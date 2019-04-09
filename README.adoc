@@ -1,0 +1,105 @@
+# HiveMQ client command line tool **mqtt**
+
+## under Construction! ##
+
+Mqtt is a command line interface for create and connect MQTT 5 clients, subscribe to topics, publish messages and disconnects client. Auth paket for MQTT 5 clients is also available.
+Mqtt works by default with MQTT 5, but working with MQTT 3 is also possible.
+
+
+This overview covers command line syntax, describes the command operations, and provides common examples.
+
+## Synopsis:
+
+$ mqtt [flag] [METHOD] URL [ITEM [ITEM]]
+
+See also mqtt --help.
+
+
+### Flag
+
+`v5(default)|v3`
+
+mqtt runs per default with MQTT version 5, but with the v3 flag, the version can be set explicitly to MQTT version 3.1.1
+
+### METHODS
+The following METHDOS are supported
+
+`con, sub, pub, auth (only v5) , disc`
+
+
+### mqtt con
+
+#### Purpose
+
+- Creates a client and connect them. The client can stay connected.
+- Attributes: Client identifier, Will properties, Will topic, Will payload, User name, password and session state.
+
+
+.Simple Examples
+|===
+|Command |Explanation
+
+|`mqtt con :`
+|connects an MQTT 5 client at localhost with default port 1883
+
+|`mqtt -v3 con myHost:`
+|connects an MQTT 3.1.1 client at myHost with default port 1883
+
+|`mqtt con :1884 `
+|connects an MQTT 5 client at localhost with port 1884.
+|===
+
+All further attributes are not mandatory.
+A client identifier is randomly set, will message is empty, clean session is false
+
+.Full Syntax
+```
+  mqtt con : client?
+            { @<fileName> |
+                i=ClientIdentifier,
+                u=UserName,
+                pw={$|'<password>'|@<fileName>},
+                cs=0
+                wp=[<header:value> [<header>:<value>]],
+                wt={$|'<Topic>'},
+                p={$|'<payload>'|@<fileName>}
+            }
+```
+|===
+|Command | Explanation
+| client? | starts the client definition that can either be defined within a file or with a set of parameters
+| i | A unique Client identifier can be defined. If not set, a randomly defined UTF-8 String will be generated.
+| u | A User name can be defined. If not set, user name will be empty.
+| pw | A password can be defined direct or
+
+         $ - via input from console - prompt, or
+
+         @<fileName> - read from file
+| cs | Session State clean is set to false (cs=1 default)
+| wp | Will properties, can contain one or more header:value pairs (default empty)
+| wt | Will topic can be defined direct or
+
+         $ - via input from console - prompt
+| p | Payload of the Will message can be defined direct or
+
+         $ - via input from console - prompt, or
+         @<fileName> - read from file
+
+|===
+
+
+**Alternative all client related properties can be read from file**
+    
+```
+mqtt con : client?@<fileName>
+```
+- connects an MQTT 5 client and reads the properties from the file.
+
+
+### mqtt sub
+mqtt sub :
+mqtt sub myHost:
+mqtt sub :1884 
+
+mqtt sub URL cId=xx -a username:pw  - header1:value1, header2:value2 -t  
+
