@@ -2,11 +2,12 @@
 
 ## under Construction! ##
 
-Mqtt is a command line interface for create and connect MQTT 5 clients, subscribe to topics, publish messages and disconnects client. Auth paket for MQTT 5 clients is also available.
-Mqtt works by default with MQTT 5, but working with MQTT 3 is also possible.
+* Mqtt is a command line interface for create and connect MQTT 5 clients, subscribe to topics, publish messages and disconnects client. Auth paket for MQTT 5 clients is also available.
+* Mqtt works by default with MQTT 5, but working with MQTT 3 is also possible.
+* Mqtt parameters can be read from cmd line or alternatively from a json/yaml file, that contains the description.
 
 
-This overview covers command line syntax, describes the command operations, and provides common examples.
+This overview covers command line syntax and file description, explains the command operations, and provides common examples.
 
 ## Synopsis:
 
@@ -21,15 +22,15 @@ See also mqtt --help.
 
 mqtt runs per default with MQTT version 5, but with the v3 flag, the version can be set explicitly to MQTT version 3.1.1
 
-### METHODS
+=== METHODS
 The following METHDOS are supported
 
 `con, sub, pub, auth (only v5) , disc`
 
 
-### mqtt con
+==== mqtt con
 
-#### Purpose
+==== Purpose
 
 - Creates a client and connect them. The client can stay connected.
 - Attributes: Client identifier, Will properties, Will topic, Will payload, User name, password and session state.
@@ -42,7 +43,7 @@ The following METHDOS are supported
 |`mqtt con :`
 |connects an MQTT 5 client at localhost with default port 1883
 
-|`mqtt -v3 con myHost:`
+|`mqtt v3 con myHost:`
 |connects an MQTT 3.1.1 client at myHost with default port 1883
 
 |`mqtt con :1884 `
@@ -50,42 +51,58 @@ The following METHDOS are supported
 |===
 
 All further attributes are not mandatory.
-A client identifier is randomly set, will message is empty, clean session is false
 
 .Full Syntax
 ```
-  mqtt con : client?
+mqtt {v3|v5} con : client?
             { @<fileName> |
-                i=ClientIdentifier,
-                u=UserName,
-                pw={$|'<password>'|@<fileName>},
-                cs=0
-                wp=[<header:value> [<header>:<value>]],
-                wt={$|'<Topic>'},
-                p={$|'<payload>'|@<fileName>}
+                i=ClientIdentifier;
+                u=UserName;
+                pw={$|'<password>'|@<fileName>};
+                cs=0;
+                se=0;
+                wp=[<header:value> [,<header>:<value>]];
+                wd=0;
+                wt={$|'<Topic>'};
+                p={$|'<payload>'|@<fileName>};
+                v=1
             }
 ```
 |===
-|Command | Explanation
-| client? | starts the client definition that can either be defined within a file or with a set of parameters
-| i | A unique Client identifier can be defined. If not set, a randomly defined UTF-8 String will be generated.
-| u | A User name can be defined. If not set, user name will be empty.
-| pw | A password can be defined direct or
+|Attribute | Explanation | default
+| {v3\|v5} | The MQTT version can be set to v3 or v5. | Not set  - v5 will be used
+| con | Method for connecting a client
+| client? | starts the client definition that can either be defined within a file or with a set of parameters. | Mandatory
+| i= | A unique Client identifier can be defined. | Not set - a randomly defined UTF-8 String will be generated.
+| u= | A User name can be defined. | If not set - user name will be empty.
+| pw= | A password can be defined direct or
 
          $ - via input from console - prompt, or
 
          @<fileName> - read from file
-| cs | Session State clean is set to false (cs=1 default)
-| wp | Will properties, can contain one or more header:value pairs (default empty)
-| wt | Will topic can be defined direct or
+         | Not set - password will be empty.
+| cs= | Session State clean is set to false. | Not set -  Clean session is set to true cs=1
+| se= | Session Expiry value in seconds. | Not set - Session expires after connection is closed se=0
+
+| wp= | Will properties, can contain one or more header:value pairs| default empty
+| wd= | Will delay interval in seconds | default wd=0
+| t= | Topic of the Will message can be defined direct or
 
          $ - via input from console - prompt
-| p | Payload of the Will message can be defined direct or
+         | Not set - no will message will be generated
+| p= | Payload of the Will message can be defined direct or
 
          $ - via input from console - prompt, or
          @<fileName> - read from file
-
+         | Not set - no will message will be generated
+| v= | The client stays connected if set v=1 | Not set - the client will be disconnected immediately.
 |===
+
+.Full Example
+```
+mqtt con : client?i=C1,u=Max,pw=$,cs=1,v=1
+```
+A client with Identifier _C1_ will be connected with a clean session. The user name is set to _Max_, the password will be set directly by the user via cmd line input. After creation a connection will be opened.
 
 
 **Alternative all client related properties can be read from file**
@@ -96,10 +113,92 @@ mqtt con : client?@<fileName>
 - connects an MQTT 5 client and reads the properties from the file.
 
 
-### mqtt sub
-mqtt sub :
-mqtt sub myHost:
-mqtt sub :1884 
+=== mqtt sub
 
-mqtt sub URL cId=xx -a username:pw  - header1:value1, header2:value2 -t  
+===== Purpose
 
+- Subscribes a client to one or more topics.
+- The client is connected with the properties described in [mqtt con]
+
+.Examples for setting the URL
+|===
+|Command |Explanation
+| mqtt sub : client?@c1.yaml topic?t='topic1' | A client described via file connects localhost and subscribes to topic 'topic1'
+| mqtt sub : client?@c1.yaml topic?t='topic1,topic2' | A client described via file connects localhost and subscribes to topic 'topic1' and 'topic2'
+| mqtt sub : client?@c1.yaml topic?@topics.yaml | A client described via file connects localhost and subscribes to topic 'topic1' and 'topic2'
+|===
+
+
+.Full Syntax
+
+```
+mqtt {v3|v5} sub : client?@<fileName> topic?
+            { @<fileName> |
+                t={$|[<topicFilter> [,<topicFilter>]]};
+                q=[<0|1|2> [,<0|1|2>]]
+            }
+```
+
+|===
+|Attribute | Explanation | Default behavior
+| topic? | starts the client definition that can either be defined within a file or with a set of parameters. | Mandatory setting - Error.
+| t= | One or more topics as UTF-8 String, comma separated. Can be defined direct or
+        $ - via input from console - prompt, or
+        @<fileName> - read from file
+        | Mandatory setting - Error.
+| q= | One or more Quality of services as number - can be 0, 1 or 2, comma separated. Can be defined direct or
+        $ - via input from console - prompt, or
+        @<fileName> - read from file
+        | Not set - default is 0.
+|===
+
+.Full Example
+```
+mqtt sub : client?@c1.yaml topic?t='my/1/#','my/2/#';q=0,1
+```
+An MQTT 5 client described in c1.yaml will be connected and subscribes to the topics that fits to the filter 'my/1/\#'  with qos 0 and 'my/2/\#' with qos 1.
+
+
+###File Descriptors
+
+All details of the commands can be packed into yaml/json files
+
+.Example for con command
+
+```
+mqtt:
+   _version: 5
+   method: con
+   client:
+    identifier: C1
+    user: Max
+    password: "$"
+    cleanSession: 1
+    sessionExpiry: 0
+    will:
+     properties:
+      p:
+       - "p1:x1"
+       - "p2:x2"
+     topic: "/mylastWill"
+     payload: "@/usr/local/Max/will.yaml"
+    stayConnected: 1
+```
+
+
+.Example for subscribe command
+
+```
+mqtt:
+ method: sub
+ client:
+    _file: "/usr/local/Max/con.yaml"
+ topics:
+  topic:
+   -
+   name: topic1
+    qos: 0
+   -
+   name: topic2
+    qos: 1
+```
