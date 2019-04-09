@@ -1,6 +1,6 @@
 # HiveMQ client command line tool **mqtt**
 
-## under Construction! ##
+## Under Construction! ##
 
 * Mqtt is a command line interface for create and connect MQTT 5 clients, subscribe to topics, publish messages and disconnects client. Auth paket for MQTT 5 clients is also available.
 * Mqtt works by default with MQTT 5, but working with MQTT 3 is also possible.
@@ -71,7 +71,7 @@ mqtt {v3|v5} con : client?
 |===
 |Attribute | Explanation | default
 | {v3\|v5} | The MQTT version can be set to v3 or v5. | Not set  - v5 will be used
-| con | Method for connecting a client
+| con | Method for connecting a client |
 | client? | starts the client definition that can either be defined within a file or with a set of parameters. | Mandatory
 | i= | A unique Client identifier can be defined. | Not set - a randomly defined UTF-8 String will be generated.
 | u= | A User name can be defined. | If not set - user name will be empty.
