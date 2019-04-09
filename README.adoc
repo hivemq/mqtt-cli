@@ -55,7 +55,7 @@ All further attributes are not mandatory.
 .Full Syntax
 ```
 mqtt {v3|v5} con : client?
-            { file=@<fileName> |
+            { @<fileName> |
                 i=ClientIdentifier;
                 u=UserName;
                 pw={$|'<password>'|@<fileName>};
@@ -133,7 +133,7 @@ mqtt con : client?@<fileName>
 
 ```
 mqtt {v3|v5} sub : client?@<fileName> topic?
-            { file=@<fileName> |
+            { @<fileName> |
                 t={$|[<topicFilter> [,<topicFilter>]]};
                 q=[<0|1|2> [,<0|1|2>]]
             }
