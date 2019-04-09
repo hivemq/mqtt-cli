@@ -19,8 +19,8 @@ $ mqtt [METHOD] URL [ITEM [ITEM]]
 See also mqtt --help.
 
 
-=== METHODS Overview
-The following METHDOS are supported
+=== Methods Overview
+The following Methods are supported
 
 ```
 sub, pub, con, auth(v5), disc
