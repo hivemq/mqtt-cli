@@ -2,14 +2,14 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.AbstractCommand;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
+import com.hivemq.client.mqtt.MqttClientBuilder;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5ClientBuilder;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-public class MqttClientFactory implements Provider<Mqtt3Client> {
+public class MqttClientFactory implements Provider<Mqtt5Client> {
 
     private AbstractCommand command;
 
@@ -19,16 +19,12 @@ public class MqttClientFactory implements Provider<Mqtt3Client> {
     }
 
     @Override
-    public Mqtt3Client get() {
+    public Mqtt5Client get() {
 
-        Mqtt3ClientBuilder builder = MqttClient.builder().useMqttVersion3()
+        MqttClientBuilder mqttClientBuilder = MqttClient.builder()
                 .serverHost(command.getHost())
-                .serverPort(command.getPort());
-
-        if (command.getIdentifier().isPresent()) {
-            builder.identifier(MqttClientIdentifier.of(command.getIdentifier().get()));
-        }
-
-        return builder.build();
+                .serverPort(command.getPort())
+                .identifier(command.getIdentifier());
+        return mqttClientBuilder.useMqttVersion5().build();
     }
 }

@@ -1,37 +1,33 @@
 package com.hivemq.cli;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.hivemq.cli.cli.Cli;
-import com.hivemq.cli.commands.AbstractCommand;
-import com.hivemq.cli.commands.HmqSub;
-import com.hivemq.cli.impl.MqttAction;
-import com.hivemq.cli.impl.SubscriptionImpl;
-import com.hivemq.cli.ioc.MqttClientModule;
+import com.hivemq.cli.cli.HmqCli;
+import com.hivemq.cli.commands.Mqtt;
+import picocli.CommandLine;
+
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        Mqtt mqtt = new Mqtt();
 
-        final AbstractCommand subCommand = Cli.getCliCommandOrDie();
+        final CommandLine cmd = new CommandLine(mqtt);
+        cmd.usage(System.out);
 
-        Injector injector = Guice.createInjector(new MqttClientModule(), new AbstractModule() {
-
-            @Override
-            protected void configure() {
-                bind(subCommand.getType()).toInstance(subCommand);
-                bind(AbstractCommand.class).toInstance(subCommand);
+        try {
+            List<CommandLine> parse = cmd.parse(args);
+            if (parse.size() > 1) {
+                CommandLine subCommandLine = parse.get(1);
+                CommandLine.printHelpIfRequested(cmd.parseArgs(args));
+                HmqCli.executeCommand( subCommandLine.getCommand());
+            } else {
+                parse.get(0).usage(System.err);
             }
-        });
-
-        MqttAction action = null;
-        if (subCommand instanceof HmqSub) {
-
-            action = injector.getInstance(SubscriptionImpl.class);
+        } catch (Exception all) {
+            System.err.println(all);
         }
-        action.run();
-
     }
+
+
 }

@@ -1,0 +1,6 @@
+Manifest-Version: 1.0.0
+Implementation-Title: HiveMQ MQTT Command line interface
+Implementation-Vendor: dc-square GmbH
+Implementation-Version: 1.0.0
+Main-Class: com.hivemq.cli.Main
+

@@ -1,49 +1,65 @@
 package com.hivemq.cli.impl;
 
-import com.hivemq.cli.commands.HmqSub;
-import com.hivemq.client.annotations.Immutable;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
-import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3ConnAckException;
-import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3SubAckException;
-import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
-import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3Subscribe;
-import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAckReturnCode;
+import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.client.internal.mqtt.MqttBlockingClient;
+import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
+import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5ConnAckException;
+import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5SubAckException;
+import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
+import com.hivemq.client.mqtt.mqtt5.message.subscribe.Mqtt5Subscribe;
+import com.hivemq.client.mqtt.mqtt5.message.subscribe.suback.Mqtt5SubAckReasonCode;
 
 import javax.inject.Inject;
 import java.util.List;
 
 public class SubscriptionImpl implements MqttAction {
 
-    private HmqSub param;
-    private Mqtt3Client mqttClient;
+    private Subscribe param;
+    private Mqtt5BlockingClient mqttBlockingClient;
 
     @Inject
-    SubscriptionImpl(final HmqSub param, final Mqtt3Client mqttClient) {
+    SubscriptionImpl(final Subscribe param, final Mqtt5Client mqttClient) {
         this.param = param;
-        this.mqttClient = mqttClient;
+        this.mqttBlockingClient = mqttClient.toBlocking();
     }
 
     @Override
     public void run() {
-
-        Mqtt3BlockingClient mqtt3BlockingClient = mqttClient.toBlocking();
-
         try {
+            Mqtt5ConnAck connAck = mqttBlockingClient.connect();
+            System.out.println("Connect: " + mqttBlockingClient.getConfig().getClientIdentifier().get() );
+            for(int i=0; i < param.getTopics().length; i++) {
+                final String topic = param.getTopics()[i];
+                final MqttQos qos = getQosFromParam(param.getQos(), i);
 
-            Mqtt3ConnAck connAck = mqtt3BlockingClient.connect();
+                List<Mqtt5SubAckReasonCode> returnCodes =
+                        mqttBlockingClient
+                                .subscribeWith()
+                                .topicFilter(topic)
+                                .qos(qos)
+                                .send().getReasonCodes();
 
-            List<Mqtt3SubAckReturnCode> returnCodes = mqtt3BlockingClient.subscribe(Mqtt3Subscribe.builder().topicFilter("#").build()).getReturnCodes();
+                System.out.println("Subscribed to Topic: " + topic + " and " + returnCodes);
 
-        } catch (Mqtt3ConnAckException ex) {
-            System.out.println("Miep");
+            }
+
+        } catch (Mqtt5ConnAckException ex) {
+            System.err.println(ex.getMqttMessage());
+        } catch (Mqtt5SubAckException e) {
+            System.err.println(e.getMqttMessage().getReasonCodes());
         }
-        catch (Mqtt3SubAckException ex) {
-            System.out.println(ex.getMqttMessage().getReturnCodes());
-            System.out.println("Miep");
-        }
 
-//        System.out.println(connAck.getReturnCode());
-        System.out.printf("Sub");
     }
+
+    private MqttQos getQosFromParam(int[] qos, int i) {
+        if( qos.length < i || qos[i] == 0) {
+            return MqttQos.AT_MOST_ONCE;
+        }
+        return qos[i]==1 ? MqttQos.AT_LEAST_ONCE:MqttQos.EXACTLY_ONCE;
+    }
+
 }
