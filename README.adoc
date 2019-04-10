@@ -26,7 +26,7 @@ The following Methods are supported
 sub, pub, con, auth(v5), disc
 ```
 
-=== specific Methods
+=== Specific Methods
 
 ==== Interactive MOde
 * Mqtt can be started in shell mode, to work interactive.
