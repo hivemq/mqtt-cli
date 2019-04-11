@@ -4,7 +4,6 @@ import com.hivemq.cli.commands.AbstractCommand;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5ClientBuilder;
 
 import javax.inject.Inject;
 import javax.inject.Provider;

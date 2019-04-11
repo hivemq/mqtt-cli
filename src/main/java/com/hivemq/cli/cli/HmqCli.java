@@ -4,15 +4,12 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.hivemq.cli.commands.AbstractCommand;
-import com.hivemq.cli.commands.Mqtt;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.shell.Shell;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.impl.SubscriptionImpl;
 import com.hivemq.cli.ioc.MqttClientModule;
 import picocli.CommandLine;
-
-import java.util.List;
 
 public class HmqCli {
 
@@ -32,13 +29,16 @@ public class HmqCli {
                 action.run();
             }
 
-            if( subCommand instanceof Shell){
+            if (subCommand instanceof Shell) {
                 ((Shell) subCommand).run();
             }
 
         } catch (CommandLine.ParameterException ex) {
             System.err.println(ex.getMessage());
             ex.getCommandLine().usage(System.err);
+        } catch (Exception others) {
+            // suppress classname
+            System.err.println(others.getCause().getMessage());
         }
         return false;
     }

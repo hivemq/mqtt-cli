@@ -59,7 +59,11 @@ public class Shell extends AbstractCommand implements Runnable {
                     // Ignore
                 } catch (EndOfFileException e) {
                     return;
+                } catch (Exception all) {
+                    System.err.println("Error in command.");
+                    System.err.println(all.getMessage());
                 }
+
             }
         } catch (Throwable t) {
             t.printStackTrace();

@@ -1,6 +1,5 @@
 package com.hivemq.cli.commands;
 
-import com.hivemq.client.mqtt.datatypes.MqttQos;
 import picocli.CommandLine;
 
 import java.util.UUID;
@@ -21,8 +20,9 @@ public abstract class AbstractCommand implements CliCommand {
     private String identifier;
 
     public String getIdentifier() {
-        return identifier!=null? identifier: "hmq"+ version + "-" + UUID.randomUUID().toString();
+        return identifier != null ? identifier : "hmq" + version + "-" + UUID.randomUUID().toString();
     }
+
     public String getHost() {
         return host;
     }

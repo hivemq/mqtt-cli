@@ -2,7 +2,6 @@ package com.hivemq.cli.ioc;
 
 import com.google.inject.AbstractModule;
 import com.hivemq.cli.mqtt.MqttClientFactory;
-import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 
 public class MqttClientModule extends AbstractModule {
