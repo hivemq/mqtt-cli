@@ -48,7 +48,7 @@ $ mqtt sub @/path2my/yamlFile.yml
 ```
 
 
-== Detailed description
+=== Detailed description
 ==== mqtt con
 
 - Creates a client and connect them. The client can stays connected.
@@ -138,7 +138,7 @@ mqtt con @<fileName>
 - connects an MQTT 5 client and reads the properties from the file.
 
 
-=== mqtt sub
+==== mqtt sub
 
 - Subscribes a client to one or more topics.
 - The client is connected with the properties described in [mqtt con]

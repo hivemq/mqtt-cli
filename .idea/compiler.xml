@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="MQTT-CLI" />
+        <module name="mqtt-cli" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="MQTT-CLI" target="8" />
+      <module name="mqtt-cli" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>

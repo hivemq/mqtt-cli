@@ -4,28 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>hmq-cli</groupId>
-    <artifactId>MQTT-CLI</artifactId>
+    <groupId>com.hivemq</groupId>
+    <artifactId>mqtt-cli</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <description>HiveMQ MQTT Client Data Test for nerd-art scenario</description>
+    <description>HiveMQ MQTT Command line Interface</description>
 
     <dependencies>
+
         <dependency>
-            <groupId>com.hivemq</groupId>
-            <artifactId>hivemq-mqtt-client</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>4.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.2</version>
-            <scope>test</scope>
+            <groupId>com.oracle.substratevm</groupId>
+            <artifactId>svm</artifactId>
+            <version>1.0.0-rc14</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -36,16 +27,34 @@
 
         <dependency>
             <groupId>info.picocli</groupId>
-            <artifactId>picocli-shell-jline3</artifactId>
+            <artifactId>picocli-shell-jline2</artifactId>
             <version>4.0.0-alpha-1</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.hivemq</groupId>
+            <artifactId>hivemq-mqtt-client</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.32.Final</version>
+        </dependency>
+        <!--
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
             <version>4.0.0-alpha-1</version>
         </dependency>
 
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli-codegen</artifactId>
+            <version>4.0.0-alpha-1</version>
+        </dependency>
+        -->
     </dependencies>
 
     <build>
@@ -114,6 +123,25 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--plugin>
+                <groupId>com.oracle.substratevm</groupId>
+                <artifactId>native-image-maven-plugin</artifactId>
+                <version>1.0.0-rc14</version>
+                <configuration>
+                    < configuration is declared in
+                        resources/META-INF/native-image/com.hivemq/mqtt-cli/native-image.properties
+                    />
+                    <mainClass>com.hivemq.cli.Mqtt</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>native-image</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin -->
         </plugins>
     </build>
 
@@ -121,54 +149,6 @@
         <profile>
             <id>Packaging</id>
             <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <descriptors>
-                                        <descriptor>assembly.xml</descriptor>
-                                    </descriptors>
-                                    <archive>
-                                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-                                    </archive>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.asciidoctor</groupId>
-                        <artifactId>asciidoctor-maven-plugin</artifactId>
-                        <version>1.5.2.1</version>
-                        <executions>
-                            <execution>
-                                <id>output-html</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>process-asciidoc</goal>
-                                </goals>
-                                <configuration>
-                                    <backend>html</backend>
-                                    <doctype>xhtml</doctype>
-                                    <headerFooter>true</headerFooter>
-                                    <sourceDirectory>${basedir}</sourceDirectory>
-                                    <outputDirectory>${basedir}/target</outputDirectory>
-                                    <sourceDocumentName>README.adoc</sourceDocumentName>
-                                    <attributes>
-                                        <icons>font</icons>
-                                        <toc2/>
-                                    </attributes>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
             </build>
         </profile>
     </profiles>

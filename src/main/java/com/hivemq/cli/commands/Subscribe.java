@@ -6,8 +6,6 @@ import picocli.CommandLine;
 
 @CommandLine.Command(name = "sub", description = "Subscribe an mqtt client to a list of topics")
 public class Subscribe extends Connect implements MqttAction {
-    @CommandLine.Spec
-    CommandLine.Model.CommandSpec spec;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "Set at least one Topic")
     private String[] topics;

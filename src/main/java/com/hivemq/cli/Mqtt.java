@@ -1,16 +1,26 @@
 package com.hivemq.cli;
 
 import com.hivemq.cli.cli.HmqCli;
-import com.hivemq.cli.commands.Mqtt;
+import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.shell.Shell;
 import picocli.CommandLine;
 
 import java.util.List;
 
-public class Main {
+@CommandLine.Command(name = "mqtt",
+        subcommands = {
+                Subscribe.class, Connect.class, Shell.class
+        },
+        description = "HiveMQ MQTT Command Line Interpreter.")
+public class Mqtt {
+
+    public Mqtt() { }
 
     public static void main(String[] args) {
 
-        Mqtt mqtt = new Mqtt();
+        com.hivemq.cli.Mqtt mqtt = new com.hivemq.cli.Mqtt();
+
         final CommandLine cmd = new CommandLine(mqtt);
 
         try {
@@ -27,6 +37,4 @@ public class Main {
 
         }
     }
-
-
 }

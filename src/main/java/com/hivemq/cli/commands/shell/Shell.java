@@ -1,60 +1,60 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.AbstractCommand;
+import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.commands.Subscribe;
-import org.jline.reader.*;
+import jline.console.ConsoleReader;
+import jline.console.UserInterruptException;
+import jline.console.completer.ArgumentCompleter;
+import jline.console.completer.ArgumentCompleter.ArgumentList;
+import jline.console.completer.ArgumentCompleter.WhitespaceArgumentDelimiter;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.MaskingCallback;
+import org.jline.reader.ParsedLine;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.reader.impl.LineReaderImpl;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
 import picocli.CommandLine;
-import picocli.shell.jline3.PicocliJLineCompleter;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.ParentCommand;
+import picocli.shell.jline2.PicocliJLineCompleter;
 
 import java.io.PrintWriter;
 
 @CommandLine.Command(name = "shell",
         description = "Starts the mqtt cli in shell mode, to enable interactive working.",
-        footer = {"", "Press Ctl-D to exit."},
-        subcommands = {Subscribe.class, ClearScreen.class})
+        footer = {"", "Press Ctl-C to exit."},
+        subcommands = {Connect.class, Subscribe.class, ClearScreen.class})
 public class Shell extends AbstractCommand implements Runnable {
 
-    LineReaderImpl reader;
-    PrintWriter out;
+    ConsoleReader reader;
 
-    Shell() {
-    }
-
-    public void setReader(LineReader reader) {
-        this.reader = (LineReaderImpl) reader;
-        out = reader.getTerminal().writer();
-    }
+    Shell() { }
 
     public void run() {
-        System.out.println(new CommandLine(this).getUsageMessage());
-        interact();
+        CommandLine cmd = new CommandLine(this);
+        System.out.println(cmd.getUsageMessage());
+        interact(cmd);
     }
 
-    private void interact() {
+    public  void interact(CommandLine cmd) {
         try {
-            CommandLine cmd = new CommandLine(this);
-            Terminal terminal = TerminalBuilder.builder().build();
-            LineReader reader = LineReaderBuilder.builder()
-                    .terminal(terminal)
-                    .completer(new PicocliJLineCompleter(cmd.getCommandSpec()))
-                    .parser(new DefaultParser())
-                    .build();
-            this.setReader(reader);
-            String prompt = "mqtt> ";
-            String rightPrompt = "null";
+
+            reader = new ConsoleReader();
+            reader.setPrompt("mqtt> ");
+
+            // set up the completion ;
+            reader.addCompleter(new PicocliJLineCompleter(cmd.getCommandSpec()));
 
             // start the shell and process input until the user quits with Ctl-D
             String line;
             while (true) {
                 try {
-                    line = reader.readLine(prompt, rightPrompt, (MaskingCallback) null, null);
-                    ParsedLine pl = reader.getParser().parse(line, 5);
-                    String[] arguments = pl.words().toArray(new String[0]);
-                    CommandLine.run(this, arguments);
+                    if((line = reader.readLine()) != null) {
+                        ArgumentList list =  new WhitespaceArgumentDelimiter().delimit(line, line.length());
+                        CommandLine.run(this, list.getArguments());
+                    }
                 } catch (UserInterruptException e) {
                     // Ignore
                 } catch (EndOfFileException e) {
@@ -63,7 +63,6 @@ public class Shell extends AbstractCommand implements Runnable {
                     System.err.println("Error in command.");
                     System.err.println(all.getMessage());
                 }
-
             }
         } catch (Throwable t) {
             t.printStackTrace();
