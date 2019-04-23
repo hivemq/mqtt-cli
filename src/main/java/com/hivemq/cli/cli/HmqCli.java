@@ -4,6 +4,7 @@ import com.hivemq.cli.commands.AbstractCommand;
 import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.shell.Shell;
+import com.hivemq.cli.impl.ConnectionImpl;
 import com.hivemq.cli.impl.SubscriptionImpl;
 import picocli.CommandLine;
 
@@ -14,25 +15,13 @@ public class HmqCli {
 
             if (subCommand instanceof Subscribe) {
                 Subscribe subscribe = (Subscribe) subCommand;
-                System.out.println("Execute Subscribe - to Topic " + subscribe.getTopics() + " at Host=" + subscribe.getHost() + ":" + subscribe.getPort() );
-
-/**
- MqttClientBuilder mqttClientBuilder = MqttClient.builder()
- .serverHost(subscribe.getHost())
- .serverPort(subscribe.getPort())
- .identifier(subscribe.getIdentifier());
- Mqtt5Client client = mqttClientBuilder.useMqttVersion5().build();
- **/
                 SubscriptionImpl subscription = new SubscriptionImpl(subscribe);
                 subscription.run();
-            }
-
-            else if( subCommand instanceof Connect) {
+            } else if (subCommand instanceof Connect) {
                 Connect connect = (Connect) subCommand;
-                System.out.println("Execute Connect - to Host=" + connect.getHost());
-            }
-
-            else if (subCommand instanceof Shell) {
+                ConnectionImpl connection = new ConnectionImpl(connect);
+                connection.run();
+            } else if (subCommand instanceof Shell) {
                 ((Shell) subCommand).run();
             }
 
@@ -41,7 +30,7 @@ public class HmqCli {
             ex.getCommandLine().usage(System.err);
         } catch (Exception others) {
             // suppress classname
-            System.err.println(others);
+            System.err.println(others.getCause().getMessage());
         }
         return false;
     }

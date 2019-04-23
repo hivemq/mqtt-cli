@@ -15,7 +15,8 @@ import java.util.List;
         description = "HiveMQ MQTT Command Line Interpreter.")
 public class Mqtt {
 
-    public Mqtt() { }
+    public Mqtt() {
+    }
 
     public static void main(String[] args) {
 

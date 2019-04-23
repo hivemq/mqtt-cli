@@ -5,22 +5,11 @@ import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.commands.Subscribe;
 import jline.console.ConsoleReader;
 import jline.console.UserInterruptException;
-import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.ArgumentCompleter.ArgumentList;
 import jline.console.completer.ArgumentCompleter.WhitespaceArgumentDelimiter;
 import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
-import org.jline.reader.MaskingCallback;
-import org.jline.reader.ParsedLine;
-import org.jline.reader.impl.DefaultParser;
-import org.jline.reader.impl.LineReaderImpl;
 import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.ParentCommand;
 import picocli.shell.jline2.PicocliJLineCompleter;
-
-import java.io.PrintWriter;
 
 @CommandLine.Command(name = "shell",
         description = "Starts the mqtt cli in shell mode, to enable interactive working.",
@@ -30,7 +19,8 @@ public class Shell extends AbstractCommand implements Runnable {
 
     ConsoleReader reader;
 
-    Shell() { }
+    Shell() {
+    }
 
     public void run() {
         CommandLine cmd = new CommandLine(this);
@@ -38,7 +28,7 @@ public class Shell extends AbstractCommand implements Runnable {
         interact(cmd);
     }
 
-    public  void interact(CommandLine cmd) {
+    public void interact(CommandLine cmd) {
         try {
 
             reader = new ConsoleReader();
@@ -51,8 +41,8 @@ public class Shell extends AbstractCommand implements Runnable {
             String line;
             while (true) {
                 try {
-                    if((line = reader.readLine()) != null) {
-                        ArgumentList list =  new WhitespaceArgumentDelimiter().delimit(line, line.length());
+                    if ((line = reader.readLine()) != null) {
+                        ArgumentList list = new WhitespaceArgumentDelimiter().delimit(line, line.length());
                         CommandLine.run(this, list.getArguments());
                     }
                 } catch (UserInterruptException e) {
