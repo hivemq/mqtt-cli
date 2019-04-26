@@ -1,9 +1,6 @@
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.AbstractCommand;
-import com.hivemq.cli.commands.Connect;
-import com.hivemq.cli.commands.Disconnect;
-import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.*;
 import jline.console.ConsoleReader;
 import jline.console.UserInterruptException;
 import jline.console.completer.ArgumentCompleter.ArgumentList;
@@ -13,9 +10,9 @@ import picocli.CommandLine;
 import picocli.shell.jline2.PicocliJLineCompleter;
 
 @CommandLine.Command(name = "shell",
-        description = "Starts the mqtt cli in shell mode, to enable interactive working.",
+        description = "Starts the mqtt cli in shell mode, to enable interactive working with further sub commands." ,
         footer = {"", "Press Ctl-C to exit."},
-        subcommands = {Connect.class, Subscribe.class, Disconnect.class, ClearScreen.class})
+        subcommands = {Connect.class, Subscribe.class, Publish.class, Disconnect.class, ClearScreen.class})
 public class Shell extends AbstractCommand implements Runnable {
 
     ConsoleReader reader;

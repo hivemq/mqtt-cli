@@ -2,6 +2,8 @@ package com.hivemq.cli;
 
 import com.hivemq.cli.cli.HmqCli;
 import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.commands.Disconnect;
+import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.shell.Shell;
 import picocli.CommandLine;
@@ -10,7 +12,7 @@ import java.util.List;
 
 @CommandLine.Command(name = "mqtt",
         subcommands = {
-                Subscribe.class, Connect.class, Shell.class
+                Subscribe.class, Publish.class, Shell.class
         },
         description = "HiveMQ MQTT Command Line Interpreter.")
 public class Mqtt {

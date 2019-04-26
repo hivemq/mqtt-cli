@@ -7,7 +7,7 @@ import picocli.CommandLine;
 import java.util.UUID;
 
 @CommandLine.Command(name = "con", description = "Connects an mqtt client")
-public class Connect extends AbstractCommand implements MqttAction {
+public class Connect extends MqttCommand implements MqttAction {
     ConnectionImpl instance;
 
     //TODO Implement

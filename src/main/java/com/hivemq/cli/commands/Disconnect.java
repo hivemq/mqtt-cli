@@ -5,7 +5,7 @@ import com.hivemq.cli.impl.MqttAction;
 import picocli.CommandLine;
 
 @CommandLine.Command(name = "dis", description = "Disconnects an mqtt client")
-public class Disconnect extends AbstractCommand implements MqttAction {
+public class Disconnect extends MqttCommand implements MqttAction {
     DisconnectImpl instance;
 
     @Override
