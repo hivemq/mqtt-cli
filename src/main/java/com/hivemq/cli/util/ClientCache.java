@@ -10,15 +10,6 @@ public class ClientCache<K, V> {
     private final int CACHE_SIZE;
     private final Map<K, Entry<K, V>> CACHE;
     private Entry<K, V> head, tail;
-
-    public boolean isVerbose() {
-        return verbose;
-    }
-
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
-
     private boolean verbose = false;
 
     public ClientCache(boolean verbose) {
@@ -30,9 +21,18 @@ public class ClientCache<K, V> {
         this(16);       // default cache size as 16
     }
 
+
     public ClientCache(int CACHE_SIZE) {
         this.CACHE_SIZE = CACHE_SIZE;
         CACHE = new HashMap<>(CACHE_SIZE);
+    }
+
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
     }
 
     public V get(K key) {
@@ -42,27 +42,37 @@ public class ClientCache<K, V> {
             remove(entry);
             // and move to top
             splayOnTop(entry);
-            if( verbose) System.out.println("get::" + key);
+            if (verbose) System.out.println("get::" + key);
             return entry.value;
         }
         return null;
     }
 
     public boolean hasKey(K key) {
-        if( verbose) System.out.println("hasKey::" + key +  " - " + CACHE.containsKey(key));
+        if (verbose) System.out.println("hasKey::" + key + " - " + CACHE.containsKey(key));
         return (CACHE.containsKey(key));
     }
 
+    public boolean remove(K key) {
+        if (CACHE.containsKey(key)) {
+            if (verbose) System.out.println("remove::" + key);
+            Entry<K, V> entry = CACHE.get(key);
+            // remove the recently accessed entry from linkedlist
+            remove(entry);
+            return true;
+        }
+        return false;
+    }
 
     public void put(K key, V value) {
         if (CACHE.containsKey(key)) {
-            if( verbose) System.out.println("put::" + key);
+            if (verbose) System.out.println("put::" + key);
             Entry<K, V> entry = CACHE.get(key);
             entry.value = value;
             remove(entry);
             splayOnTop(entry);
         } else {
-            if( verbose) System.out.println("putIfAbsent::" + key);
+            if (verbose) System.out.println("putIfAbsent::" + key);
             Entry<K, V> entry = new Entry<>();
             entry.key = key;
             entry.value = value;

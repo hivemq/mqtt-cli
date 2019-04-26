@@ -10,15 +10,6 @@ import java.util.UUID;
 public class Connect extends AbstractCommand implements MqttAction {
     ConnectionImpl instance;
 
-    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The host of the message broker..")
-    private String host;
-
-    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = "1883", description = "The port of the message broker.")
-    private int port;
-
-    @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String.")
-    private String identifier;
-
     //TODO Implement
     @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String.")
     private String prefixIdentifier;
@@ -60,15 +51,7 @@ public class Connect extends AbstractCommand implements MqttAction {
     private boolean useSsl;
 
     public String createIdentifier() {
-        return identifier != null ? identifier: "hmqClient" + this.getVersion() + "-" + UUID.randomUUID().toString();
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
+        return getIdentifier() != null ? getIdentifier() : "hmqClient" + this.getVersion() + "-" + UUID.randomUUID().toString();
     }
 
     public boolean isUseSsl() {
@@ -120,9 +103,22 @@ public class Connect extends AbstractCommand implements MqttAction {
     public String getKey() {
         return "client {" +
                 "version=" + getVersion() +
-                ", host='" + host + '\'' +
-                ", port=" + port +
-                ", identifier='" + identifier + '\'' +
+                ", host='" + getHost() + '\'' +
+                ", port=" + getPort() +
+                ", identifier='" + getIdentifier() + '\'' +
+                '}';
+    }
+
+    @Override
+    public void run() {
+        ConnectionImpl.get(this).run();
+
+    }
+
+    @Override
+    public String toString() {
+        return "Connect{" +
+                "key=" + getKey() +
                 ", prefixIdentifier='" + prefixIdentifier + '\'' +
                 ", user='" + user + '\'' +
                 ", password='" + password + '\'' +
@@ -135,18 +131,4 @@ public class Connect extends AbstractCommand implements MqttAction {
                 ", useSsl=" + useSsl +
                 '}';
     }
-
-    @Override
-    public void run() {
-        ConnectionImpl.get(this).run();
-
-    }
-
-    @Override
-    public String toString() {
-
-        return "Connect::"+ getKey();
-    }
-
-
 }

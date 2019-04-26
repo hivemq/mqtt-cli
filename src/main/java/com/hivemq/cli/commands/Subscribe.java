@@ -65,6 +65,7 @@ public class Subscribe extends Connect implements MqttAction {
     @Override
     public String toString() {
         return "Subscribe:: {" +
+                "key=" + getKey() +
                 "topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 '}';

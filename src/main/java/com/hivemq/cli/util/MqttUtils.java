@@ -1,6 +1,7 @@
 package com.hivemq.cli.util;
 
 import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
@@ -25,6 +26,13 @@ public class MqttUtils {
         return instance;
     }
 
+    private static MqttQos getQosFromParam(int[] qos, int i) {
+        if (qos.length <= i || qos[i] == 0) {
+            return MqttQos.AT_MOST_ONCE;
+        }
+        return qos[i] == 1 ? MqttQos.AT_LEAST_ONCE : MqttQos.EXACTLY_ONCE;
+    }
+
     public Mqtt5BlockingClient connect(Connect connect) throws Exception {
         return doConnect(connect);
     }
@@ -42,7 +50,7 @@ public class MqttUtils {
                                 .qos(qos)
                                 .send().getReasonCodes();
 
-                System.out.println("Client::" + mqttBlockingClient.getConfig().getClientIdentifier().get()  + " subscribed to Topic: " + topic + " with result: " + returnCodes);
+                System.out.println("Client::" + mqttBlockingClient.getConfig().getClientIdentifier().get() + " subscribed to Topic: " + topic + " with result: " + returnCodes);
             }
 
         } catch (Mqtt5SubAckException ex) {
@@ -52,6 +60,21 @@ public class MqttUtils {
             );
         }
         return mqttBlockingClient;
+    }
+
+    public boolean disconnect(Disconnect disconnect) throws Exception {
+        mqttClientClientCache.setVerbose(disconnect.isDebug());
+
+        Mqtt5BlockingClient mqttBlockingClient = null;
+
+        if (mqttClientClientCache.hasKey(disconnect.getKey())) {
+            mqttBlockingClient = mqttClientClientCache.get(disconnect.getKey());
+            mqttBlockingClient.disconnect();
+            mqttClientClientCache.remove(disconnect.getKey());
+            return true;
+        }
+        return false;
+
     }
 
     private Mqtt5BlockingClient doConnect(Connect connect) {
@@ -98,13 +121,5 @@ public class MqttUtils {
         }
         return mqttBlockingClient;
     }
-
-    private static MqttQos getQosFromParam(int[] qos, int i) {
-        if (qos.length <= i || qos[i] == 0) {
-            return MqttQos.AT_MOST_ONCE;
-        }
-        return qos[i] == 1 ? MqttQos.AT_LEAST_ONCE : MqttQos.EXACTLY_ONCE;
-    }
-
 
 }
