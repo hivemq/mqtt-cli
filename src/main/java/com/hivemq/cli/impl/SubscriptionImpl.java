@@ -1,54 +1,38 @@
 package com.hivemq.cli.impl;
 
-import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.util.MqttUtils;
-import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
-import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5ConnAckException;
-import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5SubAckException;
-import com.hivemq.client.mqtt.mqtt5.message.subscribe.suback.Mqtt5SubAckReasonCode;
-
-import java.util.List;
 
 public class SubscriptionImpl implements MqttAction {
 
+    private static SubscriptionImpl instance = new SubscriptionImpl();
     private Subscribe param;
 
-    public SubscriptionImpl(final Subscribe param) {
-        this.param = param;
+    private SubscriptionImpl() {
+    }
+
+    public static SubscriptionImpl get(final Subscribe param) {
+        instance.param = param;
+        return instance;
+    }
+
+    @Override
+    public String getKey() {
+        return param.getKey();
     }
 
     @Override
     public void run() {
-        // System.out.println(param);
+        if (param.isDebug()) {
+            System.out.println(param);
+        }
 
         try {
-            Mqtt5BlockingClient mqttBlockingClient = MqttUtils.connect((Connect) param);
-            if (mqttBlockingClient.getConfig().getState().isConnected()) {
-                for (int i = 0; i < param.getTopics().length; i++) {
-                    final String topic = param.getTopics()[i];
-                    final MqttQos qos = getQosFromParam(param.getQos(), i);
-                    List<Mqtt5SubAckReasonCode> returnCodes =
-                            (mqttBlockingClient).subscribeWith()
-                                    .topicFilter(topic)
-                                    .qos(qos)
-                                    .send().getReasonCodes();
-
-                    System.out.println("Subscribed to Topic: " + topic + " with result: " + returnCodes);
-                }
-            }
-        } catch (Mqtt5SubAckException e) {
-            System.err.println(e.getMqttMessage().getReasonCodes());
+            MqttUtils.getInstance().subscribe(param);
+        } catch (Exception others) {
+            System.err.println(others.getMessage());
         }
-    }
 
-
-    private MqttQos getQosFromParam(int[] qos, int i) {
-        if (qos.length < i || qos[i] == 0) {
-            return MqttQos.AT_MOST_ONCE;
-        }
-        return qos[i] == 1 ? MqttQos.AT_LEAST_ONCE : MqttQos.EXACTLY_ONCE;
     }
 
 }

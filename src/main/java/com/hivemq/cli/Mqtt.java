@@ -14,28 +14,30 @@ import java.util.List;
         },
         description = "HiveMQ MQTT Command Line Interpreter.")
 public class Mqtt {
-
-    public Mqtt() {
-    }
+    @CommandLine.Option(names = {"-?", "--help"}, usageHelp = true, description = "Display this help and exit.")
+    private boolean help;
 
     public static void main(String[] args) {
 
-        com.hivemq.cli.Mqtt mqtt = new com.hivemq.cli.Mqtt();
-
+        final com.hivemq.cli.Mqtt mqtt = new com.hivemq.cli.Mqtt();
         final CommandLine cmd = new CommandLine(mqtt);
+        final HmqCli hmqCli = new HmqCli();
+        short status = 1;
 
         try {
-            List<CommandLine> parse = cmd.parse(args);
+            final List<CommandLine> parse = cmd.parse(args);
             if (parse.size() > 1) {
                 CommandLine subCommandLine = parse.get(1);
-                CommandLine.printHelpIfRequested(cmd.parseArgs(args));
-                HmqCli.executeCommand(subCommandLine.getCommand());
+                boolean helpRequested = CommandLine.printHelpIfRequested(subCommandLine.getParseResult());
+                if (!helpRequested) {
+                    status = hmqCli.executeCommand(subCommandLine.getCommand());
+                }
             } else {
                 parse.get(0).usage(System.err);
             }
         } catch (CommandLine.ParameterException ex) {
             System.err.println(ex.getMessage());
-
         }
+        System.exit(status);
     }
 }

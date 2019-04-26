@@ -1,88 +1,111 @@
 [
   {
-    "name" : "com.hivemq.cli.Mqtt",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.Mqtt",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.commands.AbstractCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.commands.AbstractCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.commands.Connect",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "host" },
-      { "name" : "identifier" },
-      { "name" : "port" },
-      { "name" : "version" }
+    "name": "com.hivemq.cli.commands.Connect",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "host"
+      },
+      {
+        "name": "identifier"
+      },
+      {
+        "name": "port"
+      },
+      {
+        "name": "version"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.Subscribe",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "qos" },
-      { "name" : "topics" }
+    "name": "com.hivemq.cli.commands.Subscribe",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "qos"
+      },
+      {
+        "name": "topics"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ClearScreen",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "parent" }
+    "name": "com.hivemq.cli.commands.shell.ClearScreen",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "parent"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.Shell",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.commands.shell.Shell",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "picocli.CommandLine$AutoHelpMixin",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "helpRequested" },
-      { "name" : "versionRequested" }
+    "name": "picocli.CommandLine$AutoHelpMixin",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "helpRequested"
+      },
+      {
+        "name": "versionRequested"
+      }
     ]
   },
   {
-    "name" : "picocli.CommandLine$Model$ObjectScope",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "picocli.CommandLine$Model$ObjectScope",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
     "name": "java.io.Reader",
     "methods": [
-      { "name": "<init>", "parameterTypes": [] }
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
     ]
   },
   {
-     "name": "io.netty.channel.socket.nio.NioServerSocketChannel",
-     "methods": [
-      { "name": "<init>", "parameterTypes": [] }
-  ]
-}
-
+    "name": "io.netty.channel.socket.nio.NioServerSocketChannel",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  }
 ]

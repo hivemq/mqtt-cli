@@ -10,30 +10,25 @@ import picocli.CommandLine;
 
 public class HmqCli {
 
-    public static boolean executeCommand(AbstractCommand subCommand) {
+    public short executeCommand(AbstractCommand subCommand) {
         try {
-
             if (subCommand instanceof Subscribe) {
-                Subscribe subscribe = (Subscribe) subCommand;
-                SubscriptionImpl subscription = new SubscriptionImpl(subscribe);
-                subscription.run();
+                SubscriptionImpl.get((Subscribe) subCommand).run();
             } else if (subCommand instanceof Connect) {
-                Connect connect = (Connect) subCommand;
-                ConnectionImpl connection = new ConnectionImpl(connect);
-                connection.run();
+                ConnectionImpl.get((Connect) subCommand).run();
             } else if (subCommand instanceof Shell) {
                 ((Shell) subCommand).run();
             }
+            return 0;
 
         } catch (CommandLine.ParameterException ex) {
             System.err.println(ex.getMessage());
             ex.getCommandLine().usage(System.err);
         } catch (Exception others) {
-            // suppress classname
+            // suppress classname in output console
             System.err.println(others.getCause().getMessage());
         }
-        return false;
+        return 1;
     }
-
 
 }

@@ -1,7 +1,6 @@
 package com.hivemq.cli.impl;
 
 import com.hivemq.cli.commands.Subscribe;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +21,7 @@ public class SubscriptionImplTest {
 
     @Test
     public void run() {
-        SubscriptionImpl subscription = new SubscriptionImpl(param);
-       //  subscription.run();
+        SubscriptionImpl.get(param);
+        //  subscription.run();
     }
 }
