@@ -1,7 +1,6 @@
 package com.hivemq.cli.impl;
 
 import com.hivemq.cli.commands.Publish;
-import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.util.MqttUtils;
 
 public class PublishImpl implements MqttAction {

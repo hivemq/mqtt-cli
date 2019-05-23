@@ -43,7 +43,7 @@ public class Connect extends MqttCommand implements MqttAction {
     private boolean willRetain;
 
     //TODO Implement
-    @CommandLine.Option(names = {"-wt", "--willTopic"}, defaultValue = "", description = "The topic of the will message.")
+    @CommandLine.Option(names = {"-wt", "--willTopic"}, description = "The topic of the will message.")
     private String willTopic;
 
     //TODO Implement
@@ -112,7 +112,6 @@ public class Connect extends MqttCommand implements MqttAction {
     @Override
     public void run() {
         ConnectionImpl.get(this).run();
-
     }
 
     @Override

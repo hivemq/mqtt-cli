@@ -2,7 +2,6 @@ package com.hivemq.cli.commands;
 
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.impl.PublishImpl;
-import com.hivemq.cli.impl.SubscriptionImpl;
 import picocli.CommandLine;
 
 import java.util.Arrays;

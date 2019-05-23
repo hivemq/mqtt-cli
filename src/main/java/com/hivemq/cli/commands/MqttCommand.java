@@ -26,20 +26,39 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
         return version;
     }
 
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
     public String getHost() {
         return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public int getPort() {
         return port;
     }
 
+    public void setPort(int port) {
+        this.port = port;
+    }
+
     public String getIdentifier() {
         return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public boolean isDebug() {
         return debug;
     }
 
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 }

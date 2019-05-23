@@ -7,18 +7,17 @@ import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
-import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5ConnAckException;
-import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5SubAckException;
-import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishResult;
-import com.hivemq.client.mqtt.mqtt5.message.subscribe.suback.Mqtt5SubAckReasonCode;
-
-import java.util.List;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class MqttUtils {
 
     private static final MqttUtils instance = new MqttUtils();
-    private ClientCache<String, Mqtt5BlockingClient> mqttClientClientCache;
+    private ClientCache<String, Mqtt5AsyncClient> mqttClientClientCache;
 
     private MqttUtils() {
         mqttClientClientCache = new ClientCache<>(false);
@@ -28,125 +27,160 @@ public class MqttUtils {
         return instance;
     }
 
-    private static MqttQos getQosFromParam(int[] qos, int i) {
-        if (qos.length <= i || qos[i] == 0) {
+    private static MqttQos getQosFromParamField(int[] qos, int i) {
+        if (qos == null || qos.length <= i) {
             return MqttQos.AT_MOST_ONCE;
         }
-        return qos[i] == 1 ? MqttQos.AT_LEAST_ONCE : MqttQos.EXACTLY_ONCE;
+        return getQosFromInt(qos[i]);
     }
 
-    public Mqtt5BlockingClient connect(Connect connect) throws Exception {
+    private static MqttQos getQosFromInt(int qos) {
+        if (qos == 0) {
+            return MqttQos.AT_MOST_ONCE;
+        }
+        return qos == 1 ? MqttQos.AT_LEAST_ONCE : MqttQos.EXACTLY_ONCE;
+    }
+
+
+    public Mqtt5AsyncClient connect(Connect connect) throws Exception {
         return doConnect(connect);
     }
 
-    public Mqtt5BlockingClient subscribe(Subscribe subscribe) throws Exception {
-        final Mqtt5BlockingClient mqttBlockingClient = getMqttClientFromCacheOrConnect(subscribe);
-        try {
-            for (int i = 0; i < subscribe.getTopics().length; i++) {
-                final String topic = subscribe.getTopics()[i];
-                final MqttQos qos = getQosFromParam(subscribe.getQos(), i);
-
-                List<Mqtt5SubAckReasonCode> returnCodes =
-                        (mqttBlockingClient).subscribeWith()
-                                .topicFilter(topic)
-                                .qos(qos)
-                                .send().getReasonCodes();
-
-                System.out.println("Client::" + mqttBlockingClient.getConfig().getClientIdentifier().get() + " subscribed to Topic: " + topic + " with result: " + returnCodes);
-            }
-
-        } catch (Mqtt5SubAckException ex) {
-            System.err.println((ex.getMqttMessage()).getReasonCodes() +
-                    "  " + (ex.getMqttMessage().getReasonString().isPresent() ?
-                    ex.getMqttMessage().getReasonString().get() : "")
-            );
+    public Mqtt5AsyncClient subscribe(Subscribe subscribe) throws Exception {
+        final Mqtt5AsyncClient client = getMqttClientFromCacheOrConnect(subscribe);
+        if (client != null) {
+            return doSubscribe(client, subscribe);
         }
-        return mqttBlockingClient;
+        return null;
+    }
+    public Mqtt5AsyncClient publish(Publish publish) throws Exception {
+        final Mqtt5AsyncClient client = getMqttClientFromCacheOrConnect(publish);
+        if (client != null) {
+            return doPublish(client, publish);
+        }
+        return null;
     }
 
-    public void publish(Publish publish) throws Exception {
-        final Mqtt5BlockingClient mqttBlockingClient = getMqttClientFromCacheOrConnect(publish);
-        try {
-            for (int i = 0; i < publish.getTopics().length; i++) {
-                final String topic = publish.getTopics()[i];
-                final MqttQos qos = getQosFromParam(publish.getQos(), i);
+    private Mqtt5AsyncClient doConnect(final @NotNull Connect connectCommand) {
+        final String identifier = connectCommand.createIdentifier();
+        final MqttClientBuilder mqttClientBuilder = createBuilder(connectCommand, identifier);
+        final Mqtt5AsyncClient client = mqttClientBuilder.useMqttVersion5().build().toAsync();
 
-                Mqtt5PublishResult returnCodes =
-                        (mqttBlockingClient).publishWith()
-                                .topic(topic)
-                                .qos(qos)
-                                .payload(publish.getMessage().getBytes())
-                                .send();
 
-                System.out.println("Client::" +
-                        mqttBlockingClient.getConfig().getClientIdentifier().get() + " published to Topic: " +
-                        topic + " with result: " + returnCodes);
-            }
+        final @Nullable Mqtt5Publish willPublish = createWillPublish(connectCommand, identifier);
+        client.connectWith().willPublish(willPublish).send()
+                .whenComplete((connAck, throwable) -> {
+                    if (throwable != null) {
+                        System.err.println("Connect Client:" + client.getConfig().getClientIdentifier().get() + " failed with reason: " + throwable.getMessage());
+                    } else {
+                        mqttClientClientCache.put(connectCommand.getKey(), client);
+                        System.out.println("Connect Client:" + identifier + " with " + connAck.getReasonCode());
+                    }
+                });
 
-        } catch (Mqtt5SubAckException ex) {
-            System.err.println((ex.getMqttMessage()).getReasonCodes() +
-                    "  " + (ex.getMqttMessage().getReasonString().isPresent() ?
-                    ex.getMqttMessage().getReasonString().get() : "")
-            );
-        }
+        return client;
     }
 
-    public boolean disconnect(Disconnect disconnect) throws Exception {
+    private Mqtt5AsyncClient doSubscribe(Mqtt5AsyncClient client, Subscribe subscribe) {
+
+        for (int i = 0; i < subscribe.getTopics().length; i++) {
+            final String topic = subscribe.getTopics()[i];
+            final MqttQos qos = getQosFromParamField(subscribe.getQos(), i);
+
+            client.subscribeWith()
+                    .topicFilter(topic)
+                    .qos(qos)
+                    .callback(publish -> {
+                        System.out.println("Client::" + client.getConfig().getClientIdentifier().get() + " received msg:" + new String(publish.getPayloadAsBytes()));
+                    })
+                    .send()
+                    .whenComplete((subAck, throwable) -> {
+                        if (throwable != null) {
+                            System.err.println("Client::" + client.getConfig().getClientIdentifier().get() + " subscribe error: " + throwable.getMessage());
+                        } else {
+                            System.out.println("Client::" + client.getConfig().getClientIdentifier().get() + " subscribed to Topic: " + topic);
+                        }
+                    });
+
+
+        }
+
+        return client;
+    }
+
+    private Mqtt5AsyncClient doPublish(Mqtt5AsyncClient client, Publish publish) {
+        for (int i = 0; i < publish.getTopics().length; i++) {
+            final String topic = publish.getTopics()[i];
+            final MqttQos qos = getQosFromParamField(publish.getQos(), i);
+
+            client.publishWith()
+                    .topic(topic)
+                    .qos(qos)
+                    .payload(publish.getMessage().getBytes())
+                    .send()
+                    .whenComplete((publishResult, throwable) -> {
+                        if (throwable != null) {
+                            System.err.println("ERROR - publish to topic: " + topic + " failed: " + throwable.getMessage());
+                        } else {
+                            System.out.println("Client::" +
+                                    client.getConfig().getClientIdentifier().get() + " published msg '" + publish.getMessage().substring(0, 10) + "... ' to topic: " + topic);
+                        }
+                    });
+        }
+        return client;
+    }
+
+    public boolean disconnect(Disconnect disconnect) {
         mqttClientClientCache.setVerbose(disconnect.isDebug());
 
         if (mqttClientClientCache.hasKey(disconnect.getKey())) {
-            final Mqtt5BlockingClient mqttBlockingClient = mqttClientClientCache.get(disconnect.getKey());
+            final Mqtt5AsyncClient client = mqttClientClientCache.get(disconnect.getKey());
             mqttClientClientCache.remove(disconnect.getKey());
-            mqttBlockingClient.disconnect();
+            client.disconnect();
             return true;
         }
         return false;
-
     }
 
-    private Mqtt5BlockingClient doConnect(Connect connect) {
-        final MqttClientBuilder mqttClientBuilder = createBuilder(connect);
-        final Mqtt5BlockingClient mqttBlockingClient = mqttClientBuilder.useMqttVersion5().build().toBlocking();
 
-        try {
-            System.out.print("Connect::");
-            mqttBlockingClient.connect();
 
-            System.out.println("Client::" + (mqttBlockingClient.getConfig().getClientIdentifier().isPresent() ?
-                    mqttBlockingClient.getConfig().getClientIdentifier().get() : ""));
-
-            mqttClientClientCache.put(connect.getKey(), mqttBlockingClient);
-
-        } catch (Mqtt5ConnAckException ex) {
-            System.err.println((ex.getMqttMessage()).getReasonCode() +
-                    "  " + (ex.getMqttMessage().getReasonString().isPresent() ?
-                    ex.getMqttMessage().getReasonString().get() : "")
-            );
-
+    private Mqtt5Publish createWillPublish(final @NotNull Connect connectCommand, final @NotNull String identifier) {
+        if (connectCommand.getWillTopic() != null) {
+            Mqtt5WillPublishBuilder builder = Mqtt5WillPublish.builder()
+                    .topic(connectCommand.getWillTopic())
+                    .payload(connectCommand.getWillMessage().getBytes())
+                    .qos(getQosFromInt(connectCommand.getWillQos()))
+                    .retain(connectCommand.isWillRetain());
+            try {
+                return ((Mqtt5WillPublishBuilder.Complete) builder).build().asWill();
+            } catch (Exception e) {
+                System.err.println(" Client::" + identifier + ": can't create Will Message, error:" + e.getMessage());
+            }
         }
-        return mqttBlockingClient;
+        return null;
     }
 
-    private MqttClientBuilder createBuilder(Connect connect) {
+
+    private MqttClientBuilder createBuilder(Connect connectCommand, final @NotNull String identifier) {
         return MqttClient.builder()
-                .serverHost(connect.getHost())
-                .serverPort(connect.getPort())
-                .identifier(connect.createIdentifier());
+                .serverHost(connectCommand.getHost())
+                .serverPort(connectCommand.getPort())
+                .identifier(identifier);
     }
 
-    private Mqtt5BlockingClient getMqttClientFromCacheOrConnect(Connect connect) throws Exception {
+    private Mqtt5AsyncClient getMqttClientFromCacheOrConnect(Connect connect) throws Exception {
         mqttClientClientCache.setVerbose(connect.isDebug());
 
-        Mqtt5BlockingClient mqttBlockingClient = null;
+        Mqtt5AsyncClient mqtt5Client = null;
 
         if (mqttClientClientCache.hasKey(connect.getKey())) {
-            mqttBlockingClient = mqttClientClientCache.get(connect.getKey());
+            mqtt5Client = mqttClientClientCache.get(connect.getKey());
         }
 
-        if (mqttBlockingClient == null || (!mqttBlockingClient.getConfig().getState().isConnectedOrReconnect())) {
-            mqttBlockingClient = doConnect(connect);
+        if (mqtt5Client == null || (!mqtt5Client.getConfig().getState().isConnectedOrReconnect())) {
+            mqtt5Client = doConnect(connect);
         }
-        return mqttBlockingClient;
+        return mqtt5Client;
     }
 
 }

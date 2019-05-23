@@ -1,8 +1,6 @@
 package com.hivemq.cli;
 
 import com.hivemq.cli.cli.HmqCli;
-import com.hivemq.cli.commands.Connect;
-import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.shell.Shell;

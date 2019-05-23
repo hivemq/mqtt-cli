@@ -1,17 +1,18 @@
 package com.hivemq.cli.impl;
 
+import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.commands.Subscribe;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SubscriptionImplTest {
+public class ConnectImplTest {
 
-    private Subscribe param;
+    private Connect param;
 
     @Before
     public void setUp() throws Exception {
-        param = new Subscribe();
+        param = new Connect();
         param.setHost("localhost");
         param.setPort(1883);
     }
@@ -23,7 +24,6 @@ public class SubscriptionImplTest {
 
     @Test
     public void runSuccess() {
-        param.setTopics(new String[]{"/"});
-        SubscriptionImpl.get((Subscribe) param).run();
+        ConnectionImpl.get((Connect) param).run();
     }
 }

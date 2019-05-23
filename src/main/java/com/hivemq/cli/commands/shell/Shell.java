@@ -10,7 +10,7 @@ import picocli.CommandLine;
 import picocli.shell.jline2.PicocliJLineCompleter;
 
 @CommandLine.Command(name = "shell",
-        description = "Starts the mqtt cli in shell mode, to enable interactive working with further sub commands." ,
+        description = "Starts the mqtt cli in shell mode, to enable interactive working with further sub commands.",
         footer = {"", "Press Ctl-C to exit."},
         subcommands = {Connect.class, Subscribe.class, Publish.class, Disconnect.class, ClearScreen.class})
 public class Shell extends AbstractCommand implements Runnable {
@@ -35,7 +35,7 @@ public class Shell extends AbstractCommand implements Runnable {
             // set up the completion ;
             reader.addCompleter(new PicocliJLineCompleter(cmd.getCommandSpec()));
 
-            // start the shell and process input until the user quits with Ctl-D
+            // start the shell and process input until the user quits with Ctl-C
             String line;
             while (true) {
                 try {
@@ -46,6 +46,7 @@ public class Shell extends AbstractCommand implements Runnable {
                 } catch (UserInterruptException e) {
                     // Ignore
                 } catch (EndOfFileException e) {
+                    // exit - all clients were disconnected
                     return;
                 } catch (Exception all) {
                     System.err.println("Error in command.");

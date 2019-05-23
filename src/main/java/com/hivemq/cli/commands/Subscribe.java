@@ -9,6 +9,7 @@ import java.util.Arrays;
 @CommandLine.Command(name = "sub", description = "Subscribe an mqtt client to a list of topics")
 public class Subscribe extends Connect implements MqttAction {
 
+
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "Set at least one Topic")
     private String[] topics;
 
@@ -48,8 +49,16 @@ public class Subscribe extends Connect implements MqttAction {
         return topics;
     }
 
+    public void setTopics(String[] topics) {
+        this.topics = topics;
+    }
+
     public int[] getQos() {
         return qos;
+    }
+
+    public void setQos(int[] qos) {
+        this.qos = qos;
     }
 
     @Override
@@ -70,5 +79,6 @@ public class Subscribe extends Connect implements MqttAction {
                 ", qos=" + Arrays.toString(qos) +
                 '}';
     }
+
 
 }
