@@ -1,33 +1,40 @@
 package com.hivemq.cli.impl;
 
 import com.hivemq.cli.commands.Connect;
-import com.hivemq.cli.util.MqttUtils;
+import com.hivemq.cli.util.MqttClientUtils;
+import org.pmw.tinylog.Logger;
 
 public class ConnectionImpl implements MqttAction {
 
-    private static ConnectionImpl instance = new ConnectionImpl();
+    private static ConnectionImpl instance = null;
     private Connect param;
 
-    private ConnectionImpl() {
+    private ConnectionImpl(Connect connect) {
+        this.param = connect;
     }
 
     public static ConnectionImpl get(final Connect param) {
-        instance.param = param;
+        if (instance == null) {
+            instance = new ConnectionImpl(param);
+        }
         return instance;
     }
 
     @Override
     public void run() {
         if (param.isDebug()) {
-            System.out.println(param);
+            Logger.debug("Command: {} ", param);
         }
 
         try {
-            MqttUtils.getInstance().connect(param);
-        } catch (Exception others) {
-            System.err.println(others.getMessage());
+            MqttClientUtils.getInstance().connect(param);
+        } catch (Exception ex) {
+            if (param.isDebug()) {
+                Logger.error(ex);
+            } else {
+                Logger.error(ex.getMessage());
+            }
         }
-
     }
 
     @Override

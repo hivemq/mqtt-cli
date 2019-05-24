@@ -8,7 +8,6 @@ import java.util.UUID;
 
 @CommandLine.Command(name = "con", description = "Connects an mqtt client")
 public class Connect extends MqttCommand implements MqttAction {
-    ConnectionImpl instance;
 
     //TODO Implement
     @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String.")
@@ -30,19 +29,15 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-c", "--cleanStart"}, defaultValue = "true", description = "Define a clean start for the connection.")
     private boolean cleanStart;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-wm", "--willMessage"}, defaultValue = "", description = "The payload of the will message.")
     private String willMessage;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-wq", "--willQualityOfService"}, defaultValue = "0", description = "Quality of Service for the will message.")
     private int willQos;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-wr", "--willRetain"}, defaultValue = "false", description = "Will message as retained message")
     private boolean willRetain;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-wt", "--willTopic"}, description = "The topic of the will message.")
     private String willTopic;
 
@@ -51,7 +46,10 @@ public class Connect extends MqttCommand implements MqttAction {
     private boolean useSsl;
 
     public String createIdentifier() {
-        return getIdentifier() != null ? getIdentifier() : "hmqClient" + this.getVersion() + "-" + UUID.randomUUID().toString();
+        if (getIdentifier() == null) {
+            this.setIdentifier("hmqClient" + this.getVersion() + "-" + UUID.randomUUID().toString());
+        }
+        return getIdentifier();
     }
 
     public boolean isUseSsl() {

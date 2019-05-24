@@ -71,6 +71,10 @@ public class Subscribe extends Connect implements MqttAction {
         SubscriptionImpl.get(this).run();
     }
 
+    public void stay() throws InterruptedException {
+        SubscriptionImpl.get(this).stay();
+    }
+
     @Override
     public String toString() {
         return "Subscribe:: {" +

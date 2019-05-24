@@ -10,7 +10,7 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
     private int version;
 
     //TODO Implement
-    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode.")
+    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "true", description = "Enable debug mode.")
     private boolean debug;
 
     @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The host of the message broker..")

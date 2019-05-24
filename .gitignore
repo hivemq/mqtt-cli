@@ -1,3 +1,4 @@
 /out
 /.idea
 /mqtt-cli.iml
+/hmq-mqtt.*.log.txt

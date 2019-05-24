@@ -1,33 +1,41 @@
 package com.hivemq.cli.impl;
 
 import com.hivemq.cli.commands.Disconnect;
-import com.hivemq.cli.util.MqttUtils;
+import com.hivemq.cli.util.MqttClientUtils;
+import org.pmw.tinylog.Logger;
 
 public class DisconnectImpl implements MqttAction {
 
-    private static DisconnectImpl instance = new DisconnectImpl();
+    private static DisconnectImpl instance = null;
     private Disconnect param;
 
-    private DisconnectImpl() {
+    private DisconnectImpl(Disconnect disconnect) {
+        this.param = disconnect;
     }
 
     public static DisconnectImpl get(final Disconnect param) {
-        instance.param = param;
+        if (instance == null) {
+            instance = new DisconnectImpl(param);
+        }
         return instance;
     }
+
 
     @Override
     public void run() {
         if (param.isDebug()) {
-            System.out.println(param);
+            Logger.debug("Command: {} ", param);
         }
 
         try {
-            MqttUtils.getInstance().disconnect(param);
-        } catch (Exception others) {
-            System.err.println(others.getMessage());
+            MqttClientUtils.getInstance().disconnect(param);
+        } catch (Exception ex) {
+            if (param.isDebug()) {
+                Logger.error(ex);
+            } else {
+                Logger.error(ex.getMessage());
+            }
         }
-
     }
 
     @Override

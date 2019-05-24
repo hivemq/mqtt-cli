@@ -46,11 +46,11 @@ public class Shell extends AbstractCommand implements Runnable {
                 } catch (UserInterruptException e) {
                     // Ignore
                 } catch (EndOfFileException e) {
-                    // exit - all clients were disconnected
+                    // exit shell
+                    // TODO all clients were disconnected
                     return;
                 } catch (Exception all) {
-                    System.err.println("Error in command.");
-                    System.err.println(all.getMessage());
+                    System.err.println("Error in command. " + all.getMessage());
                 }
             }
         } catch (Throwable t) {

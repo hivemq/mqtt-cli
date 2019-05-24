@@ -1,5 +1,7 @@
 package com.hivemq.cli.util;
 
+import org.pmw.tinylog.Logger;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,7 +20,7 @@ public class ClientCache<K, V> {
     }
 
     public ClientCache() {
-        this(16);       // default cache size as 16
+        this(64);       // default cache size as 64
     }
 
 
@@ -42,22 +44,24 @@ public class ClientCache<K, V> {
             remove(entry);
             // and move to top
             splayOnTop(entry);
-            if (verbose) System.out.println("get::" + key);
+            if (verbose) Logger.debug("Cache get key {}", key);
+
             return entry.value;
         }
         return null;
     }
 
     public boolean hasKey(K key) {
-        if (verbose) System.out.println("hasKey::" + key + " - " + CACHE.containsKey(key));
-        return (CACHE.containsKey(key));
+        boolean has = CACHE.containsKey(key);
+        if (verbose) Logger.debug("Cache hasKey {} - {} ", key, has);
+        return has;
     }
 
     public boolean remove(K key) {
         if (CACHE.containsKey(key)) {
-            if (verbose) System.out.println("remove::" + key);
+            if (verbose) Logger.debug("Cache remove key {}", key);
             Entry<K, V> entry = CACHE.get(key);
-            // remove the recently accessed entry from linkedlist
+            // remove the recently accessed entry from linked list
             remove(entry);
             return true;
         }
@@ -66,13 +70,13 @@ public class ClientCache<K, V> {
 
     public void put(K key, V value) {
         if (CACHE.containsKey(key)) {
-            if (verbose) System.out.println("put::" + key);
+            if (verbose) Logger.debug("Cache replace key {}", key);
             Entry<K, V> entry = CACHE.get(key);
             entry.value = value;
             remove(entry);
             splayOnTop(entry);
         } else {
-            if (verbose) System.out.println("putIfAbsent::" + key);
+            if (verbose) Logger.debug("Cache put key {}", key);
             Entry<K, V> entry = new Entry<>();
             entry.key = key;
             entry.value = value;

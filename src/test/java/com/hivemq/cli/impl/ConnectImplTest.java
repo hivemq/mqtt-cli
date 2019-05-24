@@ -1,7 +1,6 @@
 package com.hivemq.cli.impl;
 
 import com.hivemq.cli.commands.Connect;
-import com.hivemq.cli.commands.Subscribe;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
