@@ -1,4 +1,4 @@
-package com.hivemq.cli.util;
+package com.hivemq.cli.mqtt;
 
 import org.pmw.tinylog.Logger;
 
@@ -11,7 +11,8 @@ public class ClientCache<K, V> {
 
     private final int CACHE_SIZE;
     private final Map<K, Entry<K, V>> CACHE;
-    private Entry<K, V> head, tail;
+    private Entry head;
+    private Entry tail;
     private boolean verbose = false;
 
     public ClientCache(boolean verbose) {
@@ -19,12 +20,12 @@ public class ClientCache<K, V> {
         this.verbose = verbose;
     }
 
-    public ClientCache() {
+    ClientCache() {
         this(64);       // default cache size as 64
     }
 
 
-    public ClientCache(int CACHE_SIZE) {
+    private ClientCache(int CACHE_SIZE) {
         this.CACHE_SIZE = CACHE_SIZE;
         CACHE = new HashMap<>(CACHE_SIZE);
     }
@@ -33,7 +34,7 @@ public class ClientCache<K, V> {
         return verbose;
     }
 
-    public void setVerbose(boolean verbose) {
+    void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
 
@@ -57,7 +58,7 @@ public class ClientCache<K, V> {
         return has;
     }
 
-    public boolean remove(K key) {
+    boolean remove(K key) {
         if (CACHE.containsKey(key)) {
             if (verbose) Logger.debug("Cache remove key {}", key);
             Entry<K, V> entry = CACHE.get(key);
@@ -68,7 +69,7 @@ public class ClientCache<K, V> {
         return false;
     }
 
-    public void put(K key, V value) {
+    void put(K key, V value) {
         if (CACHE.containsKey(key)) {
             if (verbose) Logger.debug("Cache replace key {}", key);
             Entry<K, V> entry = CACHE.get(key);
@@ -91,7 +92,7 @@ public class ClientCache<K, V> {
         }
     }
 
-    public Set<Entry<K, V>> entrySet() {
+    private Set<Entry<K, V>> entrySet() {
         return new HashSet<>(CACHE.values());
     }
 

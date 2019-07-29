@@ -1,4 +1,4 @@
-package com.hivemq.cli.util;
+package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.commands.Disconnect;
@@ -10,7 +10,6 @@ import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
-import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
@@ -20,24 +19,9 @@ import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.LoggingContext;
 
-public class MqttClientUtils {
+abstract class AbstractMqttClientExecutor {
 
-    private static MqttClientUtils instance = null;
-
-    private ClientCache<String, Mqtt5AsyncClient> clientCache;
-
-    private MqttClientUtils() {
-        if (clientCache == null) {
-            clientCache = new ClientCache<>(true);
-        }
-    }
-
-    public static MqttClientUtils getInstance() {
-        if (instance == null) {
-            instance = new MqttClientUtils();
-        }
-        return instance;
-    }
+    private ClientCache<String, Mqtt5AsyncClient> clientCache = new ClientCache<>();
 
     private static MqttQos getQosFromParamField(int[] qos, int i) {
         if (qos == null || qos.length <= i) {
@@ -53,6 +37,13 @@ public class MqttClientUtils {
         return qos == 1 ? MqttQos.AT_LEAST_ONCE : MqttQos.EXACTLY_ONCE;
     }
 
+    abstract boolean mqttConnect(Mqtt5BlockingClient client, Mqtt5Connect connectMessage, Connect connectCommand);
+
+    abstract void mqttSubscribe(Mqtt5AsyncClient client, @NotNull Subscribe subscribe, String topic, MqttQos qos);
+
+    public ClientCache<String, Mqtt5AsyncClient> getClientCache() {
+        return clientCache;
+    }
 
     public Mqtt5AsyncClient connect(final @NotNull Connect connect) {
         return doConnect(connect);
@@ -112,18 +103,14 @@ public class MqttClientUtils {
 
 
         try {
-            final @Nullable Mqtt5Publish willPublish = createWillPublish(connectCommand, identifier);
+            final @Nullable Mqtt5Publish willPublish = createWillPublish(connectCommand);
 
             final Mqtt5Connect connectMessage = Mqtt5Connect.builder()
                     .willPublish(willPublish)
                     .build();
 
-            final Mqtt5ConnAck connAck = client.connect(connectMessage);
-            if (connectCommand.isDebug()) {
-                Log.debug("Client connect with {} ", connectCommand.toString());
-            } else {
-                Logger.info("Client connect with {} ", connAck.getReasonCode());
-            }
+            mqttConnect(client, connectMessage, connectCommand);
+
             clientCache.put(connectCommand.getKey(), client.toAsync());
 
         } catch (Exception throwable) {
@@ -134,41 +121,20 @@ public class MqttClientUtils {
         return client.toAsync();
     }
 
+
     private Mqtt5AsyncClient doSubscribe(Mqtt5AsyncClient client, final @NotNull Subscribe subscribe) {
 
         for (int i = 0; i < subscribe.getTopics().length; i++) {
             final String topic = subscribe.getTopics()[i];
             final MqttQos qos = getQosFromParamField(subscribe.getQos(), i);
 
-            client.subscribeWith()
-                    .topicFilter(topic)
-                    .qos(qos)
-                    .callback(publish -> {
-                        final String p = new String(publish.getPayloadAsBytes());
-                        if (subscribe.isDebug()) {
-                            Log.debug("Client received on topic: {} message: '{}' ", topic, p);
-                        } else {
-                            Logger.info("Client received msg: '{}...' ", p.length() > 10 ? p.substring(0, 10) : p);
-                        }
-                    })
-                    .send()
-                    .whenComplete((subAck, throwable) -> {
-                        if (throwable != null) {
-                            if (subscribe.isDebug()) {
-                                Log.debug("Client subscribe failed with reason: {} ", topic, throwable.getStackTrace());
-                            } else {
-                                Logger.error("Client subscribe failed with reason: {}", topic, throwable.getMessage());
-                            }
-
-                        } else {
-                            Logger.info("Client subscribed to Topic: {} ", topic);
-                        }
-                    });
+            mqttSubscribe(client, subscribe, topic, qos);
 
         }
 
         return client;
     }
+
 
     private Mqtt5AsyncClient doPublish(Mqtt5AsyncClient client, final @NotNull Publish publish) {
         for (int i = 0; i < publish.getTopics().length; i++) {
@@ -201,12 +167,13 @@ public class MqttClientUtils {
         return client;
     }
 
-    private Mqtt5Publish createWillPublish(final @NotNull Connect connectCommand, final @NotNull String identifier) throws Exception {
+    private Mqtt5Publish createWillPublish(final @NotNull Connect connectCommand) throws Exception {
         // only topic is mandatory for will message creation
         if (connectCommand.getWillTopic() != null) {
+            byte[] willpayload = connectCommand.getWillMessage() != null ? connectCommand.getWillMessage().getBytes() : null;
             Mqtt5WillPublishBuilder builder = Mqtt5WillPublish.builder()
                     .topic(connectCommand.getWillTopic())
-                    .payload(connectCommand.getWillMessage().getBytes())
+                    .payload(willpayload)
                     .qos(getQosFromInt(connectCommand.getWillQos()))
                     .retain(connectCommand.isWillRetain());
             try {
@@ -215,7 +182,7 @@ public class MqttClientUtils {
                 Logger.error("Client can't create Will Message, error: {} " + e.getMessage());
                 throw e;
             }
-        } else if (!connectCommand.getWillMessage().isEmpty()) {
+        } else if (connectCommand.getWillMessage() != null && !connectCommand.getWillMessage().isEmpty()) {
             //seems somebody like to create a will message without a topic
             Logger.debug("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
         }
@@ -243,5 +210,4 @@ public class MqttClientUtils {
         }
         return mqtt5Client;
     }
-
 }
