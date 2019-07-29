@@ -1,7 +1,7 @@
 package com.hivemq.cli.impl;
 
 import com.hivemq.cli.commands.Publish;
-import com.hivemq.cli.util.MqttClientUtils;
+import com.hivemq.cli.mqtt.MqttClientExecutor;
 import org.pmw.tinylog.Logger;
 
 public class PublishImpl implements MqttAction {
@@ -9,17 +9,24 @@ public class PublishImpl implements MqttAction {
     private static PublishImpl instance = null;
     private Publish param;
 
-    private PublishImpl(Publish publish) {
-        this.param = publish;
+    private PublishImpl() {
     }
 
     public static PublishImpl get(final Publish param) {
         if (instance == null) {
-            instance = new PublishImpl(param);
+            instance = new PublishImpl();
         }
+        instance.setParam(param);
         return instance;
     }
 
+    public Publish getParam() {
+        return param;
+    }
+
+    public void setParam(Publish param) {
+        this.param = param;
+    }
 
     @Override
     public String getKey() {
@@ -33,7 +40,7 @@ public class PublishImpl implements MqttAction {
         }
 
         try {
-            MqttClientUtils.getInstance().publish(param);
+            MqttClientExecutor.getInstance().publish(param);
         } catch (Exception ex) {
             if (param.isDebug()) {
                 Logger.error(ex);

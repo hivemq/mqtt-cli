@@ -71,7 +71,7 @@ public class Publish extends Connect implements MqttAction {
 
     @Override
     public String toString() {
-        return "Subscribe:: {" +
+        return "Publish:: {" +
                 "key=" + getKey() +
                 "topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +

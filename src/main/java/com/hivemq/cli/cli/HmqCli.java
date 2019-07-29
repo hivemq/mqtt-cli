@@ -2,6 +2,7 @@ package com.hivemq.cli.cli;
 
 import com.hivemq.cli.commands.AbstractCommand;
 import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.shell.Shell;
 import com.hivemq.cli.impl.ConnectionImpl;
@@ -14,6 +15,8 @@ public class HmqCli {
         try {
             if (subCommand instanceof Subscribe) {
                 SubscriptionImpl.get((Subscribe) subCommand).run();
+            } else if (subCommand instanceof Publish) {
+                ((Publish) subCommand).run();
             } else if (subCommand instanceof Connect) {
                 ConnectionImpl.get((Connect) subCommand).run();
             } else if (subCommand instanceof Shell) {

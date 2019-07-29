@@ -20,7 +20,7 @@ final class Target_io_netty_util_internal_logging_InternalLoggerFactory {
     }
 }
 
-@TargetClass(className = "io.netty.util.internal.PlatformDependent0")
+@TargetClass(className = "io.netty.mqtt.internal.PlatformDependent0")
 final class Target_io_netty_util_internal_PlatformDependent0 {
     @Alias
     @RecomputeFieldValue(kind = Kind.FieldOffset, //
@@ -29,7 +29,7 @@ final class Target_io_netty_util_internal_PlatformDependent0 {
     private static long ADDRESS_FIELD_OFFSET;
 }
 
-@TargetClass(className = "io.netty.util.internal.CleanerJava6")
+@TargetClass(className = "io.netty.mqtt.internal.CleanerJava6")
 final class Target_io_netty_util_internal_CleanerJava6 {
     @Alias
     @RecomputeFieldValue(kind = Kind.FieldOffset, //
@@ -38,14 +38,14 @@ final class Target_io_netty_util_internal_CleanerJava6 {
     private static long CLEANER_FIELD_OFFSET;
 }
 
-@TargetClass(className = "io.netty.util.internal.shaded.org.jctools.util.UnsafeRefArrayAccess")
+@TargetClass(className = "io.netty.mqtt.internal.shaded.org.jctools.mqtt.UnsafeRefArrayAccess")
 final class Target_io_netty_util_internal_shaded_org_jctools_util_UnsafeRefArrayAccess {
     @Alias
     @RecomputeFieldValue(kind = Kind.ArrayIndexShift, declClass = Object[].class) //
     public static int REF_ELEMENT_SHIFT;
 }
 
-@TargetClass(className = "org.jctools.util.UnsafeRefArrayAccess")
+@TargetClass(className = "org.jctools.mqtt.UnsafeRefArrayAccess")
 final class Target_org_jctools_util_UnsafeRefArrayAccess {
     @Alias
     @RecomputeFieldValue(kind = Kind.ArrayIndexShift, declClass = Object[].class) //

@@ -80,16 +80,32 @@ public class Connect extends MqttCommand implements MqttAction {
         return willMessage;
     }
 
+    public void setWillMessage(String willMessage) {
+        this.willMessage = willMessage;
+    }
+
     public int getWillQos() {
         return willQos;
+    }
+
+    public void setWillQos(int willQos) {
+        this.willQos = willQos;
     }
 
     public boolean isWillRetain() {
         return willRetain;
     }
 
+    public void setWillRetain(boolean willRetain) {
+        this.willRetain = willRetain;
+    }
+
     public String getWillTopic() {
         return willTopic;
+    }
+
+    public void setWillTopic(String willTopic) {
+        this.willTopic = willTopic;
     }
 
     @Override
