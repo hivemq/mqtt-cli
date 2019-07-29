@@ -45,6 +45,11 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use ssl for connection.")
     private boolean useSsl;
 
+
+
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", description = "Session expiry can be disabled by setting it to 4294967295")
+    private long sessionExpiryInterval;
+
     public String createIdentifier() {
         if (getIdentifier() == null) {
             this.setIdentifier("hmqClient" + this.getVersion() + "-" + UUID.randomUUID().toString());
@@ -95,6 +100,8 @@ public class Connect extends MqttCommand implements MqttAction {
     public boolean isWillRetain() {
         return willRetain;
     }
+
+    public long getSessionExpiryInterval() { return sessionExpiryInterval; }
 
     public void setWillRetain(boolean willRetain) {
         this.willRetain = willRetain;
