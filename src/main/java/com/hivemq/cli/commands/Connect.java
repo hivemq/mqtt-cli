@@ -41,7 +41,7 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use ssl for connection.")
     private boolean useSsl;
 
-    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", description = "Session expiry can be disabled by setting it to 4294967295")
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", description = "Session expiry can be disabled by setting it to 4_294_967_295")
     private long sessionExpiryInterval;
 
     public String createIdentifier() {
