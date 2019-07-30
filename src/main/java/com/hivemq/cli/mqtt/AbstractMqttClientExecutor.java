@@ -95,7 +95,6 @@ abstract class AbstractMqttClientExecutor {
 
 
     private Mqtt5AsyncClient doConnect(final @NotNull Connect connectCommand) {
-        final long NO_SESSION_EXPIRY = 4294967295L;
         final String identifier = connectCommand.createIdentifier();
         LoggingContext.put("identifier", identifier);
 
@@ -107,11 +106,9 @@ abstract class AbstractMqttClientExecutor {
             final @Nullable Mqtt5Publish willPublish = createWillPublish(connectCommand);
 
             Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
+                    .sessionExpiryInterval(connectCommand.getSessionExpiryInterval())
                     .keepAlive(connectCommand.getKeepAlive())
                     .cleanStart(connectCommand.isCleanStart());
-            // Disable Session Expiry if it was set to NO_SESSION_EXPIRY
-            if (connectCommand.getSessionExpiryInterval() == NO_SESSION_EXPIRY)  connectBuilder.noSessionExpiry();
-            else connectBuilder.sessionExpiryInterval(connectCommand.getSessionExpiryInterval());
 
             // if username is present append authentication to the ConnectMessage
             if (connectCommand.getUser() != null) {
@@ -120,6 +117,7 @@ abstract class AbstractMqttClientExecutor {
                         .password(connectCommand.getPassword().getBytes())
                         .applySimpleAuth();
             }
+
             final Mqtt5Connect connectMessage = connectBuilder.build();
 
             mqttConnect(client, connectMessage, connectCommand);
