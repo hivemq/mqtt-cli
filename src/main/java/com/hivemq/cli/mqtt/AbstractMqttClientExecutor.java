@@ -216,6 +216,7 @@ abstract class AbstractMqttClientExecutor {
         return mqtt5Client;
     }
 
+    // TODO: Review & Refactoring
     private Mqtt5ConnectBuilder applyAuthentication(Mqtt5ConnectBuilder connectBuilder, Connect connectCommand) {
         if (connectCommand.getUser() != null && connectCommand.getPassword() != null) {
             connectBuilder.simpleAuth()

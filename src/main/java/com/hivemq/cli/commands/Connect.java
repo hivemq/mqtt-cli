@@ -13,19 +13,15 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String.")
     private String prefixIdentifier;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for the client UTF-8 String.")
     private String user;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-pw", "--password"}, description = "The password for the client UTF-8 String.")
     private String password;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-k", "--keepAlive"}, defaultValue = "60", description = "A keep alive of the client (in seconds).")
     private int keepAlive;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-c", "--cleanStart"}, defaultValue = "true", description = "Define a clean start for the connection.")
     private boolean cleanStart;
 
