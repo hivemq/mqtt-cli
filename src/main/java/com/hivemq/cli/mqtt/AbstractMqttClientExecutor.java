@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.LoggingContext;
 
+import java.nio.charset.StandardCharsets;
+
 abstract class AbstractMqttClientExecutor {
 
     private ClientCache<String, Mqtt5AsyncClient> clientCache = new ClientCache<>();
@@ -216,16 +218,15 @@ abstract class AbstractMqttClientExecutor {
         return mqtt5Client;
     }
 
-    // TODO: Review & Refactoring
-    private Mqtt5ConnectBuilder applyAuthentication(Mqtt5ConnectBuilder connectBuilder, Connect connectCommand) {
+    private Mqtt5ConnectBuilder applyAuthentication(@NotNull Mqtt5ConnectBuilder connectBuilder, @NotNull Connect connectCommand) {
         if (connectCommand.getUser() != null && connectCommand.getPassword() != null) {
             connectBuilder.simpleAuth()
                     .username(connectCommand.getUser())
-                    .password(connectCommand.getPassword().getBytes())
+                    .password(connectCommand.getPassword().getBytes(StandardCharsets.UTF_8))
                     .applySimpleAuth();
         } else if (connectCommand.getPassword() != null) {
             connectBuilder.simpleAuth()
-                    .password(connectCommand.getPassword().getBytes())
+                    .password(connectCommand.getPassword().getBytes(StandardCharsets.UTF_8))
                     .applySimpleAuth();
         } else if (connectCommand.getUser() != null) {
             connectBuilder.simpleAuth()
