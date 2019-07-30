@@ -110,13 +110,7 @@ abstract class AbstractMqttClientExecutor {
                     .keepAlive(connectCommand.getKeepAlive())
                     .cleanStart(connectCommand.isCleanStart());
 
-            // if username is present append authentication to the ConnectMessage
-            if (connectCommand.getUser() != null) {
-                connectBuilder.simpleAuth()
-                        .username(connectCommand.getUser())
-                        .password(connectCommand.getPassword().getBytes())
-                        .applySimpleAuth();
-            }
+            applyAuthentication(connectBuilder, connectCommand);
 
             final Mqtt5Connect connectMessage = connectBuilder.build();
 
@@ -220,5 +214,23 @@ abstract class AbstractMqttClientExecutor {
             mqtt5Client = doConnect(connect);
         }
         return mqtt5Client;
+    }
+
+    private Mqtt5ConnectBuilder applyAuthentication(Mqtt5ConnectBuilder connectBuilder, Connect connectCommand) {
+        if (connectCommand.getUser() != null && connectCommand.getPassword() != null) {
+            connectBuilder.simpleAuth()
+                    .username(connectCommand.getUser())
+                    .password(connectCommand.getPassword().getBytes())
+                    .applySimpleAuth();
+        } else if (connectCommand.getPassword() != null) {
+            connectBuilder.simpleAuth()
+                    .password(connectCommand.getPassword().getBytes())
+                    .applySimpleAuth();
+        } else if (connectCommand.getUser() != null) {
+            connectBuilder.simpleAuth()
+                    .username(connectCommand.getUser())
+                    .applySimpleAuth();
+        }
+        return connectBuilder;
     }
 }
