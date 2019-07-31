@@ -109,6 +109,34 @@ public class Connect extends MqttCommand implements MqttAction {
         this.willTopic = willTopic;
     }
 
+    public void setPrefixIdentifier(String prefixIdentifier) {
+        this.prefixIdentifier = prefixIdentifier;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setKeepAlive(int keepAlive) {
+        this.keepAlive = keepAlive;
+    }
+
+    public void setCleanStart(boolean cleanStart) {
+        this.cleanStart = cleanStart;
+    }
+
+    public void setUseSsl(boolean useSsl) {
+        this.useSsl = useSsl;
+    }
+
+    public void setSessionExpiryInterval(long sessionExpiryInterval) {
+        this.sessionExpiryInterval = sessionExpiryInterval;
+    }
+
     @Override
     public Class getType() {
         return Connect.class;
