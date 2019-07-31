@@ -10,6 +10,7 @@ import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
+import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5ConnectBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
@@ -18,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.LoggingContext;
+
+import java.nio.charset.StandardCharsets;
 
 abstract class AbstractMqttClientExecutor {
 
@@ -94,7 +97,6 @@ abstract class AbstractMqttClientExecutor {
 
 
     private Mqtt5AsyncClient doConnect(final @NotNull Connect connectCommand) {
-
         final String identifier = connectCommand.createIdentifier();
         LoggingContext.put("identifier", identifier);
 
@@ -105,9 +107,14 @@ abstract class AbstractMqttClientExecutor {
         try {
             final @Nullable Mqtt5Publish willPublish = createWillPublish(connectCommand);
 
-            final Mqtt5Connect connectMessage = Mqtt5Connect.builder()
-                    .willPublish(willPublish)
-                    .build();
+            Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
+                    .sessionExpiryInterval(connectCommand.getSessionExpiryInterval())
+                    .keepAlive(connectCommand.getKeepAlive())
+                    .cleanStart(connectCommand.isCleanStart());
+
+            applyAuthentication(connectBuilder, connectCommand);
+
+            final Mqtt5Connect connectMessage = connectBuilder.build();
 
             mqttConnect(client, connectMessage, connectCommand);
 
@@ -209,5 +216,22 @@ abstract class AbstractMqttClientExecutor {
             mqtt5Client = doConnect(connect);
         }
         return mqtt5Client;
+    }
+
+    private void applyAuthentication(final @NotNull Mqtt5ConnectBuilder connectBuilder, final @NotNull Connect connectCommand) {
+        if (connectCommand.getUser() != null && connectCommand.getPassword() != null) {
+            connectBuilder.simpleAuth()
+                    .username(connectCommand.getUser())
+                    .password(connectCommand.getPassword().getBytes(StandardCharsets.UTF_8))
+                    .applySimpleAuth();
+        } else if (connectCommand.getPassword() != null) {
+            connectBuilder.simpleAuth()
+                    .password(connectCommand.getPassword().getBytes(StandardCharsets.UTF_8))
+                    .applySimpleAuth();
+        } else if (connectCommand.getUser() != null) {
+            connectBuilder.simpleAuth()
+                    .username(connectCommand.getUser())
+                    .applySimpleAuth();
+        }
     }
 }

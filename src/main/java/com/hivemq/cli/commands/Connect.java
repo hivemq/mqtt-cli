@@ -13,19 +13,15 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String.")
     private String prefixIdentifier;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for the client UTF-8 String.")
     private String user;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-pw", "--password"}, description = "The password for the client UTF-8 String.")
     private String password;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-k", "--keepAlive"}, defaultValue = "60", description = "A keep alive of the client (in seconds).")
     private int keepAlive;
 
-    //TODO Implement
     @CommandLine.Option(names = {"-c", "--cleanStart"}, defaultValue = "true", description = "Define a clean start for the connection.")
     private boolean cleanStart;
 
@@ -44,6 +40,9 @@ public class Connect extends MqttCommand implements MqttAction {
     //TODO Implement
     @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use ssl for connection.")
     private boolean useSsl;
+
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", description = "Session expiry can be disabled by setting it to 4_294_967_295")
+    private long sessionExpiryInterval;
 
     public String createIdentifier() {
         if (getIdentifier() == null) {
@@ -96,6 +95,8 @@ public class Connect extends MqttCommand implements MqttAction {
         return willRetain;
     }
 
+    public long getSessionExpiryInterval() { return sessionExpiryInterval; }
+
     public void setWillRetain(boolean willRetain) {
         this.willRetain = willRetain;
     }
@@ -106,6 +107,34 @@ public class Connect extends MqttCommand implements MqttAction {
 
     public void setWillTopic(String willTopic) {
         this.willTopic = willTopic;
+    }
+
+    public void setPrefixIdentifier(String prefixIdentifier) {
+        this.prefixIdentifier = prefixIdentifier;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setKeepAlive(int keepAlive) {
+        this.keepAlive = keepAlive;
+    }
+
+    public void setCleanStart(boolean cleanStart) {
+        this.cleanStart = cleanStart;
+    }
+
+    public void setUseSsl(boolean useSsl) {
+        this.useSsl = useSsl;
+    }
+
+    public void setSessionExpiryInterval(long sessionExpiryInterval) {
+        this.sessionExpiryInterval = sessionExpiryInterval;
     }
 
     @Override
@@ -142,6 +171,7 @@ public class Connect extends MqttCommand implements MqttAction {
                 ", willRetain=" + willRetain +
                 ", willTopic='" + willTopic + '\'' +
                 ", useSsl=" + useSsl +
+                ", sessionExpiryInterval=" + sessionExpiryInterval + '\'' +
                 '}';
     }
 }
