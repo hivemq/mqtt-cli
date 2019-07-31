@@ -1,7 +1,11 @@
 package com.hivemq.cli.commands;
 
+import com.hivemq.cli.converters.MqttQosConverter;
+import com.hivemq.cli.converters.UnsignedIntConverter;
+import com.hivemq.cli.converters.UnsignedShortConverter;
 import com.hivemq.cli.impl.ConnectionImpl;
 import com.hivemq.cli.impl.MqttAction;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import picocli.CommandLine;
 
 import java.util.UUID;
@@ -17,19 +21,19 @@ public class Connect extends MqttCommand implements MqttAction {
     private String user;
 
     @CommandLine.Option(names = {"-pw", "--password"}, description = "The password for the client UTF-8 String.")
-    private String password;
+    private byte[] password;
 
-    @CommandLine.Option(names = {"-k", "--keepAlive"}, defaultValue = "60", description = "A keep alive of the client (in seconds).")
+    @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, defaultValue = "60", description = "A keep alive of the client (in seconds).")
     private int keepAlive;
 
     @CommandLine.Option(names = {"-c", "--cleanStart"}, defaultValue = "true", description = "Define a clean start for the connection.")
     private boolean cleanStart;
 
     @CommandLine.Option(names = {"-wm", "--willMessage"}, defaultValue = "", description = "The payload of the will message.")
-    private String willMessage;
+    private byte[] willMessage;
 
-    @CommandLine.Option(names = {"-wq", "--willQualityOfService"}, defaultValue = "0", description = "Quality of Service for the will message.")
-    private int willQos;
+    @CommandLine.Option(names = {"-wq", "--willQualityOfService"}, converter = MqttQosConverter.class, defaultValue = "AT_MOST_ONCE", description = "Quality of Service for the will message.")
+    private MqttQos willQos;
 
     @CommandLine.Option(names = {"-wr", "--willRetain"}, defaultValue = "false", description = "Will message as retained message")
     private boolean willRetain;
@@ -37,11 +41,35 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-wt", "--willTopic"}, description = "The topic of the will message.")
     private String willTopic;
 
+
+    // TODO
+    @CommandLine.Option(names = {"-we", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class, defaultValue = "4294967295", description = "The lifetime of the Will Message in seconds.")
+    private long willMessageExpiryInterval;
+
+    @CommandLine.Option(names = {"-wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, defaultValue = "0", description = "The Server delays publishing the Client's Will Message until the Will Delay has passed.")
+    private long willDelayInterval;
+
+    @CommandLine.Option(names = {"-wp", "--willPayloadFormatIndicator"}, defaultValue = "false", description = "The Payload Format Indicator.")
+    private boolean willPayloadFormatIndicator;
+
+    @CommandLine.Option(names = {"-wc", "--willContentType"}, description = "A description of Will Message's content.")
+    private String willContentType;
+
+    @CommandLine.Option(names = {"-wrt", "--willResponseTopic"}, description = "The Topic Name for a response message.")
+    private String willResponseTopic;
+
+    @CommandLine.Option(names = {"-wcd", "--willCorrelationData"}, description = "The Correlation Data of the Will Message.")
+    private String willCorrelationData;
+
+    @CommandLine.Option(names = {"-wu", "--willUserProperties"}, arity = "2", description = "The User Property of the Will Message.")
+    private String[] willUserProperties;
+
+
     //TODO Implement
     @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use ssl for connection.")
     private boolean useSsl;
 
-    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", description = "Session expiry can be disabled by setting it to 4_294_967_295")
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", converter = UnsignedIntConverter.class, description = "Session expiry can be disabled by setting it to 4_294_967_295")
     private long sessionExpiryInterval;
 
     public String createIdentifier() {
@@ -63,7 +91,7 @@ public class Connect extends MqttCommand implements MqttAction {
         return user;
     }
 
-    public String getPassword() {
+    public byte[] getPassword() {
         return password;
     }
 
@@ -75,20 +103,20 @@ public class Connect extends MqttCommand implements MqttAction {
         return cleanStart;
     }
 
-    public String getWillMessage() {
+    public void setPassword(byte[] password) {
+        this.password = password;
+    }
+
+    public byte[] getWillMessage() {
         return willMessage;
     }
 
-    public void setWillMessage(String willMessage) {
+    public void setWillMessage(byte[] willMessage) {
         this.willMessage = willMessage;
     }
 
-    public int getWillQos() {
+    public MqttQos getWillQos() {
         return willQos;
-    }
-
-    public void setWillQos(int willQos) {
-        this.willQos = willQos;
     }
 
     public boolean isWillRetain() {
@@ -117,8 +145,8 @@ public class Connect extends MqttCommand implements MqttAction {
         this.user = user;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setWillQos(MqttQos willQos) {
+        this.willQos = willQos;
     }
 
     public void setKeepAlive(int keepAlive) {
@@ -174,4 +202,5 @@ public class Connect extends MqttCommand implements MqttAction {
                 ", sessionExpiryInterval=" + sessionExpiryInterval + '\'' +
                 '}';
     }
+
 }
