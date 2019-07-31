@@ -2,13 +2,13 @@ package com.hivemq.cli.impl;
 
 import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.mqtt.TestableMqttClientExecutor;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 
@@ -58,8 +58,8 @@ public class ConnectImplTest {
     @Test
     public void runUseWill() {
         param.setWillTopic("test");
-        param.setWillMessage("test");
-        param.setWillQos(1);
+        param.setWillMessage("test".getBytes());
+        param.setWillQos(MqttQos.AT_MOST_ONCE);
         param.setWillRetain(false);
 
         TestableMqttClientExecutor.getInstance().connect(param);
@@ -75,7 +75,7 @@ public class ConnectImplTest {
 
     @Test
     public void runUseWillMessageOnly() {
-        param.setWillMessage("test");
+        param.setWillMessage("test".getBytes());
 
         TestableMqttClientExecutor.getInstance().connect(param);
 
@@ -90,7 +90,7 @@ public class ConnectImplTest {
 
     @Test
     public void runUseWillQosOnly() {
-        param.setWillQos(1);
+        param.setWillQos(MqttQos.AT_MOST_ONCE);
 
         TestableMqttClientExecutor.getInstance().connect(param);
 
@@ -171,7 +171,7 @@ public class ConnectImplTest {
     public void runUsePassword() {
         String expected = "password";
 
-        param.setPassword(expected);
+        param.setPassword(expected.getBytes());
         TestableMqttClientExecutor.getInstance().connect(param);
 
         assertTrue("cached element", TestableMqttClientExecutor.getInstance().getClientCache().hasKey(param.getKey()));
@@ -196,8 +196,8 @@ public class ConnectImplTest {
         String expectedPassword = "password";
 
         param.setUser(expectedUser);
-        param.setPassword(expectedPassword);
-        param.setPassword(expectedPassword);
+        param.setPassword(expectedPassword.getBytes());
+        param.setPassword(expectedPassword.getBytes());
 
         TestableMqttClientExecutor.getInstance().connect(param);
 
@@ -265,8 +265,8 @@ public class ConnectImplTest {
         String expectedPassword = "password";
 
         param.setUser(expectedUser);
-        param.setPassword(expectedPassword);
-        param.setPassword(expectedPassword);
+        param.setPassword(expectedPassword.getBytes());
+        param.setPassword(expectedPassword.getBytes());
         param.setCleanStart(true);
         param.setKeepAlive(120);
         param.setSessionExpiryInterval(60);
