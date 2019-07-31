@@ -151,6 +151,7 @@ abstract class AbstractMqttClientExecutor {
             client.publishWith()
                     .topic(topic)
                     .qos(qos)
+                    .retain(publish.isRetain())
                     .payload(publish.getMessage().getBytes())
                     .send()
                     .whenComplete((publishResult, throwable) -> {
