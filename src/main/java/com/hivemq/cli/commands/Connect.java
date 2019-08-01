@@ -254,22 +254,22 @@ public class Connect extends MqttCommand implements MqttAction {
                 "key=" + getKey() +
                 ", prefixIdentifier='" + prefixIdentifier + '\'' +
                 ", user='" + user + '\'' +
-                ", password='" + password + '\'' +
+                ", password=" + password +
                 ", keepAlive=" + keepAlive +
                 ", cleanStart=" + cleanStart +
                 ", willTopic='" + willTopic + '\'' +
                 ", willQos=" + willQos +
                 ", willMessage='" + willMessage + '\'' +
-                ", willRetain=" + willRetain + '\'' +
-                ", willMessageExpiryInterval" + willMessageExpiryInterval + '\'' +
-                ", willDelayInterval" + willDelayInterval + '\'' +
-                ", willPayloadFormatIndicator" + willPayloadFormatIndicator + '\'' +
-                ", willContentType" + willContentType + '\'' +
-                ", willResponseTopic" + willResponseTopic + '\'' +
-                ", willCorrelationData" + willCorrelationData + '\'' +
-                ", willUserProperties" + willUserProperties + '\'' +
+                ", willRetain=" + willRetain +
+                ", willMessageExpiryInterval=" + willMessageExpiryInterval +
+                ", willDelayInterval=" + willDelayInterval +
+                ", willPayloadFormatIndicator=" + willPayloadFormatIndicator + '\'' +
+                ", willContentType='" + willContentType + '\'' +
+                ", willResponseTopic='" + willResponseTopic + '\'' +
+                ", willCorrelationData=" + willCorrelationData +
+                ", willUserProperties=" + willUserProperties +
                 ", useSsl=" + useSsl +
-                ", sessionExpiryInterval=" + sessionExpiryInterval + '\'' +
+                ", sessionExpiryInterval=" + sessionExpiryInterval +
                 '}';
     }
 
