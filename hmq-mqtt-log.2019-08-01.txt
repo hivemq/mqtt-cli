@@ -1,0 +1,1 @@
+2019-08-01 09:27:28: DEBUG: null: Command: Connect{key=client {version=5, host='localhost', port=1883, identifier='null'}, prefixIdentifier='null', user='null', password='null', keepAlive=60, cleanStart=true, willMessage='null', willQos=AT_MOST_ONCE, willRetain=false, willTopic='null', useSsl=false, sessionExpiryInterval=0'} 

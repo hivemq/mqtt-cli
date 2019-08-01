@@ -1,11 +1,11 @@
 package com.hivemq.cli.commands;
 
-import com.hivemq.cli.converters.MqttQosConverter;
-import com.hivemq.cli.converters.UnsignedIntConverter;
-import com.hivemq.cli.converters.UnsignedShortConverter;
+import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.ConnectionImpl;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import picocli.CommandLine;
 
 import java.util.UUID;
@@ -29,7 +29,9 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-c", "--cleanStart"}, defaultValue = "true", description = "Define a clean start for the connection.")
     private boolean cleanStart;
 
-    @CommandLine.Option(names = {"-wm", "--willMessage"}, defaultValue = "", description = "The payload of the will message.")
+
+    // TODO REARRANGE WITH OTHER WILL ATTRIBUTES
+    @CommandLine.Option(names = {"-wm", "--willMessage"}, description = "The payload of the will message.")
     private byte[] willMessage;
 
     @CommandLine.Option(names = {"-wq", "--willQualityOfService"}, converter = MqttQosConverter.class, defaultValue = "AT_MOST_ONCE", description = "Quality of Service for the will message.")
@@ -42,15 +44,15 @@ public class Connect extends MqttCommand implements MqttAction {
     private String willTopic;
 
 
-    // TODO
+    // TODO IMPLEMENT
     @CommandLine.Option(names = {"-we", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class, defaultValue = "4294967295", description = "The lifetime of the Will Message in seconds.")
     private long willMessageExpiryInterval;
 
     @CommandLine.Option(names = {"-wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, defaultValue = "0", description = "The Server delays publishing the Client's Will Message until the Will Delay has passed.")
     private long willDelayInterval;
 
-    @CommandLine.Option(names = {"-wp", "--willPayloadFormatIndicator"}, defaultValue = "false", description = "The Payload Format Indicator.")
-    private boolean willPayloadFormatIndicator;
+    @CommandLine.Option(names = {"-wp", "--willPayloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The Payload Format Indicator.")
+    private Mqtt5PayloadFormatIndicator willPayloadFormatIndicator;
 
     @CommandLine.Option(names = {"-wc", "--willContentType"}, description = "A description of Will Message's content.")
     private String willContentType;
@@ -59,18 +61,20 @@ public class Connect extends MqttCommand implements MqttAction {
     private String willResponseTopic;
 
     @CommandLine.Option(names = {"-wcd", "--willCorrelationData"}, description = "The Correlation Data of the Will Message.")
-    private String willCorrelationData;
+    private byte[] willCorrelationData;
 
-    @CommandLine.Option(names = {"-wu", "--willUserProperties"}, arity = "2", description = "The User Property of the Will Message.")
-    private String[] willUserProperties;
+    @CommandLine.Option(names = {"-wu", "--willUserProperties"}, converter = UserPropertiesConverter.class, description = "The User Property of the Will Message. Usage: Key=Value, Key1=Value1|Key2=Value2")
+    private Mqtt5UserProperties willUserProperties;
 
 
     //TODO Implement
     @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use ssl for connection.")
     private boolean useSsl;
 
+    //TODO REARRANGE
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", converter = UnsignedIntConverter.class, description = "Session expiry can be disabled by setting it to 4_294_967_295")
     private long sessionExpiryInterval;
+
 
     public String createIdentifier() {
         if (getIdentifier() == null) {
@@ -123,7 +127,9 @@ public class Connect extends MqttCommand implements MqttAction {
         return willRetain;
     }
 
-    public long getSessionExpiryInterval() { return sessionExpiryInterval; }
+    public long getSessionExpiryInterval() {
+        return sessionExpiryInterval;
+    }
 
     public void setWillRetain(boolean willRetain) {
         this.willRetain = willRetain;
