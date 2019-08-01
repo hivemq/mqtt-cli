@@ -178,8 +178,10 @@ abstract class AbstractMqttClientExecutor {
                     .payloadFormatIndicator(connectCommand.getWillPayloadFormatIndicator())
                     .contentType(connectCommand.getWillContentType())
                     .responseTopic(connectCommand.getWillResponseTopic())
-                    .correlationData(connectCommand.getWillCorrelationData())
-                    .userProperties(connectCommand.getWillUserProperties());
+                    .correlationData(connectCommand.getWillCorrelationData());
+            if (connectCommand.getWillUserProperties() != null) { // user Properties can't be completed with null
+                ((Mqtt5WillPublishBuilder.Complete) builder).userProperties(connectCommand.getWillUserProperties());
+            }
             try {
                 return ((Mqtt5WillPublishBuilder.Complete) builder).build().asWill();
             } catch (Exception e) {
