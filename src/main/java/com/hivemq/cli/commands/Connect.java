@@ -8,6 +8,7 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import picocli.CommandLine;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @CommandLine.Command(name = "con", description = "Connects an mqtt client")
@@ -253,19 +254,19 @@ public class Connect extends MqttCommand implements MqttAction {
                 "key=" + getKey() +
                 ", prefixIdentifier='" + prefixIdentifier + '\'' +
                 ", user='" + user + '\'' +
-                ", password='" + password + '\'' +
+                ", password='" + Arrays.toString(password) + '\'' +
                 ", keepAlive=" + keepAlive +
                 ", cleanStart=" + cleanStart +
                 ", willTopic='" + willTopic + '\'' +
                 ", willQos=" + willQos +
-                ", willMessage='" + willMessage + '\'' +
+                ", willMessage='" + Arrays.toString(willMessage) + '\'' +
                 ", willRetain=" + willRetain + '\'' +
                 ", willMessageExpiryInterval" + willMessageExpiryInterval + '\'' +
                 ", willDelayInterval" + willDelayInterval + '\'' +
                 ", willPayloadFormatIndicator" + willPayloadFormatIndicator + '\'' +
                 ", willContentType" + willContentType + '\'' +
                 ", willResponseTopic" + willResponseTopic + '\'' +
-                ", willCorrelationData" + willCorrelationData + '\'' +
+                ", willCorrelationData" + Arrays.toString(willCorrelationData) + '\'' +
                 ", willUserProperties" + willUserProperties + '\'' +
                 ", useSsl=" + useSsl +
                 ", sessionExpiryInterval=" + sessionExpiryInterval + '\'' +
