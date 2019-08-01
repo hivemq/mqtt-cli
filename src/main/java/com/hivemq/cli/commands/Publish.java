@@ -1,6 +1,6 @@
 package com.hivemq.cli.commands;
 
-import com.hivemq.cli.converters.ByteConverter;
+import com.hivemq.cli.converters.ByteBufferConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.impl.PublishImpl;
@@ -19,7 +19,7 @@ public class Publish extends Connect implements MqttAction {
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of Service for the corresponding topic.")
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteConverter.class, required = true, description = "The message that should be published.")
+    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message that should be published.")
     private ByteBuffer message;
 
     @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false", description = "The message will be retained.")

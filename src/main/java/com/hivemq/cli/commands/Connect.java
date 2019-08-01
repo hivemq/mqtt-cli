@@ -21,7 +21,7 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for the client UTF-8 String.")
     private String user;
 
-    @CommandLine.Option(names = {"-pw", "--password"}, converter = ByteConverter.class, description = "The password for the client UTF-8 String.")
+    @CommandLine.Option(names = {"-pw", "--password"}, converter = ByteBufferConverter.class, description = "The password for the client UTF-8 String.")
     private ByteBuffer password;
 
     @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, defaultValue = "60", description = "A keep alive of the client (in seconds).")
@@ -32,7 +32,7 @@ public class Connect extends MqttCommand implements MqttAction {
 
 
     // TODO REARRANGE WITH OTHER WILL ATTRIBUTES
-    @CommandLine.Option(names = {"-wm", "--willMessage"}, converter = ByteConverter.class, description = "The payload of the will message.")
+    @CommandLine.Option(names = {"-wm", "--willMessage"}, converter = ByteBufferConverter.class, description = "The payload of the will message.")
     private ByteBuffer willMessage;
 
     @CommandLine.Option(names = {"-wq", "--willQualityOfService"}, converter = MqttQosConverter.class, defaultValue = "AT_MOST_ONCE", description = "Quality of Service for the will message.")
@@ -61,7 +61,7 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-wrt", "--willResponseTopic"}, description = "The Topic Name for a response message.")
     private String willResponseTopic;
 
-    @CommandLine.Option(names = {"-wcd", "--willCorrelationData"}, converter = ByteConverter.class, description = "The Correlation Data of the Will Message.")
+    @CommandLine.Option(names = {"-wcd", "--willCorrelationData"}, converter = ByteBufferConverter.class, description = "The Correlation Data of the Will Message.")
     private ByteBuffer willCorrelationData;
 
     @CommandLine.Option(names = {"-wu", "--willUserProperties"}, converter = UserPropertiesConverter.class, description = "The User Property of the Will Message. Usage: Key=Value, Key1=Value1|Key2=Value2")

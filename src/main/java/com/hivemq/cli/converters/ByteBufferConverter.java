@@ -6,7 +6,7 @@ import picocli.CommandLine;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public class ByteConverter implements CommandLine.ITypeConverter<ByteBuffer> {
+public class ByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
 
 
     @Override
