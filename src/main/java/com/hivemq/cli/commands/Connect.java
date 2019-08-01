@@ -256,10 +256,17 @@ public class Connect extends MqttCommand implements MqttAction {
                 ", password='" + password + '\'' +
                 ", keepAlive=" + keepAlive +
                 ", cleanStart=" + cleanStart +
-                ", willMessage='" + willMessage + '\'' +
-                ", willQos=" + willQos +
-                ", willRetain=" + willRetain +
                 ", willTopic='" + willTopic + '\'' +
+                ", willQos=" + willQos +
+                ", willMessage='" + willMessage + '\'' +
+                ", willRetain=" + willRetain + '\'' +
+                ", willMessageExpiryInterval" + willMessageExpiryInterval + '\'' +
+                ", willDelayInterval" + willDelayInterval + '\'' +
+                ", willPayloadFormatIndicator" + willPayloadFormatIndicator + '\'' +
+                ", willContentType" + willContentType + '\'' +
+                ", willResponseTopic" + willResponseTopic + '\'' +
+                ", willCorrelationData" + willCorrelationData + '\'' +
+                ", willUserProperties" + willUserProperties + '\'' +
                 ", useSsl=" + useSsl +
                 ", sessionExpiryInterval=" + sessionExpiryInterval + '\'' +
                 '}';
