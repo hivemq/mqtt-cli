@@ -30,8 +30,9 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-c", "--cleanStart"}, defaultValue = "true", description = "Define a clean start for the connection.")
     private boolean cleanStart;
 
+    @CommandLine.Option(names = {"-wt", "--willTopic"}, description = "The topic of the will message.")
+    private String willTopic;
 
-    // TODO REARRANGE WITH OTHER WILL ATTRIBUTES
     @CommandLine.Option(names = {"-wm", "--willMessage"}, converter = ByteBufferConverter.class, description = "The payload of the will message.")
     private ByteBuffer willMessage;
 
@@ -41,11 +42,6 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-wr", "--willRetain"}, defaultValue = "false", description = "Will message as retained message")
     private boolean willRetain;
 
-    @CommandLine.Option(names = {"-wt", "--willTopic"}, description = "The topic of the will message.")
-    private String willTopic;
-
-
-    // TODO IMPLEMENT
     @CommandLine.Option(names = {"-we", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class, defaultValue = "4294967295", description = "The lifetime of the Will Message in seconds.")
     private long willMessageExpiryInterval;
 
@@ -263,7 +259,7 @@ public class Connect extends MqttCommand implements MqttAction {
                 ", willRetain=" + willRetain +
                 ", willMessageExpiryInterval=" + willMessageExpiryInterval +
                 ", willDelayInterval=" + willDelayInterval +
-                ", willPayloadFormatIndicator=" + willPayloadFormatIndicator + '\'' +
+                ", willPayloadFormatIndicator=" + willPayloadFormatIndicator +
                 ", willContentType='" + willContentType + '\'' +
                 ", willResponseTopic='" + willResponseTopic + '\'' +
                 ", willCorrelationData=" + willCorrelationData +
