@@ -8,7 +8,7 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import picocli.CommandLine;
 
-import java.util.Arrays;
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 @CommandLine.Command(name = "con", description = "Connects an mqtt client")
@@ -21,8 +21,8 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for the client UTF-8 String.")
     private String user;
 
-    @CommandLine.Option(names = {"-pw", "--password"}, description = "The password for the client UTF-8 String.")
-    private byte[] password;
+    @CommandLine.Option(names = {"-pw", "--password"}, converter = ByteConverter.class, description = "The password for the client UTF-8 String.")
+    private ByteBuffer password;
 
     @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, defaultValue = "60", description = "A keep alive of the client (in seconds).")
     private int keepAlive;
@@ -32,8 +32,8 @@ public class Connect extends MqttCommand implements MqttAction {
 
 
     // TODO REARRANGE WITH OTHER WILL ATTRIBUTES
-    @CommandLine.Option(names = {"-wm", "--willMessage"}, description = "The payload of the will message.")
-    private byte[] willMessage;
+    @CommandLine.Option(names = {"-wm", "--willMessage"}, converter = ByteConverter.class, description = "The payload of the will message.")
+    private ByteBuffer willMessage;
 
     @CommandLine.Option(names = {"-wq", "--willQualityOfService"}, converter = MqttQosConverter.class, defaultValue = "AT_MOST_ONCE", description = "Quality of Service for the will message.")
     private MqttQos willQos;
@@ -61,8 +61,8 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-wrt", "--willResponseTopic"}, description = "The Topic Name for a response message.")
     private String willResponseTopic;
 
-    @CommandLine.Option(names = {"-wcd", "--willCorrelationData"}, description = "The Correlation Data of the Will Message.")
-    private byte[] willCorrelationData;
+    @CommandLine.Option(names = {"-wcd", "--willCorrelationData"}, converter = ByteConverter.class, description = "The Correlation Data of the Will Message.")
+    private ByteBuffer willCorrelationData;
 
     @CommandLine.Option(names = {"-wu", "--willUserProperties"}, converter = UserPropertiesConverter.class, description = "The User Property of the Will Message. Usage: Key=Value, Key1=Value1|Key2=Value2")
     private Mqtt5UserProperties willUserProperties;
@@ -108,11 +108,11 @@ public class Connect extends MqttCommand implements MqttAction {
         this.user = user;
     }
 
-    public byte[] getPassword() {
+    public ByteBuffer getPassword() {
         return password;
     }
 
-    public void setPassword(byte[] password) {
+    public void setPassword(ByteBuffer password) {
         this.password = password;
     }
 
@@ -172,11 +172,11 @@ public class Connect extends MqttCommand implements MqttAction {
         this.willResponseTopic = willResponseTopic;
     }
 
-    public byte[] getWillCorrelationData() {
+    public ByteBuffer getWillCorrelationData() {
         return willCorrelationData;
     }
 
-    public void setWillCorrelationData(byte[] willCorrelationData) {
+    public void setWillCorrelationData(ByteBuffer willCorrelationData) {
         this.willCorrelationData = willCorrelationData;
     }
 
@@ -188,11 +188,11 @@ public class Connect extends MqttCommand implements MqttAction {
         this.willUserProperties = willUserProperties;
     }
 
-    public byte[] getWillMessage() {
+    public ByteBuffer getWillMessage() {
         return willMessage;
     }
 
-    public void setWillMessage(byte[] willMessage) {
+    public void setWillMessage(ByteBuffer willMessage) {
         this.willMessage = willMessage;
     }
 
@@ -254,19 +254,19 @@ public class Connect extends MqttCommand implements MqttAction {
                 "key=" + getKey() +
                 ", prefixIdentifier='" + prefixIdentifier + '\'' +
                 ", user='" + user + '\'' +
-                ", password='" + Arrays.toString(password) + '\'' +
+                ", password='" + password + '\'' +
                 ", keepAlive=" + keepAlive +
                 ", cleanStart=" + cleanStart +
                 ", willTopic='" + willTopic + '\'' +
                 ", willQos=" + willQos +
-                ", willMessage='" + Arrays.toString(willMessage) + '\'' +
+                ", willMessage='" + willMessage + '\'' +
                 ", willRetain=" + willRetain + '\'' +
                 ", willMessageExpiryInterval" + willMessageExpiryInterval + '\'' +
                 ", willDelayInterval" + willDelayInterval + '\'' +
                 ", willPayloadFormatIndicator" + willPayloadFormatIndicator + '\'' +
                 ", willContentType" + willContentType + '\'' +
                 ", willResponseTopic" + willResponseTopic + '\'' +
-                ", willCorrelationData" + Arrays.toString(willCorrelationData) + '\'' +
+                ", willCorrelationData" + willCorrelationData + '\'' +
                 ", willUserProperties" + willUserProperties + '\'' +
                 ", useSsl=" + useSsl +
                 ", sessionExpiryInterval=" + sessionExpiryInterval + '\'' +

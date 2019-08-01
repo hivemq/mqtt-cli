@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.LoggingContext;
 
+import java.nio.ByteBuffer;
+
 abstract class AbstractMqttClientExecutor {
 
     private ClientCache<String, Mqtt5AsyncClient> clientCache = new ClientCache<>();
@@ -138,7 +140,7 @@ abstract class AbstractMqttClientExecutor {
                     .topic(topic)
                     .qos(qos)
                     .retain(publish.isRetain())
-                    .payload(publish.getMessage().getBytes())
+                    .payload(publish.getMessage())
                     .send()
                     .whenComplete((publishResult, throwable) -> {
                         if (throwable != null) {
@@ -148,7 +150,7 @@ abstract class AbstractMqttClientExecutor {
                                 Logger.error("Client publish to topic: {} failed with reason: {}", topic, throwable.getMessage());
                             }
                         } else {
-                            final String p = publish.getMessage();
+                            final String p = publish.getMessage().toString();
                             if (publish.isDebug()) {
                                 Log.debug("Client publish to topic: {} message: '{}' ", topic, p);
                             } else {
@@ -164,7 +166,7 @@ abstract class AbstractMqttClientExecutor {
     private Mqtt5Publish createWillPublish(final @NotNull Connect connectCommand) throws Exception {
         // only topic is mandatory for will message creation
         if (connectCommand.getWillTopic() != null) {
-            byte[] willpayload = connectCommand.getWillMessage() != null ? connectCommand.getWillMessage() : null;
+            ByteBuffer willpayload = connectCommand.getWillMessage() != null ? connectCommand.getWillMessage() : null;
             Mqtt5WillPublishBuilder builder = Mqtt5WillPublish.builder()
                     .topic(connectCommand.getWillTopic())
                     .payload(willpayload)
@@ -176,7 +178,7 @@ abstract class AbstractMqttClientExecutor {
                 Logger.error("Client can't create Will Message, error: {} " + e.getMessage());
                 throw e;
             }
-        } else if (connectCommand.getWillMessage() != null && !(connectCommand.getWillMessage().length == 0)) {
+        } else if (connectCommand.getWillMessage() != null) {
             //seems somebody like to create a will message without a topic
             Logger.debug("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
         }

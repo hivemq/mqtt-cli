@@ -1,11 +1,13 @@
 package com.hivemq.cli.commands;
 
+import com.hivemq.cli.converters.ByteConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.impl.PublishImpl;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import picocli.CommandLine;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "pub", description = "Publish a message to a list of topics")
@@ -17,8 +19,8 @@ public class Publish extends Connect implements MqttAction {
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of Service for the corresponding topic.")
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-m", "--message"}, required = true, description = "The message that should be published.")
-    private String message;
+    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteConverter.class, required = true, description = "The message that should be published.")
+    private ByteBuffer message;
 
     @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false", description = "The message will be retained.")
     private boolean retain;
@@ -39,11 +41,11 @@ public class Publish extends Connect implements MqttAction {
         this.qos = qos;
     }
 
-    public String getMessage() {
+    public ByteBuffer getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(ByteBuffer message) {
         this.message = message;
     }
 
