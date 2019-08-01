@@ -171,7 +171,14 @@ abstract class AbstractMqttClientExecutor {
                     .topic(connectCommand.getWillTopic())
                     .payload(willpayload)
                     .qos(connectCommand.getWillQos())
-                    .retain(connectCommand.isWillRetain());
+                    .retain(connectCommand.isWillRetain())
+                    .messageExpiryInterval(connectCommand.getWillMessageExpiryInterval())
+                    .delayInterval(connectCommand.getWillDelayInterval())
+                    .payloadFormatIndicator(connectCommand.getWillPayloadFormatIndicator())
+                    .contentType(connectCommand.getWillContentType())
+                    .responseTopic(connectCommand.getWillResponseTopic())
+                    .correlationData(connectCommand.getWillCorrelationData())
+                    .userProperties(connectCommand.getWillUserProperties());
             try {
                 return ((Mqtt5WillPublishBuilder.Complete) builder).build().asWill();
             } catch (Exception e) {
