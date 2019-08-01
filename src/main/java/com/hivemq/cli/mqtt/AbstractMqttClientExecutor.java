@@ -98,7 +98,8 @@ abstract class AbstractMqttClientExecutor {
             Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
                     .sessionExpiryInterval(connectCommand.getSessionExpiryInterval())
                     .keepAlive(connectCommand.getKeepAlive())
-                    .cleanStart(connectCommand.isCleanStart());
+                    .cleanStart(connectCommand.isCleanStart())
+                    .willPublish(willPublish);
 
             applyAuthentication(connectBuilder, connectCommand);
 
@@ -171,7 +172,16 @@ abstract class AbstractMqttClientExecutor {
                     .topic(connectCommand.getWillTopic())
                     .payload(willpayload)
                     .qos(connectCommand.getWillQos())
-                    .retain(connectCommand.isWillRetain());
+                    .retain(connectCommand.isWillRetain())
+                    .messageExpiryInterval(connectCommand.getWillMessageExpiryInterval())
+                    .delayInterval(connectCommand.getWillDelayInterval())
+                    .payloadFormatIndicator(connectCommand.getWillPayloadFormatIndicator())
+                    .contentType(connectCommand.getWillContentType())
+                    .responseTopic(connectCommand.getWillResponseTopic())
+                    .correlationData(connectCommand.getWillCorrelationData());
+            if (connectCommand.getWillUserProperties() != null) { // user Properties can't be completed with null
+                ((Mqtt5WillPublishBuilder.Complete) builder).userProperties(connectCommand.getWillUserProperties());
+            }
             try {
                 return ((Mqtt5WillPublishBuilder.Complete) builder).build().asWill();
             } catch (Exception e) {

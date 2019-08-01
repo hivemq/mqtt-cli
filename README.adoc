@@ -80,14 +80,22 @@ mqtt con { @<fileName> |
                 -h <host>
                 -p <port>
                 -i client identifier
-                -u {<user name>}
-                -pw  {$|<password>| @<fileName>}
+                -u {<'user name'>}
+                -pw  {$|<'password'>| @<fileName>}
                 -cs  {0|1}
                 -se  {0|1}
-                -wpr {[<'header':'value'> [,<'header'>:<'value'>]]}
-                -wd  {0|n}
                 -wt  {$|<'topic'>};
-                -wp  {$|<'payload'>|@<fileName>};
+                -wq  {0|1|2|AT_MOST_ONCE|AT_LEAST_ONCE|EXACTLY_ONCE}
+                -wm  {$|<'payload'>|@<fileName>};
+                -wr  {0|1}
+                -we  {[0 - 4_294_967_295]}
+                -wd  {[0 - 4_294_967_295]}
+                -wp  {UTF8|UTF_8}
+                -wc  {<'content description'>}
+                -wrt {$|<'response topic'>}
+                -wcd {<'correlation data'>}
+                -wu {[<'header'='value'> [|<'header'>=<'value'>]]}
+                -sc  {0|1}
          }
 ```
 |===
@@ -107,18 +115,30 @@ mqtt con { @<fileName> |
          | Not set - password will be empty.
 | -c   | --clean | Clean State start setting 0 or 1. | Not set - Clean Start is set cs=1
 | -se  | --sessionExpiry | Session Expiry value in seconds. | Not set - Session expires after connection is closed se=0
-
-| -wpr | --willProperties |Will properties, can contain one or more header:value pairs| default empty
-| -wd  | --willDelay |Will delay interval in seconds | 0
 | -wt  | --willTopic |Topic of the Will message can be defined direct or
 
          $ - via input from console - prompt
          | Not set - no will message will be generated
-| -wp  | --willPayload |Payload of the Will message can be defined direct or
+| -wq   | --willQualityOfService | QoS level of the will message | 0 (AT_MOST_ONCE)
+| -wm  | --willPayload |Payload of the Will message can be defined direct or
 
          $ - via input from console - prompt, or
          @<fileName> - read from file
          | Not set - no will message will be generated
+| -wr   | --willRetain  | Will message will be retained |false
+| -we   | --willMessageExpiryInterval   |Lifetime of the will message in seconds
+
+Can be disabled by setting it to ```4_294_967_295```|4_294_967_295
+| -wd  | --willDelayInterval |Will delay interval in seconds | 0
+| -wp  | --willPayloadFormatIndicator |Payload Format can be specified as ```UTF8``` else it may be ``UNSPECIFIED`` | default empty
+| -wc   | --willContentType |   Description of the Will Message's content | default empty
+| -wrt  | --willResponseTopic | Topic Name for a response message   |   default empty
+| -wcd  | --willCorrelationData | Correlation Data of the Will Message  |   default empty
+| -wu   | --willUserProperties  | User Properties of the Will Message can be defined like
+
+```key=value``` for single pair or ```key1=value1\|key2=value2``` for multiple pairs | default empty
+
+
 | -sc | --stayConnected | The client stays connected 0 or 1 |  0 - the client will be disconnected immediately. In shell mode the Client stays connected.
 |===
 
