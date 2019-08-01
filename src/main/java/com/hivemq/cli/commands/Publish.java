@@ -27,16 +27,32 @@ public class Publish extends Connect implements MqttAction {
         return topics;
     }
 
+    public void setTopics(String[] topics) {
+        this.topics = topics;
+    }
+
     public MqttQos[] getQos() {
         return qos;
+    }
+
+    public void setQos(MqttQos[] qos) {
+        this.qos = qos;
     }
 
     public String getMessage() {
         return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public boolean isRetain() {
         return retain;
+    }
+
+    public void setRetain(boolean retain) {
+        this.retain = retain;
     }
 
     @Override
