@@ -87,28 +87,104 @@ public class Connect extends MqttCommand implements MqttAction {
         return useSsl;
     }
 
+    public void setUseSsl(boolean useSsl) {
+        this.useSsl = useSsl;
+    }
+
     public String getPrefixIdentifier() {
         return prefixIdentifier;
+    }
+
+    public void setPrefixIdentifier(String prefixIdentifier) {
+        this.prefixIdentifier = prefixIdentifier;
     }
 
     public String getUser() {
         return user;
     }
 
+    public void setUser(String user) {
+        this.user = user;
+    }
+
     public byte[] getPassword() {
         return password;
+    }
+
+    public void setPassword(byte[] password) {
+        this.password = password;
     }
 
     public int getKeepAlive() {
         return keepAlive;
     }
 
+    public void setKeepAlive(int keepAlive) {
+        this.keepAlive = keepAlive;
+    }
+
     public boolean isCleanStart() {
         return cleanStart;
     }
 
-    public void setPassword(byte[] password) {
-        this.password = password;
+    public void setCleanStart(boolean cleanStart) {
+        this.cleanStart = cleanStart;
+    }
+
+    public long getWillMessageExpiryInterval() {
+        return willMessageExpiryInterval;
+    }
+
+    public void setWillMessageExpiryInterval(long willMessageExpiryInterval) {
+        this.willMessageExpiryInterval = willMessageExpiryInterval;
+    }
+
+    public long getWillDelayInterval() {
+        return willDelayInterval;
+    }
+
+    public void setWillDelayInterval(long willDelayInterval) {
+        this.willDelayInterval = willDelayInterval;
+    }
+
+    public Mqtt5PayloadFormatIndicator getWillPayloadFormatIndicator() {
+        return willPayloadFormatIndicator;
+    }
+
+    public void setWillPayloadFormatIndicator(Mqtt5PayloadFormatIndicator willPayloadFormatIndicator) {
+        this.willPayloadFormatIndicator = willPayloadFormatIndicator;
+    }
+
+    public String getWillContentType() {
+        return willContentType;
+    }
+
+    public void setWillContentType(String willContentType) {
+        this.willContentType = willContentType;
+    }
+
+    public String getWillResponseTopic() {
+        return willResponseTopic;
+    }
+
+    public void setWillResponseTopic(String willResponseTopic) {
+        this.willResponseTopic = willResponseTopic;
+    }
+
+    public byte[] getWillCorrelationData() {
+        return willCorrelationData;
+    }
+
+    public void setWillCorrelationData(byte[] willCorrelationData) {
+        this.willCorrelationData = willCorrelationData;
+    }
+
+    public Mqtt5UserProperties getWillUserProperties() {
+        return willUserProperties;
+    }
+
+    public void setWillUserProperties(Mqtt5UserProperties willUserProperties) {
+        this.willUserProperties = willUserProperties;
     }
 
     public byte[] getWillMessage() {
@@ -123,16 +199,24 @@ public class Connect extends MqttCommand implements MqttAction {
         return willQos;
     }
 
+    public void setWillQos(MqttQos willQos) {
+        this.willQos = willQos;
+    }
+
     public boolean isWillRetain() {
         return willRetain;
+    }
+
+    public void setWillRetain(boolean willRetain) {
+        this.willRetain = willRetain;
     }
 
     public long getSessionExpiryInterval() {
         return sessionExpiryInterval;
     }
 
-    public void setWillRetain(boolean willRetain) {
-        this.willRetain = willRetain;
+    public void setSessionExpiryInterval(long sessionExpiryInterval) {
+        this.sessionExpiryInterval = sessionExpiryInterval;
     }
 
     public String getWillTopic() {
@@ -141,34 +225,6 @@ public class Connect extends MqttCommand implements MqttAction {
 
     public void setWillTopic(String willTopic) {
         this.willTopic = willTopic;
-    }
-
-    public void setPrefixIdentifier(String prefixIdentifier) {
-        this.prefixIdentifier = prefixIdentifier;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public void setWillQos(MqttQos willQos) {
-        this.willQos = willQos;
-    }
-
-    public void setKeepAlive(int keepAlive) {
-        this.keepAlive = keepAlive;
-    }
-
-    public void setCleanStart(boolean cleanStart) {
-        this.cleanStart = cleanStart;
-    }
-
-    public void setUseSsl(boolean useSsl) {
-        this.useSsl = useSsl;
-    }
-
-    public void setSessionExpiryInterval(long sessionExpiryInterval) {
-        this.sessionExpiryInterval = sessionExpiryInterval;
     }
 
     @Override
