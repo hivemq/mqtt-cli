@@ -98,7 +98,8 @@ abstract class AbstractMqttClientExecutor {
             Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
                     .sessionExpiryInterval(connectCommand.getSessionExpiryInterval())
                     .keepAlive(connectCommand.getKeepAlive())
-                    .cleanStart(connectCommand.isCleanStart());
+                    .cleanStart(connectCommand.isCleanStart())
+                    .willPublish(willPublish);
 
             applyAuthentication(connectBuilder, connectCommand);
 
