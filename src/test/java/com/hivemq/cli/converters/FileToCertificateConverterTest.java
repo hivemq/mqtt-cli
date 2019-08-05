@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class FileToCertificateConverterTest {
 
     private FileToCertificateConverter fileToCertificateConverter;
-    private String pathToValidCertficate;
+    private String pathToValidCertificate;
     private String pathToInvalidFileExtensionCertificate;
     private String pathToNoFileExtensionCertificate;
     private String pathToInvalidCertificate;
@@ -31,7 +31,7 @@ class FileToCertificateConverterTest {
         assert noFileExtensionCertificate != null;
         assert invalidCertificate != null;
 
-        pathToValidCertficate = validCertificateResource.getPath();
+        pathToValidCertificate = validCertificateResource.getPath();
         pathToInvalidFileExtensionCertificate = invalidFileExtensionResource.getPath();
         pathToNoFileExtensionCertificate = noFileExtensionCertificate.getPath();
         pathToInvalidCertificate = invalidCertificate.getPath();
@@ -39,7 +39,7 @@ class FileToCertificateConverterTest {
 
     @Test
     void convertSuccess() throws Exception {
-        X509Certificate cert = fileToCertificateConverter.convert(pathToValidCertficate);
+        X509Certificate cert = fileToCertificateConverter.convert(pathToValidCertificate);
         cert.checkValidity();
     }
 
@@ -58,12 +58,12 @@ class FileToCertificateConverterTest {
     @Test
     void convert_NoFileExtensionCertificate() {
         Exception e = assertThrows(Exception.class, () -> fileToCertificateConverter.convert(pathToNoFileExtensionCertificate));
-        assertEquals(FileToCertificateConverter.MISSING_FILE_EXTENSION, e.getMessage());
+        assertEquals(FileToCertificateConverter.NO_VALID_FILE_EXTENSION, e.getMessage());
     }
 
     @Test
     void convert_InvalidCertificate() {
         Exception e = assertThrows(Exception.class, () -> fileToCertificateConverter.convert(pathToInvalidCertificate));
-        assertEquals(FileToCertificateConverter.NO_VALID_CERTIFICATE, e.getMessage());
+        assertEquals(CertificateConverterUtils.NO_VALID_CERTIFICATE, e.getMessage());
     }
 }
