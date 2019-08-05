@@ -266,18 +266,18 @@ public class Connect extends MqttCommand implements MqttAction {
 
     @Override
     public void run() {
-        if (useSsl) {
-            try {
-                buildSslConfig();
-                if (getPort() == 1883) setPort(8883);
-            } catch (Exception e) {
-                Logger.debug(e);
-            }
+        try {
+            buildSslConfig();
+        } catch (Exception e) {
+            Logger.debug(e);
+            return;
         }
+
         ConnectionImpl.get(this).run();
     }
 
     private void buildSslConfig() throws Exception {
+        if (useSsl && getPort() == 1883) setPort(8883);
         TrustManagerFactory trustManagerFactory = buildTrustManagerFactory(certificates);
         sslConfig = MqttClientSslConfig.builder()
                 .trustManagerFactory(trustManagerFactory)
@@ -285,6 +285,7 @@ public class Connect extends MqttCommand implements MqttAction {
     }
 
     private TrustManagerFactory buildTrustManagerFactory(Collection<X509Certificate> certCollection) throws Exception {
+        if (certCollection == null) return null;
 
         final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
         ks.load(null, null);

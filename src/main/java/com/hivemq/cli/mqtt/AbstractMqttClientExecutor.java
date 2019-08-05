@@ -6,6 +6,7 @@ import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
@@ -196,13 +197,17 @@ abstract class AbstractMqttClientExecutor {
     }
 
     private MqttClientBuilder createBuilder(final @NotNull Connect connectCommand, final @NotNull String identifier) {
-        return MqttClient.builder()
+
+        MqttClientBuilder builder = MqttClient.builder()
                 .serverHost(connectCommand.getHost())
                 .serverPort(connectCommand.getPort())
-                .sslConfig()
-                .trustManagerFactory(connectCommand.getSslConfig().getTrustManagerFactory().get())
-                .applySslConfig()
                 .identifier(identifier);
+
+        if (connectCommand.isUseSsl()) {
+            applySsl(builder, connectCommand.getSslConfig());
+        }
+
+        return builder;
     }
 
     private Mqtt5AsyncClient getMqttClientFromCacheOrConnect(final @NotNull Connect connect) {
@@ -235,5 +240,11 @@ abstract class AbstractMqttClientExecutor {
                     .username(connectCommand.getUser())
                     .applySimpleAuth();
         }
+    }
+
+    private void applySsl(final @NotNull MqttClientBuilder builder, MqttClientSslConfig config) {
+        builder.sslConfig()
+                .trustManagerFactory(config.getTrustManagerFactory().get())
+                .applySslConfig();
     }
 }
