@@ -90,6 +90,12 @@ public class Connect extends MqttCommand implements MqttAction {
         certificates.add(certificate);
     }
 
+    @CommandLine.Option(names = {"--capath"}, converter = DirectoryToCertificateCollectionConverter.class, description = {"Path to a directory containing certificate files to import to enable encrypted certificate based communication."})
+    private void addCACollection(Collection<X509Certificate> certs) {
+        useSsl = true;
+        certificates.addAll(certs);
+    }
+
     public String createIdentifier() {
         if (getIdentifier() == null) {
             this.setIdentifier("hmqClient" + this.getVersion() + "-" + UUID.randomUUID().toString());
@@ -326,7 +332,7 @@ public class Connect extends MqttCommand implements MqttAction {
                 ", willCorrelationData=" + willCorrelationData +
                 ", willUserProperties=" + willUserProperties +
                 ", useSsl=" + useSsl +
-                ", cafile=" + certificates +
+                ", certificates=" + certificates +
                 ", sessionExpiryInterval=" + sessionExpiryInterval +
                 '}';
     }
