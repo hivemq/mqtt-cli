@@ -199,6 +199,9 @@ abstract class AbstractMqttClientExecutor {
         return MqttClient.builder()
                 .serverHost(connectCommand.getHost())
                 .serverPort(connectCommand.getPort())
+                .sslConfig()
+                .trustManagerFactory(connectCommand.getSslConfig().getTrustManagerFactory().get())
+                .applySslConfig()
                 .identifier(identifier);
     }
 

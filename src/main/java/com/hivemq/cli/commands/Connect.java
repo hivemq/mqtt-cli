@@ -3,12 +3,20 @@ package com.hivemq.cli.commands;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.ConnectionImpl;
 import com.hivemq.cli.impl.MqttAction;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
+import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
+import javax.net.ssl.TrustManagerFactory;
 import java.nio.ByteBuffer;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @CommandLine.Command(name = "con", description = "Connects an mqtt client")
@@ -72,6 +80,15 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", converter = UnsignedIntConverter.class, description = "Session expiry can be disabled by setting it to 4_294_967_295")
     private long sessionExpiryInterval;
 
+    private MqttClientSslConfig sslConfig;
+
+    private List<X509Certificate> certificates = new ArrayList<>();
+
+    @CommandLine.Option(names = {"--cafile"}, converter = FileToCertificateConverter.class, description = "Path to a file containing trusted CA certificates to enable encrypted certificate based communication.")
+    private void addCAFile(X509Certificate certificate) {
+        useSsl = true;
+        certificates.add(certificate);
+    }
 
     public String createIdentifier() {
         if (getIdentifier() == null) {
@@ -224,6 +241,14 @@ public class Connect extends MqttCommand implements MqttAction {
         this.willTopic = willTopic;
     }
 
+    public MqttClientSslConfig getSslConfig() {
+        return sslConfig;
+    }
+
+    public void setSslConfig(MqttClientSslConfig sslConfig) {
+        this.sslConfig = sslConfig;
+    }
+
     @Override
     public Class getType() {
         return Connect.class;
@@ -241,7 +266,42 @@ public class Connect extends MqttCommand implements MqttAction {
 
     @Override
     public void run() {
+        if (useSsl) {
+            try {
+                buildSslConfig();
+                if (getPort() == 1883) setPort(8883);
+            } catch (Exception e) {
+                Logger.debug(e);
+            }
+        }
         ConnectionImpl.get(this).run();
+    }
+
+    private void buildSslConfig() throws Exception {
+        TrustManagerFactory trustManagerFactory = buildTrustManagerFactory(certificates);
+        sslConfig = MqttClientSslConfig.builder()
+                .trustManagerFactory(trustManagerFactory)
+                .build();
+    }
+
+    private TrustManagerFactory buildTrustManagerFactory(Collection<X509Certificate> certCollection) throws Exception {
+
+        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        ks.load(null, null);
+
+        // add all certificates of the collection to the KeyStore
+        int i = 1;
+        for (X509Certificate cert : certCollection) {
+            String alias = Integer.toString(i);
+            ks.setCertificateEntry(alias, cert);
+            i++;
+        }
+
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+
+        trustManagerFactory.init(ks);
+
+        return trustManagerFactory;
     }
 
     @Override
@@ -265,6 +325,7 @@ public class Connect extends MqttCommand implements MqttAction {
                 ", willCorrelationData=" + willCorrelationData +
                 ", willUserProperties=" + willUserProperties +
                 ", useSsl=" + useSsl +
+                ", cafile=" + certificates +
                 ", sessionExpiryInterval=" + sessionExpiryInterval +
                 '}';
     }
