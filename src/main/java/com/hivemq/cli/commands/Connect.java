@@ -27,6 +27,12 @@ import java.util.UUID;
 @CommandLine.Command(name = "con", description = "Connects an mqtt client")
 public class Connect extends MqttCommand implements MqttAction {
 
+    private static final String DEFAULT_TLS_VERSION = "TLSv1.2";
+
+    private MqttClientSslConfig sslConfig;
+
+    private List<X509Certificate> certificates = new ArrayList<>();
+
     //TODO Implement
     @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String.")
     private String prefixIdentifier;
@@ -76,55 +82,100 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-wu", "--willUserProperties"}, converter = UserPropertiesConverter.class, description = "The User Property of the Will Message. Usage: Key=Value, Key1=Value1|Key2=Value2")
     private Mqtt5UserProperties willUserProperties;
 
-
-    //TODO Implement
-    @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use ssl for connection.")
-    private boolean useSsl;
-
-    //TODO REARRANGE
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", converter = UnsignedIntConverter.class, description = "Session expiry can be disabled by setting it to 4_294_967_295")
     private long sessionExpiryInterval;
 
-    private MqttClientSslConfig sslConfig;
-
-    private List<X509Certificate> certificates = new ArrayList<>();
-
+    @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use default ssl configuration if no other ssl options are specified.")
+    private boolean useSsl;
 
     @CommandLine.Option(names = {"--cafile"}, converter = FileToCertificateConverter.class, description = "Path to a file containing trusted CA certificates to enable encrypted certificate based communication.")
     private void addCAFile(X509Certificate certificate) {
-        useSsl = true;
         certificates.add(certificate);
     }
 
     @CommandLine.Option(names = {"--capath"}, converter = DirectoryToCertificateCollectionConverter.class, description = {"Path to a directory containing certificate files to import to enable encrypted certificate based communication."})
     private void addCACollection(Collection<X509Certificate> certs) {
-        useSsl = true;
         certificates.addAll(certs);
     }
 
-    @CommandLine.ArgGroup(exclusive = false)
-    private ClientSideAuthentication clientSideAuthentication;
     @CommandLine.Option(names = {"--ciphers"}, split = ":", description = "The client supported cipher suites list generated with 'openssl ciphers'.")
     private Collection<String> cipherSuites;
+
     @CommandLine.Option(names = {"--tls-version"}, description = "The TLS protocol version to use.")
     private Collection<String> supportedTLSVersions;
 
+    @CommandLine.ArgGroup(exclusive = false)
+    private ClientSideAuthentication clientSideAuthentication;
+
     @Override
     public void run() {
-        if (clientSideAuthentication != null) useSsl = true;
 
-        if (useSsl) {
+        if (useBuiltSslConfig()) {
             try {
                 buildSslConfig();
             } catch (Exception e) {
                 Logger.debug(e);
             }
+        } else if (useSsl) { // use default ssl configuration
+            if (getPort() == 1883) setPort(8883);
+            sslConfig = MqttClientSslConfig.builder().build();
         }
 
         ConnectionImpl.get(this).run();
     }
 
+    private boolean useBuiltSslConfig() {
+        return !certificates.isEmpty() ||
+                cipherSuites != null ||
+                supportedTLSVersions != null ||
+                clientSideAuthentication != null;
+    }
 
+    @Override
+    public Class getType() {
+        return Connect.class;
+    }
+
+    @Override
+    public String getKey() {
+        return "client {" +
+                "version=" + getVersion() +
+                ", host='" + getHost() + '\'' +
+                ", port=" + getPort() +
+                ", identifier='" + getIdentifier() + '\'' +
+                '}';
+    }
+
+    private void buildSslConfig() throws Exception {
+        // use ssl Port if the user forgot to set it
+        if (getPort() == 1883) setPort(8883);
+
+        // build trustManagerFactory for server side authentication and to enable tls
+        TrustManagerFactory trustManagerFactory = null;
+        if (!certificates.isEmpty()) {
+            trustManagerFactory = buildTrustManagerFactory(certificates);
+        }
+
+
+        // build keyManagerFactory if clientSideAuthentication is used
+        KeyManagerFactory keyManagerFactory = null;
+        if (clientSideAuthentication != null) {
+            keyManagerFactory = buildKeyManagerFactory(clientSideAuthentication.clientCertificate, clientSideAuthentication.clientPrivateKey);
+        }
+
+        // default to tlsv.2
+        if (supportedTLSVersions == null) {
+            supportedTLSVersions = new ArrayList<>();
+            supportedTLSVersions.add(DEFAULT_TLS_VERSION);
+        }
+
+        sslConfig = MqttClientSslConfig.builder()
+                .trustManagerFactory(trustManagerFactory)
+                .keyManagerFactory(keyManagerFactory)
+                .cipherSuites(cipherSuites)
+                .protocols(supportedTLSVersions)
+                .build();
+    }
 
     public String createIdentifier() {
         if (getIdentifier() == null) {
@@ -133,9 +184,76 @@ public class Connect extends MqttCommand implements MqttAction {
         return getIdentifier();
     }
 
+
+    private TrustManagerFactory buildTrustManagerFactory(final @NotNull Collection<X509Certificate> certCollection) throws Exception {
+
+        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        ks.load(null, null);
+
+        // add all certificates of the collection to the KeyStore
+        int i = 1;
+        for (X509Certificate cert : certCollection) {
+            String alias = Integer.toString(i);
+            ks.setCertificateEntry(alias, cert);
+            i++;
+        }
+
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+
+        trustManagerFactory.init(ks);
+
+        return trustManagerFactory;
+    }
+
+    private KeyManagerFactory buildKeyManagerFactory(final @NotNull X509Certificate cert, final @NotNull PrivateKey key) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
+
+        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+
+        ks.load(null, null);
+
+        Certificate[] certChain = new Certificate[1];
+        certChain[0] = cert;
+        ks.setKeyEntry("mykey", key, null, certChain);
+
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+
+        keyManagerFactory.init(ks, null);
+
+        return keyManagerFactory;
+    }
+
     public boolean isUseSsl() {
         return useSsl;
     }
+
+    @Override
+    public String toString() {
+        return "Connect{" +
+                "key=" + getKey() +
+                ", prefixIdentifier='" + prefixIdentifier + '\'' +
+                ", user='" + user + '\'' +
+                ", password=" + password +
+                ", keepAlive=" + keepAlive +
+                ", cleanStart=" + cleanStart +
+                ", willTopic='" + willTopic + '\'' +
+                ", willQos=" + willQos +
+                ", willMessage='" + willMessage + '\'' +
+                ", willRetain=" + willRetain +
+                ", willMessageExpiryInterval=" + willMessageExpiryInterval +
+                ", willDelayInterval=" + willDelayInterval +
+                ", willPayloadFormatIndicator=" + willPayloadFormatIndicator +
+                ", willContentType='" + willContentType + '\'' +
+                ", willResponseTopic='" + willResponseTopic + '\'' +
+                ", willCorrelationData=" + willCorrelationData +
+                ", willUserProperties=" + willUserProperties +
+                ", useSsl=" + useSsl +
+                ", sessionExpiryInterval=" + sessionExpiryInterval +
+                ", sslConfig=" + sslConfig +
+                '}';
+    }
+
+
+    // GETTER AND SETTER
 
     public void setUseSsl(boolean useSsl) {
         this.useSsl = useSsl;
@@ -185,9 +303,7 @@ public class Connect extends MqttCommand implements MqttAction {
         return willMessageExpiryInterval;
     }
 
-    public void setWillMessageExpiryInterval(long willMessageExpiryInterval) {
-        this.willMessageExpiryInterval = willMessageExpiryInterval;
-    }
+    public void setWillMessageExpiryInterval(long willMessageExpiryInterval) { this.willMessageExpiryInterval = willMessageExpiryInterval; }
 
     public long getWillDelayInterval() {
         return willDelayInterval;
@@ -201,9 +317,7 @@ public class Connect extends MqttCommand implements MqttAction {
         return willPayloadFormatIndicator;
     }
 
-    public void setWillPayloadFormatIndicator(Mqtt5PayloadFormatIndicator willPayloadFormatIndicator) {
-        this.willPayloadFormatIndicator = willPayloadFormatIndicator;
-    }
+    public void setWillPayloadFormatIndicator(Mqtt5PayloadFormatIndicator willPayloadFormatIndicator) { this.willPayloadFormatIndicator = willPayloadFormatIndicator; }
 
     public String getWillContentType() {
         return willContentType;
@@ -225,17 +339,13 @@ public class Connect extends MqttCommand implements MqttAction {
         return willCorrelationData;
     }
 
-    public void setWillCorrelationData(ByteBuffer willCorrelationData) {
-        this.willCorrelationData = willCorrelationData;
-    }
+    public void setWillCorrelationData(ByteBuffer willCorrelationData) { this.willCorrelationData = willCorrelationData; }
 
     public Mqtt5UserProperties getWillUserProperties() {
         return willUserProperties;
     }
 
-    public void setWillUserProperties(Mqtt5UserProperties willUserProperties) {
-        this.willUserProperties = willUserProperties;
-    }
+    public void setWillUserProperties(Mqtt5UserProperties willUserProperties) { this.willUserProperties = willUserProperties; }
 
     public ByteBuffer getWillMessage() {
         return willMessage;
@@ -285,111 +395,6 @@ public class Connect extends MqttCommand implements MqttAction {
         this.sslConfig = sslConfig;
     }
 
-    @Override
-    public Class getType() {
-        return Connect.class;
-    }
-
-    @Override
-    public String getKey() {
-        return "client {" +
-                "version=" + getVersion() +
-                ", host='" + getHost() + '\'' +
-                ", port=" + getPort() +
-                ", identifier='" + getIdentifier() + '\'' +
-                '}';
-    }
-
-    private void buildSslConfig() throws Exception {
-        // use ssl Port if the user forgot to set it
-        if (getPort() == 1883) setPort(8883);
-
-        // build trustManagerFactory for server side authentication and to enable tls
-        TrustManagerFactory trustManagerFactory = buildTrustManagerFactory(certificates);
-
-        // build keyManagerFactory if clientSideAuthentication is used
-        KeyManagerFactory keyManagerFactory = null;
-        if (clientSideAuthentication != null) {
-            keyManagerFactory = buildKeyManagerFactory(clientSideAuthentication.clientCertificate, clientSideAuthentication.clientPrivateKey);
-        }
-
-        // default to tlsv.2
-        if (supportedTLSVersions == null) {
-            supportedTLSVersions = new ArrayList<>();
-            supportedTLSVersions.add("TLSv1.2");
-        }
-
-        sslConfig = MqttClientSslConfig.builder()
-                .trustManagerFactory(trustManagerFactory)
-                .keyManagerFactory(keyManagerFactory)
-                .cipherSuites(cipherSuites)
-                .protocols(supportedTLSVersions)
-                .build();
-    }
-
-    private TrustManagerFactory buildTrustManagerFactory(final @NotNull Collection<X509Certificate> certCollection) throws Exception {
-
-        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-        ks.load(null, null);
-
-        // add all certificates of the collection to the KeyStore
-        int i = 1;
-        for (X509Certificate cert : certCollection) {
-            String alias = Integer.toString(i);
-            ks.setCertificateEntry(alias, cert);
-            i++;
-        }
-
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-
-        trustManagerFactory.init(ks);
-
-        return trustManagerFactory;
-    }
-
-    private KeyManagerFactory buildKeyManagerFactory(final @NotNull X509Certificate cert, final @NotNull PrivateKey key) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
-
-        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-
-        ks.load(null, null);
-
-        Certificate[] certChain = new Certificate[1];
-        certChain[0] = cert;
-        ks.setKeyEntry("mykey", key, null, certChain);
-
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-
-        keyManagerFactory.init(ks, null);
-
-        return keyManagerFactory;
-    }
-
-    @Override
-    public String toString() {
-        return "Connect{" +
-                "key=" + getKey() +
-                ", prefixIdentifier='" + prefixIdentifier + '\'' +
-                ", user='" + user + '\'' +
-                ", password=" + password +
-                ", keepAlive=" + keepAlive +
-                ", cleanStart=" + cleanStart +
-                ", willTopic='" + willTopic + '\'' +
-                ", willQos=" + willQos +
-                ", willMessage='" + willMessage + '\'' +
-                ", willRetain=" + willRetain +
-                ", willMessageExpiryInterval=" + willMessageExpiryInterval +
-                ", willDelayInterval=" + willDelayInterval +
-                ", willPayloadFormatIndicator=" + willPayloadFormatIndicator +
-                ", willContentType='" + willContentType + '\'' +
-                ", willResponseTopic='" + willResponseTopic + '\'' +
-                ", willCorrelationData=" + willCorrelationData +
-                ", willUserProperties=" + willUserProperties +
-                ", useSsl=" + useSsl +
-                ", sessionExpiryInterval=" + sessionExpiryInterval +
-                ", sslConfig=" + sslConfig +
-                '}';
-    }
-
     static class ClientSideAuthentication {
 
         @CommandLine.Option(names = {"--cert"}, required = true, converter = FileToCertificateConverter.class, description = "The Client certificate to use for client-side authentication.")
@@ -398,5 +403,4 @@ public class Connect extends MqttCommand implements MqttAction {
         @CommandLine.Option(names = {"--key"}, required = true, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication.")
         PrivateKey clientPrivateKey;
     }
-
 }
