@@ -37,7 +37,7 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
         Security.addProvider(new BouncyCastleProvider());
 
         // read the keyfile
-        PEMParser pemParser = new PEMParser(new FileReader(keyFile));
+        final PEMParser pemParser = new PEMParser(new FileReader(keyFile));
 
         Object object;
         try {
@@ -47,7 +47,7 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
             throw new Exception(MALFORMED_KEY);
         }
 
-        JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
+        final JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
 
         PrivateKey privateKey;
         if (object instanceof PKCS8EncryptedPrivateKeyInfo) {
@@ -55,8 +55,8 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
 
             char[] password = PasswordUtils.readPassword("Enter private key password:");
 
-            PKCS8EncryptedPrivateKeyInfo encryptedPrivateKey = (PKCS8EncryptedPrivateKeyInfo) object;
-            InputDecryptorProvider decryptorProvider = new JceOpenSSLPKCS8DecryptorProviderBuilder().build(password);
+            final PKCS8EncryptedPrivateKeyInfo encryptedPrivateKey = (PKCS8EncryptedPrivateKeyInfo) object;
+            final InputDecryptorProvider decryptorProvider = new JceOpenSSLPKCS8DecryptorProviderBuilder().build(password);
 
             PrivateKeyInfo privateKeyInfo;
             try {

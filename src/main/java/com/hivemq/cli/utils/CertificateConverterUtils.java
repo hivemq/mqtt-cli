@@ -14,7 +14,7 @@ public class CertificateConverterUtils {
     public static final String NO_VALID_CERTIFICATE = "The given file contains no valid or supported certficate,";
 
     public static X509Certificate generateX509Certificate(final @NotNull File keyFile) throws Exception {
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        final CertificateFactory cf = CertificateFactory.getInstance("X.509");
         try {
             return (X509Certificate) cf.generateCertificate(new FileInputStream(keyFile));
         } catch (CertificateException | FileNotFoundException ce) {

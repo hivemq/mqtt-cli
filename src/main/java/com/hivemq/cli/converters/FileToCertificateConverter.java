@@ -18,7 +18,8 @@ public class FileToCertificateConverter implements CommandLine.ITypeConverter<X5
 
     @Override
     public X509Certificate convert(final @NotNull String s) throws Exception {
-        File keyFile = new File(s);
+
+        final File keyFile = new File(s);
 
         if (!keyFile.exists())
             throw new FileNotFoundException(FILE_NOT_FOUND);
@@ -26,7 +27,7 @@ public class FileToCertificateConverter implements CommandLine.ITypeConverter<X5
         if (!keyFile.isFile())
             throw new Exception(NOT_A_FILE);
 
-        boolean correctExtension = CertificateConverterUtils.endsWithValidExtension(keyFile.getName());
+        final boolean correctExtension = CertificateConverterUtils.endsWithValidExtension(keyFile.getName());
 
         if (!correctExtension)
             throw new Exception(NO_VALID_FILE_EXTENSION);

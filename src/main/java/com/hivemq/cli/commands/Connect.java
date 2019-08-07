@@ -201,13 +201,13 @@ public class Connect extends MqttCommand implements MqttAction {
 
         // add all certificates of the collection to the KeyStore
         int i = 1;
-        for (X509Certificate cert : certCollection) {
+        for (final X509Certificate cert : certCollection) {
             String alias = Integer.toString(i);
             ks.setCertificateEntry(alias, cert);
             i++;
         }
 
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 
         trustManagerFactory.init(ks);
 
@@ -220,11 +220,11 @@ public class Connect extends MqttCommand implements MqttAction {
 
         ks.load(null, null);
 
-        Certificate[] certChain = new Certificate[1];
+        final Certificate[] certChain = new Certificate[1];
         certChain[0] = cert;
         ks.setKeyEntry("mykey", key, null, certChain);
 
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 
         keyManagerFactory.init(ks, null);
 
