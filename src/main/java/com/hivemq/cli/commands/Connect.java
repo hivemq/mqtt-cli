@@ -107,6 +107,15 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.ArgGroup(exclusive = false)
     private ClientSideAuthentication clientSideAuthentication;
 
+    static class ClientSideAuthentication {
+
+        @CommandLine.Option(names = {"--cert"}, required = true, converter = FileToCertificateConverter.class, description = "The Client certificate to use for client-side authentication.")
+        X509Certificate clientCertificate;
+
+        @CommandLine.Option(names = {"--key"}, required = true, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication.")
+        PrivateKey clientPrivateKey;
+    }
+
     @Override
     public void run() {
 
@@ -395,12 +404,4 @@ public class Connect extends MqttCommand implements MqttAction {
         this.sslConfig = sslConfig;
     }
 
-    static class ClientSideAuthentication {
-
-        @CommandLine.Option(names = {"--cert"}, required = true, converter = FileToCertificateConverter.class, description = "The Client certificate to use for client-side authentication.")
-        X509Certificate clientCertificate;
-
-        @CommandLine.Option(names = {"--key"}, required = true, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication.")
-        PrivateKey clientPrivateKey;
-    }
 }
