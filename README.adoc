@@ -154,10 +154,11 @@ Can be disabled by setting it to ```4_294_967_295```|4_294_967_295
 See https://www.iana.org/assignments/tls-parameters/tls-parameters.xml for supported cipher suite strings.
  | default empty
 |   |   --tls-version   |   The TLS version to use | TLSv1.2
-|   |   --cert  |   The path to the client certificate to use for client-side authentication.    | default empty
-|   |   --key   |   The path to the clien private key to use for client-side authentication.    | default empty
-|===
+|   |   --cert  |   The path to the client certificate to use for client-side authentication.
 
+NOTE: Currently only self signed certificates are supported. | default empty
+|   |   --key   |   The path to the client private key to use for client-side authentication.    | default empty
+|===
 
 .Full Example
 ```
