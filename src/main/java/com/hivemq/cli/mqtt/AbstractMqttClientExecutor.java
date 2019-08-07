@@ -244,7 +244,10 @@ abstract class AbstractMqttClientExecutor {
 
     private void applySsl(final @NotNull MqttClientBuilder builder, MqttClientSslConfig config) {
         builder.sslConfig()
-                .trustManagerFactory(config.getTrustManagerFactory().get())
+                .trustManagerFactory(config.getTrustManagerFactory().orElse(null))
+                .keyManagerFactory(config.getKeyManagerFactory().orElse(null))
+                .cipherSuites(config.getCipherSuites().orElse(null))
+                .protocols(config.getProtocols().orElse(null))
                 .applySslConfig();
     }
 }

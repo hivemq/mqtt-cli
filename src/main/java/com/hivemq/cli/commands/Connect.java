@@ -7,12 +7,17 @@ import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
+import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.security.KeyStore;
+import java.security.*;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,6 +89,7 @@ public class Connect extends MqttCommand implements MqttAction {
 
     private List<X509Certificate> certificates = new ArrayList<>();
 
+
     @CommandLine.Option(names = {"--cafile"}, converter = FileToCertificateConverter.class, description = "Path to a file containing trusted CA certificates to enable encrypted certificate based communication.")
     private void addCAFile(X509Certificate certificate) {
         useSsl = true;
@@ -95,6 +101,30 @@ public class Connect extends MqttCommand implements MqttAction {
         useSsl = true;
         certificates.addAll(certs);
     }
+
+    @CommandLine.ArgGroup(exclusive = false)
+    private ClientSideAuthentication clientSideAuthentication;
+    @CommandLine.Option(names = {"--ciphers"}, split = ":", description = "The client supported cipher suites list generated with 'openssl ciphers'.")
+    private Collection<String> cipherSuites;
+    @CommandLine.Option(names = {"--tls-version"}, description = "The TLS protocol version to use.")
+    private Collection<String> supportedTLSVersions;
+
+    @Override
+    public void run() {
+        if (clientSideAuthentication != null) useSsl = true;
+
+        if (useSsl) {
+            try {
+                buildSslConfig();
+            } catch (Exception e) {
+                Logger.debug(e);
+            }
+        }
+
+        ConnectionImpl.get(this).run();
+    }
+
+
 
     public String createIdentifier() {
         if (getIdentifier() == null) {
@@ -270,28 +300,34 @@ public class Connect extends MqttCommand implements MqttAction {
                 '}';
     }
 
-    @Override
-    public void run() {
-        try {
-            buildSslConfig();
-        } catch (Exception e) {
-            Logger.debug(e);
-            return;
+    private void buildSslConfig() throws Exception {
+        // use ssl Port if the user forgot to set it
+        if (getPort() == 1883) setPort(8883);
+
+        // build trustManagerFactory for server side authentication and to enable tls
+        TrustManagerFactory trustManagerFactory = buildTrustManagerFactory(certificates);
+
+        // build keyManagerFactory if clientSideAuthentication is used
+        KeyManagerFactory keyManagerFactory = null;
+        if (clientSideAuthentication != null) {
+            keyManagerFactory = buildKeyManagerFactory(clientSideAuthentication.clientCertificate, clientSideAuthentication.clientPrivateKey);
         }
 
-        ConnectionImpl.get(this).run();
-    }
+        // default to tlsv.2
+        if (supportedTLSVersions == null) {
+            supportedTLSVersions = new ArrayList<>();
+            supportedTLSVersions.add("TLSv1.2");
+        }
 
-    private void buildSslConfig() throws Exception {
-        if (useSsl && getPort() == 1883) setPort(8883);
-        TrustManagerFactory trustManagerFactory = buildTrustManagerFactory(certificates);
         sslConfig = MqttClientSslConfig.builder()
                 .trustManagerFactory(trustManagerFactory)
+                .keyManagerFactory(keyManagerFactory)
+                .cipherSuites(cipherSuites)
+                .protocols(supportedTLSVersions)
                 .build();
     }
 
-    private TrustManagerFactory buildTrustManagerFactory(Collection<X509Certificate> certCollection) throws Exception {
-        if (certCollection == null) return null;
+    private TrustManagerFactory buildTrustManagerFactory(final @NotNull Collection<X509Certificate> certCollection) throws Exception {
 
         final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
         ks.load(null, null);
@@ -309,6 +345,23 @@ public class Connect extends MqttCommand implements MqttAction {
         trustManagerFactory.init(ks);
 
         return trustManagerFactory;
+    }
+
+    private KeyManagerFactory buildKeyManagerFactory(final @NotNull X509Certificate cert, final @NotNull PrivateKey key) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
+
+        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+
+        ks.load(null, null);
+
+        Certificate[] certChain = new Certificate[1];
+        certChain[0] = cert;
+        ks.setKeyEntry("mykey", key, null, certChain);
+
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+
+        keyManagerFactory.init(ks, null);
+
+        return keyManagerFactory;
     }
 
     @Override
@@ -332,9 +385,18 @@ public class Connect extends MqttCommand implements MqttAction {
                 ", willCorrelationData=" + willCorrelationData +
                 ", willUserProperties=" + willUserProperties +
                 ", useSsl=" + useSsl +
-                ", certificates=" + certificates +
                 ", sessionExpiryInterval=" + sessionExpiryInterval +
+                ", sslConfig=" + sslConfig +
                 '}';
+    }
+
+    static class ClientSideAuthentication {
+
+        @CommandLine.Option(names = {"--cert"}, required = true, converter = FileToCertificateConverter.class, description = "The Client certificate to use for client-side authentication.")
+        X509Certificate clientCertificate;
+
+        @CommandLine.Option(names = {"--key"}, required = true, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication.")
+        PrivateKey clientPrivateKey;
     }
 
 }
