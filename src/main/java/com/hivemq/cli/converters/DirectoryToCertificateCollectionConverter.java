@@ -1,5 +1,6 @@
 package com.hivemq.cli.converters;
 
+import com.hivemq.cli.utils.CertificateConverterUtils;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 

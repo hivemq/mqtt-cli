@@ -1,5 +1,6 @@
 package com.hivemq.cli.converters;
 
+import com.hivemq.cli.utils.CertificateConverterUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

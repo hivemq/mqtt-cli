@@ -1,5 +1,6 @@
 package com.hivemq.cli.converters;
 
+import com.hivemq.cli.utils.CertificateConverterUtils;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -30,9 +31,8 @@ public class FileToCertificateConverter implements CommandLine.ITypeConverter<X5
         if (!correctExtension)
             throw new Exception(NO_VALID_FILE_EXTENSION);
 
-        X509Certificate certificate = CertificateConverterUtils.generateX509Certificate(keyFile);
+        return CertificateConverterUtils.generateX509Certificate(keyFile);
 
-        return certificate;
     }
 
 
