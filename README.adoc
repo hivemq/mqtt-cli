@@ -76,26 +76,32 @@ All further attributes are not mandatory.
 
 ```
 mqtt con { @<fileName> |
-                -v {3|5}
-                -h <host>
-                -p <port>
-                -i client identifier
-                -u {<'user name'>}
-                -pw  {$|<'password'>| @<fileName>}
-                -cs  {0|1}
-                -se  {0|1}
-                -wt  {$|<'topic'>};
-                -wq  {0|1|2|AT_MOST_ONCE|AT_LEAST_ONCE|EXACTLY_ONCE}
-                -wm  {$|<'payload'>|@<fileName>};
-                -wr  {0|1}
-                -we  {[0 - 4_294_967_295]}
-                -wd  {[0 - 4_294_967_295]}
-                -wp  {UTF8|UTF_8}
-                -wc  {<'content description'>}
-                -wrt {$|<'response topic'>}
-                -wcd {<'correlation data'>}
-                -wu {[<'header'='value'> [|<'header'>=<'value'>]]}
-                -sc  {0|1}
+                -v              {3|5}
+                -h              <host>
+                -p              <port>
+                -i              client identifier
+                -u              {<'user name'>}
+                -pw             {$|<'password'>| @<fileName>}
+                -cs             {0|1}
+                -se             {0|1}
+                -wt             {$|<'topic'>};
+                -wq             {0|1|2|AT_MOST_ONCE|AT_LEAST_ONCE|EXACTLY_ONCE}
+                -wm             {$|<'payload'>|@<fileName>};
+                -wr             {0|1}
+                -we             {[0 - 4_294_967_295]}
+                -wd             {[0 - 4_294_967_295]}
+                -wp             {UTF8|UTF_8}
+                -wc             {<'content description'>}
+                -wrt            {$|<'response topic'>}
+                -wcd            {<'correlation data'>}
+                -wu             {[<'header'='value'> [|<'header'>=<'value'>]*}
+                -s              {0|1}
+                --cafile        {'filepath'}
+                --capath        {'directorypath'}
+                --ciphers       {['TLS_ciphersuite'] [:'TLS_ciphersuite']*}
+                --tls-version   {'TLS_version'}
+                --cert          {'filepath'}
+                --key           {'filepath'}
          }
 ```
 |===
@@ -140,6 +146,16 @@ Can be disabled by setting it to ```4_294_967_295```|4_294_967_295
 
 
 | -sc | --stayConnected | The client stays connected 0 or 1 |  0 - the client will be disconnected immediately. In shell mode the Client stays connected.
+| -s    | --secure  | The client uses the default ssl configuration to communicate with the broker | False
+| | --cafile    | Path to a file containing a trusted CA certificate to enable encrypted certificate based communication | default empty
+|   | --capath  | Path to a directory containing trusted CA certificates to enable encrypted certificate based communication | default empty
+|   | --ciphers  | The supported cipher suites in IANA string format concatenated by the ':' character if more than one cipher should be supported.
+
+See https://www.iana.org/assignments/tls-parameters/tls-parameters.xml for supported cipher suite strings.
+ | default empty
+|   |   --tls-version   |   The TLS version to use | TLSv1.2
+|   |   --cert  |   The path to the client certificate to use for client-side authentication.    | default empty
+|   |   --key   |   The path to the clien private key to use for client-side authentication.    | default empty
 |===
 
 
