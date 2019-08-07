@@ -126,7 +126,7 @@ public class Connect extends MqttCommand implements MqttAction {
                 Logger.debug(e);
             }
         } else if (useSsl) { // use default ssl configuration
-            if (getPort() == 1883) setPort(8883);
+            if (getPort() == DEFAULT_MQTT_PORT) setPort(DEFAULT_MQTT_SSL_PORT);
             sslConfig = MqttClientSslConfig.builder().build();
         }
 
@@ -157,7 +157,7 @@ public class Connect extends MqttCommand implements MqttAction {
 
     private void buildSslConfig() throws Exception {
         // use ssl Port if the user forgot to set it
-        if (getPort() == 1883) setPort(8883);
+        if (getPort() == DEFAULT_MQTT_PORT) setPort(DEFAULT_MQTT_SSL_PORT);
 
         // build trustManagerFactory for server side authentication and to enable tls
         TrustManagerFactory trustManagerFactory = null;

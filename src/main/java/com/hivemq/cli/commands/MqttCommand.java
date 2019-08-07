@@ -5,6 +5,9 @@ import picocli.CommandLine;
 @CommandLine.Command
 public abstract class MqttCommand extends AbstractCommand implements CliCommand {
 
+    static final int DEFAULT_MQTT_PORT = 1883;
+    static final int DEFAULT_MQTT_SSL_PORT = 8883;
+
     //TODO Implement complete
     @CommandLine.Option(names = {"-v", "--version"}, defaultValue = "5", description = "The mqtt version used by the client.")
     private int version;
