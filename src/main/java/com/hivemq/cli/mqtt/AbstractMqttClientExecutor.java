@@ -168,7 +168,7 @@ abstract class AbstractMqttClientExecutor {
         // only topic is mandatory for will message creation
         if (connectCommand.getWillTopic() != null) {
             ByteBuffer willpayload = connectCommand.getWillMessage() != null ? connectCommand.getWillMessage() : null;
-            Mqtt5WillPublishBuilder builder = Mqtt5WillPublish.builder()
+            Mqtt5WillPublishBuilder.Complete builder = Mqtt5WillPublish.builder()
                     .topic(connectCommand.getWillTopic())
                     .payload(willpayload)
                     .qos(connectCommand.getWillQos())
@@ -180,14 +180,9 @@ abstract class AbstractMqttClientExecutor {
                     .responseTopic(connectCommand.getWillResponseTopic())
                     .correlationData(connectCommand.getWillCorrelationData());
             if (connectCommand.getWillUserProperties() != null) { // user Properties can't be completed with null
-                ((Mqtt5WillPublishBuilder.Complete) builder).userProperties(connectCommand.getWillUserProperties());
+                builder.userProperties(connectCommand.getWillUserProperties());
             }
-            try {
-                return ((Mqtt5WillPublishBuilder.Complete) builder).build().asWill();
-            } catch (Exception e) {
-                Logger.error("Client can't create Will Message, error: {} " + e.getMessage());
-                throw e;
-            }
+            return builder.build().asWill();
         } else if (connectCommand.getWillMessage() != null) {
             //seems somebody like to create a will message without a topic
             Logger.debug("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
@@ -196,9 +191,11 @@ abstract class AbstractMqttClientExecutor {
     }
 
     private MqttClientBuilder createBuilder(final @NotNull Connect connectCommand, final @NotNull String identifier) {
+
         return MqttClient.builder()
                 .serverHost(connectCommand.getHost())
                 .serverPort(connectCommand.getPort())
+                .sslConfig(connectCommand.getSslConfig())
                 .identifier(identifier);
     }
 

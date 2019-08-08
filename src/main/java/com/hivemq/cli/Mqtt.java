@@ -12,6 +12,7 @@ import org.pmw.tinylog.policies.SizePolicy;
 import org.pmw.tinylog.writers.RollingFileWriter;
 import picocli.CommandLine;
 
+import java.security.Security;
 import java.util.List;
 
 @CommandLine.Command(name = "mqtt",
@@ -36,6 +37,7 @@ public class Mqtt {
         final CommandLine cmd = new CommandLine(mqtt);
         final HmqCli hmqCli = new HmqCli();
         short status = EXIT_FAIL;
+        Security.setProperty("crypto.policy", "unlimited");
 
         Configurator.defaultConfig()
                 .writer(new RollingFileWriter("hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10)))

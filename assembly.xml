@@ -15,12 +15,18 @@
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
-            <source>target/README.html</source>
+            <source>hivemq-cli</source>
+            <destName>hivemq-cli</destName>
             <outputDirectory>/</outputDirectory>
         </file>
         <file>
+            <source>hivemq-cli</source>
+            <destName>hivemq-cli</destName>
+            <outputDirectory>/brew/</outputDirectory>
+        </file>
+        <file>
             <source>target/${artifactId}-${version}.jar</source>
-            <destName>${artifactId}-${version}.jar</destName>
+            <destName>${artifactId}.jar</destName>
             <outputDirectory>/</outputDirectory>
         </file>
     </files>
