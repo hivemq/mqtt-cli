@@ -24,12 +24,12 @@ public class DirectoryToCertificateCollectionConverter implements CommandLine.IT
             throw new FileNotFoundException(DIRECTORY_NOT_FOUND);
 
         if (!directory.isDirectory())
-            throw new Exception(NOT_A_DIRECTORY);
+            throw new IllegalArgumentException(NOT_A_DIRECTORY);
 
         final File[] validFiles = directory.listFiles((dir, name) -> CertificateConverterUtils.endsWithValidExtension(name));
 
         if (validFiles == null || validFiles.length == 0)
-            throw new Exception(NO_CERTIFICATES_FOUND_IN_DIRECTORY);
+            throw new IllegalArgumentException(NO_CERTIFICATES_FOUND_IN_DIRECTORY);
 
         final Collection<X509Certificate> certificates = new ArrayList<>();
 

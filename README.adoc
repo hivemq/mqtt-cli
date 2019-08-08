@@ -81,7 +81,7 @@ mqtt con { @<fileName> |
                 -p              <port>
                 -i              client identifier
                 -u              {<'user name'>}
-                -pw             {$|<'password'>| @<fileName>}
+                -pw             {∅|$|<'password'>| @<fileName>}
                 -cs             {0|1}
                 -se             {0|1}
                 -wt             {$|<'topic'>};
@@ -113,9 +113,11 @@ mqtt con { @<fileName> |
 | -p   | --port| The MQTT port. | 1883 will be used
 | -i   | --identifier| A unique Client identifier can be defined. | A randomly defined UTF-8 String will be generated.
 | -u   | --user | A User name can be defined. | Not set - user name will be empty.
-| -pw  | --password | A password can be defined direct or
+| -pw  | --password | A password can be defined directly, or
 
-         $ - via input from console - prompt, or
+left blank - via input from console prompt, or
+
+         $ - via input from console prompt, or
 
          @<fileName> - read from file
          | Not set - password will be empty.

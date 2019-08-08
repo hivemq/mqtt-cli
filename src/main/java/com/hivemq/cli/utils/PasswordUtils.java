@@ -1,6 +1,7 @@
 package com.hivemq.cli.utils;
 
 import java.io.BufferedReader;
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -14,13 +15,16 @@ public class PasswordUtils {
             promptMessage = args[0];
         }
 
-        if (STARTED_IN_IDE) {
+        Console console = System.console();
+        if (console != null) {
+            return console.readPassword("[%s]", promptMessage);
+        }
+        else { // Safe password prompt is not possible - maybe called program from IDE?
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             System.out.println(promptMessage);
             return in.readLine().toCharArray();
-        } else {
-            return System.console().readPassword("[%s]", promptMessage);
         }
+
     }
 
 }

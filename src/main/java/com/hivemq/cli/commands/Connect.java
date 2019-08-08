@@ -3,6 +3,7 @@ package com.hivemq.cli.commands;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.ConnectionImpl;
 import com.hivemq.cli.impl.MqttAction;
+import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
@@ -125,9 +126,6 @@ public class Connect extends MqttCommand implements MqttAction {
             } catch (Exception e) {
                 Logger.debug(e);
             }
-        } else if (useSsl) { // use default ssl configuration
-            if (getPort() == DEFAULT_MQTT_PORT) setPort(DEFAULT_MQTT_SSL_PORT);
-            sslConfig = MqttClientSslConfig.builder().build();
         }
 
         ConnectionImpl.get(this).run();
@@ -137,7 +135,8 @@ public class Connect extends MqttCommand implements MqttAction {
         return !certificates.isEmpty() ||
                 cipherSuites != null ||
                 supportedTLSVersions != null ||
-                clientSideAuthentication != null;
+                clientSideAuthentication != null ||
+                useSsl;
     }
 
     @Override
@@ -157,7 +156,7 @@ public class Connect extends MqttCommand implements MqttAction {
 
     private void buildSslConfig() throws Exception {
         // use ssl Port if the user forgot to set it
-        if (getPort() == DEFAULT_MQTT_PORT) setPort(DEFAULT_MQTT_SSL_PORT);
+        if (getPort() == MqttClient.DEFAULT_SERVER_PORT) setPort(MqttClient.DEFAULT_SERVER_PORT_SSL);
 
         // build trustManagerFactory for server side authentication and to enable tls
         TrustManagerFactory trustManagerFactory = null;

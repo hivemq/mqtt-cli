@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hivemq</groupId>
-    <artifactId>mqtt-cli</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>hivemq-cli</artifactId>
+    <version>1.0</version>
 
     <description>HiveMQ MQTT Command line Interface</description>
 
@@ -51,9 +51,9 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -184,13 +184,32 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <descriptor>assembly.xml</descriptor>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>create-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
             <!--plugin>
                 <groupId>com.oracle.substratevm</groupId>
                 <artifactId>native-image-maven-plugin</artifactId>
                 <version>1.0.0-rc14</version>
                 <configuration>
                     < configuration is declared in
-                        resources/META-INF/native-image/com.hivemq/mqtt-cli/native-image.properties
+                        resources/META-INF/native-image/com.hivemq/hivemq-cli/native-image.properties
                     />
                     <mainClass>com.hivemq.cli.Mqtt</mainClass>
                 </configuration>

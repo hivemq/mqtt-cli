@@ -33,9 +33,7 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
     }
 
     private PrivateKey getPrivateKeyFromFile(final @NotNull File keyFile) throws Exception {
-        // Setup provider
         Security.addProvider(new BouncyCastleProvider());
-
         // read the keyfile
         final PEMParser pemParser = new PEMParser(new FileReader(keyFile));
 
@@ -62,7 +60,7 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
             try {
                 privateKeyInfo = encryptedPrivateKey.decryptPrivateKeyInfo(decryptorProvider);
             } catch (PKCSException pkcse) {
-                throw new Exception(WRONG_PASSWORD);
+                throw new IllegalArgumentException(WRONG_PASSWORD);
             }
 
             privateKey = converter.getPrivateKey(privateKeyInfo);
@@ -70,7 +68,7 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
             // if key pair is already decrypted
             privateKey = converter.getPrivateKey(((PEMKeyPair) object).getPrivateKeyInfo());
         } else {
-            throw new Exception(UNRECOGNIZED_KEY);
+            throw new IllegalArgumentException(UNRECOGNIZED_KEY);
         }
 
         // Convert extracted private key into native java Private key
