@@ -24,7 +24,7 @@ import java.security.Security;
 public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<PrivateKey> {
     static final String UNRECOGNIZED_KEY = "The private key could not be recognized.";
     static final String MALFORMED_KEY = "The private key could not be read.";
-    static final String WRONG_PASSWORD = "The given password to decrypt the private key was wrong.";
+    static final String WRONG_PASSWORD = "The password for decrypting the private key was wrong.";
 
     @Override
     public PrivateKey convert(final @NotNull String s) throws Exception {
