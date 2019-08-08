@@ -41,7 +41,7 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for the client UTF-8 String.")
     private String user;
 
-    @CommandLine.Option(names = {"-pw", "--password"}, converter = ByteBufferConverter.class, description = "The password for the client UTF-8 String.")
+    @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", converter = PasswordConverter.class, description = "The password for the client UTF-8 String.")
     private ByteBuffer password;
 
     @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, defaultValue = "60", description = "A keep alive of the client (in seconds).")
