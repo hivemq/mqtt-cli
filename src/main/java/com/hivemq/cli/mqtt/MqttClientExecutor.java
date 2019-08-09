@@ -7,8 +7,9 @@ import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
-import jline.internal.Log;
+
 import org.jetbrains.annotations.NotNull;
+import org.jline.utils.Log;
 import org.pmw.tinylog.Logger;
 
 public class MqttClientExecutor extends AbstractMqttClientExecutor {

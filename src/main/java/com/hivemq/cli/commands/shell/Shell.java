@@ -1,13 +1,15 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.*;
-import jline.console.ConsoleReader;
-import jline.console.UserInterruptException;
-import jline.console.completer.ArgumentCompleter.ArgumentList;
-import jline.console.completer.ArgumentCompleter.WhitespaceArgumentDelimiter;
-import org.jline.reader.EndOfFileException;
+import org.jline.reader.*;
+import org.jline.reader.impl.DefaultParser;
+import org.jline.reader.impl.LineReaderImpl;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import picocli.CommandLine;
-import picocli.shell.jline2.PicocliJLineCompleter;
+import picocli.shell.jline3.PicocliJLineCompleter;
+
+import java.io.PrintWriter;
 
 @CommandLine.Command(name = "shell",
         description = "Starts the mqtt cli in shell mode, to enable interactive working with further sub commands.",
@@ -15,7 +17,10 @@ import picocli.shell.jline2.PicocliJLineCompleter;
         subcommands = {Connect.class, Subscribe.class, Publish.class, Disconnect.class, ClearScreen.class})
 public class Shell extends AbstractCommand implements Runnable {
 
-    ConsoleReader reader;
+    LineReaderImpl reader;
+    PrintWriter out;
+    private static final String prompt = "hivemq-cli> ";
+    private static final String rightPrompt = "null";
 
     Shell() {
     }
@@ -29,22 +34,23 @@ public class Shell extends AbstractCommand implements Runnable {
     public void interact(CommandLine cmd) {
         try {
 
-            reader = new ConsoleReader();
-            reader.setPrompt("mqtt> ");
+            Terminal terminal = TerminalBuilder.builder().build();
+            LineReader reader = LineReaderBuilder.builder()
+                    .terminal(terminal)
+                    .completer(new PicocliJLineCompleter(cmd.getCommandSpec()))
+                    .parser(new DefaultParser())
+                    .build();
 
-            // set up the completion ;
-            reader.addCompleter(new PicocliJLineCompleter(cmd.getCommandSpec()));
-
-            // start the shell and process input until the user quits with Ctl-C
             String line;
             while (true) {
                 try {
-                    if ((line = reader.readLine()) != null) {
-                        ArgumentList list = new WhitespaceArgumentDelimiter().delimit(line, line.length());
-                        CommandLine.run(this, list.getArguments());
-                    }
+                    line = reader.readLine(prompt, null, (MaskingCallback) null, null);
+                    ParsedLine pl = reader.getParser().parse(line, prompt.length());
+                    String [] arguments = pl.words().toArray(new String[0]);
+                    CommandLine.run(this, arguments);
                 } catch (UserInterruptException e) {
                     // Ignore
+                    return;
                 } catch (EndOfFileException e) {
                     // exit shell
                     // TODO all clients were disconnected
