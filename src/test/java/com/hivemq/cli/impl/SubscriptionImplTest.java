@@ -5,6 +5,7 @@ import com.hivemq.cli.mqtt.TestableMqttClientExecutor;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -25,6 +26,7 @@ public class SubscriptionImplTest {
 
     }
 
+    @Ignore
     @Test
     public void runSuccess() {
         param.setTopics(new String[]{"/"});
@@ -44,6 +46,7 @@ public class SubscriptionImplTest {
 
     }
 
+    @Ignore
     @Test
     public void runSuccess2() {
         param.setTopics(new String[]{"muster", "test"});
