@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class PasswordUtils {
-    private static final boolean STARTED_IN_IDE = true;
 
     public static char[] readPassword(String... args) throws IOException {
         if (args.length > 1) throw new IllegalArgumentException();
@@ -17,11 +16,11 @@ public class PasswordUtils {
 
         Console console = System.console();
         if (console != null) {
-            return console.readPassword("[%s]", promptMessage);
+            return console.readPassword("%s", promptMessage);
         }
         else { // Safe password prompt is not possible - maybe called program from IDE?
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println(promptMessage);
+            System.out.print(promptMessage);
             return in.readLine().toCharArray();
         }
 
