@@ -4,3 +4,4 @@
 /hmq-mqtt.*.log.txt
 /*.pem
 /test-certificates/
+/.idea/

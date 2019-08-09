@@ -2,6 +2,7 @@ package com.hivemq.cli.impl;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.mqtt.TestableMqttClientExecutor;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import org.junit.After;
 import org.junit.Before;
@@ -26,10 +27,11 @@ public class SubscriptionImplTest {
 
     }
 
-    @Ignore
     @Test
     public void runSuccess() {
         param.setTopics(new String[]{"/"});
+        param.setQos(new MqttQos[]{MqttQos.AT_MOST_ONCE});
+
         TestableMqttClientExecutor.getInstance().subscribe(param);
 
         assertNotNull(param.getKey());
@@ -46,10 +48,11 @@ public class SubscriptionImplTest {
 
     }
 
-    @Ignore
     @Test
     public void runSuccess2() {
         param.setTopics(new String[]{"muster", "test"});
+        param.setQos(new MqttQos[]{MqttQos.AT_MOST_ONCE});
+
         TestableMqttClientExecutor.getInstance().subscribe(param);
 
         assertNotNull(param.getKey());

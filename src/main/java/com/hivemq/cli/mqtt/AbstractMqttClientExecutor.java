@@ -26,8 +26,6 @@ abstract class AbstractMqttClientExecutor {
 
     private ClientCache<String, Mqtt5AsyncClient> clientCache = new ClientCache<>();
 
-
-
     abstract boolean mqttConnect(Mqtt5BlockingClient client, Mqtt5Connect connectMessage, Connect connectCommand);
 
     abstract void mqttSubscribe(Mqtt5AsyncClient client, @NotNull Subscribe subscribe, String topic, MqttQos qos);
@@ -122,7 +120,7 @@ abstract class AbstractMqttClientExecutor {
 
         for (int i = 0; i < subscribe.getTopics().length; i++) {
             final String topic = subscribe.getTopics()[i];
-            final MqttQos qos = subscribe.getQos()[i];
+            final MqttQos qos = subscribe.getQos().length > i ? subscribe.getQos()[i]:subscribe.getQos()[0];
 
             mqttSubscribe(client, subscribe, topic, qos);
 
