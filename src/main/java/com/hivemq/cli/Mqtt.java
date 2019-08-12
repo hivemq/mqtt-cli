@@ -50,7 +50,14 @@ public class Mqtt {
                 CommandLine subCommandLine = parse.get(1);
                 boolean helpRequested = CommandLine.printHelpIfRequested(subCommandLine.getParseResult());
                 if (!helpRequested) {
+                    if (subCommandLine.getCommand() instanceof Subscribe) {
+                        // subscribe was called directly - not in interactive shell mode
+                        Subscribe sub = subCommandLine.getCommand();
+                        sub.setPrintToSTDOUT(true); // default print to stdout if subscribe is waiting in console
+                    }
+
                     status = hmqCli.executeCommand(subCommandLine.getCommand());
+
                     if (status == EXIT_SUCCESS &&
                             subCommandLine.getCommand() instanceof Subscribe) {
                         stayConnected(subCommandLine.getCommand());
