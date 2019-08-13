@@ -6,11 +6,17 @@ import com.hivemq.cli.impl.SubscriptionImpl;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import picocli.CommandLine;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "sub", description = "Subscribe an mqtt client to a list of topics")
 public class Subscribe extends Connect implements MqttAction {
+
+    @Inject
+    public Subscribe() {
+    }
 
     private boolean printToSTDOUT = false;
 

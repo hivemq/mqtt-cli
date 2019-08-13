@@ -5,8 +5,10 @@ import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.impl.PublishImpl;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
+import javax.inject.Inject;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 

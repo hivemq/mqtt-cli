@@ -4,6 +4,8 @@ import com.hivemq.cli.cli.HmqCli;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.shell.Shell;
+import com.hivemq.cli.ioc.DaggerHiveMQCLI;
+import com.hivemq.cli.ioc.HiveMQCLI;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
 import org.pmw.tinylog.Logger;
@@ -23,6 +25,7 @@ import java.util.List;
 public class Mqtt {
     final static int EXIT_SUCCESS = 0;
     final static int EXIT_FAIL = -1;
+    public static final HiveMQCLI hiveMQCli = DaggerHiveMQCLI.create();
     @CommandLine.Option(names = {"-?", "--help"}, usageHelp = true, description = "Display this help and exit.")
     private boolean help;
 
@@ -38,6 +41,9 @@ public class Mqtt {
         final HmqCli hmqCli = new HmqCli();
         short status = EXIT_FAIL;
         Security.setProperty("crypto.policy", "unlimited");
+
+
+        hiveMQCli.commandLine().execute(args);
 
         Configurator.defaultConfig()
                 .writer(new RollingFileWriter("hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10)))

@@ -7,14 +7,28 @@ import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.shell.Shell;
 import com.hivemq.cli.impl.ConnectionImpl;
 import com.hivemq.cli.impl.SubscriptionImpl;
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
+import javax.inject.Inject;
+
 public class HmqCli {
+
+    private final SubscriptionImpl subscription;
+    private final ConnectionImpl connection;
+
+    @Inject
+    public HmqCli(final @NotNull SubscriptionImpl subscription, final @NotNull ConnectionImpl connection) {
+        this.subscription = subscription;
+        this.connection = connection;
+    }
 
     public short executeCommand(AbstractCommand subCommand) {
         try {
             if (subCommand instanceof Subscribe) {
-                SubscriptionImpl.get((Subscribe) subCommand).run();
+                subscription.setParam((Subscribe) subCommand);
+                subscription.run();
+               // SubscriptionImpl.get((Subscribe) subCommand).run();
             } else if (subCommand instanceof Publish) {
                 ((Publish) subCommand).run();
             } else if (subCommand instanceof Connect) {

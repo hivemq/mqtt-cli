@@ -2,14 +2,22 @@ package com.hivemq.cli.impl;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class SubscriptionImpl implements MqttAction {
 
     private static SubscriptionImpl instance = null;
+    private final MqttClientExecutor mqttClientExecutor;
     private Subscribe param;
 
-    private SubscriptionImpl() {
+    @Inject
+    private SubscriptionImpl(final @NotNull MqttClientExecutor mqttClientExecutor) {
+        this.mqttClientExecutor = mqttClientExecutor;
     }
 
 
@@ -21,7 +29,7 @@ public class SubscriptionImpl implements MqttAction {
         return instance;
     }
 
-    private void setParam(Subscribe param) {
+    public void setParam(Subscribe param) {
         this.param = param;
     }
 
@@ -37,7 +45,7 @@ public class SubscriptionImpl implements MqttAction {
         }
 
         try {
-            MqttClientExecutor.getInstance().subscribe(param);
+            mqttClientExecutor.subscribe(param);
         } catch (Exception ex) {
             if (param.isDebug()) {
                 Logger.error(ex);

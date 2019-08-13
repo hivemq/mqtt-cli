@@ -15,22 +15,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jline.utils.Log;
 import org.pmw.tinylog.Logger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.PrintWriter;
 
+@Singleton
 public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     private static MqttClientExecutor instance = null;
 
-    private MqttClientExecutor() {
-    }
-
-    public static MqttClientExecutor getInstance() {
-        if (instance == null) {
-            instance = new MqttClientExecutor();
-        }
-        return instance;
+    @Inject
+    MqttClientExecutor() {
     }
 
     boolean mqttConnect(final @NotNull Mqtt5BlockingClient client, Mqtt5Connect connectMessage, final @NotNull Connect connectCommand) {
@@ -110,9 +107,9 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .send()
                 .whenComplete((connAck, throwable) -> {
                     if (throwable != null) {
-                        Logger.error ( throwable.getStackTrace());
+                        Logger.error(throwable.getStackTrace());
                     } else {
-                        Logger.info( "Client {} connected {} ", client.getConfig().getClientIdentifier(), connAck.getReasonCode());
+                        Logger.info("Client {} connected {} ", client.getConfig().getClientIdentifier(), connAck.getReasonCode());
                     }
                 });
 
