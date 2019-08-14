@@ -88,32 +88,4 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     }
                 });
     }
-
-    private void connectWithSSL(final @NotNull ConnectCommand setting, KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) {
-
-        MqttClientSslConfig clientSslConfig = MqttClientSslConfig.builder()
-                .trustManagerFactory(trustManagerFactory)   // the truststore
-                .keyManagerFactory(keyManagerFactory)       // if a client keyStore is used
-                .build();
-
-        final Mqtt5AsyncClient client = MqttClient.builder()
-                .identifier("hive-mqtt5-test-client")
-                .serverPort(setting.getPort())
-                .serverHost(setting.getHost())
-                .useSsl(clientSslConfig)
-                .useMqttVersion5()
-                .buildAsync();
-
-        client.connectWith()
-                .keepAlive(setting.getKeepAlive())
-                .send()
-                .whenComplete((connAck, throwable) -> {
-                    if (throwable != null) {
-                        Logger.error ( throwable.getStackTrace());
-                    } else {
-                        Logger.info( "Client {} connected {} ", client.getConfig().getClientIdentifier(), connAck.getReasonCode());
-                    }
-                });
-
-    }
 }
