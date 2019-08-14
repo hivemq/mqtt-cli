@@ -21,13 +21,15 @@ public class ShellSubCommandModule {
                                                     final @NotNull SubscribeCommand subscribeCommand,
                                                     final @NotNull PublishCommand publishCommand,
                                                     final @NotNull DisconnectCommand disconnectCommand,
-                                                    final @NotNull ClearScreenCommand clearScreenCommand) {
+                                                    final @NotNull ClearScreenCommand clearScreenCommand,
+                                                    final @NotNull ListClientsCommand listClientsCommand) {
 
         return new CommandLine(shellCommand)
                 .addSubcommand(connectCommand)
                 .addSubcommand(subscribeCommand)
                 .addSubcommand(publishCommand)
                 .addSubcommand(disconnectCommand)
-                .addSubcommand(clearScreenCommand);
+                .addSubcommand(clearScreenCommand)
+                .addSubcommand(listClientsCommand);
     }
 }
