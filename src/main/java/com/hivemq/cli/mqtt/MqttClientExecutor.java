@@ -1,7 +1,7 @@
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.Connect;
-import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.ConnectCommand;
+import com.hivemq.cli.commands.SubscribeCommand;
 import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
@@ -15,25 +15,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jline.utils.Log;
 import org.pmw.tinylog.Logger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.PrintWriter;
 
+@Singleton
 public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
-    private static MqttClientExecutor instance = null;
-
-    private MqttClientExecutor() {
+    @Inject
+    MqttClientExecutor() {
     }
 
-    public static MqttClientExecutor getInstance() {
-        if (instance == null) {
-            instance = new MqttClientExecutor();
-        }
-        return instance;
-    }
-
-    boolean mqttConnect(final @NotNull Mqtt5BlockingClient client, Mqtt5Connect connectMessage, final @NotNull Connect connectCommand) {
+    boolean mqttConnect(final @NotNull Mqtt5BlockingClient client, Mqtt5Connect connectMessage, final @NotNull ConnectCommand connectCommand) {
         Mqtt5ConnAck connAck = client.connect(connectMessage);
         if (connectCommand.isDebug()) {
             Log.debug("Client connect with {} ", connectCommand.toString());
@@ -43,11 +38,11 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         return client.getConfig().getState().isConnected();
     }
 
-    void mqttSubscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull Subscribe subscribe, final String topic, final MqttQos qos) {
+    void mqttSubscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final String topic, final MqttQos qos) {
 
         PrintWriter fileWriter = null;
-        if (subscribe.getReceivedMessagesFile() != null) {
-            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
+        if (subscribeCommand.getReceivedMessagesFile() != null) {
+            fileWriter = FileUtils.createFileAppender(subscribeCommand.getReceivedMessagesFile());
         }
         PrintWriter finalFileWriter = fileWriter;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -67,11 +62,11 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         finalFileWriter.flush();
                     }
 
-                    if (subscribe.isPrintToSTDOUT()) {
+                    if (subscribeCommand.isPrintToSTDOUT()) {
                         System.out.println(p);
                     }
 
-                    if (subscribe.isDebug()) {
+                    if (subscribeCommand.isDebug()) {
                         Log.debug("Client received on topic: {} message: '{}' ", topic, p);
                     } else {
                         Logger.info("Client received msg: '{}...' ", p.length() > 10 ? p.substring(0, 10) : p);
@@ -82,7 +77,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .send()
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
-                        if (subscribe.isDebug()) {
+                        if (subscribeCommand.isDebug()) {
                             Log.debug("Client subscribe failed with reason: {} ", topic, throwable.getStackTrace());
                         } else {
                             Logger.error("Client subscribe failed with reason: {}", topic, throwable.getMessage());
@@ -94,7 +89,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 });
     }
 
-    private void connectWithSSL(final @NotNull Connect setting, KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) {
+    private void connectWithSSL(final @NotNull ConnectCommand setting, KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) {
 
         MqttClientSslConfig clientSslConfig = MqttClientSslConfig.builder()
                 .trustManagerFactory(trustManagerFactory)   // the truststore

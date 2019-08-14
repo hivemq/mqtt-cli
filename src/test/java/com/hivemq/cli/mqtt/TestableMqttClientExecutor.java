@@ -1,7 +1,7 @@
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.Connect;
-import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.ConnectCommand;
+import com.hivemq.cli.commands.SubscribeCommand;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
@@ -35,7 +35,7 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    boolean mqttConnect(@NotNull Mqtt5BlockingClient client, Mqtt5Connect connectMessage, Connect connectCommand) {
+    boolean mqttConnect(@NotNull Mqtt5BlockingClient client, Mqtt5Connect connectMessage, ConnectCommand connectCommand) {
 
         connectMgs = connectMessage;
         subscribeTopic = new ArrayList<>();
@@ -43,7 +43,7 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    void mqttSubscribe(Mqtt5AsyncClient client, @NotNull Subscribe subscribeCommand, String topic, MqttQos qos) {
+    void mqttSubscribe(Mqtt5AsyncClient client, @NotNull SubscribeCommand subscribeCommand, String topic, MqttQos qos) {
         subscribeTopic.add(topic);
     }
 

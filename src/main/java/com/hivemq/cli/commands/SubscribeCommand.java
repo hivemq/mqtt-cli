@@ -2,15 +2,26 @@ package com.hivemq.cli.commands;
 
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
-import com.hivemq.cli.impl.SubscriptionImpl;
+import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import org.jetbrains.annotations.NotNull;
+import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "sub", description = "Subscribe an mqtt client to a list of topics")
-public class Subscribe extends Connect implements MqttAction {
+public class SubscribeCommand extends ConnectCommand implements MqttAction {
+
+
+    @Inject
+    public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+
+        super(mqttClientExecutor);
+
+    }
 
     private boolean printToSTDOUT = false;
 
@@ -57,16 +68,44 @@ public class Subscribe extends Connect implements MqttAction {
 
     @Override
     public Class getType() {
-        return Subscribe.class;
+        return SubscribeCommand.class;
     }
 
     @Override
     public void run() {
-        SubscriptionImpl.get(this).run();
+
+        if (isDebug()) {
+            Logger.debug("Command: {} ", this);
+        }
+        try {
+            mqttClientExecutor.subscribe(this);
+        } catch (Exception ex) {
+            if (isDebug()) {
+                Logger.error(ex);
+            } else {
+                Logger.error(ex.getMessage());
+            }
+        }
+
+        if (!ShellCommand.IN_SHELL) {
+            printToSTDOUT = true;
+            try {
+                stay();
+            } catch (InterruptedException e) {
+                Logger.error(e.getMessage());
+            }
+            printToSTDOUT = false;
+        }
+
     }
 
     public void stay() throws InterruptedException {
-        SubscriptionImpl.get(this).stay();
+        synchronized (this) {
+            while (mqttClientExecutor.isConnected(this)) {
+                this.wait(500);
+            }
+            Logger.debug("Client disconnected.");
+        }
     }
 
     @Override
