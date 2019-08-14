@@ -45,11 +45,15 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     void mqttSubscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull Subscribe subscribe, final String topic, final MqttQos qos) {
 
-        PrintWriter writer = null;
+        PrintWriter fileWriter = null;
         if (subscribe.getReceivedMessagesFile() != null) {
-            writer = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
+            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
         }
-        PrintWriter finalWriter = writer;
+        PrintWriter finalFileWriter = fileWriter;
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (finalFileWriter != null) finalFileWriter.close();
+        }));
+
 
         client.subscribeWith()
                 .topicFilter(topic)
@@ -58,9 +62,9 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
                     final String p = new String(publish.getPayloadAsBytes());
 
-                    if (finalWriter != null) {
-                        finalWriter.println(topic + "/: " + p);
-                        finalWriter.flush();
+                    if (finalFileWriter != null) {
+                        finalFileWriter.println(topic + "/: " + p);
+                        finalFileWriter.flush();
                     }
 
                     if (subscribe.isPrintToSTDOUT()) {
