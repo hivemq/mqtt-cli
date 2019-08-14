@@ -43,9 +43,9 @@ public class ListClientsCommand implements Runnable {
     @Override
     public void run() {
 
-        ClientCache<String, Mqtt5AsyncClient> clientCache = mqttClientExecutor.getClientCache();
-        Map<String, LocalTime> creationTimes = mqttClientExecutor.getClientCreationTimes();
-        Set<String> clientKeys = clientCache.keySet();
+        final ClientCache<String, Mqtt5AsyncClient> clientCache = mqttClientExecutor.getClientCache();
+        final Map<String, LocalTime> creationTimes = mqttClientExecutor.getClientCreationTimes();
+        final Set<String> clientKeys = clientCache.keySet();
 
         Comparator<String> comparator = (s, t1) -> {
             String clientID1 = clientCache.get(s).getConfig().getClientIdentifier().toString();
@@ -56,11 +56,12 @@ public class ListClientsCommand implements Runnable {
         if (sortByTime) {
             comparator = Comparator.comparing(creationTimes::get);
         }
-        TreeMap<String, MqttClient> sortedClients = new TreeMap<>(comparator);
+
+        final TreeMap<String, MqttClient> sortedClients = new TreeMap<>(comparator);
 
         for (String key :
                 clientKeys) {
-            MqttClient client = clientCache.get(key);
+            final MqttClient client = clientCache.get(key);
             sortedClients.put(key, client);
         }
 
@@ -86,10 +87,10 @@ public class ListClientsCommand implements Runnable {
 
         for (Map.Entry<String, MqttClient> entry : sortedClients.entrySet()) {
 
-            String clientKey = entry.getKey();
-            MqttClient client = entry.getValue();
-            MqttClientConfig config = client.getConfig();
-            LocalTime timestamp = creationTimes.get(clientKey);
+            final String clientKey = entry.getKey();
+            final MqttClient client = entry.getValue();
+            final MqttClientConfig config = client.getConfig();
+            final LocalTime timestamp = creationTimes.get(clientKey);
 
             if (outputDetailedClientInformation) {
                 System.out.printf(outputFormat,
