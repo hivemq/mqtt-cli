@@ -47,17 +47,14 @@ public class ListClientsCommand implements Runnable {
         Map<String, LocalTime> creationTimes = mqttClientExecutor.getClientCreationTimes();
         Set<String> clientKeys = clientCache.keySet();
 
-        Comparator<String> comparator = new Comparator<String>() {
-            @Override
-            public int compare(String s, String t1) {
-                String clientID1 = clientCache.get(s).getConfig().getClientIdentifier().toString();
-                String clientID2 = clientCache.get(t1).getConfig().getClientIdentifier().toString();
-                return clientID1.compareTo(clientID2);
-            }
+        Comparator<String> comparator = (s, t1) -> {
+            String clientID1 = clientCache.get(s).getConfig().getClientIdentifier().toString();
+            String clientID2 = clientCache.get(t1).getConfig().getClientIdentifier().toString();
+            return clientID1.compareTo(clientID2);
         };
 
         if (sortByTime) {
-            comparator = (s, t1) -> creationTimes.get(s).compareTo(creationTimes.get(t1));
+            comparator = Comparator.comparing(creationTimes::get);
         }
         TreeMap<String, MqttClient> sortedClients = new TreeMap<>(comparator);
 
