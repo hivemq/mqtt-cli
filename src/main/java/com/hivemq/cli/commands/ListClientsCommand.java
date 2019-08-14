@@ -33,7 +33,7 @@ public class ListClientsCommand implements Runnable {
     @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "List clients with detailed client inforamtion")
     private boolean outputDetailedClientInformation;
 
-    @CommandLine.Option(names = {"-at", "-ta", "--cleanStart"})
+    @CommandLine.Option(names = {"-at", "-ta"})
     private void setOptionsTrue(final boolean allTrue) {
         sortByTime = allTrue;
         outputDetailedClientInformation = allTrue;
