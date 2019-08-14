@@ -40,11 +40,15 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     void mqttSubscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final String topic, final MqttQos qos) {
 
-        PrintWriter writer = null;
-        if (subscribeCommand.getReceivedMessagesFile() != null) {
-            writer = FileUtils.createFileAppender(subscribeCommand.getReceivedMessagesFile());
+        PrintWriter fileWriter = null;
+        if (subscribe.getReceivedMessagesFile() != null) {
+            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
         }
-        PrintWriter finalWriter = writer;
+        PrintWriter finalFileWriter = fileWriter;
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (finalFileWriter != null) finalFileWriter.close();
+        }));
+
 
         client.subscribeWith()
                 .topicFilter(topic)
@@ -53,12 +57,12 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
                     final String p = new String(publish.getPayloadAsBytes());
 
-                    if (finalWriter != null) {
-                        finalWriter.println(topic + "/: " + p);
-                        finalWriter.flush();
+                    if (finalFileWriter != null) {
+                        finalFileWriter.println(topic + "/: " + p);
+                        finalFileWriter.flush();
                     }
 
-                    if (subscribeCommand.isPrintToSTDOUT()) {
+                    if (subscribe.isPrintToSTDOUT()) {
                         System.out.println(p);
                     }
 
@@ -85,4 +89,31 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 });
     }
 
+    private void connectWithSSL(final @NotNull Connect setting, KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) {
+
+        MqttClientSslConfig clientSslConfig = MqttClientSslConfig.builder()
+                .trustManagerFactory(trustManagerFactory)   // the truststore
+                .keyManagerFactory(keyManagerFactory)       // if a client keyStore is used
+                .build();
+
+        final Mqtt5AsyncClient client = MqttClient.builder()
+                .identifier("hive-mqtt5-test-client")
+                .serverPort(setting.getPort())
+                .serverHost(setting.getHost())
+                .useSsl(clientSslConfig)
+                .useMqttVersion5()
+                .buildAsync();
+
+        client.connectWith()
+                .keepAlive(setting.getKeepAlive())
+                .send()
+                .whenComplete((connAck, throwable) -> {
+                    if (throwable != null) {
+                        Logger.error ( throwable.getStackTrace());
+                    } else {
+                        Logger.info( "Client {} connected {} ", client.getConfig().getClientIdentifier(), connAck.getReasonCode());
+                    }
+                });
+
+    }
 }
