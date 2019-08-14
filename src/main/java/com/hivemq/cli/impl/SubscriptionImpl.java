@@ -50,8 +50,7 @@ public class SubscriptionImpl implements MqttAction {
     public void stay() throws InterruptedException {
         synchronized (param) {
             while (MqttClientExecutor.getInstance().isConnected(param)) {
-                System.out.println(param.getIdentifier());
-                param.wait(5000);
+                param.wait(500);
             }
             Logger.debug("Client disconnected.");
         }

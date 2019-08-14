@@ -2,6 +2,7 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -16,6 +17,7 @@ import org.pmw.tinylog.Logger;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
+import java.io.PrintWriter;
 
 public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
@@ -42,17 +44,41 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     void mqttSubscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull Subscribe subscribe, final String topic, final MqttQos qos) {
+
+        PrintWriter fileWriter = null;
+        if (subscribe.getReceivedMessagesFile() != null) {
+            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
+        }
+        PrintWriter finalFileWriter = fileWriter;
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (finalFileWriter != null) finalFileWriter.close();
+        }));
+
+
         client.subscribeWith()
                 .topicFilter(topic)
                 .qos(qos)
                 .callback(publish -> {
+
                     final String p = new String(publish.getPayloadAsBytes());
+
+                    if (finalFileWriter != null) {
+                        finalFileWriter.println(topic + "/: " + p);
+                        finalFileWriter.flush();
+                    }
+
+                    if (subscribe.isPrintToSTDOUT()) {
+                        System.out.println(p);
+                    }
+
                     if (subscribe.isDebug()) {
                         Log.debug("Client received on topic: {} message: '{}' ", topic, p);
                     } else {
                         Logger.info("Client received msg: '{}...' ", p.length() > 10 ? p.substring(0, 10) : p);
                     }
+
                 })
+
                 .send()
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {

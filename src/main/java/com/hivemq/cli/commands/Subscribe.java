@@ -6,17 +6,22 @@ import com.hivemq.cli.impl.SubscriptionImpl;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import picocli.CommandLine;
 
+import java.io.File;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "sub", description = "Subscribe an mqtt client to a list of topics")
 public class Subscribe extends Connect implements MqttAction {
 
+    private boolean printToSTDOUT = false;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "Set at least one Topic")
     private String[] topics;
 
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of Service for the corresponding topic.")
     private MqttQos[] qos;
+
+    @CommandLine.Option(names = {"-f", "--file"}, description = "The file to which the received messages will be written.")
+    private File receivedMessagesFile;
 
     public String[] getTopics() {
         return topics;
@@ -34,6 +39,21 @@ public class Subscribe extends Connect implements MqttAction {
         this.qos = qos;
     }
 
+    public File getReceivedMessagesFile() {
+        return receivedMessagesFile;
+    }
+
+    public void setReceivedMessagesFile(File receivedMessagesFile) {
+        this.receivedMessagesFile = receivedMessagesFile;
+    }
+
+    public boolean isPrintToSTDOUT() {
+        return printToSTDOUT;
+    }
+
+    public void setPrintToSTDOUT(boolean printToSTDOUT) {
+        this.printToSTDOUT = printToSTDOUT;
+    }
 
     @Override
     public Class getType() {
@@ -55,6 +75,7 @@ public class Subscribe extends Connect implements MqttAction {
                 "key=" + getKey() +
                 "topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
+                ", toFile=" + receivedMessagesFile +
                 '}';
     }
 
