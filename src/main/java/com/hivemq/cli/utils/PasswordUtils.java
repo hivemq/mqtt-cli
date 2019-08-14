@@ -19,9 +19,10 @@ public class PasswordUtils {
             return console.readPassword("%s", promptMessage);
         }
         else { // Safe password prompt is not possible - maybe called program from IDE?
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             System.out.print(promptMessage);
-            return in.readLine().toCharArray();
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            String result = in.readLine();
+            return result.toCharArray();
         }
 
     }

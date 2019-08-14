@@ -1,8 +1,8 @@
 package com.hivemq.cli.commands;
 
 import com.hivemq.cli.converters.*;
-import com.hivemq.cli.impl.ConnectionImpl;
 import com.hivemq.cli.impl.MqttAction;
+import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
+import javax.inject.Inject;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
@@ -26,7 +27,16 @@ import java.util.List;
 import java.util.UUID;
 
 @CommandLine.Command(name = "con", description = "Connects an mqtt client")
-public class Connect extends MqttCommand implements MqttAction {
+public class ConnectCommand extends MqttCommand implements MqttAction {
+
+    final MqttClientExecutor mqttClientExecutor;
+
+    @Inject
+    public ConnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+
+        this.mqttClientExecutor = mqttClientExecutor;
+
+    }
 
     private static final String DEFAULT_TLS_VERSION = "TLSv1.2";
 
@@ -41,7 +51,7 @@ public class Connect extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for the client UTF-8 String.")
     private String user;
 
-    @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", converter = PasswordConverter.class, description = "The password for the client UTF-8 String.")
+    @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for the client UTF-8 String.")
     private ByteBuffer password;
 
     @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, defaultValue = "60", description = "A keep alive of the client (in seconds).")
@@ -128,7 +138,20 @@ public class Connect extends MqttCommand implements MqttAction {
             }
         }
 
-        ConnectionImpl.get(this).run();
+
+        if (isDebug()) {
+            Logger.debug("Command: {} ", this);
+        }
+        try {
+            mqttClientExecutor.connect(this);
+        } catch (Exception ex) {
+            if (isDebug()) {
+                Logger.error(ex);
+            } else {
+                Logger.error(ex.getMessage());
+            }
+        }
+
     }
 
     private boolean useBuiltSslConfig() {
@@ -141,7 +164,7 @@ public class Connect extends MqttCommand implements MqttAction {
 
     @Override
     public Class getType() {
-        return Connect.class;
+        return ConnectCommand.class;
     }
 
     @Override

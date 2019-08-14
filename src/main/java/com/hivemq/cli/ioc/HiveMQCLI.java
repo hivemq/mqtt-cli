@@ -4,7 +4,15 @@ import dagger.Component;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
-@Component(modules = {CommandLineModule.class})
+import javax.inject.Singleton;
+
+@Singleton
+@Component(modules = {
+        CommandLineModule.class,
+        ShellSubCommandModule.class
+})
 public interface HiveMQCLI {
+
     @NotNull CommandLine commandLine();
+
 }

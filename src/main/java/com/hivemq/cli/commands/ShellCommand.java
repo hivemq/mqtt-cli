@@ -1,6 +1,6 @@
-package com.hivemq.cli.commands.shell;
+package com.hivemq.cli.commands;
 
-import com.hivemq.cli.commands.*;
+import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.reader.impl.LineReaderImpl;
@@ -9,47 +9,58 @@ import org.jline.terminal.TerminalBuilder;
 import picocli.CommandLine;
 import picocli.shell.jline3.PicocliJLineCompleter;
 
+import javax.inject.Inject;
 import java.io.PrintWriter;
 
+
 @CommandLine.Command(name = "shell",
-        description = "Starts the mqtt cli in shell mode, to enable interactive working with further sub commands.",
+        description = "Starts HiveMQ-CLI in shell mode, to enable interactive mode with further sub commands.",
         footer = {"", "Press Ctl-C to exit."},
-        subcommands = {Connect.class, Subscribe.class, Publish.class, Disconnect.class, ClearScreen.class})
-public class Shell extends AbstractCommand implements Runnable {
+        mixinStandardHelpOptions = true)
+public class ShellCommand extends AbstractCommand implements Runnable {
 
-    LineReaderImpl reader;
-    PrintWriter out;
-    private static final String prompt = "hivemq-cli> ";
-    private static final String rightPrompt = "null";
+    public static boolean IN_SHELL = false;
 
-    Shell() {
+    @SuppressWarnings("NullableProblems")
+    @CommandLine.Spec
+    private @NotNull CommandLine.Model.CommandSpec spec;
+
+    @Inject
+    ShellCommand() {
     }
 
+    LineReaderImpl reader;
+    private static final String prompt = "hmq> ";
+
+
+    @Override
     public void run() {
-        CommandLine cmd = new CommandLine(this);
-        System.out.println(cmd.getUsageMessage());
+        final CommandLine cmd = new CommandLine(spec);
         interact(cmd);
     }
 
-    public void interact(CommandLine cmd) {
-        try {
 
-            Terminal terminal = TerminalBuilder.builder().build();
-            LineReader reader = LineReaderBuilder.builder()
+    private void interact(final @NotNull CommandLine cmd) {
+        try {
+            IN_SHELL = true;
+            final Terminal terminal = TerminalBuilder.builder().build();
+            reader = (LineReaderImpl) LineReaderBuilder.builder()
                     .terminal(terminal)
                     .completer(new PicocliJLineCompleter(cmd.getCommandSpec()))
                     .parser(new DefaultParser())
                     .build();
 
+            PrintWriter out = terminal.writer();
+            out.println(cmd.getUsageMessage());
+
             String line;
             while (true) {
                 try {
                     line = reader.readLine(prompt, null, (MaskingCallback) null, null);
-                    ParsedLine pl = reader.getParser().parse(line, prompt.length());
-                    String [] arguments = pl.words().toArray(new String[0]);
-                    CommandLine.run(this, arguments);
+                    final ParsedLine pl = reader.getParser().parse(line, prompt.length());
+                    final String[] arguments = pl.words().toArray(new String[0]);
+                    cmd.execute(arguments);
                 } catch (UserInterruptException e) {
-                    // Ignore
                     return;
                 } catch (EndOfFileException e) {
                     // exit shell
@@ -64,10 +75,9 @@ public class Shell extends AbstractCommand implements Runnable {
         }
     }
 
+
     @Override
     public Class getType() {
-        return Shell.class;
+        return ShellCommand.class;
     }
 }
-
-

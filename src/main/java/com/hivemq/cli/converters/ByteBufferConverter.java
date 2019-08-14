@@ -9,10 +9,6 @@ import java.nio.charset.StandardCharsets;
 
 public class ByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
 
-    @Inject
-    public ByteBufferConverter() {
-    }
-
     @Override
     public ByteBuffer convert(final @NotNull String s) throws Exception {
         return ByteBuffer.wrap(s.getBytes(StandardCharsets.UTF_8));

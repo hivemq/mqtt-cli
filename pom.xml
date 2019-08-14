@@ -230,7 +230,7 @@
                     < configuration is declared in
                         resources/META-INF/native-image/com.hivemq/hivemq-cli/native-image.properties
                     />
-                    <mainClass>com.hivemq.cli.Mqtt</mainClass>
+                    <mainClass>com.hivemq.cli.HiveMQCLIMain</mainClass>
                 </configuration>
                 <executions>
                     <execution>

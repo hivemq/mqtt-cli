@@ -3,9 +3,10 @@ package com.hivemq.cli.commands;
 import com.hivemq.cli.converters.ByteBufferConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
-import com.hivemq.cli.impl.PublishImpl;
+import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import org.jetbrains.annotations.NotNull;
+import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -13,7 +14,15 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "pub", description = "Publish a message to a list of topics")
-public class Publish extends Connect implements MqttAction {
+public class PublishCommand extends ConnectCommand implements MqttAction {
+
+
+    @Inject
+    public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+
+        super(mqttClientExecutor);
+
+    }
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The Topic, at least one.")
     private String[] topics;
@@ -61,12 +70,26 @@ public class Publish extends Connect implements MqttAction {
 
     @Override
     public Class getType() {
-        return Publish.class;
+        return PublishCommand.class;
     }
 
     @Override
     public void run() {
-        PublishImpl.get(this).run();
+
+        if (isDebug()) {
+            Logger.debug("Command: {} ", this);
+        }
+
+        try {
+            mqttClientExecutor.publish(this);
+        } catch (Exception ex) {
+            if (isDebug()) {
+                Logger.error(ex);
+            } else {
+                Logger.error(ex.getMessage());
+            }
+        }
+
     }
 
     @Override
