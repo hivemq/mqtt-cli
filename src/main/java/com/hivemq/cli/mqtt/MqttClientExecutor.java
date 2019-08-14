@@ -41,8 +41,8 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     void mqttSubscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final String topic, final MqttQos qos) {
 
         PrintWriter fileWriter = null;
-        if (subscribe.getReceivedMessagesFile() != null) {
-            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
+        if (subscribeCommand.getReceivedMessagesFile() != null) {
+            fileWriter = FileUtils.createFileAppender(subscribeCommand.getReceivedMessagesFile());
         }
         PrintWriter finalFileWriter = fileWriter;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -62,7 +62,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         finalFileWriter.flush();
                     }
 
-                    if (subscribe.isPrintToSTDOUT()) {
+                    if (subscribeCommand.isPrintToSTDOUT()) {
                         System.out.println(p);
                     }
 
@@ -89,7 +89,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 });
     }
 
-    private void connectWithSSL(final @NotNull Connect setting, KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) {
+    private void connectWithSSL(final @NotNull ConnectCommand setting, KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) {
 
         MqttClientSslConfig clientSslConfig = MqttClientSslConfig.builder()
                 .trustManagerFactory(trustManagerFactory)   // the truststore
