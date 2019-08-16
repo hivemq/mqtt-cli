@@ -54,7 +54,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     final String p = new String(publish.getPayloadAsBytes());
 
                     if (finalFileWriter != null) {
-                        finalFileWriter.println(topic + "/: " + p);
+                        finalFileWriter.println(publish.getTopic() + ": " + p);
                         finalFileWriter.flush();
                     }
 
