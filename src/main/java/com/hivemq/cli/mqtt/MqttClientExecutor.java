@@ -16,6 +16,7 @@ import org.pmw.tinylog.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.PrintWriter;
+import java.util.Base64;
 
 @Singleton
 public class MqttClientExecutor extends AbstractMqttClientExecutor {
@@ -51,21 +52,22 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .qos(qos)
                 .callback(publish -> {
 
-                    final String p = new String(publish.getPayloadAsBytes());
+                    byte[] payload = publish.getPayloadAsBytes();
+                    final String payloadMessage = subscribeCommand.isBase64() ? new String(Base64.getEncoder().encode(payload)) : new String(payload);
 
                     if (finalFileWriter != null) {
-                        finalFileWriter.println(publish.getTopic() + ": " + p);
+                        finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
                         finalFileWriter.flush();
                     }
 
                     if (subscribeCommand.isPrintToSTDOUT()) {
-                        System.out.println(p);
+                        System.out.println(payloadMessage);
                     }
 
                     if (subscribeCommand.isDebug()) {
-                        Log.debug("Client received on topic: {} message: '{}' ", topic, p);
+                        Log.debug("Client received on topic: {} message: '{}' ", topic, payloadMessage);
                     } else {
-                        Logger.info("Client received msg: '{}...' ", p.length() > 10 ? p.substring(0, 10) : p);
+                        Logger.info("Client received msg: '{}...' ", payloadMessage.length() > 10 ? payloadMessage.substring(0, 10) : payloadMessage);
                     }
 
                 })
