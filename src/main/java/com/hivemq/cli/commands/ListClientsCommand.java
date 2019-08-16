@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class ListClientsCommand implements Runnable {
     @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "List clients with detailed client inforamtion")
     private boolean outputDetailedClientInformation;
 
-    @CommandLine.Option(names = {"-at", "-ta"})
+    @CommandLine.Option(names = {"-at", "-ta"}, description = "List detailed client information sorted by client creation time")
     private void setOptionsTrue(final boolean allTrue) {
         sortByTime = allTrue;
         outputDetailedClientInformation = allTrue;
@@ -44,7 +45,7 @@ public class ListClientsCommand implements Runnable {
     public void run() {
 
         final ClientCache<String, Mqtt5AsyncClient> clientCache = mqttClientExecutor.getClientCache();
-        final Map<String, LocalTime> creationTimes = mqttClientExecutor.getClientCreationTimes();
+        final Map<String, LocalDateTime> creationTimes = mqttClientExecutor.getClientCreationTimes();
         final Set<String> clientKeys = clientCache.keySet();
 
         Comparator<String> comparator = (s, t1) -> {
@@ -59,8 +60,7 @@ public class ListClientsCommand implements Runnable {
 
         final TreeMap<String, MqttClient> sortedClients = new TreeMap<>(comparator);
 
-        for (String key :
-                clientKeys) {
+        for (String key : clientKeys) {
             final MqttClient client = clientCache.get(key);
             sortedClients.put(key, client);
         }
@@ -69,7 +69,7 @@ public class ListClientsCommand implements Runnable {
         String outputFormat = "%-20s %-25s\n";
 
         if (outputDetailedClientInformation) {
-            outputFormat = "%-25s %-20s %-20s %-10s %-25s %-15s %-15s\n";
+            outputFormat = "%-30s %-20s %-20s %-10s %-25s %-15s %-15s\n";
             System.out.printf(outputFormat,
                     "Created-At",
                     "Client-ID",
@@ -90,7 +90,7 @@ public class ListClientsCommand implements Runnable {
             final String clientKey = entry.getKey();
             final MqttClient client = entry.getValue();
             final MqttClientConfig config = client.getConfig();
-            final LocalTime timestamp = creationTimes.get(clientKey);
+            final LocalDateTime timestamp = creationTimes.get(clientKey);
 
             if (outputDetailedClientInformation) {
                 System.out.printf(outputFormat,

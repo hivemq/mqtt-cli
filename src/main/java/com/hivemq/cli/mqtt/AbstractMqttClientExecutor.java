@@ -21,14 +21,14 @@ import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.LoggingContext;
 
 import java.nio.ByteBuffer;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 abstract class AbstractMqttClientExecutor {
 
     private ClientCache<String, Mqtt5AsyncClient> clientCache = new ClientCache<>();
-    private Map<String, LocalTime> clientCreationTimes = new HashMap<>();
+    private Map<String, LocalDateTime> clientCreationTimes = new HashMap<>();
 
 
     abstract boolean mqttConnect(Mqtt5BlockingClient client, Mqtt5Connect connectMessage, ConnectCommand connectCommand);
@@ -39,11 +39,11 @@ abstract class AbstractMqttClientExecutor {
         return clientCache;
     }
 
-    public Map<String, LocalTime> getClientCreationTimes() {
+    public Map<String, LocalDateTime> getClientCreationTimes() {
         return clientCreationTimes;
     }
 
-    public void setClientCreationTimes(Map<String, LocalTime> clientCreationTimes) {
+    public void setClientCreationTimes(Map<String, LocalDateTime> clientCreationTimes) {
         this.clientCreationTimes = clientCreationTimes;
     }
 
@@ -117,7 +117,7 @@ abstract class AbstractMqttClientExecutor {
             mqttConnect(client, connectMessage, connectCommand);
 
             clientCache.put(connectCommand.getKey(), client.toAsync());
-            clientCreationTimes.put(connectCommand.getKey(), LocalTime.now());
+            clientCreationTimes.put(connectCommand.getKey(), LocalDateTime.now());
 
         } catch (Exception throwable) {
             Logger.error("Client connect failed with reason: {}", throwable.getMessage());

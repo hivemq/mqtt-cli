@@ -3,8 +3,6 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.ConnectCommand;
 import com.hivemq.cli.commands.SubscribeCommand;
 import com.hivemq.cli.utils.FileUtils;
-import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
@@ -17,8 +15,6 @@ import org.pmw.tinylog.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.PrintWriter;
 
 @Singleton
