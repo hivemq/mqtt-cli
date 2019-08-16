@@ -3,8 +3,6 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.ConnectCommand;
 import com.hivemq.cli.commands.SubscribeCommand;
 import com.hivemq.cli.utils.FileUtils;
-import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
@@ -17,8 +15,6 @@ import org.pmw.tinylog.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.PrintWriter;
 
 @Singleton
@@ -87,33 +83,5 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         Logger.info("Client subscribed to Topic: {} ", topic);
                     }
                 });
-    }
-
-    private void connectWithSSL(final @NotNull ConnectCommand setting, KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) {
-
-        MqttClientSslConfig clientSslConfig = MqttClientSslConfig.builder()
-                .trustManagerFactory(trustManagerFactory)   // the truststore
-                .keyManagerFactory(keyManagerFactory)       // if a client keyStore is used
-                .build();
-
-        final Mqtt5AsyncClient client = MqttClient.builder()
-                .identifier("hive-mqtt5-test-client")
-                .serverPort(setting.getPort())
-                .serverHost(setting.getHost())
-                .useSsl(clientSslConfig)
-                .useMqttVersion5()
-                .buildAsync();
-
-        client.connectWith()
-                .keepAlive(setting.getKeepAlive())
-                .send()
-                .whenComplete((connAck, throwable) -> {
-                    if (throwable != null) {
-                        Logger.error ( throwable.getStackTrace());
-                    } else {
-                        Logger.info( "Client {} connected {} ", client.getConfig().getClientIdentifier(), connAck.getReasonCode());
-                    }
-                });
-
     }
 }
