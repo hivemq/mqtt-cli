@@ -49,6 +49,7 @@ $ mqtt sub @/path2my/yamlFile.yml
 
 
 === Detailed description
+
 ==== mqtt con
 
 - Creates a client and connect them. The client can stays connected.
@@ -146,7 +147,6 @@ Can be disabled by setting it to ```4_294_967_295```|4_294_967_295
 
 ```key=value``` for single pair or ```key1=value1\|key2=value2``` for multiple pairs | default empty
 
-
 | -sc | --stayConnected | The client stays connected 0 or 1 |  0 - the client will be disconnected immediately. In shell mode the Client stays connected.
 | -s    | --secure  | The client uses the default ssl configuration to communicate with the broker | False
 | | --cafile    | Path to a file containing a trusted CA certificate to enable encrypted certificate based communication | default empty
@@ -177,6 +177,9 @@ mqtt con @<fileName>
 - connects an MQTT 5 client and reads the properties from the file.
 
 
+
+
+
 ==== mqtt sub
 
 - Subscribes a client to one or more topics.
@@ -198,6 +201,7 @@ mqtt sub    { @<fileName> |
                 <Client Settings>
                 -t {$|[<topicFilter> [,<topicFilter>]]}
                 -q [<0|1|2> [,<0|1|2>]]
+-f {'filename'}
             }
 ```
 
@@ -212,6 +216,7 @@ mqtt sub    { @<fileName> |
 | -q | --qos |One or more Quality of services as number - can be 0, 1 or 2, comma separated. Can be defined direct or
         $ - via input from console - prompt
         | 0.
+| -f    |   --file  | Output of Subscribe will be appended to the specified existing file or the file will be created | default not used
 |===
 
 .Full Example
@@ -264,3 +269,34 @@ mqtt:
    name: topic2
     qos: 1
 ```
+
+
+==== hivemq-cli shell
+
+- Starts HiveMQ-CLI in interactive shell mode
+
+.Examples for using the shell
+|===
+|Command |Explanation
+| hivemq-cli shell | An interactive shell is started
+| $ hmq> ls  | Lists all connected clients
+| $ hmq> cls | Clears the current terminal
+|===
+
+
+.Full Syntax
+
+```
+hivemq-cli shell
+```
+
+.Available Commands in interactive mode
+|===
+|Attribute | Full name | Explanation
+| con   | connect  | Connect a client
+| sub | subscribe | command to subscribe a client to a list of topics
+| pub  | publish | Publish
+| cls | clear | Clears the
+
+| ls | list | Lists all the connected clients
+|===
