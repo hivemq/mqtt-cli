@@ -133,6 +133,8 @@ public class ClientCache<K, V> {
         } else {
             tail = entry.prev;
         }
+
+        CACHE.remove(entry.key);
     }
 
     private static class Entry<K, V> {
