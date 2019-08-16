@@ -53,7 +53,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .callback(publish -> {
 
                     byte[] payload = publish.getPayloadAsBytes();
-                    final String payloadMessage = subscribeCommand.isBase64() ? new String(Base64.getEncoder().encode(payload)) : new String(payload);
+                    final String payloadMessage = subscribeCommand.isBase64() ? Base64.getEncoder().encodeToString(payload) : new String(payload);
 
                     if (finalFileWriter != null) {
                         finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
