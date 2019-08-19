@@ -44,7 +44,7 @@ public class ListClientsCommand implements Runnable {
     @Override
     public void run() {
 
-        final ClientCache<String, Mqtt5AsyncClient> clientCache = mqttClientExecutor.getClientCache();
+        final ClientCache<String, MqttClient> clientCache = mqttClientExecutor.getClientCache();
         final Map<String, LocalDateTime> creationTimes = mqttClientExecutor.getClientCreationTimes();
         final Set<String> clientKeys = clientCache.keySet();
 
@@ -62,7 +62,9 @@ public class ListClientsCommand implements Runnable {
 
         for (String key : clientKeys) {
             final MqttClient client = clientCache.get(key);
-            sortedClients.put(key, client);
+            if (client.getConfig().getState().isConnectedOrReconnect()) {
+                sortedClients.put(key, client);
+            }
         }
 
 
