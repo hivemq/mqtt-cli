@@ -138,9 +138,10 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
                 Logger.debug(e);
             }
         }
-        boolean verfied = verifyVersionOptions();
-        if (verfied)
-            connect();
+
+        logUnusedOptions();
+
+        connect();
 
     }
 
@@ -150,7 +151,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
         }
         try {
             mqttClientExecutor.connect(this);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             if (isDebug()) {
                 Logger.error(ex);
             } else {
@@ -159,14 +160,25 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
         }
     }
 
-    private boolean verifyVersionOptions() {
+    private void logUnusedOptions() {
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
-            if (user != null || password != null)
-                System.err.println("MQTT Version 3 does not support Authentication");
-            System.err.println("Connect aborted");
-            return false;
+            if (sessionExpiryInterval != 0)
+                Logger.debug("Session Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            if (willMessageExpiryInterval != 4294967295L)
+                Logger.debug("Will Message Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            if (willPayloadFormatIndicator != null)
+                Logger.debug("Will Payload Format was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            if (willDelayInterval != 0)
+                Logger.debug("Will Delay Interval was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            if (willContentType != null)
+                Logger.debug("Will Content Type was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            if (willResponseTopic != null)
+                Logger.debug("Will Response Topic was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            if (willCorrelationData != null)
+                Logger.debug("Will Correlation Data was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            if (willUserProperties != null)
+                Logger.debug("Will User Properties was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
         }
-        return true;
     }
 
     private boolean useBuiltSslConfig() {
