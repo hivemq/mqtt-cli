@@ -66,6 +66,7 @@ public class ClientCache<K, V> {
             remove(entry);
             return true;
         }
+        CACHE.remove(key);
         return false;
     }
 
