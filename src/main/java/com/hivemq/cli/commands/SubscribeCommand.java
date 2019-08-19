@@ -34,6 +34,9 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     @CommandLine.Option(names = {"-f", "--file"}, description = "The file to which the received messages will be written.")
     private File receivedMessagesFile;
 
+    @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64")
+    private boolean base64;
+
     public String[] getTopics() {
         return topics;
     }
@@ -64,6 +67,14 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
     public void setPrintToSTDOUT(boolean printToSTDOUT) {
         this.printToSTDOUT = printToSTDOUT;
+    }
+
+    public boolean isBase64() {
+        return base64;
+    }
+
+    public void setBase64(boolean base64) {
+        this.base64 = base64;
     }
 
     @Override
@@ -99,7 +110,7 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
     }
 
-    public void stay() throws InterruptedException {
+    private void stay() throws InterruptedException {
         synchronized (this) {
             while (mqttClientExecutor.isConnected(this)) {
                 this.wait(500);
