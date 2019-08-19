@@ -1,13 +1,15 @@
 package com.hivemq.cli.commands;
 
+import com.hivemq.cli.converters.MqttVersionConverter;
+import com.hivemq.client.mqtt.MqttVersion;
 import picocli.CommandLine;
 
 @CommandLine.Command
 public abstract class MqttCommand extends AbstractCommand implements CliCommand {
 
     //TODO Implement complete
-    @CommandLine.Option(names = {"-v", "--version"}, defaultValue = "5", description = "The mqtt version used by the client.")
-    private int version;
+    @CommandLine.Option(names = {"-v", "--version"}, defaultValue = "5", converter = MqttVersionConverter.class, description = "The mqtt version used by the client.")
+    private MqttVersion version;
 
     //TODO Implement
     @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "true", description = "Enable debug mode.")
@@ -22,11 +24,11 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
     @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String.")
     private String identifier;
 
-    public int getVersion() {
+    public MqttVersion getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(MqttVersion version) {
         this.version = version;
     }
 
