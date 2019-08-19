@@ -36,9 +36,9 @@ abstract class AbstractMqttClientExecutor {
     private Map<String, LocalDateTime> clientCreationTimes = new HashMap<>();
 
 
-    abstract boolean mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull ConnectCommand connectCommand);
+    abstract void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull ConnectCommand connectCommand);
 
-    abstract boolean mqtt3Connect(final @NotNull Mqtt3BlockingClient client, final @NotNull Mqtt3Connect connectMessage, final @NotNull ConnectCommand connectCommand);
+    abstract void mqtt3Connect(final @NotNull Mqtt3BlockingClient client, final @NotNull Mqtt3Connect connectMessage, final @NotNull ConnectCommand connectCommand);
 
     abstract void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final @NotNull String topic, final @NotNull MqttQos qos);
 
@@ -48,19 +48,8 @@ abstract class AbstractMqttClientExecutor {
 
     abstract void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    public ClientCache<String, MqttClient> getClientCache() {
-        return clientCache;
-    }
 
-    public Map<String, LocalDateTime> getClientCreationTimes() {
-        return clientCreationTimes;
-    }
-
-    public void setClientCreationTimes(Map<String, LocalDateTime> clientCreationTimes) {
-        this.clientCreationTimes = clientCreationTimes;
-    }
-
-    public MqttClient subscribe(final @NotNull SubscribeCommand subscribeCommand) {
+    public void subscribe(final @NotNull SubscribeCommand subscribeCommand) {
 
         final MqttClient client = getMqttClientFromCacheOrConnect(subscribeCommand);
 
@@ -69,21 +58,20 @@ abstract class AbstractMqttClientExecutor {
 
         for (int i = 0; i < subscribeCommand.getTopics().length; i++) {
             final String topic = subscribeCommand.getTopics()[i];
-            final MqttQos qos = subscribeCommand.getQos().length > i ? subscribeCommand.getQos()[i] : subscribeCommand.getQos()[0];
+            final MqttQos qos = subscribeCommand.getQos()[i];
 
-            if (client instanceof Mqtt5AsyncClient)
+            if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_5_0)
                 mqtt5Subscribe((Mqtt5AsyncClient) client, subscribeCommand, topic, qos);
-            else if (client instanceof Mqtt3AsyncClient)
+            else if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1)
                 mqtt3Subscribe((Mqtt3AsyncClient) client, subscribeCommand, topic, qos);
             else {
-                Logger.error("Can't subscribe with client of type {}", client.getClass());
+                Logger.debug("The Mqtt Version specified is not supported. Version was " + subscribeCommand.getVersion());
             }
         }
 
-        return client;
     }
 
-    public MqttClient publish(final @NotNull PublishCommand publishCommand) {
+    public void publish(final @NotNull PublishCommand publishCommand) {
         final MqttClient client = getMqttClientFromCacheOrConnect(publishCommand);
         LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get());
 
@@ -91,14 +79,33 @@ abstract class AbstractMqttClientExecutor {
             final String topic = publishCommand.getTopics()[i];
             final MqttQos qos = publishCommand.getQos()[i];
 
-            if (client instanceof Mqtt5AsyncClient)
+            if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_5_0) {
                 mqtt5Publish((Mqtt5AsyncClient) client, publishCommand, topic, qos);
-            else if (client instanceof Mqtt3AsyncClient)
+            } else if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
                 mqtt3Publish((Mqtt3AsyncClient) client, publishCommand, topic, qos);
-            else
-                Logger.error("Can't publish with client of type {}", client.getClass());
+            } else {
+                Logger.debug("The Mqtt Version specified is not supported. Version was " + publishCommand.getVersion());
+            }
+
         }
-        return client;
+    }
+
+    public void disconnect(final @NotNull DisconnectCommand disconnectCommand) {
+        LoggingContext.put("identifier", disconnectCommand.getIdentifier());
+
+        clientCache.setVerbose(disconnectCommand.isDebug());
+
+        if (clientCache.hasKey(disconnectCommand.getKey())) {
+            final MqttClient client = clientCache.get(disconnectCommand.getKey());
+            clientCache.remove(disconnectCommand.getKey());
+
+            if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_5_0)
+                ((Mqtt5AsyncClient) client).disconnect();
+            else if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1)
+                ((Mqtt3AsyncClient) client).disconnect();
+        }
+
+        throw new IllegalStateException("The MQTT Version specified is not supported. Version was " + disconnectCommand.getVersion());
     }
 
     public boolean isConnected(final @NotNull SubscribeCommand subscriber) {
@@ -112,102 +119,69 @@ abstract class AbstractMqttClientExecutor {
         return false;
     }
 
-    public boolean disconnect(final @NotNull DisconnectCommand disconnectCommand) {
-        LoggingContext.put("identifier", disconnectCommand.getIdentifier());
 
-        clientCache.setVerbose(disconnectCommand.isDebug());
-
-        if (clientCache.hasKey(disconnectCommand.getKey())) {
-            final MqttClient client = clientCache.get(disconnectCommand.getKey());
-            clientCache.remove(disconnectCommand.getKey());
-
-            if (client instanceof Mqtt5AsyncClient)
-                ((Mqtt5AsyncClient) client).disconnect();
-            else if (client instanceof Mqtt3AsyncClient)
-                ((Mqtt3AsyncClient) client).disconnect();
-            return true;
-        }
-        return false;
-    }
-
-
-    public MqttClient connect(final @NotNull ConnectCommand connectCommand) {
+    public @NotNull MqttClient connect(final @NotNull ConnectCommand connectCommand) {
         final String identifier = connectCommand.createIdentifier();
         LoggingContext.put("identifier", identifier);
 
-        final @NotNull MqttClientBuilder mqttClientBuilder = createBuilder(connectCommand, identifier);
+        if (connectCommand.getVersion() == MqttVersion.MQTT_5_0) {
+            return connectMqtt5Client(connectCommand, identifier);
+        } else if (connectCommand.getVersion() == MqttVersion.MQTT_3_1_1) {
+            return connectMqtt3Client(connectCommand, identifier);
+        }
 
-        if (connectCommand.getVersion() == MqttVersion.MQTT_5_0)
-            return connectMqtt5Client(mqttClientBuilder, connectCommand);
-        else if (connectCommand.getVersion() == MqttVersion.MQTT_3_1_1)
-            return connectMqtt3Client(mqttClientBuilder, connectCommand);
-
-        Logger.debug("The MQTT Version specified is not supported - Version was {}", connectCommand.getVersion());
-
-        return null;
+        throw new IllegalStateException("The MQTT Version specified is not supported. Version was " + connectCommand.getVersion());
     }
 
-    private Mqtt5AsyncClient connectMqtt5Client(final @NotNull MqttClientBuilder clientBuilder, final @NotNull ConnectCommand connectCommand) {
-        Mqtt5BlockingClient client = clientBuilder.useMqttVersion5().build().toBlocking();
+    private @NotNull Mqtt5AsyncClient connectMqtt5Client(final @NotNull ConnectCommand connectCommand, String identifier) {
+        final MqttClientBuilder clientBuilder = createBuilder(connectCommand, identifier);
+        final Mqtt5BlockingClient client = clientBuilder.useMqttVersion5().build().toBlocking();
+        final @Nullable Mqtt5Publish willPublish = createMqtt5WillPublish(connectCommand);
 
-        try {
-            final @Nullable Mqtt5Publish willPublish = createMqtt5WillPublish(connectCommand);
+        Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
+                .sessionExpiryInterval(connectCommand.getSessionExpiryInterval())
+                .keepAlive(connectCommand.getKeepAlive())
+                .cleanStart(connectCommand.isCleanStart())
+                .willPublish(willPublish);
 
-            Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
-                    .sessionExpiryInterval(connectCommand.getSessionExpiryInterval())
-                    .keepAlive(connectCommand.getKeepAlive())
-                    .cleanStart(connectCommand.isCleanStart())
-                    .willPublish(willPublish);
+        applyMqtt5Authentication(connectBuilder, connectCommand);
 
-            applyAuthentication(connectBuilder, connectCommand);
+        mqtt5Connect(client, connectBuilder.build(), connectCommand);
 
-            final Mqtt5Connect connectMessage = connectBuilder.build();
-
-            mqtt5Connect(client, connectMessage, connectCommand);
-
-            clientCache.put(connectCommand.getKey(), client.toAsync());
-            clientCreationTimes.put(connectCommand.getKey(), LocalDateTime.now());
-
-        } catch (Exception throwable) {
-            Logger.error("Client connect failed with reason: {}", throwable.getMessage());
-        }
+        clientCache.put(connectCommand.getKey(), client.toAsync());
+        clientCreationTimes.put(connectCommand.getKey(), LocalDateTime.now());
 
         return client.toAsync();
     }
 
-    private Mqtt3AsyncClient connectMqtt3Client(final @NotNull MqttClientBuilder clientBuilder, final @NotNull ConnectCommand connectCommand) {
+    private @NotNull Mqtt3AsyncClient connectMqtt3Client(final @NotNull ConnectCommand connectCommand, final @NotNull String identifier) {
+        final MqttClientBuilder clientBuilder = createBuilder(connectCommand, identifier);
+        final Mqtt3BlockingClient client = clientBuilder.useMqttVersion3().build().toBlocking();
 
-        Mqtt3BlockingClient client = clientBuilder.useMqttVersion3().build().toBlocking();
+        final @Nullable Mqtt3Publish willPublish = createMqtt3WillPublish(connectCommand);
 
-        try {
-            final @Nullable Mqtt3Publish willPublish = createMqtt3WillPublish(connectCommand);
-
-            Mqtt3ConnectBuilder connectBuilder = Mqtt3Connect.builder()
+        Mqtt3ConnectBuilder connectBuilder = Mqtt3Connect.builder()
                     .keepAlive(connectCommand.getKeepAlive())
                     .cleanSession(connectCommand.isCleanStart())
                     .willPublish(willPublish);
 
-            final Mqtt3Connect connectMessage = connectBuilder.build();
+        applyMqtt3Authentication(connectBuilder, connectCommand);
 
-            mqtt3Connect(client, connectMessage, connectCommand);
+        mqtt3Connect(client, connectBuilder.build(), connectCommand);
 
-            clientCache.put(connectCommand.getKey(), client.toAsync());
-            clientCreationTimes.put(connectCommand.getKey(), LocalDateTime.now());
+        clientCache.put(connectCommand.getKey(), client.toAsync());
+        clientCreationTimes.put(connectCommand.getKey(), LocalDateTime.now());
 
-        } catch (Exception throwable) {
-            Logger.error("Client connect failed with reason: {}", throwable.getMessage());
-        }
         return client.toAsync();
     }
 
-
-    private Mqtt5Publish createMqtt5WillPublish(final @NotNull ConnectCommand connectCommand) {
+    private @Nullable Mqtt5Publish createMqtt5WillPublish(final @NotNull ConnectCommand connectCommand) {
         // only topic is mandatory for will message creation
         if (connectCommand.getWillTopic() != null) {
-            ByteBuffer willpayload = connectCommand.getWillMessage();
+            final ByteBuffer willPayload = connectCommand.getWillMessage();
             Mqtt5WillPublishBuilder.Complete builder = Mqtt5WillPublish.builder()
                     .topic(connectCommand.getWillTopic())
-                    .payload(willpayload)
+                    .payload(willPayload)
                     .qos(connectCommand.getWillQos())
                     .retain(connectCommand.isWillRetain())
                     .messageExpiryInterval(connectCommand.getWillMessageExpiryInterval())
@@ -227,9 +201,9 @@ abstract class AbstractMqttClientExecutor {
         return null;
     }
 
-    private Mqtt3Publish createMqtt3WillPublish(final @NotNull ConnectCommand connectCommand) {
+    private @Nullable Mqtt3Publish createMqtt3WillPublish(final @NotNull ConnectCommand connectCommand) {
         if (connectCommand.getWillTopic() != null) {
-            ByteBuffer willPayload = connectCommand.getWillMessage();
+            final ByteBuffer willPayload = connectCommand.getWillMessage();
             return Mqtt3Publish.builder()
                     .topic(connectCommand.getWillTopic())
                     .payload(willPayload)
@@ -242,13 +216,53 @@ abstract class AbstractMqttClientExecutor {
         return null;
     }
 
-    private MqttClientBuilder createBuilder(final @NotNull ConnectCommand connectCommand, final @NotNull String identifier) {
+    private @NotNull MqttClientBuilder createBuilder(final @NotNull ConnectCommand connectCommand, final @NotNull String identifier) {
 
         return MqttClient.builder()
                 .serverHost(connectCommand.getHost())
                 .serverPort(connectCommand.getPort())
                 .sslConfig(connectCommand.getSslConfig())
                 .identifier(identifier);
+    }
+
+    private void applyMqtt5Authentication(final @NotNull Mqtt5ConnectBuilder connectBuilder, final @NotNull ConnectCommand connectCommand) {
+        if (connectCommand.getUser() != null && connectCommand.getPassword() != null) {
+            connectBuilder.simpleAuth()
+                    .username(connectCommand.getUser())
+                    .password(connectCommand.getPassword())
+                    .applySimpleAuth();
+        } else if (connectCommand.getPassword() != null) {
+            connectBuilder.simpleAuth()
+                    .password(connectCommand.getPassword())
+                    .applySimpleAuth();
+        } else if (connectCommand.getUser() != null) {
+            connectBuilder.simpleAuth()
+                    .username(connectCommand.getUser())
+                    .applySimpleAuth();
+        }
+    }
+
+    private void applyMqtt3Authentication(final @NotNull Mqtt3ConnectBuilder connectBuilder, final @NotNull ConnectCommand connectCommand) {
+        if (connectCommand.getUser() != null && connectCommand.getPassword() != null) {
+            connectBuilder.simpleAuth()
+                    .username(connectCommand.getUser())
+                    .password(connectCommand.getPassword())
+                    .applySimpleAuth();
+        } else if (connectCommand.getUser() != null) {
+            connectBuilder.simpleAuth()
+                    .username(connectCommand.getUser())
+                    .applySimpleAuth();
+        } else if (connectCommand.getPassword() != null) {
+            throw new IllegalArgumentException("Password-Only Authentication is not allowed in MQTT 3");
+        }
+    }
+
+    public ClientCache<String, MqttClient> getClientCache() {
+        return clientCache;
+    }
+
+    public Map<String, LocalDateTime> getClientCreationTimes() {
+        return clientCreationTimes;
     }
 
     private MqttClient getMqttClientFromCacheOrConnect(final @NotNull ConnectCommand connect) {
@@ -264,22 +278,5 @@ abstract class AbstractMqttClientExecutor {
             mqttClient = connect(connect);
         }
         return mqttClient;
-    }
-
-    private void applyAuthentication(final @NotNull Mqtt5ConnectBuilder connectBuilder, final @NotNull ConnectCommand connectCommand) {
-        if (connectCommand.getUser() != null && connectCommand.getPassword() != null) {
-            connectBuilder.simpleAuth()
-                    .username(connectCommand.getUser())
-                    .password(connectCommand.getPassword())
-                    .applySimpleAuth();
-        } else if (connectCommand.getPassword() != null) {
-            connectBuilder.simpleAuth()
-                    .password(connectCommand.getPassword())
-                    .applySimpleAuth();
-        } else if (connectCommand.getUser() != null) {
-            connectBuilder.simpleAuth()
-                    .username(connectCommand.getUser())
-                    .applySimpleAuth();
-        }
     }
 }
