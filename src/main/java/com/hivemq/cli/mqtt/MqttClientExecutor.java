@@ -16,7 +16,8 @@ import org.pmw.tinylog.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.PrintWriter;
-import java.util.Base64;
+
+import org.bouncycastle.util.encoders.Base64;
 
 @Singleton
 public class MqttClientExecutor extends AbstractMqttClientExecutor {
@@ -53,7 +54,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .callback(publish -> {
 
                     byte[] payload = publish.getPayloadAsBytes();
-                    final String payloadMessage = subscribeCommand.isBase64() ? Base64.getEncoder().encodeToString(payload) : new String(payload);
+                    final String payloadMessage = subscribeCommand.isBase64() ? Base64.toBase64String(payload) : new String(payload);
 
                     if (finalFileWriter != null) {
                         finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
