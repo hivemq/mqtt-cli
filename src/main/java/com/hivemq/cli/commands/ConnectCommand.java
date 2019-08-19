@@ -5,6 +5,7 @@ import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
+import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
@@ -137,8 +138,13 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
                 Logger.debug(e);
             }
         }
+        boolean verfied = verifyVersionOptions();
+        if (verfied)
+            connect();
 
+    }
 
+    private void connect() {
         if (isDebug()) {
             Logger.debug("Command: {} ", this);
         }
@@ -151,7 +157,16 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
                 Logger.error(ex.getMessage());
             }
         }
+    }
 
+    private boolean verifyVersionOptions() {
+        if (getVersion() == MqttVersion.MQTT_3_1_1) {
+            if (user != null || password != null)
+                System.err.println("MQTT Version 3 does not support Authentication");
+            System.err.println("Connect aborted");
+            return false;
+        }
+        return true;
     }
 
     private boolean useBuiltSslConfig() {

@@ -1,17 +1,34 @@
 package com.hivemq.cli.mqtt;
 
+import com.google.common.eventbus.Subscribe;
 import com.hivemq.cli.commands.ConnectCommand;
 import com.hivemq.cli.commands.DisconnectCommand;
 import com.hivemq.cli.commands.PublishCommand;
 import com.hivemq.cli.commands.SubscribeCommand;
+import com.hivemq.client.internal.mqtt.MqttAsyncClient;
+import com.hivemq.client.internal.mqtt.MqttBlockingClient;
+import com.hivemq.client.internal.mqtt.message.connect.MqttConnectBuilder;
+import com.hivemq.client.internal.mqtt.message.publish.MqttWillPublish;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
+import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
+import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
+import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3ConnectBuilder;
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3PublishBuilder;
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3WillPublishBuilder;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5ConnectBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -27,15 +44,23 @@ import java.util.Map;
 
 abstract class AbstractMqttClientExecutor {
 
-    private ClientCache<String, Mqtt5AsyncClient> clientCache = new ClientCache<>();
+    private ClientCache<String, MqttClient> clientCache = new ClientCache<>();
     private Map<String, LocalDateTime> clientCreationTimes = new HashMap<>();
 
 
-    abstract boolean mqttConnect(Mqtt5BlockingClient client, Mqtt5Connect connectMessage, ConnectCommand connectCommand);
+    abstract boolean mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull ConnectCommand connectCommand);
 
-    abstract void mqttSubscribe(Mqtt5AsyncClient client, @NotNull SubscribeCommand subscribeCommand, String topic, MqttQos qos);
+    abstract boolean mqtt3Connect(final @NotNull Mqtt3BlockingClient client, final @NotNull Mqtt3Connect connectMessage, final @NotNull ConnectCommand connectCommand);
 
-    public ClientCache<String, Mqtt5AsyncClient> getClientCache() {
+    abstract void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final @NotNull String topic, final @NotNull MqttQos qos);
+
+    abstract void mqtt3Subscribe(final @NotNull Mqtt3AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final @NotNull String topic, final @NotNull MqttQos qos);
+
+    abstract void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos);
+
+    abstract void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos);
+
+    public ClientCache<String, MqttClient> getClientCache() {
         return clientCache;
     }
 
@@ -47,31 +72,52 @@ abstract class AbstractMqttClientExecutor {
         this.clientCreationTimes = clientCreationTimes;
     }
 
-    public Mqtt5AsyncClient connect(final @NotNull ConnectCommand connect) {
-        return doConnect(connect);
+    public MqttClient subscribe(final @NotNull SubscribeCommand subscribeCommand) {
+
+        final MqttClient client = getMqttClientFromCacheOrConnect(subscribeCommand);
+
+        LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get());
+
+
+        for (int i = 0; i < subscribeCommand.getTopics().length; i++) {
+            final String topic = subscribeCommand.getTopics()[i];
+            final MqttQos qos = subscribeCommand.getQos().length > i ? subscribeCommand.getQos()[i] : subscribeCommand.getQos()[0];
+
+            if (client instanceof Mqtt5AsyncClient)
+                mqtt5Subscribe((Mqtt5AsyncClient) client, subscribeCommand, topic, qos);
+            else if (client instanceof Mqtt3AsyncClient)
+                mqtt3Subscribe((Mqtt3AsyncClient) client, subscribeCommand, topic, qos);
+            else {
+                Logger.error("Can't subscribe with client of type {}", client.getClass());
+            }
+        }
+
+        return client;
     }
 
-    public Mqtt5AsyncClient subscribe(final @NotNull SubscribeCommand subscribeCommand) {
-
-        final Mqtt5AsyncClient client = getMqttClientFromCacheOrConnect(subscribeCommand);
+    public MqttClient publish(final @NotNull PublishCommand publishCommand) {
+        final MqttClient client = getMqttClientFromCacheOrConnect(publishCommand);
         LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get());
-        return doSubscribe(client, subscribeCommand);
 
-    }
+        for (int i = 0; i < publishCommand.getTopics().length; i++) {
+            final String topic = publishCommand.getTopics()[i];
+            final MqttQos qos = publishCommand.getQos()[i];
 
-    public Mqtt5AsyncClient publish(final @NotNull PublishCommand publishCommand) {
-
-        final Mqtt5AsyncClient client = getMqttClientFromCacheOrConnect(publishCommand);
-        LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get());
-        return doPublish(client, publishCommand);
-
+            if (client instanceof Mqtt5AsyncClient)
+                mqtt5Publish((Mqtt5AsyncClient) client, publishCommand, topic, qos);
+            else if (client instanceof Mqtt3AsyncClient)
+                mqtt3Publish((Mqtt3AsyncClient) client, publishCommand, topic, qos);
+            else
+                Logger.error("Can't publish with client of type {}", client.getClass());
+        }
+        return client;
     }
 
     public boolean isConnected(final @NotNull SubscribeCommand subscriber) {
         LoggingContext.put("identifier", subscriber.getIdentifier());
 
         if (clientCache.hasKey(subscriber.getKey())) {
-            final Mqtt5AsyncClient client = clientCache.get(subscriber.getKey());
+            final MqttClient client = clientCache.get(subscriber.getKey());
             Logger.debug("Client in cache key: {} ", subscriber.getKey());
             return client.getConfig().getState().isConnected();
         }
@@ -84,25 +130,39 @@ abstract class AbstractMqttClientExecutor {
         clientCache.setVerbose(disconnectCommand.isDebug());
 
         if (clientCache.hasKey(disconnectCommand.getKey())) {
-            final Mqtt5AsyncClient client = clientCache.get(disconnectCommand.getKey());
+            final MqttClient client = clientCache.get(disconnectCommand.getKey());
             clientCache.remove(disconnectCommand.getKey());
-            client.disconnect();
+
+            if (client instanceof Mqtt5AsyncClient)
+                ((Mqtt5AsyncClient) client).disconnect();
+            else if (client instanceof Mqtt3AsyncClient)
+                ((Mqtt3AsyncClient) client).disconnect();
             return true;
         }
         return false;
     }
 
 
-    private Mqtt5AsyncClient doConnect(final @NotNull ConnectCommand connectCommand) {
+    public MqttClient connect(final @NotNull ConnectCommand connectCommand) {
         final String identifier = connectCommand.createIdentifier();
         LoggingContext.put("identifier", identifier);
 
         final @NotNull MqttClientBuilder mqttClientBuilder = createBuilder(connectCommand, identifier);
-        final @NotNull Mqtt5BlockingClient client = mqttClientBuilder.useMqttVersion5().build().toBlocking();
 
+        if (connectCommand.getVersion() == MqttVersion.MQTT_5_0)
+            return connectMqtt5Client(mqttClientBuilder, connectCommand);
+        else if (connectCommand.getVersion() == MqttVersion.MQTT_3_1_1)
+            return connectMqtt3Client(mqttClientBuilder, connectCommand);
+        else { // TODO Error Handling
+            return null;
+        }
+    }
+
+    private Mqtt5AsyncClient connectMqtt5Client(final @NotNull MqttClientBuilder clientBuilder, final @NotNull ConnectCommand connectCommand) {
+        Mqtt5BlockingClient client = clientBuilder.useMqttVersion5().build().toBlocking();
 
         try {
-            final @Nullable Mqtt5Publish willPublish = createWillPublish(connectCommand);
+            final @Nullable Mqtt5Publish willPublish = createMqtt5WillPublish(connectCommand);
 
             Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
                     .sessionExpiryInterval(connectCommand.getSessionExpiryInterval())
@@ -114,7 +174,7 @@ abstract class AbstractMqttClientExecutor {
 
             final Mqtt5Connect connectMessage = connectBuilder.build();
 
-            mqttConnect(client, connectMessage, connectCommand);
+            mqtt5Connect(client, connectMessage, connectCommand);
 
             clientCache.put(connectCommand.getKey(), client.toAsync());
             clientCreationTimes.put(connectCommand.getKey(), LocalDateTime.now());
@@ -123,61 +183,39 @@ abstract class AbstractMqttClientExecutor {
             Logger.error("Client connect failed with reason: {}", throwable.getMessage());
         }
 
+        return client.toAsync();
+    }
 
+    private Mqtt3AsyncClient connectMqtt3Client(final @NotNull MqttClientBuilder clientBuilder, final @NotNull ConnectCommand connectCommand) {
+
+        Mqtt3BlockingClient client = clientBuilder.useMqttVersion3().build().toBlocking();
+
+        try {
+            final @Nullable Mqtt3Publish willPublish = createMqtt3WillPublish(connectCommand);
+
+            Mqtt3ConnectBuilder connectBuilder = Mqtt3Connect.builder()
+                    .keepAlive(connectCommand.getKeepAlive())
+                    .cleanSession(connectCommand.isCleanStart())
+                    .willPublish(willPublish);
+
+            final Mqtt3Connect connectMessage = connectBuilder.build();
+
+            mqtt3Connect(client, connectMessage, connectCommand);
+
+            clientCache.put(connectCommand.getKey(), client.toAsync());
+            clientCreationTimes.put(connectCommand.getKey(), LocalDateTime.now());
+
+        } catch (Exception throwable) {
+            Logger.error("Client connect failed with reason: {}", throwable.getMessage());
+        }
         return client.toAsync();
     }
 
 
-    private Mqtt5AsyncClient doSubscribe(Mqtt5AsyncClient client, final @NotNull SubscribeCommand subscribeCommand) {
-
-        for (int i = 0; i < subscribeCommand.getTopics().length; i++) {
-            final String topic = subscribeCommand.getTopics()[i];
-            final MqttQos qos = subscribeCommand.getQos().length > i ? subscribeCommand.getQos()[i] : subscribeCommand.getQos()[0];
-
-            mqttSubscribe(client, subscribeCommand, topic, qos);
-
-        }
-
-        return client;
-    }
-
-
-    private Mqtt5AsyncClient doPublish(Mqtt5AsyncClient client, final @NotNull PublishCommand publishCommand) {
-        for (int i = 0; i < publishCommand.getTopics().length; i++) {
-            final String topic = publishCommand.getTopics()[i];
-            final MqttQos qos = publishCommand.getQos()[i];
-
-            client.publishWith()
-                    .topic(topic)
-                    .qos(qos)
-                    .retain(publishCommand.isRetain())
-                    .payload(publishCommand.getMessage())
-                    .send()
-                    .whenComplete((publishResult, throwable) -> {
-                        if (throwable != null) {
-                            if (publishCommand.isDebug()) {
-                                Log.debug("Client publish to topic: {} failed with reason: {} ", topic, throwable.getStackTrace());
-                            } else {
-                                Logger.error("Client publish to topic: {} failed with reason: {}", topic, throwable.getMessage());
-                            }
-                        } else {
-                            final String p = publishCommand.getMessage().toString();
-                            if (publishCommand.isDebug()) {
-                                Log.debug("Client publish to topic: {} message: '{}' ", topic, p);
-                            } else {
-                                Logger.info("Client publish to topic: {} message: '{}... ' ", topic,
-                                        p.length() > 10 ? p.substring(0, 10) : p);
-                            }
-                        }
-                    });
-        }
-        return client;
-    }
-
-    private Mqtt5Publish createWillPublish(final @NotNull ConnectCommand connectCommand) throws Exception {
+    private Mqtt5Publish createMqtt5WillPublish(final @NotNull ConnectCommand connectCommand) {
         // only topic is mandatory for will message creation
         if (connectCommand.getWillTopic() != null) {
-            ByteBuffer willpayload = connectCommand.getWillMessage() != null ? connectCommand.getWillMessage() : null;
+            ByteBuffer willpayload = connectCommand.getWillMessage();
             Mqtt5WillPublishBuilder.Complete builder = Mqtt5WillPublish.builder()
                     .topic(connectCommand.getWillTopic())
                     .payload(willpayload)
@@ -200,6 +238,21 @@ abstract class AbstractMqttClientExecutor {
         return null;
     }
 
+    private Mqtt3Publish createMqtt3WillPublish(final @NotNull ConnectCommand connectCommand) {
+        if (connectCommand.getWillTopic() != null) {
+            ByteBuffer willPayload = connectCommand.getWillMessage();
+            return Mqtt3Publish.builder()
+                    .topic(connectCommand.getWillTopic())
+                    .payload(willPayload)
+                    .qos(connectCommand.getWillQos())
+                    .retain(connectCommand.isWillRetain())
+                    .build();
+        } else if (connectCommand.getWillMessage() != null) {
+            Logger.debug("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
+        }
+        return null;
+    }
+
     private MqttClientBuilder createBuilder(final @NotNull ConnectCommand connectCommand, final @NotNull String identifier) {
 
         return MqttClient.builder()
@@ -209,19 +262,19 @@ abstract class AbstractMqttClientExecutor {
                 .identifier(identifier);
     }
 
-    private Mqtt5AsyncClient getMqttClientFromCacheOrConnect(final @NotNull ConnectCommand connect) {
+    private MqttClient getMqttClientFromCacheOrConnect(final @NotNull ConnectCommand connect) {
         clientCache.setVerbose(connect.isDebug());
 
-        Mqtt5AsyncClient mqtt5Client = null;
+        MqttClient mqttClient = null;
 
         if (clientCache.hasKey(connect.getKey())) {
-            mqtt5Client = clientCache.get(connect.getKey());
+            mqttClient = clientCache.get(connect.getKey());
         }
 
-        if (mqtt5Client == null || (!mqtt5Client.getConfig().getState().isConnectedOrReconnect())) {
-            mqtt5Client = doConnect(connect);
+        if (mqttClient == null || (!mqttClient.getConfig().getState().isConnectedOrReconnect())) {
+            mqttClient = connect(connect);
         }
-        return mqtt5Client;
+        return mqttClient;
     }
 
     private void applyAuthentication(final @NotNull Mqtt5ConnectBuilder connectBuilder, final @NotNull ConnectCommand connectCommand) {
