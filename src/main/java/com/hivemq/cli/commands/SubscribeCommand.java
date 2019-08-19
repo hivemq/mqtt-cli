@@ -23,7 +23,6 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
     }
 
-    private boolean printToSTDOUT = false;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "Set at least one Topic")
     private String[] topics;
@@ -31,8 +30,11 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of Service for the corresponding topic.")
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-of", "--outputFile"}, description = "The file to which the received messages will be written.")
+    @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "The file to which the received messages will be written.")
     private File receivedMessagesFile;
+
+    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console.")
+    private boolean printToSTDOUT;
 
     @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64")
     private boolean base64;
@@ -99,13 +101,14 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         }
 
         if (!ShellCommand.IN_SHELL) {
-            printToSTDOUT = true;
+            if (receivedMessagesFile == null && !printToSTDOUT) {
+                printToSTDOUT = true;
+            }
             try {
                 stay();
             } catch (InterruptedException e) {
                 Logger.error(e.getMessage());
             }
-            printToSTDOUT = false;
         }
 
     }
