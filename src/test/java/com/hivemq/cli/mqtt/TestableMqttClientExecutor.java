@@ -40,32 +40,32 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
 
 
     @Override
-    boolean mqtt5Connect(Mqtt5BlockingClient client, Mqtt5Connect connectMessage, ConnectCommand connectCommand) {
+    boolean mqtt5Connect(@NotNull Mqtt5BlockingClient client, @NotNull Mqtt5Connect connectMessage, @NotNull ConnectCommand connectCommand) {
         return false;
     }
 
     @Override
-    boolean mqtt3Connect(Mqtt3BlockingClient client, Mqtt3Connect connectMessage, ConnectCommand connectCommand) {
+    boolean mqtt3Connect(@NotNull Mqtt3BlockingClient client, @NotNull Mqtt3Connect connectMessage, @NotNull ConnectCommand connectCommand) {
         return false;
     }
 
     @Override
-    void mqtt5Subscribe(Mqtt5AsyncClient client, @NotNull SubscribeCommand subscribeCommand, String topic, MqttQos qos) {
+    void mqtt5Subscribe(@NotNull Mqtt5AsyncClient client, @NotNull SubscribeCommand subscribeCommand, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
     @Override
-    void mqtt3Subscribe(Mqtt3AsyncClient client, @NotNull SubscribeCommand subscribeCommand, String topic, MqttQos qos) {
+    void mqtt3Subscribe(@NotNull Mqtt3AsyncClient client, @NotNull SubscribeCommand subscribeCommand, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
     @Override
-    void mqtt5Publish(Mqtt5AsyncClient client, @NotNull PublishCommand publishCommand, String topic, MqttQos qos) {
+    void mqtt5Publish(@NotNull Mqtt5AsyncClient client, @NotNull PublishCommand publishCommand, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
     @Override
-    void mqtt3Publish(Mqtt3AsyncClient client, @NotNull PublishCommand publishCommand, String topic, MqttQos qos) {
+    void mqtt3Publish(@NotNull Mqtt3AsyncClient client, @NotNull PublishCommand publishCommand, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 }
