@@ -31,24 +31,24 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     MqttClientExecutor() {
     }
 
-    boolean mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull ConnectCommand connectCommand) {
+    void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull ConnectCommand connectCommand) {
         Mqtt5ConnAck connAck = client.connect(connectMessage);
         if (connectCommand.isDebug()) {
             Log.debug("Client connect with {} ", connectCommand.toString());
         } else {
             Logger.info("Client connect with {} ", connAck.getReasonCode());
         }
-        return client.getConfig().getState().isConnected();
+        client.getConfig().getState();
     }
 
-    boolean mqtt3Connect(final @NotNull Mqtt3BlockingClient client, final @NotNull Mqtt3Connect connectMessage, final @NotNull ConnectCommand connectCommand) {
+    void mqtt3Connect(final @NotNull Mqtt3BlockingClient client, final @NotNull Mqtt3Connect connectMessage, final @NotNull ConnectCommand connectCommand) {
         Mqtt3ConnAck connAck = client.connect(connectMessage);
         if (connectCommand.isDebug()) {
             Log.debug("Client connect with {} ", connectCommand.toString());
         } else {
             Logger.info("Client connect with {} ", connAck.getReturnCode());
         }
-        return client.getConfig().getState().isConnected();
+        client.getConfig().getState();
     }
 
     void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final @NotNull String topic, final @NotNull MqttQos qos) {
@@ -59,7 +59,9 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         }
         PrintWriter finalFileWriter = fileWriter;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (finalFileWriter != null) finalFileWriter.close();
+            if (finalFileWriter != null) {
+                finalFileWriter.close();
+            }
         }));
 
 
@@ -69,7 +71,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .callback(publish -> {
 
                     byte[] payload = publish.getPayloadAsBytes();
-                    final String payloadMessage = subscribeCommand.isBase64() ? Base64.toBase64String(payload) : new String(payload);
+                    final String payloadMessage = applyBase64EncodingIfSet(subscribeCommand.isBase64(), payload);
 
                     if (finalFileWriter != null) {
                         finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
@@ -111,7 +113,9 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         }
         PrintWriter finalFileWriter = fileWriter;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (finalFileWriter != null) finalFileWriter.close();
+            if (finalFileWriter != null) {
+                finalFileWriter.close();
+            }
         }));
 
 
@@ -121,7 +125,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .callback(publish -> {
 
                     byte[] payload = publish.getPayloadAsBytes();
-                    final String payloadMessage = subscribeCommand.isBase64() ? new String(Base64.getEncoder().encode(payload)) : new String(payload);
+                    final String payloadMessage = applyBase64EncodingIfSet(subscribeCommand.isBase64(), payload);
 
                     if (finalFileWriter != null) {
                         finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
@@ -155,7 +159,6 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 });
     }
 
-
     void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos) {
 
         client.publishWith()
@@ -167,17 +170,16 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((publishResult, throwable) -> {
                     if (throwable != null) {
                         if (publishCommand.isDebug()) {
-                            Log.debug("Client publish to topic: {} failed with reason: {} ", topic, throwable.getStackTrace());
+                            Log.debug("Client published to topic: {} failed with reason: {} ", topic, throwable.getStackTrace());
                         } else {
-                            Logger.error("Client publish to topic: {} failed with reason: {}", topic, throwable.getMessage());
+                            Logger.error("Client published to topic: {} failed with reason: {}", topic, throwable.getMessage());
                         }
                     } else {
                         final String p = publishCommand.getMessage().toString();
                         if (publishCommand.isDebug()) {
-                            Log.debug("Client publish to topic: {} message: '{}' ", topic, p);
+                            Log.debug("Client published to topic: {} message: '{}' ", topic, p);
                         } else {
-                            Logger.info("Client publish to topic: {} message: '{}... ' ", topic,
-                                    p.length() > 10 ? p.substring(0, 10) : p);
+                            Logger.info("Client published to topic: {} message: '{}... ' ", topic, p.substring(0, 10));
                         }
                     }
                 });
@@ -194,19 +196,27 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((publishResult, throwable) -> {
                     if (throwable != null) {
                         if (publishCommand.isDebug()) {
-                            Log.debug("Client publish to topic: {} failed with reason: {} ", topic, throwable.getStackTrace());
+                            Log.debug("Client published to topic: {} failed with reason: {} ", topic, throwable.getStackTrace());
                         } else {
-                            Logger.error("Client publish to topic: {} failed with reason: {}", topic, throwable.getMessage());
+                            Logger.error("Client published to topic: {} failed with reason: {}", topic, throwable.getMessage());
                         }
                     } else {
                         final String p = publishCommand.getMessage().toString();
                         if (publishCommand.isDebug()) {
-                            Log.debug("Client publish to topic: {} message: '{}' ", topic, p);
+                            Log.debug("Client published to topic: {} message: '{}' ", topic, p);
                         } else {
-                            Logger.info("Client publish to topic: {} message: '{}... ' ", topic,
-                                    p.length() > 10 ? p.substring(0, 10) : p);
+                            Logger.info("Client published to topic: {} message: '{}... ' ", topic, p.substring(0, 10));
                         }
                     }
                 });
+    }
+
+
+    private String applyBase64EncodingIfSet(boolean encode, byte[] payload) {
+        if (encode) {
+            return Base64.toBase64String(payload);
+        } else {
+            return new String(payload);
+        }
     }
 }
