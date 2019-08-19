@@ -7,7 +7,6 @@ import picocli.CommandLine;
 @CommandLine.Command
 public abstract class MqttCommand extends AbstractCommand implements CliCommand {
 
-    //TODO Implement complete
     @CommandLine.Option(names = {"-v", "--version"}, defaultValue = "5", converter = MqttVersionConverter.class, description = "The mqtt version used by the client.")
     private MqttVersion version;
 

@@ -153,9 +153,10 @@ abstract class AbstractMqttClientExecutor {
             return connectMqtt5Client(mqttClientBuilder, connectCommand);
         else if (connectCommand.getVersion() == MqttVersion.MQTT_3_1_1)
             return connectMqtt3Client(mqttClientBuilder, connectCommand);
-        else { // TODO Error Handling
-            return null;
-        }
+
+        Logger.debug("The MQTT Version specified is not supported - Version was {}", connectCommand.getVersion());
+
+        return null;
     }
 
     private Mqtt5AsyncClient connectMqtt5Client(final @NotNull MqttClientBuilder clientBuilder, final @NotNull ConnectCommand connectCommand) {
