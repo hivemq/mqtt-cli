@@ -167,7 +167,7 @@ hmq> con {  [-h <hostname>]
 If left blank the user will be prompted for the password in console.
 |
 
-| ```-c```   | ```--clean``` | Disable clean start if set. | ```True```
+| ``-c``   | ```--clean``` | Disable clean start if set. | ```True```
 
 | ```-s```    | ```--secure```  | Use the default SSL configuration. | ```False```
 
