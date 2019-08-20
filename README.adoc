@@ -1,3 +1,5 @@
+:sectnums:
+:sectanchors:
 = HiveMQ Client Command Line Interface
 
 **HiveMQ-CLI** is the official HiveMQ MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT Clients which uses the link:_includes/https://github.com/hivemq/hivemq-mqtt-client[HiveMQ MQTT Client API].
@@ -26,26 +28,293 @@ The CLI was written in the link:_includes/https://www.oracle.com/technetwork/jav
 For *Mac OS X* and *Linux* systems use link:_includes/https://brew.sh/[Homebrew] to install HiveMQ-CLI via the link:_includes/https://github.com/hivemq/homebrew-hivemq-cli[HiveMQ-CLI Tap].
 
 ```
-brew tap hivemq/hivemq-cli
+$ brew tap hivemq/hivemq-cli
 ```
 
 ```
-brew install hivemq-cli
+$ brew install hivemq-cli
 ```
 
 NOTE: As the current tap repository is still a private repository please follow link:_includes/mosquitto.org/man/mosquitto_pub-1.html[this guide] if you face any authentication problems.
 
 == Usage
 
-=== dsg
+=== Synopsis
 
 ```
-$ mqtt [METHOD] URL [ITEM [ITEM]]
-
+$ hivemq-cli [flags] [METHOD] [OPTION [OPTION]]
 ```
 
-See also mqtt --help.
+Supported methods:
 
+* pub
+* sub
+* shell
+** pub
+** sub
+** con
+** dis
+** ls
+
+See also ```hivemq-cli --help```.
+
+=== Examples
+
+Basic Publish:
+
+```
+$ hivemq-cli pub -t topic -m "Hello World"
+```
+
+Basic Subscribe (will block the console to output published mesages):
+
+```
+$ hivemq-cli sub -t topic
+>
+```
+
+Interactive Shell:
+
+```
+$ hivemq-cli shell
+hmq>
+```
+
+Connect Client with identifier in Shell
+
+```
+hmq> con -i hmqShell -h localhost
+```
+
+[[Connect]]
+== Connect
+
+NOTE: Connect builds the basic wrapper of the publish and subscribe commands.
+Therefore all Connect Options can also be used in publish and subscribe.
+
+NOTE: This method is only accessible in Shell-Mode
+
+The Connect Method creates a client and connects it to the specified broker.
+The Client will stay connected until it is disconnected by the broker or the dis method is called.
+To list all of the connected clients use the <<TODO>> method.
+
+=== Simple Examples
+
+|===
+|Command |Explanation
+
+| ```hmq> con ```
+| Creates and connect a new MQTT Client with the <<default setting>>
+
+| ```hmq> con -v 3 -h myHost```
+| Creates and connects an MQTT 3.1.1 Client at myHost with the default port
+
+| ```hmq> con -i hmq-client -p 1884```
+| Creates and connects an MQTT client at localhost with port 1884 which is identified by "hmq-client".
+|===
+
+See also ```hivemq-cli con --help```
+
+=== Synopsis
+
+```
+hmq> con {  [-h <hostname>]
+            [-v <mqtt-version>]
+            [-p <port-number>]
+            [-i <client-identifier>]
+            [-u <username>]
+            [-pw <password>]
+            [-c <clean-session>]
+            [-s <use-default-ssl>]
+            [-se <session-expiry>]
+            [-wt <will-message-topic>]
+            [-wq <will-quality-of-service>]
+            [-wm <will-message-payload>]
+            [-wr <will-retain>]
+            [-we <will-expiry>]
+            [-wd <will-delay-interval>]
+            [-wp <will-payload-format>]
+            [-wc <will-content>]
+            [-wrt <will-response-topic>]
+            [-wcd <will-correlation-data>]
+            [-wu <will-user-properties>]
+            [--cafile <path-to-certificate>]
+            [--capath <path-to-certificate-directory>]
+            [--ciphers <tls-ciphersuites>]
+            [--tls-version <tls-version>]
+            [--cert <path-to-client-certificate>
+             --key <path-to-private-key>]
+}
+```
+
+=== Options
+
+|===
+|Option |Long Version | Explanation | Default
+
+| ```-h```   | ```--host```| The MQTT host. | ```localhost```
+
+| ```-v```   | ```--version```| The MQTT version can be set to 3 or 5. | ```MQTT  v.5.0```
+
+| ```-p```  | ```--port```| The MQTT port. | ```1883```
+
+| ```-i```   | ```--identifier``` | A unique Client identifier can be defined. | A randomly defined UTF-8 String will be generated.
+
+| ```-u```   | ```--user``` | A User name for authentication can be defined. |
+
+| ```-pw```  | ```--password``` | A password for authentication can be defined directly.
+
+If left blank the user will be prompted for the password in console.
+|
+
+| ```-c```   | ```--clean``` | Disable clean start if set. | ```True```
+
+| ```-s```    | ```--secure```  | Use the default SSL configuration. | ```False```
+
+| ```-se```  | ```--sessionExpiry``` | Session Expiry value in seconds. | ```0``` (No Expiry)
+
+| ```-wt```  | ```--willTopic``` | Topic of the Will message.  |
+
+| ```-wq```   | ```--willQualityOfService``` | QoS level of the Will message. | ```0```
+
+| ```-wm```  | ```--willPayload``` | Payload of the Will Message. |
+| ```-wr```   | ```--willRetain```  | Retain the Will message. | ```False```
+| ```-we```   | ```--willMessageExpiryInterval```   | Lifetime of the will message in seconds.
+
+Can be disabled by setting it to ```4_294_967_295```| ```4_294_967_295``` (Disabled)
+
+| ```-wd``` | ```--willDelayInterval``` | Will delay interval in seconds. | ```0```
+
+| ```-wp```  | ```--willPayloadFormatIndicator``` |Payload Format can be explicitly specified as ```UTF8``` else it may be ``UNSPECIFIED``. |
+
+| ```-wc```   | ```--willContentType``` |   Description of the Will Message's content. |
+
+| ```-wrt```  | ```--willResponseTopic``` | Topic Name for a response message.   |
+
+| ```-wcd```  | ```--willCorrelationData``` | Correlation Data of the Will Message  |
+
+| ```-wu```   | ```--willUserProperties```  | User Properties of the Will Message can be defined like
+
+```key=value``` for single pair or ```key1=value1\|key2=value2``` for multiple pairs. |
+
+| | ```--cafile```    | Path to a file containing a trusted CA certificate to enable encrypted certificate based communication. |
+
+|   | ```--capath```  | Path to a directory containing trusted CA certificates to enable encrypted certificate based communication. |
+
+|   | ```--ciphers```  | The supported cipher suites in IANA string format concatenated by the ':' character if more than one cipher should be supported.
+e.g ```TLS_CIPHER_1:TLS_CIPHER_2```
+
+See https://www.iana.org/assignments/tls-parameters/tls-parameters.xml for supported cipher suite strings.
+ |
+|   |   ```--tls-version```   |   The TLS version to use -
+```TLSv1.1```
+```TLSv1.2```
+```TLSv1.3```
+| ```TLSv1.2```
+
+|   |   ```--cert```  |   The path to the client certificate to use for client-side authentication. |
+
+|   |   ```--key```   |   The path to the client certificate corresponding  private key to use for client-side authentication.    |
+|===
+
+=== Examples
+
+Connect a client to myHost on port 1884:
+
+```
+hmq> con -h myHost -p 1884
+```
+
+Connect a client to the default host on default port using authentication:
+
+```
+hmq> con -u username -pw password
+# Or omit the password to get it prompted
+hmq> con -u username -pw
+Enter value for --password (The password for the client UTF-8 String.):
+```
+
+Connect a client on default settings and use it to publish:
+
+```
+hmq> con -i myClient
+hmq> pub -i myClient -t test -m "Hello World"
+```
+
+Connect a client with a Will message:
+
+```
+hmq> con -wt willtopic -wq 2 -wm "Client disconnected ungracefully"
+```
+
+Connect a client with SSL using client side and server side authentication with a password encrypted private key.
+
+```
+hmq> con --cafile pathToServerCertificate.pem --tls-version TLSv.1.3
+         --cert pathToClientCertificate.pem --key pathToClientKey.pem
+Enter private key password:
+```
+
+== Publish
+
+NOTE: Publish supports all Connect options.
+Therefore all Connect options can be used with publish.
+
+NOTE: This command can also be used in shell mode.
+
+Publishes a message to one or more topics.
+
+=== Simple Examples
+
+|===
+|Command |Explanation
+
+| ```hivemq-cli pub -t test -m "Hello" ```
+| Publishes the message "Hello" to the test topics on the <<default setting>>
+
+| ```hivemq-cli pub -t test1 -t test2 -m "Hello Tests"```
+| Publishes the message "Hello Tests" on both test topics on the <<default settings>>
+
+| ```hivemq-cli pub -t test -m "Hello" -h localhost -p 1884```
+| Publishes the message "Hello" on localhost:1884
+|===
+
+See also ```hivemq-cli pub --help```
+
+=== Synopsis
+
+```
+hivemqcli pub { [[Connect-Option] [Connect-Option]]
+                -t message-topic...
+                -m message
+                [-r retain]
+                [-q qos...]
+}
+```
+
+=== Options
+
+|===
+|Option |Long Version | Explanation | Default
+
+| ```-t```   | ```--topic```| The MQTT Topic where the message will be published. |
+| ```-m```| ```--message``` | The message which will be published on the topic. |
+| ```-r```| ```--retain``` | Message will be retained. | ```False```
+| ```-q``` | ```--qos``` | Use a defined Quality of Service on all topics if only one qos is specified.
+
+You can define a specific QoS-Level for every topic. See <<Examples>> | ```0```
+
+|===
+
+=== Examples
+
+== Subscribe
+
+== Disconnect
+
+== List
+
+== Clear
 
 === Methods Overview
 The following Methods are supported
@@ -75,15 +344,13 @@ $ mqtt sub @/path2my/yamlFile.yml
 
 ```
 
-
 === Detailed description
 
 ==== mqtt con
 
-- Creates a client and connect them. The client can stays connected.
+- Creates a client and connect them.The client can stays connected.
 - This is especially useful for the shell mode in addition with further mqtt-packet usage.
-- Attributes: Client identifier, Will properties, Will topic, Will payload, User name, password and session state.
-
+- Attributes:Client identifier, Will properties, Will topic, Will payload, User name, password and session state.
 
 .Simple Examples
 |===
@@ -102,7 +369,6 @@ $ mqtt sub @/path2my/yamlFile.yml
 All further attributes are not mandatory.
 
 .Full Syntax
-
 ```
 mqtt con { @<fileName> |
                 -v              {3|5}
@@ -226,12 +492,12 @@ mqtt con @<fileName>
 
 ```
 mqtt sub    { @<fileName> |
-                <Client Settings>
+<Client Settings>
 -t      {$|[<topicFilter> [,<topicFilter>]]}
 -q      [<0|1|2> [,<0|1|2>]]
 -b64    {0|1}
 -f      {'filename'}
-            }
+}
 ```
 
 |===
@@ -264,22 +530,22 @@ As mentioned on top, all details of the commands can be packed into yaml/json fi
 
 ```
 mqtt:
-   _version: 5
-   method: con
-   client:
-    identifier: C1
-    user: Max
-    password: "$"
-    cleanStart: 1
-    sessionExpiry: 0
-    will:
-     properties:
-      p:
-       - "p1:x1"
-       - "p2:x2"
-     topic: "/myLastWill"
-     payload: "@/path2my/will.yaml"
-    stayConnected: 1
+_version: 5
+method: con
+client:
+identifier: C1
+user: Max
+password: "$"
+cleanStart: 1
+sessionExpiry: 0
+will:
+properties:
+p:
+- "p1:x1"
+- "p2:x2"
+topic: "/myLastWill"
+payload: "@/path2my/will.yaml"
+stayConnected: 1
 ```
 
 
@@ -287,17 +553,17 @@ mqtt:
 
 ```
 mqtt:
- method: sub
- client:
-    _file: "/path2my/con.yaml"
- topics:
-  topic:
-   -
-   name: topic1
-    qos: 0
-   -
-   name: topic2
-    qos: 1
+method: sub
+client:
+_file: "/path2my/con.yaml"
+topics:
+topic:
+-
+name: topic1
+qos: 0
+-
+name: topic2
+qos: 1
 ```
 
 
