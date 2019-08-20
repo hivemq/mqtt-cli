@@ -85,7 +85,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     if (subscribeCommand.isDebug()) {
                         Log.debug("Client received on topic: {} message: '{}' ", topic, payloadMessage);
                     } else {
-                        Logger.info("Client received msg: '{}...' ", payloadMessage.length() > 10 ? trimMessage(payloadMessage) : payloadMessage);
+                        Logger.info("Client received msg: '{}...' ", trimMessage(payloadMessage));
                     }
 
                 })
@@ -139,7 +139,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     if (subscribeCommand.isDebug()) {
                         Log.debug("Client received on topic: {} message: '{}' ", topic, payloadMessage);
                     } else {
-                        Logger.info("Client received msg: '{}...' ", payloadMessage.length() > 10 ? trimMessage(payloadMessage) : payloadMessage);
+                        Logger.info("Client received msg: '{}...' ", trimMessage(payloadMessage));
                     }
 
                 })
