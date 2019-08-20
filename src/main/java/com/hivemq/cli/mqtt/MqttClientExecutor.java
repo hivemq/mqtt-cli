@@ -85,7 +85,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     if (subscribeCommand.isDebug()) {
                         Log.debug("Client received on topic: {} message: '{}' ", topic, payloadMessage);
                     } else {
-                        Logger.info("Client received msg: '{}...' ", payloadMessage.length() > 10 ? payloadMessage.substring(0, 10) : payloadMessage);
+                        Logger.info("Client received msg: '{}...' ", payloadMessage.length() > 10 ? trimMessage(payloadMessage) : payloadMessage);
                     }
 
                 })
@@ -139,7 +139,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     if (subscribeCommand.isDebug()) {
                         Log.debug("Client received on topic: {} message: '{}' ", topic, payloadMessage);
                     } else {
-                        Logger.info("Client received msg: '{}...' ", payloadMessage.length() > 10 ? payloadMessage.substring(0, 10) : payloadMessage);
+                        Logger.info("Client received msg: '{}...' ", payloadMessage.length() > 10 ? trimMessage(payloadMessage) : payloadMessage);
                     }
 
                 })
@@ -179,11 +179,12 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         if (publishCommand.isDebug()) {
                             Log.debug("Client published to topic: {} message: '{}' ", topic, p);
                         } else {
-                            Logger.info("Client published to topic: {} message: '{}... ' ", topic, p.substring(0, 10));
+                            Logger.info("Client published to topic: {} message: '{}... ' ", topic, trimMessage(p));
                         }
                     }
                 });
     }
+
 
     void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, final @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos) {
 
@@ -205,18 +206,27 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         if (publishCommand.isDebug()) {
                             Log.debug("Client published to topic: {} message: '{}' ", topic, p);
                         } else {
-                            Logger.info("Client published to topic: {} message: '{}... ' ", topic, p.substring(0, 10));
+                            Logger.info("Client published to topic: {} message: '{}... ' ", topic, trimMessage(p));
                         }
                     }
                 });
     }
 
 
-    private @NotNull String applyBase64EncodingIfSet(boolean encode, byte[] payload) {
+    private @NotNull String applyBase64EncodingIfSet(final boolean encode, final byte[] payload) {
         if (encode) {
             return Base64.toBase64String(payload);
         } else {
             return new String(payload);
         }
+    }
+
+    private @NotNull String trimMessage(String p) {
+        if (p.length() > 10) {
+            return p.substring(0, 10);
+        } else {
+            return p;
+        }
+
     }
 }
