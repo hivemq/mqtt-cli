@@ -60,7 +60,7 @@ public class ListClientsCommand implements Runnable {
 
         final TreeMap<String, MqttClient> sortedClients = new TreeMap<>(comparator);
 
-        for (String key : clientKeys) {
+        for (final String key : clientKeys) {
             final MqttClient client = clientCache.get(key);
             if (client.getConfig().getState().isConnectedOrReconnect()) {
                 sortedClients.put(key, client);

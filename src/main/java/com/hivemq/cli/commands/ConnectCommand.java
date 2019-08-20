@@ -162,22 +162,30 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
 
     private void logUnusedOptions() {
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
-            if (sessionExpiryInterval != 0)
+            if (sessionExpiryInterval != 0) {
                 Logger.debug("Session Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            if (willMessageExpiryInterval != 4294967295L)
+            }
+            if (willMessageExpiryInterval != 4294967295L) {
                 Logger.debug("Will Message Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            if (willPayloadFormatIndicator != null)
+            }
+            if (willPayloadFormatIndicator != null) {
                 Logger.debug("Will Payload Format was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            if (willDelayInterval != 0)
+            }
+            if (willDelayInterval != 0) {
                 Logger.debug("Will Delay Interval was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            if (willContentType != null)
+            }
+            if (willContentType != null) {
                 Logger.debug("Will Content Type was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            if (willResponseTopic != null)
+            }
+            if (willResponseTopic != null) {
                 Logger.debug("Will Response Topic was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            if (willCorrelationData != null)
+            }
+            if (willCorrelationData != null) {
                 Logger.debug("Will Correlation Data was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            if (willUserProperties != null)
+            }
+            if (willUserProperties != null) {
                 Logger.debug("Will User Properties was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
         }
     }
 

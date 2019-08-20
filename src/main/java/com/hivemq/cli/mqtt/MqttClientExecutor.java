@@ -212,7 +212,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
 
-    private String applyBase64EncodingIfSet(boolean encode, byte[] payload) {
+    private @NotNull String applyBase64EncodingIfSet(boolean encode, byte[] payload) {
         if (encode) {
             return Base64.toBase64String(payload);
         } else {

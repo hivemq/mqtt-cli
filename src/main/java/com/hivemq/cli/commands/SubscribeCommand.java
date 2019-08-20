@@ -1,8 +1,10 @@
 package com.hivemq.cli.commands;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
@@ -90,7 +92,7 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         }
 
         try {
-            arrangeQosToMatchTopics();
+            qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(this);
         } catch (Exception ex) {
             if (isDebug()) {
@@ -110,16 +112,6 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
             printToSTDOUT = false;
         }
 
-    }
-
-    private void arrangeQosToMatchTopics() {
-        if (topics.length != qos.length && qos.length == 1) {
-            MqttQos defaultQos = qos[0];
-            qos = new MqttQos[topics.length];
-            Arrays.fill(qos, defaultQos);
-        } else if (topics.length != qos.length) {
-            throw new IllegalArgumentException("Topics do not match up to the QoS given. Topics Size {" + topics.length + "}, QoS Size {" + qos.length + "}");
-        }
     }
 
     private void stay() throws InterruptedException {
