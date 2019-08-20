@@ -1,15 +1,43 @@
-# HiveMQ client command line tool **mqtt**
+= HiveMQ Client Command Line Interface
 
-## Under Construction! ##
+**HiveMQ-CLI** is the official HiveMQ MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT Clients which uses the link:_includes/https://github.com/hivemq/hivemq-mqtt-client[HiveMQ MQTT Client API].
 
-* Mqtt is a command line interface for create and connect MQTT 5 clients, subscribe to topics, publish messages and disconnects client. Auth paket for MQTT 5 clients is also available.
-* Mqtt works by default with MQTT 5, but working with MQTT 3 is also possible.
-* Mqtt parameters can be read from cmd line or alternatively from a json/yaml file, that contains the description.
+If you have any questions feel free to open link:_includes/https://github.com/hivemq/hivemq-cli/issues/new[a new GitHub issue].
+You can follow the development progess of HiveMQ-CLI on link:_inlcudes/https://github.com/hivemq/hivemq-cli/projects[the GitHub Projects Section]
 
+== Main features
 
-This overview covers command line syntax and file description, explains the command operations, and provides common examples.
+* Support of the main MQTT Client methods *subscribe*, *publish*, *connect*, *disconnect*
+* Interactive Shell for client connection handling
+* MQTT 3.1.1 and MQTT 5.0 feature support
+* SSL/TLS Support
+* Authentication
 
-## Synopsis:
+== Installation
+
+=== Prerequisites
+
+At least Java 8 is required to run HiveMQ-CLI.
+
+The CLI was written in the link:_includes/https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html[11.0.4 Java release] which is the preferred version to run this project.
+
+=== Installing using a package manager
+
+For *Mac OS X* and *Linux* systems use link:_includes/https://brew.sh/[Homebrew] to install HiveMQ-CLI via the link:_includes/https://github.com/hivemq/homebrew-hivemq-cli[HiveMQ-CLI Tap].
+
+```
+brew tap hivemq/hivemq-cli
+```
+
+```
+brew install hivemq-cli
+```
+
+NOTE: As the current tap repository is still a private repository please follow link:_includes/mosquitto.org/man/mosquitto_pub-1.html[this guide] if you face any authentication problems.
+
+== Usage
+
+=== dsg
 
 ```
 $ mqtt [METHOD] URL [ITEM [ITEM]]
