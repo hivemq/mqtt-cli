@@ -1,8 +1,10 @@
 package com.hivemq.cli.commands;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
@@ -88,7 +90,9 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         if (isDebug()) {
             Logger.debug("Command: {} ", this);
         }
+
         try {
+            qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(this);
         } catch (Exception ex) {
             if (isDebug()) {

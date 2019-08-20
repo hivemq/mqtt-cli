@@ -1,8 +1,12 @@
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.ConnectCommand;
+import com.hivemq.cli.commands.PublishCommand;
 import com.hivemq.cli.commands.SubscribeCommand;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
+import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
@@ -34,18 +38,34 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
         return subscribeTopic;
     }
 
-    @Override
-    boolean mqttConnect(@NotNull Mqtt5BlockingClient client, Mqtt5Connect connectMessage, ConnectCommand connectCommand) {
 
-        connectMgs = connectMessage;
-        subscribeTopic = new ArrayList<>();
-        return true;
+    @Override
+    boolean mqtt5Connect(@NotNull Mqtt5BlockingClient client, @NotNull Mqtt5Connect connectMessage, @NotNull ConnectCommand connectCommand) {
+        return false;
     }
 
     @Override
-    void mqttSubscribe(Mqtt5AsyncClient client, @NotNull SubscribeCommand subscribeCommand, String topic, MqttQos qos) {
-        subscribeTopic.add(topic);
+    boolean mqtt3Connect(@NotNull Mqtt3BlockingClient client, @NotNull Mqtt3Connect connectMessage, @NotNull ConnectCommand connectCommand) {
+        return false;
     }
 
+    @Override
+    void mqtt5Subscribe(@NotNull Mqtt5AsyncClient client, @NotNull SubscribeCommand subscribeCommand, @NotNull String topic, @NotNull MqttQos qos) {
 
+    }
+
+    @Override
+    void mqtt3Subscribe(@NotNull Mqtt3AsyncClient client, @NotNull SubscribeCommand subscribeCommand, @NotNull String topic, @NotNull MqttQos qos) {
+
+    }
+
+    @Override
+    void mqtt5Publish(@NotNull Mqtt5AsyncClient client, @NotNull PublishCommand publishCommand, @NotNull String topic, @NotNull MqttQos qos) {
+
+    }
+
+    @Override
+    void mqtt3Publish(@NotNull Mqtt3AsyncClient client, @NotNull PublishCommand publishCommand, @NotNull String topic, @NotNull MqttQos qos) {
+
+    }
 }
