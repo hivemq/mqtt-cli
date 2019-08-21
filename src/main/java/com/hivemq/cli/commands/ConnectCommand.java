@@ -137,6 +137,8 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
             } catch (Exception e) {
                 Logger.debug(e);
             }
+        } else {
+            sslConfig = null;
         }
 
         logUnusedOptions();
