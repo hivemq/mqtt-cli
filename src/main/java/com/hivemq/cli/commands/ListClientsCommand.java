@@ -6,6 +6,7 @@ import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import org.jetbrains.annotations.NotNull;
+import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -16,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-@CommandLine.Command(name = "ls",
+@CommandLine.Command(name = "ls", aliases = "list",
         description = "List all connected clients with their respective identifieres",
         mixinStandardHelpOptions = true)
 public class ListClientsCommand implements Runnable {
@@ -40,9 +41,21 @@ public class ListClientsCommand implements Runnable {
         outputDetailedClientInformation = allTrue;
     }
 
+    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode.")
+    private boolean debug;
+
 
     @Override
     public void run() {
+
+        if (ShellCommand.IN_SHELL && ShellCommand.DEBUG) {
+            debug = true;
+        }
+
+        if (debug) {
+            Logger.debug("Command: {}", this);
+        }
+
 
         final ClientCache<String, MqttClient> clientCache = mqttClientExecutor.getClientCache();
         final Map<String, LocalDateTime> creationTimes = mqttClientExecutor.getClientCreationTimes();

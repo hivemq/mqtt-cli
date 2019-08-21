@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-@CommandLine.Command(name = "con", description = "Connects an mqtt client")
+@CommandLine.Command(name = "con", aliases = "connect", description = "Connects an mqtt client")
 public class ConnectCommand extends MqttCommand implements MqttAction {
 
     final MqttClientExecutor mqttClientExecutor;
@@ -131,11 +131,20 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     @Override
     public void run() {
 
+        if (ShellCommand.IN_SHELL && ShellCommand.DEBUG) {
+            setDebug(true);
+        }
+
         if (useBuiltSslConfig()) {
             try {
                 buildSslConfig();
             } catch (Exception e) {
-                Logger.debug(e);
+                if (isDebug()) {
+                    Logger.error("Failed to build ssl config: {}", e);
+                } else {
+                    Logger.error("Failed to build ssl config: {}", e.getMessage());
+                }
+                return;
             }
         } else {
             sslConfig = null;

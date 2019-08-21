@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-@CommandLine.Command(name = "pub", description = "Publish a message to a list of topics")
+@CommandLine.Command(name = "pub", aliases = "publish", description = "Publish a message to a list of topics")
 public class PublishCommand extends ConnectCommand implements MqttAction {
 
 
@@ -75,6 +75,10 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
 
     @Override
     public void run() {
+
+        if (ShellCommand.IN_SHELL && ShellCommand.DEBUG) {
+            setDebug(true);
+        }
 
         if (isDebug()) {
             Logger.debug("Command: {} ", this);

@@ -64,8 +64,8 @@ abstract class AbstractMqttClientExecutor {
                 mqtt5Subscribe((Mqtt5AsyncClient) client, subscribeCommand, topic, qos);
             else if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1)
                 mqtt3Subscribe((Mqtt3AsyncClient) client, subscribeCommand, topic, qos);
-            else {
-                Logger.debug("The Mqtt Version specified is not supported. Version was " + subscribeCommand.getVersion());
+            else { // practical unreachable
+                Logger.error("The Mqtt Version specified is not supported. Version was " + subscribeCommand.getVersion());
             }
         }
 
@@ -83,8 +83,8 @@ abstract class AbstractMqttClientExecutor {
                 mqtt5Publish((Mqtt5AsyncClient) client, publishCommand, topic, qos);
             } else if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
                 mqtt3Publish((Mqtt3AsyncClient) client, publishCommand, topic, qos);
-            } else {
-                Logger.debug("The Mqtt Version specified is not supported. Version was " + publishCommand.getVersion());
+            } else { // practical unreachable
+                Logger.error("The Mqtt Version specified is not supported. Version was " + publishCommand.getVersion());
             }
 
         }
@@ -111,9 +111,10 @@ abstract class AbstractMqttClientExecutor {
     public boolean isConnected(final @NotNull SubscribeCommand subscriber) {
         LoggingContext.put("identifier", subscriber.getIdentifier());
 
+        clientCache.setVerbose(subscriber.isDebug());
+
         if (clientCache.hasKey(subscriber.getKey())) {
             final MqttClient client = clientCache.get(subscriber.getKey());
-            Logger.debug("Client in cache key: {} ", subscriber.getKey());
             return client.getConfig().getState().isConnected();
         }
         return false;
@@ -123,6 +124,8 @@ abstract class AbstractMqttClientExecutor {
     public @NotNull MqttClient connect(final @NotNull ConnectCommand connectCommand) {
         final String identifier = connectCommand.createIdentifier();
         LoggingContext.put("identifier", identifier);
+
+        clientCache.setVerbose(connectCommand.isDebug());
 
         if (connectCommand.getVersion() == MqttVersion.MQTT_5_0) {
             return connectMqtt5Client(connectCommand, identifier);

@@ -139,6 +139,8 @@ hmq> con {  [-h <hostname>]
             [-v <mqtt-version>]
             [-p <port-number>]
             [-i <client-identifier>]
+            [-d <debug>]
+            [-D <verbose>]
             [-u <username>]
             [-pw <password>]
             [-c <clean-session>]
@@ -176,6 +178,10 @@ hmq> con {  [-h <hostname>]
 | ``-p``  | ``--port``| The MQTT port. | ``1883``
 
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly defined UTF-8 String will be generated.
+
+| ``-d``    |   ``--debug``     | Print info level debug messages to the console. | ``False``
+
+| ``-D``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
 
 | ``-u``   | ``--user`` | A username for authentication can be defined. |
 
@@ -304,10 +310,10 @@ See also ``hivemq-cli pub --help``
 
 ```
 hivemq-cli pub { [[Connect-Option] [Connect-Option]]
-                -t message-topic...
-                -m message
-                [-r retain]
-                [-q qos...]
+                -t <message-topic>...
+                -m <message>
+                [-r <retain>]
+                [-q <qos>...]
 }
 ```
 
@@ -373,11 +379,11 @@ See also ``hivemq-cli sub --help``
 
 ```
 hivemq-cli sub { [[Connect-Option] [Connect-Option]]
-                -t message-topic...
-                [-q qos...]
-                [-of output-to-file]
-                [-oc output-to-console]
-                [-b64 base64]
+                -t <message-topic>...
+                [-q <qos>...]
+                [-of <output-to-file>]
+                [-oc <output-to-console>]
+                [-b64 <base64>]
 }
 ```
 
@@ -447,6 +453,21 @@ Therefore tab-completion, command-history, password-masking and other familiar s
 
 The Shell-Mode can be mainly used for connection handling as the Publish and Subscribe commands drop the connections after they are done.
 
+=== Summary
+
+```
+hivemq-cli shell [-d <debug>]
+    { con | pub | sub | dis | ls | cls }
+
+```
+
+|===
+|Option |Long Version | Explanation | Default
+
+| ``-d``   | ``--debug``| Do not use info level debug messages but the detailed debug messages. | ``True``
+|===
+
+Start interactive shell with:
 ```
 $ hivemq-cli shell
 ```
@@ -462,10 +483,12 @@ Disconnect a previously connected client.
 ==== Synopsis
 
 ```
-hivemq-cli shell dis {  [-i identifier]
-                        [-h hostname]
-                        [-p port]
-                        [-v version]
+hivemq-cli shell dis {  [-i <identifier>]
+                        [-h <hostname>]
+                        [-p <port>]
+                        [-v <version>]
+                        [-d <debug>]
+                        [-D <verbose>]
 }
 ```
 
@@ -475,9 +498,17 @@ hivemq-cli shell dis {  [-i identifier]
 |Option |Long Version | Explanation | Default
 
 | ``-i``   | ``--identifier``| The unique identifier of a client. |
+
 | ``-h``| ``--host`` | The host the client is connected to. | ``localhost``
+
 | ``-p``| ``--port`` | The port on which the client is connected. | ``1883``
+
 | ``-v`` | ``--version`` |  The MQTT version which the connected client is using. | ``MQTT  v.5.0``
+
+| ``-d``    |   ``--debug``     | Print info level debug messages to the logfile. | ``False``
+
+| ``-D``    |   ``--verbose``   | Print detailed debug level messages to the logfile. | ``True``
+
 
 |===
 

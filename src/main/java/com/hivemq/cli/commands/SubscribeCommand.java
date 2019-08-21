@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
 
-@CommandLine.Command(name = "sub", description = "Subscribe an mqtt client to a list of topics")
+@CommandLine.Command(name = "sub", aliases = "subscribe", description = "Subscribe an mqtt client to a list of topics")
 public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
 
@@ -89,6 +89,10 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     @Override
     public void run() {
 
+        if (ShellCommand.IN_SHELL && ShellCommand.DEBUG) {
+            setDebug(true);
+        }
+
         if (isDebug()) {
             Logger.debug("Command: {} ", this);
         }
@@ -111,7 +115,11 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
             try {
                 stay();
             } catch (InterruptedException e) {
-                Logger.error(e.getMessage());
+                if (isDebug()) {
+                    Logger.error(e);
+                } else {
+                    Logger.error(e.getMessage());
+                }
             }
         }
 
@@ -119,10 +127,14 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
     private void stay() throws InterruptedException {
         synchronized (this) {
+            boolean debug = isDebug();
+            this.setDebug(false);
             while (mqttClientExecutor.isConnected(this)) {
                 this.wait(500);
             }
-            Logger.debug("Client disconnected.");
+            if (debug) {
+                Logger.debug("Client disconnected.");
+            }
         }
     }
 
