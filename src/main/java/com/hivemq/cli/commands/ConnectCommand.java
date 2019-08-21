@@ -5,6 +5,7 @@ import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
+import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
@@ -140,20 +141,54 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
             sslConfig = null;
         }
 
+        logUnusedOptions();
 
+        connect();
+
+    }
+
+    private void connect() {
         if (isDebug()) {
             Logger.debug("Command: {} ", this);
         }
         try {
             mqttClientExecutor.connect(this);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             if (isDebug()) {
                 Logger.error(ex);
             } else {
                 Logger.error(ex.getMessage());
             }
         }
+    }
 
+    private void logUnusedOptions() {
+        if (getVersion() == MqttVersion.MQTT_3_1_1) {
+            if (sessionExpiryInterval != 0) {
+                Logger.debug("Session Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (willMessageExpiryInterval != 4294967295L) {
+                Logger.debug("Will Message Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (willPayloadFormatIndicator != null) {
+                Logger.debug("Will Payload Format was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (willDelayInterval != 0) {
+                Logger.debug("Will Delay Interval was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (willContentType != null) {
+                Logger.debug("Will Content Type was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (willResponseTopic != null) {
+                Logger.debug("Will Response Topic was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (willCorrelationData != null) {
+                Logger.debug("Will Correlation Data was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (willUserProperties != null) {
+                Logger.debug("Will User Properties was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+        }
     }
 
     private boolean useBuiltSslConfig() {

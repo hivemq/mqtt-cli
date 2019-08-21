@@ -314,6 +314,7 @@ hivemq-cli pub { [[Connect-Option] [Connect-Option]]
 === Options
 
 |===
+
 |Option |Long Version | Explanation | Default
 
 | ``-t``   | ``--topic``| The MQTT topic where the message will be published. |
@@ -561,6 +562,3 @@ Example:
 ```
 hmq> clear
 ```
-
-
-

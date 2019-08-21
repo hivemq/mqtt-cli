@@ -1,8 +1,10 @@
 package com.hivemq.cli.commands;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
@@ -23,7 +25,6 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
     }
 
-    private boolean printToSTDOUT = false;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "Set at least one Topic")
     private String[] topics;
@@ -31,8 +32,11 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of Service for the corresponding topic.")
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-f", "--file"}, description = "The file to which the received messages will be written.")
+    @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "The file to which the received messages will be written.")
     private File receivedMessagesFile;
+
+    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console.")
+    private boolean printToSTDOUT;
 
     @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64")
     private boolean base64;
@@ -88,7 +92,9 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         if (isDebug()) {
             Logger.debug("Command: {} ", this);
         }
+
         try {
+            qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(this);
         } catch (Exception ex) {
             if (isDebug()) {
@@ -99,13 +105,14 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         }
 
         if (!ShellCommand.IN_SHELL) {
-            printToSTDOUT = true;
+            if (receivedMessagesFile == null && !printToSTDOUT) {
+                printToSTDOUT = true;
+            }
             try {
                 stay();
             } catch (InterruptedException e) {
                 Logger.error(e.getMessage());
             }
-            printToSTDOUT = false;
         }
 
     }

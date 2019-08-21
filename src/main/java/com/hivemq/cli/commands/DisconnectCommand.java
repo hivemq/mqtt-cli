@@ -34,7 +34,7 @@ public class DisconnectCommand extends MqttCommand implements MqttAction {
 
         try {
             mqttClientExecutor.disconnect(this);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             if (isDebug()) {
                 Logger.error(ex);
             } else {
