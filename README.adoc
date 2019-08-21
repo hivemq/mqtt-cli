@@ -218,7 +218,10 @@ mqtt sub    { @<fileName> |
         $ - via input from console - prompt
         | 0.
 | -b64  | --base64  | Use Base64-Encoding Format to encode the received publishes | false
-| -f    |   --file  | Output of Subscribe will be appended to the specified existing file or the file will be created | default not used
+| -of    |   --outputToFile  | Output of Subscribe will be appended to the specified existing file or the file will be created | default not used
+| -oc   | --outputToConsole | Output all the received messages to the console | default false for use in shell
+
+default true for use as command alone
 |===
 
 .Full Example
@@ -298,7 +301,7 @@ hivemq-cli shell
 | con   | connect  | Connect a client
 | sub | subscribe | command to subscribe a client to a list of topics
 | pub  | publish | Publish
-| cls | clear | Clears the
+| cls | clear | Clears the Screen
 
 | ls | list | Lists all the connected clients
 |===
