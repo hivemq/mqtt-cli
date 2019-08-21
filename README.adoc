@@ -1,7 +1,10 @@
 :sectnums:
 :sectanchors:
+
+[.text-center]
 = HiveMQ Client Command Line Interface
 
+:icons: font
 **HiveMQ-CLI** is the official HiveMQ MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT Clients which uses the link:_includes/https://github.com/hivemq/hivemq-mqtt-client[HiveMQ MQTT Client API].
 
 If you have any questions feel free to open link:_includes/https://github.com/hivemq/hivemq-cli/issues/new[a new GitHub issue].
@@ -207,7 +210,7 @@ Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
 e.g ``TLS_CIPHER_1:TLS_CIPHER_2``
 
 See https://www.iana.org/assignments/tls-parameters/tls-parameters.xml for supported cipher suite strings.
- |
+|
 |   |   ``--tls-version``   |   The TLS version to use -
 ``TLSv1.1``
 ``TLSv1.2``
