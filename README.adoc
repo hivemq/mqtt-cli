@@ -17,17 +17,17 @@ endif::[]
 
 **HiveMQ-CLI** is the official HiveMQ MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT Clients which uses the link:_includes/https://github.com/hivemq/hivemq-mqtt-client[HiveMQ MQTT Client API].
 
-[.lead]
 If you have any questions feel free to open link:_includes/https://github.com/hivemq/hivemq-cli/issues/new[a new GitHub issue].
-You can follow the development progess of HiveMQ-CLI on link:_inlcudes/https://github.com/hivemq/hivemq-cli/projects[the GitHub Projects Section]
+You can follow the development progress of HiveMQ-CLI on link:_inlcudes/https://github.com/hivemq/hivemq-cli/projects[the GitHub Projects Section].
 
 toc::[]
-== Main features
 
-* Support of the main MQTT Client methods *subscribe*, *publish*, *connect*, *disconnect*
-* Interactive Shell for client connection handling
+== Main Features
+
+* Support of the main MQTT Client methods: *subscribe*, *publish*, *connect*, *disconnect*
+* Interactive shell for client connection handling
 * MQTT 3.1.1 and MQTT 5.0 feature support
-* SSL/TLS Support
+* SSL/TLS support
 * Authentication
 
 == Installation
@@ -41,7 +41,7 @@ At least Java 8 is required to run HiveMQ-CLI.
 
 The CLI was written in the link:_includes/https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html[11.0.4 Java release] which is the preferred version to run this project.
 
-=== Installing using a package manager
+=== Installation using a package manager
 
 For *Mac OS X* and *Linux* systems use link:_includes/https://brew.sh/[Homebrew] to install HiveMQ-CLI via the link:_includes/https://github.com/hivemq/homebrew-hivemq-cli[HiveMQ-CLI Tap].
 
@@ -112,8 +112,8 @@ Therefore all Connect Options can also be used in publish and subscribe.
 NOTE: This method is only accessible in Shell-Mode
 
 The Connect Method creates a client and connects it to the specified broker.
-The Client will stay connected until it is disconnected by the broker or the dis method is called.
-To list all of the connected clients use the <<TODO>> method.
+The Client will stay connected until it is disconnected by the broker or the <<Disconnect>> method is called.
+To list all of the connected clients use the <<List>> method.
 
 === Simple Examples
 
@@ -175,9 +175,9 @@ hmq> con {  [-h <hostname>]
 
 | ``-p``  | ``--port``| The MQTT port. | ``1883``
 
-| ``-i``   | ``--identifier`` | A unique Client identifier can be defined. | A randomly defined UTF-8 String will be generated.
+| ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly defined UTF-8 String will be generated.
 
-| ``-u``   | ``--user`` | A User name for authentication can be defined. |
+| ``-u``   | ``--user`` | A username for authentication can be defined. |
 
 | ``-pw``  | ``--password`` | A password for authentication can be defined directly.
 
@@ -188,14 +188,16 @@ If left blank the user will be prompted for the password in console.
 
 | ``-s``    | ``--secure``  | Use the default SSL configuration. | ``False``
 
-| ``-se``  | ``--sessionExpiry`` | Session Expiry value in seconds. | ``0`` (No Expiry)
+| ``-se``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
 
-| ``-wt``  | ``--willTopic`` | Topic of the Will message.  |
+| ``-wt``  | ``--willTopic`` | Topic of the will message.  |
 
-| ``-wq``   | ``--willQualityOfService`` | QoS level of the Will message. | ``0``
+| ``-wq``   | ``--willQualityOfService`` | QoS level of the will message. | ``0``
 
-| ``-wm``  | ``--willPayload`` | Payload of the Will Message. |
-| ``-wr``   | ``--willRetain``  | Retain the Will message. | ``False``
+| ``-wm``  | ``--willPayload`` | Payload of the will message. |
+
+| ``-wr``   | ``--willRetain``  | Retain the will message. | ``False``
+
 | ``-we``   | ``--willMessageExpiryInterval``   | Lifetime of the will message in seconds.
 
 Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
@@ -204,13 +206,13 @@ Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
 
 | ``-wp``  | ``--willPayloadFormatIndicator`` |Payload Format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 
-| ``-wc``   | ``--willContentType`` |   Description of the Will Message's content. |
+| ``-wc``   | ``--willContentType`` |   Description of the will Message's content. |
 
 | ``-wrt``  | ``--willResponseTopic`` | Topic Name for a response message.   |
 
-| ``-wcd``  | ``--willCorrelationData`` | Correlation Data of the Will Message  |
+| ``-wcd``  | ``--willCorrelationData`` | Correlation data of the will message  |
 
-| ``-wu``   | ``--willUserProperties``  | User Properties of the Will Message can be defined like
+| ``-wu``   | ``--willUserProperties``  | User properties of the will message can be defined like
 
 ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
 
@@ -258,13 +260,13 @@ hmq> con -i myClient
 hmq> pub -i myClient -t test -m "Hello World"
 ```
 
-Connect a client with a Will message:
+Connect a client with a will message:
 
 ```
 hmq> con -wt willtopic -wq 2 -wm "Client disconnected ungracefully"
 ```
 
-Connect a client with SSL using client side and server side authentication with a password encrypted private key.
+Connect a client with SSL using client side and server side authentication with a password encrypted private key:
 
 ```
 hmq> con --cafile pathToServerCertificate.pem --tls-version TLSv.1.3
@@ -287,13 +289,13 @@ Publishes a message to one or more topics.
 |Command |Explanation
 
 | ``hivemq-cli pub -t test -m "Hello" ``
-| Publishes the message "Hello" to the test topics on the <<default setting>>
+| Publish the message "Hello" to the test topics on the <<default setting>>
 
 | ``hivemq-cli pub -t test1 -t test2 -m "Hello Tests"``
-| Publishes the message "Hello Tests" on both test topics on the <<default settings>>
+| Publish the message "Hello Tests" on both test topics on the <<default settings>>
 
 | ``hivemq-cli pub -t test -m "Hello" -h localhost -p 1884``
-| Publishes the message "Hello" on localhost:1884
+| Publish the message "Hello" on localhost:1884
 |===
 
 See also ``hivemq-cli pub --help``
@@ -314,26 +316,26 @@ hivemq-cli pub { [[Connect-Option] [Connect-Option]]
 |===
 |Option |Long Version | Explanation | Default
 
-| ``-t``   | ``--topic``| The MQTT Topic where the message will be published. |
+| ``-t``   | ``--topic``| The MQTT topic where the message will be published. |
 | ``-m``| ``--message`` | The message which will be published on the topic. |
 | ``-r``| ``--retain`` | Message will be retained. | ``False``
-| ``-q`` | ``--qos`` | Use a defined Quality of Service on all topics if only one qos is specified.
+| ``-q`` | ``--qos`` | Use a defined quality of service on all topics if only one qos is specified.
 
-You can define a specific QoS-Level for every topic. See <<Examples>> | ``0``
+You can define a specific qos-Level for every topic. See <<Examples>> | ``0``
 
 |===
 
 === Further Examples
 
-Publish a message with default QoS Exactly Once.
+Publish a message with default qos set to Exactly Once:
 
-NOTE: If you only specify one QoS but more than one topic the QoS will be used as default QoS for all topics.
+NOTE: If you only specify one qos but more than one topic the qos will be used as default QoS for all topics.
 
 ```
 $ hivemq-cli pub -t topic1 -t topic2 -q 2
 ```
 
-Publish a message with a given QoS for each topic. (topic1 will have QoS 0, topic2 QoS 1, topic2 QoS 2)
+Publish a message with a given qos for each topic. (topic1 will have qos 0, topic2 qos 1, topic2 qos 2):
 
 ```
 $ hivemq-cli pub -t topic1 -t topic2 -t topic3 -q 0 -q 1 -q 2
@@ -347,7 +349,7 @@ Therefore all Connect options can be used with subscribe.
 NOTE: This command can also be used in Shell-Mode.
 
 Subscribe a client to one or more topics.
-If the Subscribe-Command is not called in Shell-Mode it will block the console by default and write the received publishes to the console.
+If the Subscribe command is not called in Shell-Mode it will block the console by default and write the received publishes to the console.
 
 === Simple Examples
 
@@ -361,7 +363,7 @@ If the Subscribe-Command is not called in Shell-Mode it will block the console b
 | Subscribe to the topics test1 and test2 on <<Default Settings>> and block the console.
 
 | ``hivemq-cli sub -t test -h localhost -p 1884``
-| Subscribe to topic test at localhost:1884
+| Subscribe to topic test at localhost:1884.
 |===
 
 See also ``hivemq-cli sub --help``
@@ -383,20 +385,20 @@ hivemq-cli sub { [[Connect-Option] [Connect-Option]]
 |===
 |Option |Long Version | Explanation | Default
 
-| ``-t``   | ``--topic``| The MQTT Topic the client will subscribe to. |
+| ``-t``   | ``--topic``| The MQTT topic the client will subscribe to. |
 | ``-q`` | ``--qos`` | Use a defined Quality of Service on all topics if only one qos is specified.
 
 You can define a specific QoS-Level for every topic. See <<Examples>> | ``0``
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` in Shell-Mode, else ``True``
-| ``b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
+| ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
 
 
 |===
 
 === Further Examples
 
-Subscribe to one topic with default QoS Exactly Once.
+Subscribe to one topic with default QoS Exactly Once:
 
 NOTE: If you only specify one QoS but more than one topic the QoS will be used as default QoS for all topics.
 
@@ -404,13 +406,13 @@ NOTE: If you only specify one QoS but more than one topic the QoS will be used a
 $ hivemq-cli sub -t topic1 -t topic2 -q 2
 ```
 
-Subscribe to the given topics with a QoS specified for each. (topic1 will have QoS 0, topic2 QoS 1, topic2 QoS 2)
+Subscribe to the given topics with a QoS specified for each: (topic1 will have QoS 0, topic2 QoS 1, topic2 QoS 2)
 
 ```
 $ hivemq-cli sub -t topic1 -t topic2 -t topic3 -q 0 -q 1 -q 2
 ```
 
-Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in the current directory.
+Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in the current directory:
 
 NOTE: If the file is not created yet it will be created by the CLI. If it is present the received publish messages will be appended to the file.
 
@@ -418,19 +420,19 @@ NOTE: If the file is not created yet it will be created by the CLI. If it is pre
 $ hivemq-cli sub -t topic -of publishes.log
 ```
 
-Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in a specified ``/usr/local/var`` directory.
+Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in a specified ``/usr/local/var`` directory:
 
 ```
 $ hivemq-cli sub -t topic -of /usr/local/var/publishes.log
 ```
 
-Subscribe to a topic in Shell-Mode and output all the received publish messages to the console.
+Subscribe to a topic in Shell-Mode and output all the received publish messages to the console:
 
 ```
 hmq> sub -t topic -oc
 ```
 
-Subscribe to a topic and output all the received messages in base64-encoding.
+Subscribe to a topic and output all the received messages in base64 encoding:
 
 ```
 $ hivemq-cli sub -t topic -b64
@@ -480,14 +482,14 @@ hivemq-cli shell dis {  [-i identifier]
 
 ==== Examples
 
-Connect a client which is identified by myClient and disconnect it afterwards using <<Default Settings>>.
+Connect a client which is identified by myClient and disconnect it afterwards using <<Default Settings>>:
 
 ```
 hmq> con -i myClient
 hmq> dis -i myClient
 ```
 
-Connect a client which is identified by myClient on specific settings and disconnect it afterwards.
+Connect a client which is identified by myClient on specific settings and disconnect it afterwards:
 
 NOTE: Besides the **identifier** also **version**, **hostname** and **port** have to be given to uniquely identify the client.
 If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
@@ -521,7 +523,7 @@ hivemq-cli shell ls {   [-t sort-by-time]
 
 ==== Examples
 
-Connect two clients and list them by default settings.
+Connect two clients and list them by default settings:
 
 ```
 hmq> con -i client1
@@ -532,7 +534,7 @@ client1              localhost:1883
 client2              localhost:1883
 ```
 
-Connect a client and show detailed information about it.
+Connect a client and show detailed information about it:
 
 ```
 hmq> con -i client
