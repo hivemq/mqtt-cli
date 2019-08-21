@@ -7,16 +7,19 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
-
+:icons: font
+:toc:
+:toc-placement!:
 [.text-center]
 = HiveMQ Client Command Line Interface
 
-:icons: font
+
 **HiveMQ-CLI** is the official HiveMQ MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT Clients which uses the link:_includes/https://github.com/hivemq/hivemq-mqtt-client[HiveMQ MQTT Client API].
 
 If you have any questions feel free to open link:_includes/https://github.com/hivemq/hivemq-cli/issues/new[a new GitHub issue].
 You can follow the development progess of HiveMQ-CLI on link:_inlcudes/https://github.com/hivemq/hivemq-cli/projects[the GitHub Projects Section]
 
+toc::[]
 == Main features
 
 * Support of the main MQTT Client methods *subscribe*, *publish*, *connect*, *disconnect*
