@@ -9,13 +9,17 @@ ifdef::env-github[]
 endif::[]
 :icons: font
 :toc:
+:toc-title:
+:sectlinks:
 :toc-placement!:
-[.text-center]
+
 = HiveMQ Client Command Line Interface
 
+image::hivemq-cli-logo.png[align=center]
 
 **HiveMQ-CLI** is the official HiveMQ MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT Clients which uses the link:_includes/https://github.com/hivemq/hivemq-mqtt-client[HiveMQ MQTT Client API].
 
+[.lead]
 If you have any questions feel free to open link:_includes/https://github.com/hivemq/hivemq-cli/issues/new[a new GitHub issue].
 You can follow the development progess of HiveMQ-CLI on link:_inlcudes/https://github.com/hivemq/hivemq-cli/projects[the GitHub Projects Section]
 
@@ -558,6 +562,5 @@ Example:
 hmq> clear
 ```
 
-== Default Settings
 
 
