@@ -140,7 +140,7 @@ hmq> con {  [-h <hostname>]
             [-p <port-number>]
             [-i <client-identifier>]
             [-d <debug>]
-            [-D <verbose>]
+            [-vb <verbose>]
             [-u <username>]
             [-pw <password>]
             [-c <clean-session>]
@@ -482,8 +482,6 @@ hivemq-cli shell dis {  [-i <identifier>]
                         [-h <hostname>]
                         [-p <port>]
                         [-v <version>]
-                        [-d <debug>]
-                        [-vb <verbose>]
 }
 ```
 
@@ -499,11 +497,6 @@ hivemq-cli shell dis {  [-i <identifier>]
 | ``-p``| ``--port`` | The port on which the client is connected. | ``1883``
 
 | ``-v`` | ``--version`` |  The MQTT version which the connected client is using. | ``MQTT  v.5.0``
-
-| ``-d``    |   ``--debug``     | Print info level debug messages to the logfile. | ``False``
-
-| ``-vb``    |   ``--verbose``   | Print detailed debug level messages to the logfile. | ``True``
-
 
 |===
 
