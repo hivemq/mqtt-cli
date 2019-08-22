@@ -29,6 +29,7 @@ public class ShellCommand implements Runnable {
     static boolean IN_SHELL = false;
     static boolean DEBUG = true;
     static boolean VERBOSE = true;
+    private String logfilePath;
 
     LineReaderImpl reader;
 
@@ -64,7 +65,7 @@ public class ShellCommand implements Runnable {
                         "{message}")
                 .activate();
 
-        Logger.info("Writing Logfile to {}", rfw.getFilename());
+        logfilePath = rfw.getFilename();
 
         final CommandLine cmd = new CommandLine(spec);
 
@@ -86,6 +87,9 @@ public class ShellCommand implements Runnable {
 
             PrintWriter out = terminal.writer();
             out.println(cmd.getUsageMessage());
+            out.flush();
+
+            Logger.info("Writing Logfile to {}", logfilePath);
 
             String line;
             while (true) {
