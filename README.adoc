@@ -471,6 +471,12 @@ NOTE: The commands **Connect**, **Disconnect**, **List** and **Clear** are only 
 
 NOTE: A client is uniquely identified in the CLI by the **version**, **hostname**, **port** and the unique **identifier**.
 
+=== Logging
+
+By default the Shell-Model logs all commands in verbose mode to a uniquely named logfile which is placed in a temp directory which is printed out at the start of the shell.
+
+NOTE: In Shell mode the **-d** and **-vb** options for every command will be overridden the default shell debug level.
+
 === Disconnect
 
 Disconnect a previously connected client.

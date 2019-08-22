@@ -50,11 +50,13 @@ public class ShellCommand implements Runnable {
 
         String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}";
 
+        String tmpDir = System.getProperty("java.io.tmpdir");
+
+        RollingFileWriter rfw = new RollingFileWriter(tmpDir + "/hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
 
         // TODO Read default config for debug and verbose from a property file
-
         Configurator.defaultConfig()
-                .writer(new RollingFileWriter("hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10)),
+                .writer(rfw,
                         Level.TRACE,
                         logfileFormatPattern)
                 .addWriter(new ConsoleWriter(),
@@ -62,6 +64,7 @@ public class ShellCommand implements Runnable {
                         "{message}")
                 .activate();
 
+        Logger.info("Writing Logfile to {}", rfw.getFilename());
 
         final CommandLine cmd = new CommandLine(spec);
 
