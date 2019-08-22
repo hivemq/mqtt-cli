@@ -11,6 +11,7 @@ import org.pmw.tinylog.Level;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.labelers.TimestampLabeler;
 import org.pmw.tinylog.policies.SizePolicy;
+import org.pmw.tinylog.writers.ConsoleWriter;
 import org.pmw.tinylog.writers.RollingFileWriter;
 import picocli.CommandLine;
 import picocli.shell.jline3.PicocliJLineCompleter;
@@ -47,23 +48,20 @@ public class ShellCommand implements Runnable {
 
         IN_SHELL = true;
 
+        String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}";
+
+
         // TODO Read default config for debug and verbose from a property file
 
-        Configurator config = Configurator.defaultConfig()
-                .writer(new RollingFileWriter("hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10)))
-                .formatPattern("{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}");
+        Configurator.defaultConfig()
+                .writer(new RollingFileWriter("hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10)),
+                        Level.TRACE,
+                        logfileFormatPattern)
+                .addWriter(new ConsoleWriter(),
+                        Level.INFO,
+                        "{message}")
+                .activate();
 
-        if (VERBOSE) {
-            config.level(Level.TRACE);
-        } else if (DEBUG) {
-            config.level(Level.DEBUG);
-        }
-
-        config.activate();
-
-        if (VERBOSE) {
-            Logger.trace("Command: {}", this);
-        }
 
         final CommandLine cmd = new CommandLine(spec);
 

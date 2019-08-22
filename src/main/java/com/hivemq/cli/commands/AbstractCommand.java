@@ -2,6 +2,8 @@ package com.hivemq.cli.commands;
 
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
+import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
 @CommandLine.Command
@@ -16,14 +18,17 @@ abstract class AbstractCommand implements CliCommand {
         if (ShellCommand.IN_SHELL) {
             this.verbose = ShellCommand.VERBOSE;
             this.debug = ShellCommand.DEBUG;
-        }
-
-        if (debug) {
+            if (debug) {
+                Logger.warn("-d option is omitted in shell mode. Executing command with default shell debug level.");
+            }
+        } else if (debug) {
             this.debug = true;
             Configurator.currentConfig().level(Level.DEBUG).activate();
         } else {
             this.debug = false;
         }
+
+
     }
 
     @CommandLine.Option(names = {"-vb", "--verbose"}, defaultValue = "false", description = "Enable verbose mode.")
@@ -32,6 +37,9 @@ abstract class AbstractCommand implements CliCommand {
         if (ShellCommand.IN_SHELL) {
             this.verbose = ShellCommand.VERBOSE;
             this.debug = ShellCommand.DEBUG;
+            if (verbose) {
+                Logger.warn("-vb option is omitted in shell mode. Executing command with default shell debug level.");
+            }
         } else if (verbose) {
             this.verbose = true;
             this.debug = true;

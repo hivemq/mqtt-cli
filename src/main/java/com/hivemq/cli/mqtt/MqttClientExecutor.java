@@ -229,7 +229,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         }
 
         if (publishCommand.isVerbose()) {
-            Logger.debug("sending PUBLISH with command: {}", publishCommand);
+            Logger.trace("sending PUBLISH with command: {}", publishCommand);
         }
 
         client.publishWith()
@@ -256,7 +256,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         }
 
                         if (publishCommand.isVerbose()) {
-                            Logger.info("received RESULT: '{}' for PUBLISH to Topic: {}", publishResult, topic);
+                            Logger.trace("received RESULT: '{}' for PUBLISH to Topic: {}", publishResult, topic);
                         }
 
                     }
@@ -271,7 +271,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         }
 
         if (publishCommand.isVerbose()) {
-            Logger.debug("sending PUBLISH with command: {}", publishCommand);
+            Logger.trace("sending PUBLISH with command: {}", publishCommand);
         }
 
         client.publishWith()
@@ -298,7 +298,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         }
 
                         if (publishCommand.isVerbose()) {
-                            Logger.info("received RESULT: '{}' for PUBLISH to Topic: {}", publishResult, topic);
+                            Logger.trace("received RESULT: '{}' for PUBLISH to Topic: {}", publishResult, topic);
                         }
 
                     }
