@@ -17,8 +17,8 @@ endif::[]
 
 **HiveMQ-CLI** is the official HiveMQ MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT clients which uses the https://github.com/hivemq/hivemq-mqtt-client[HiveMQ MQTT Client API].
 
-If you have any questions feel free to open lhttps://github.com/hivemq/hivemq-cli/issues/new[a new GitHub issue].
-You can follow the development progress of HiveMQ-CLI on link:_inlcudes/https://github.com/hivemq/hivemq-cli/projects[the GitHub Projects Section].
+If you have any questions feel free to open https://github.com/hivemq/hivemq-cli/issues/new[a new GitHub issue].
+You can follow the development progress of HiveMQ-CLI on https://github.com/hivemq/hivemq-cli/projects[the GitHub Projects Section].
 
 toc::[]
 
@@ -442,7 +442,7 @@ $ hivemq-cli sub -t topic -b64
 == Shell
 
 Open HiveMQ-CLI in an interactive shell session.
-The Shell uses link:_includes/https://github.com/jline/jline3[JLine] for handling console input.
+The Shell uses https://github.com/jline/jline3[JLine] for handling console input.
 Therefore tab-completion, command-history, password-masking and other familiar shell features are available.
 
 The Shell-Mode can be mainly used for connection handling as the Publish and Subscribe commands drop the connections after they are done.
