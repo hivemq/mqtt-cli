@@ -33,8 +33,8 @@ import java.util.Map;
 
 abstract class AbstractMqttClientExecutor {
 
-    private ClientCache<String, MqttClient> clientCache = new ClientCache<>();
-    private Map<String, LocalDateTime> clientCreationTimes = new HashMap<>();
+    private final ClientCache<String, MqttClient> clientCache = new ClientCache<>();
+    private final Map<String, LocalDateTime> clientCreationTimes = new HashMap<>();
 
 
     abstract void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull ConnectCommand connectCommand);

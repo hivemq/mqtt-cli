@@ -27,8 +27,8 @@ import java.io.PrintWriter;
 public class ShellCommand implements Runnable {
 
     static boolean IN_SHELL = false;
-    static boolean DEBUG = true;
-    static boolean VERBOSE = true;
+    static final boolean DEBUG = true;
+    static final boolean VERBOSE = true;
     private String logfilePath;
 
     LineReaderImpl reader;

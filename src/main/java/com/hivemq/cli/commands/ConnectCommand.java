@@ -43,7 +43,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
 
     private MqttClientSslConfig sslConfig;
 
-    private List<X509Certificate> certificates = new ArrayList<>();
+    private final List<X509Certificate> certificates = new ArrayList<>();
 
     //TODO Implement
     @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String.")
