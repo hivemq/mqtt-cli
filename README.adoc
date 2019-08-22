@@ -39,7 +39,7 @@ You can use ``sudo sh -c "echo 127.0.0.1 localhost $(hostname) >> /etc/hosts"`` 
 
 At least Java 8 is required to run HiveMQ-CLI.
 
-The CLI was written in the link:_includes/https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html[11.0.4 Java release] which is the preferred version to run this project.
+The CLI was written in the https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html[11.0.4 Java release] which is the preferred version to run this project.
 
 === Installation using a package manager
 
