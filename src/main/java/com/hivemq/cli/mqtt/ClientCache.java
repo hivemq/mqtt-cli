@@ -45,7 +45,7 @@ public class ClientCache<K, V> {
             remove(entry);
             // and move to top
             splayOnTop(entry);
-            if (verbose) Logger.debug("Cache get key {}", key);
+            if (verbose) Logger.trace("Cache get key {}", key);
 
             return entry.value;
         }
@@ -54,13 +54,13 @@ public class ClientCache<K, V> {
 
     public boolean hasKey(K key) {
         boolean has = CACHE.containsKey(key);
-        if (verbose) Logger.debug("Cache hasKey {} - {} ", key, has);
+        if (verbose) Logger.trace("Cache hasKey {} - {} ", key, has);
         return has;
     }
 
     boolean remove(K key) {
         if (CACHE.containsKey(key)) {
-            if (verbose) Logger.debug("Cache remove key {}", key);
+            if (verbose) Logger.trace("Cache remove key {}", key);
             Entry<K, V> entry = CACHE.get(key);
             // remove the recently accessed entry from linked list
             remove(entry);
@@ -71,13 +71,13 @@ public class ClientCache<K, V> {
 
     void put(K key, V value) {
         if (CACHE.containsKey(key)) {
-            if (verbose) Logger.debug("Cache replace key {}", key);
+            if (verbose) Logger.trace("Cache replace key {}", key);
             Entry<K, V> entry = CACHE.get(key);
             entry.value = value;
             remove(entry);
             splayOnTop(entry);
         } else {
-            if (verbose) Logger.debug("Cache put key {}", key);
+            if (verbose) Logger.trace("Cache put key {}", key);
             Entry<K, V> entry = new Entry<>();
             entry.key = key;
             entry.value = value;

@@ -131,43 +131,42 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     @Override
     public void run() {
 
-        if (ShellCommand.IN_SHELL && ShellCommand.DEBUG) {
-            setDebug(true);
-        }
 
         if (useBuiltSslConfig()) {
             try {
                 buildSslConfig();
             } catch (Exception e) {
                 if (isDebug()) {
-                    Logger.error("Failed to build ssl config: {}", e);
-                } else {
-                    Logger.error("Failed to build ssl config: {}", e.getMessage());
+                    Logger.debug("Failed to build ssl config: {}", e);
                 }
+                Logger.error("Failed to build ssl config: {}", e.getMessage());
                 return;
             }
         } else {
             sslConfig = null;
         }
 
-        logUnusedOptions();
+        if (isDebug()) {
+            logUnusedOptions();
+        }
+
 
         connect();
 
     }
 
     private void connect() {
-        if (isDebug()) {
-            Logger.debug("Command: {} ", this);
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
         }
+
         try {
             mqttClientExecutor.connect(this);
         } catch (final Exception ex) {
             if (isDebug()) {
-                Logger.error(ex);
-            } else {
-                Logger.error(ex.getMessage());
+                Logger.debug(ex);
             }
+            Logger.error(ex.getMessage());
         }
     }
 

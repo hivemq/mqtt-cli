@@ -20,7 +20,7 @@ import java.util.TreeMap;
 @CommandLine.Command(name = "ls", aliases = "list",
         description = "List all connected clients with their respective identifieres",
         mixinStandardHelpOptions = true)
-public class ListClientsCommand implements Runnable {
+public class ListClientsCommand extends AbstractCommand implements Runnable {
 
     private final MqttClientExecutor mqttClientExecutor;
 
@@ -41,19 +41,14 @@ public class ListClientsCommand implements Runnable {
         outputDetailedClientInformation = allTrue;
     }
 
-    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode.")
-    private boolean debug;
 
 
     @Override
     public void run() {
 
-        if (ShellCommand.IN_SHELL && ShellCommand.DEBUG) {
-            debug = true;
-        }
 
-        if (debug) {
-            Logger.debug("Command: {}", this);
+        if (isVerbose()) {
+            Logger.trace("Command: {}", this);
         }
 
 
@@ -126,5 +121,18 @@ public class ListClientsCommand implements Runnable {
             }
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return "List:: {" +
+                "sortByTime=" + sortByTime +
+                ", detailedOutput" + outputDetailedClientInformation +
+                '}';
+    }
+
+    @Override
+    public Class getType() {
+        return ListClientsCommand.class;
     }
 }

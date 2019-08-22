@@ -28,22 +28,18 @@ public class DisconnectCommand extends MqttCommand implements MqttAction {
     @Override
     public void run() {
 
-        if (ShellCommand.IN_SHELL && ShellCommand.DEBUG) {
-            setDebug(true);
-        }
-
-        if (isDebug()) {
-            Logger.debug("Command: {} ", this);
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
         }
 
         try {
             mqttClientExecutor.disconnect(this);
         } catch (final Exception ex) {
             if (isDebug()) {
-                Logger.error(ex);
-            } else {
-                Logger.error(ex.getMessage());
+                Logger.debug(ex);
             }
+            Logger.error(ex.getMessage());
+
         }
 
     }

@@ -21,8 +21,8 @@ public class HiveMQCLIMain {
 
         Configurator.defaultConfig()
                 .writer(new ConsoleWriter())
-                .formatPattern("{date: HH:mm:ss}: {context:identifier}: {message}")
-                .level(Level.ERROR)
+                .formatPattern("Client {context:identifier}: {message}")
+                .level(Level.INFO)
                 .activate();
 
 

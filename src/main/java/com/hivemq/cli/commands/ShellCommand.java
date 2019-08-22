@@ -23,9 +23,11 @@ import java.io.PrintWriter;
         description = "Starts HiveMQ-CLI in shell mode, to enable interactive mode with further sub commands.",
         footer = {"", "Press Ctl-C to exit."},
         mixinStandardHelpOptions = true)
-public class ShellCommand extends AbstractCommand implements Runnable {
+public class ShellCommand implements Runnable {
 
     static boolean IN_SHELL = false;
+    static boolean DEBUG = true;
+    static boolean VERBOSE = true;
 
     LineReaderImpl reader;
 
@@ -39,31 +41,39 @@ public class ShellCommand extends AbstractCommand implements Runnable {
     ShellCommand() {
     }
 
-    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "true", description = "Enable debug mode.")
-    static boolean DEBUG;
-
 
     @Override
     public void run() {
-        Configurator.defaultConfig()
-                .writer(new RollingFileWriter("hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10)))
-                .formatPattern("{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} {context:identifier}: {message}")
-                .level(Level.INFO)
-                .activate();
 
-        if (DEBUG) {
-            Configurator.currentConfig()
-                    .level(Level.DEBUG)
-                    .activate();
-            Logger.debug("Command: {}", this);
+        IN_SHELL = true;
+
+        // TODO Read default config for debug and verbose from a property file
+
+        Configurator config = Configurator.defaultConfig()
+                .writer(new RollingFileWriter("hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10)))
+                .formatPattern("{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}");
+
+        if (VERBOSE) {
+            config.level(Level.TRACE);
+        } else if (DEBUG) {
+            config.level(Level.DEBUG);
+        }
+
+        config.activate();
+
+        if (VERBOSE) {
+            Logger.trace("Command: {}", this);
         }
 
         final CommandLine cmd = new CommandLine(spec);
+
         interact(cmd);
     }
 
 
     private void interact(final @NotNull CommandLine cmd) {
+
+
         try {
             IN_SHELL = true;
             final Terminal terminal = TerminalBuilder.builder().build();
@@ -84,34 +94,31 @@ public class ShellCommand extends AbstractCommand implements Runnable {
                     final String[] arguments = pl.words().toArray(new String[0]);
                     cmd.execute(arguments);
                 } catch (UserInterruptException e) {
-                    if (DEBUG) {
-                        Logger.debug("User interrupted shell: {}", e);
+                    if (VERBOSE) {
+                        Logger.trace("User interrupted shell: {}", e);
                     }
                     return;
                 } catch (EndOfFileException e) {
                     // exit shell
-                    if (DEBUG) {
-                        Logger.error(e);
-                    } else {
-                        Logger.error(e.getMessage());
+                    if (VERBOSE) {
+                        Logger.trace(e);
                     }
+                    Logger.error(e.getMessage());
                     // TODO all clients were disconnected
                     return;
                 } catch (Exception all) {
-                    if (DEBUG) {
+                    if (VERBOSE) {
                         Logger.error(all);
-                    } else {
-                        Logger.error(all.getMessage());
                     }
-                    System.err.println("Error in command. " + all.getMessage());
+                    Logger.error(all.getMessage());
                 }
             }
         } catch (Throwable t) {
-            if (DEBUG) {
-                Logger.error(t);
-            } else {
-                Logger.error(t.getMessage());
+            if (VERBOSE) {
+                Logger.trace(t);
             }
+            Logger.error(t.getMessage());
+
         }
     }
 
@@ -120,11 +127,8 @@ public class ShellCommand extends AbstractCommand implements Runnable {
     public String toString() {
         return "Shell:: {" +
                 "debug=" + DEBUG +
-                '}';
+                ", verbose=" + VERBOSE +
+                "}";
     }
 
-    @Override
-    public Class getType() {
-        return ShellCommand.class;
-    }
 }

@@ -17,14 +17,12 @@ import java.util.Arrays;
 @CommandLine.Command(name = "sub", aliases = "subscribe", description = "Subscribe an mqtt client to a list of topics")
 public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
-
     @Inject
     public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
 
         super(mqttClientExecutor);
 
     }
-
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "Set at least one Topic")
     private String[] topics;
@@ -89,12 +87,8 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     @Override
     public void run() {
 
-        if (ShellCommand.IN_SHELL && ShellCommand.DEBUG) {
-            setDebug(true);
-        }
-
-        if (isDebug()) {
-            Logger.debug("Command: {} ", this);
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
         }
 
         try {
@@ -103,9 +97,8 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         } catch (Exception ex) {
             if (isDebug()) {
                 Logger.error(ex);
-            } else {
-                Logger.error(ex.getMessage());
             }
+            Logger.error(ex.getMessage());
         }
 
         if (!ShellCommand.IN_SHELL) {
@@ -117,9 +110,8 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
             } catch (InterruptedException e) {
                 if (isDebug()) {
                     Logger.error(e);
-                } else {
-                    Logger.error(e.getMessage());
                 }
+                Logger.error(e.getMessage());
             }
         }
 
@@ -127,13 +119,11 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
     private void stay() throws InterruptedException {
         synchronized (this) {
-            boolean debug = isDebug();
-            this.setDebug(false);
             while (mqttClientExecutor.isConnected(this)) {
-                this.wait(500);
+                this.wait(5000);
             }
-            if (debug) {
-                Logger.debug("Client disconnected.");
+            if (isVerbose()) {
+                Logger.trace("Client disconnected.");
             }
         }
     }
@@ -142,7 +132,7 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     public String toString() {
         return "Subscribe:: {" +
                 "key=" + getKey() +
-                "topics=" + Arrays.toString(topics) +
+                ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", toFile=" + receivedMessagesFile +
                 '}';

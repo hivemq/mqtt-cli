@@ -6,6 +6,7 @@ import com.hivemq.cli.commands.PublishCommand;
 import com.hivemq.cli.commands.SubscribeCommand;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
+import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
@@ -60,77 +61,95 @@ abstract class AbstractMqttClientExecutor {
             final String topic = subscribeCommand.getTopics()[i];
             final MqttQos qos = subscribeCommand.getQos()[i];
 
-            if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_5_0)
-                mqtt5Subscribe((Mqtt5AsyncClient) client, subscribeCommand, topic, qos);
-            else if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1)
-                mqtt3Subscribe((Mqtt3AsyncClient) client, subscribeCommand, topic, qos);
-            else { // practical unreachable
-                Logger.error("The Mqtt Version specified is not supported. Version was " + subscribeCommand.getVersion());
+            switch (client.getConfig().getMqttVersion()) {
+                case MQTT_5_0:
+                    mqtt5Subscribe((Mqtt5AsyncClient) client, subscribeCommand, topic, qos);
+                    break;
+                case MQTT_3_1_1:
+                    mqtt3Subscribe((Mqtt3AsyncClient) client, subscribeCommand, topic, qos);
+                    break;
             }
         }
 
     }
 
     public void publish(final @NotNull PublishCommand publishCommand) {
+
         final MqttClient client = getMqttClientFromCacheOrConnect(publishCommand);
+
         LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get());
 
         for (int i = 0; i < publishCommand.getTopics().length; i++) {
             final String topic = publishCommand.getTopics()[i];
             final MqttQos qos = publishCommand.getQos()[i];
 
-            if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_5_0) {
-                mqtt5Publish((Mqtt5AsyncClient) client, publishCommand, topic, qos);
-            } else if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
-                mqtt3Publish((Mqtt3AsyncClient) client, publishCommand, topic, qos);
-            } else { // practical unreachable
-                Logger.error("The Mqtt Version specified is not supported. Version was " + publishCommand.getVersion());
+            switch (client.getConfig().getMqttVersion()) {
+                case MQTT_5_0:
+                    mqtt5Publish((Mqtt5AsyncClient) client, publishCommand, topic, qos);
+                    break;
+                case MQTT_3_1_1:
+                    mqtt3Publish((Mqtt3AsyncClient) client, publishCommand, topic, qos);
+                    break;
             }
 
         }
     }
 
     public void disconnect(final @NotNull DisconnectCommand disconnectCommand) {
+
         LoggingContext.put("identifier", disconnectCommand.getIdentifier());
 
-        clientCache.setVerbose(disconnectCommand.isDebug());
+        clientCache.setVerbose(disconnectCommand.isVerbose());
 
         if (clientCache.hasKey(disconnectCommand.getKey())) {
             final MqttClient client = clientCache.get(disconnectCommand.getKey());
             clientCache.remove(disconnectCommand.getKey());
 
-            if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_5_0)
-                ((Mqtt5AsyncClient) client).disconnect();
-            else if (client.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1)
-                ((Mqtt3AsyncClient) client).disconnect();
+            switch (client.getConfig().getMqttVersion()) {
+                case MQTT_5_0:
+                    ((Mqtt5AsyncClient) client).disconnect();
+                    break;
+                case MQTT_3_1_1:
+                    ((Mqtt3AsyncClient) client).disconnect();
+                    break;
+            }
+        } else if (disconnectCommand.isDebug()) {
+            Logger.debug("client to disconnect is not connected: {} ", disconnectCommand.getKey());
         }
 
-        throw new IllegalStateException("The MQTT Version specified is not supported. Version was " + disconnectCommand.getVersion());
     }
 
     public boolean isConnected(final @NotNull SubscribeCommand subscriber) {
+
         LoggingContext.put("identifier", subscriber.getIdentifier());
 
-        clientCache.setVerbose(subscriber.isDebug());
+        clientCache.setVerbose(subscriber.isVerbose());
 
         if (clientCache.hasKey(subscriber.getKey())) {
             final MqttClient client = clientCache.get(subscriber.getKey());
-            return client.getConfig().getState().isConnected();
+            MqttClientState state = client.getConfig().getState();
+            if (subscriber.isVerbose()) {
+                Logger.trace("in State: {}", state);
+            }
+            return state.isConnected();
         }
         return false;
     }
 
 
     public @NotNull MqttClient connect(final @NotNull ConnectCommand connectCommand) {
+
         final String identifier = connectCommand.createIdentifier();
+
         LoggingContext.put("identifier", identifier);
 
-        clientCache.setVerbose(connectCommand.isDebug());
+        clientCache.setVerbose(connectCommand.isVerbose());
 
-        if (connectCommand.getVersion() == MqttVersion.MQTT_5_0) {
-            return connectMqtt5Client(connectCommand, identifier);
-        } else if (connectCommand.getVersion() == MqttVersion.MQTT_3_1_1) {
-            return connectMqtt3Client(connectCommand, identifier);
+        switch (connectCommand.getVersion()) {
+            case MQTT_5_0:
+                return connectMqtt5Client(connectCommand, identifier);
+            case MQTT_3_1_1:
+                return connectMqtt3Client(connectCommand, identifier);
         }
 
         throw new IllegalStateException("The MQTT Version specified is not supported. Version was " + connectCommand.getVersion());
@@ -198,8 +217,9 @@ abstract class AbstractMqttClientExecutor {
             }
             return builder.build().asWill();
         } else if (connectCommand.getWillMessage() != null) {
-            //seems somebody like to create a will message without a topic
-            Logger.debug("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
+            if (connectCommand.isVerbose()) {
+                Logger.trace("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
+            }
         }
         return null;
     }
@@ -214,7 +234,9 @@ abstract class AbstractMqttClientExecutor {
                     .retain(connectCommand.isWillRetain())
                     .build();
         } else if (connectCommand.getWillMessage() != null) {
-            Logger.debug("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
+            if (connectCommand.isVerbose()) {
+                Logger.trace("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
+            }
         }
         return null;
     }
@@ -269,7 +291,7 @@ abstract class AbstractMqttClientExecutor {
     }
 
     private MqttClient getMqttClientFromCacheOrConnect(final @NotNull ConnectCommand connect) {
-        clientCache.setVerbose(connect.isDebug());
+        clientCache.setVerbose(connect.isVerbose());
 
         MqttClient mqttClient = null;
 

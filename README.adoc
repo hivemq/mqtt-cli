@@ -181,7 +181,7 @@ hmq> con {  [-h <hostname>]
 
 | ``-d``    |   ``--debug``     | Print info level debug messages to the console. | ``False``
 
-| ``-D``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
+| ``-vb``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
 
 | ``-u``   | ``--user`` | A username for authentication can be defined. |
 
@@ -456,16 +456,11 @@ The Shell-Mode can be mainly used for connection handling as the Publish and Sub
 === Summary
 
 ```
-hivemq-cli shell [-d <debug>]
-    { con | pub | sub | dis | ls | cls }
+hivemq-cli shell { con | pub | sub | dis | ls | cls }
 
 ```
 
-|===
-|Option |Long Version | Explanation | Default
 
-| ``-d``   | ``--debug``| Do not use info level debug messages but the detailed debug messages. | ``True``
-|===
 
 Start interactive shell with:
 ```
@@ -488,7 +483,7 @@ hivemq-cli shell dis {  [-i <identifier>]
                         [-p <port>]
                         [-v <version>]
                         [-d <debug>]
-                        [-D <verbose>]
+                        [-vb <verbose>]
 }
 ```
 
@@ -507,7 +502,7 @@ hivemq-cli shell dis {  [-i <identifier>]
 
 | ``-d``    |   ``--debug``     | Print info level debug messages to the logfile. | ``False``
 
-| ``-D``    |   ``--verbose``   | Print detailed debug level messages to the logfile. | ``True``
+| ``-vb``    |   ``--verbose``   | Print detailed debug level messages to the logfile. | ``True``
 
 
 |===

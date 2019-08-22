@@ -76,12 +76,8 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
     @Override
     public void run() {
 
-        if (ShellCommand.IN_SHELL && ShellCommand.DEBUG) {
-            setDebug(true);
-        }
-
-        if (isDebug()) {
-            Logger.debug("Command: {} ", this);
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
         }
 
         try {
@@ -89,9 +85,8 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         } catch (Exception ex) {
             if (isDebug()) {
                 Logger.error(ex);
-            } else {
-                Logger.error(ex.getMessage());
             }
+            Logger.error(ex.getMessage());
         }
 
     }
@@ -100,7 +95,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
     public String toString() {
         return "Publish:: {" +
                 "key=" + getKey() +
-                "topics=" + Arrays.toString(topics) +
+                ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", retain=" + retain +
                 '}';
