@@ -15,9 +15,9 @@ endif::[]
 
 = HiveMQ Client Command Line Interface
 
-**HiveMQ-CLI** is the official HiveMQ MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT clients which uses the link:_includes/https://github.com/hivemq/hivemq-mqtt-client[HiveMQ MQTT Client API].
+**HiveMQ-CLI** is the official HiveMQ MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT clients which uses the https://github.com/hivemq/hivemq-mqtt-client[HiveMQ MQTT Client API].
 
-If you have any questions feel free to open link:_includes/https://github.com/hivemq/hivemq-cli/issues/new[a new GitHub issue].
+If you have any questions feel free to open lhttps://github.com/hivemq/hivemq-cli/issues/new[a new GitHub issue].
 You can follow the development progress of HiveMQ-CLI on link:_inlcudes/https://github.com/hivemq/hivemq-cli/projects[the GitHub Projects Section].
 
 toc::[]
@@ -43,7 +43,7 @@ The CLI was written in the https://www.oracle.com/technetwork/java/javase/downlo
 
 === Installation using a package manager
 
-For *Mac OS X* and *Linux* systems use link:_includes/https://brew.sh/[Homebrew] to install HiveMQ-CLI via the link:_includes/https://github.com/hivemq/homebrew-hivemq-cli[HiveMQ-CLI Tap].
+For *Mac OS X* and *Linux* systems use https://brew.sh/[Homebrew] to install HiveMQ-CLI via the https://github.com/hivemq/homebrew-hivemq-cli[HiveMQ-CLI Tap].
 
 ```
 $ brew tap hivemq/hivemq-cli
@@ -53,7 +53,7 @@ $ brew tap hivemq/hivemq-cli
 $ brew install hivemq-cli
 ```
 
-NOTE: As the current tap repository is still a private repository please follow link:_includes/mosquitto.org/man/mosquitto_pub-1.html[this guide] if you face any authentication problems.
+NOTE: As the current tap repository is still a private repository please follow https://gist.github.com/mlafeldt/8e7d50ee0b1de44e256d[this guide] if you face any authentication problems.
 
 == Usage
 
