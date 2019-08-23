@@ -37,7 +37,7 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
         // read the keyfile
         final PEMParser pemParser = new PEMParser(new FileReader(keyFile));
 
-        Object object;
+        final Object object;
         try {
             object = pemParser.readObject();
         } catch (PEMException pe) {
@@ -47,19 +47,19 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
 
         final JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider("BC");
 
-        PrivateKey privateKey;
+        final PrivateKey privateKey;
         if (object instanceof PKCS8EncryptedPrivateKeyInfo) {
             // if encrypted key is password protected - decrypt it with given password
 
-            char[] password = PasswordUtils.readPassword("Enter private key password:");
+            final char[] password = PasswordUtils.readPassword("Enter private key password:");
 
             final PKCS8EncryptedPrivateKeyInfo encryptedPrivateKey = (PKCS8EncryptedPrivateKeyInfo) object;
             final InputDecryptorProvider decryptorProvider = new JceOpenSSLPKCS8DecryptorProviderBuilder().build(password);
 
-            PrivateKeyInfo privateKeyInfo;
+            final PrivateKeyInfo privateKeyInfo;
             try {
                 privateKeyInfo = encryptedPrivateKey.decryptPrivateKeyInfo(decryptorProvider);
-            } catch (PKCSException pkcse) {
+            } catch (final PKCSException pkcse) {
                 throw new IllegalArgumentException(WRONG_PASSWORD);
             }
 

@@ -14,7 +14,7 @@ public class FileUtils {
         if ( file.exists() && !file.isDirectory() ) { // append to existing file
             try {
                 out = new FileOutputStream(file, true);
-            } catch (FileNotFoundException e) {
+            } catch (final FileNotFoundException e) {
                 Logger.error("Could not open file: {} ", file.getName(), e.getMessage());
             }
         }
@@ -22,7 +22,7 @@ public class FileUtils {
             file = new File(file.getName());
             try {
                 out = new FileOutputStream(file);
-            } catch (FileNotFoundException e) {
+            } catch (final FileNotFoundException e) {
                 Logger.error("Could not create file: {} ", file.getName(), e.getMessage());
             }
         }

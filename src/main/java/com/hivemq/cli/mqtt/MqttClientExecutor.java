@@ -43,7 +43,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.trace("sending CONNECT with Command: {}", connectCommand);
         }
 
-        Mqtt5ConnAck connAck = client.connect(connectMessage);
+        final Mqtt5ConnAck connAck = client.connect(connectMessage);
 
         if (connectCommand.isDebug()) {
             Logger.debug("received CONNACK {}", connAck.getReasonCode());
@@ -66,7 +66,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.trace("sending CONNECT with Command: {}", connectCommand);
         }
 
-        Mqtt3ConnAck connAck = client.connect(connectMessage);
+        final Mqtt3ConnAck connAck = client.connect(connectMessage);
 
         if (connectCommand.isDebug()) {
             Logger.debug("received CONNACK {}", connAck.getReturnCode());
@@ -93,7 +93,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         if (subscribeCommand.getReceivedMessagesFile() != null) {
             fileWriter = FileUtils.createFileAppender(subscribeCommand.getReceivedMessagesFile());
         }
-        PrintWriter finalFileWriter = fileWriter;
+        final PrintWriter finalFileWriter = fileWriter;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (finalFileWriter != null) {
                 finalFileWriter.close();
@@ -165,7 +165,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         if (subscribeCommand.getReceivedMessagesFile() != null) {
             fileWriter = FileUtils.createFileAppender(subscribeCommand.getReceivedMessagesFile());
         }
-        PrintWriter finalFileWriter = fileWriter;
+        final PrintWriter finalFileWriter = fileWriter;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (finalFileWriter != null) {
                 finalFileWriter.close();

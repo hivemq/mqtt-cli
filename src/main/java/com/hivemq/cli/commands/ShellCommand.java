@@ -49,15 +49,15 @@ public class ShellCommand implements Runnable {
 
         IN_SHELL = true;
 
-        String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}";
+        final String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}";
 
-        String tmpDir = System.getProperty("java.io.tmpdir");
+        final String tmpDir = System.getProperty("java.io.tmpdir");
 
-        RollingFileWriter rfw = new RollingFileWriter(tmpDir + "/hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
+        final RollingFileWriter logfileWriter = new RollingFileWriter(tmpDir + "/hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
 
         // TODO Read default config for debug and verbose from a property file
         Configurator.defaultConfig()
-                .writer(rfw,
+                .writer(logfileWriter,
                         Level.TRACE,
                         logfileFormatPattern)
                 .addWriter(new ConsoleWriter(),
@@ -65,7 +65,7 @@ public class ShellCommand implements Runnable {
                         "{message}")
                 .activate();
 
-        logfilePath = rfw.getFilename();
+        logfilePath = logfileWriter.getFilename();
 
         final CommandLine cmd = new CommandLine(spec);
 
@@ -85,9 +85,9 @@ public class ShellCommand implements Runnable {
                     .parser(new DefaultParser())
                     .build();
 
-            PrintWriter out = terminal.writer();
-            out.println(cmd.getUsageMessage());
-            out.flush();
+            final PrintWriter terminalWriter = terminal.writer();
+            terminalWriter.println(cmd.getUsageMessage());
+            terminalWriter.flush();
 
             Logger.info("Writing Logfile to {}", logfilePath);
 
@@ -98,12 +98,12 @@ public class ShellCommand implements Runnable {
                     final ParsedLine pl = reader.getParser().parse(line, prompt.length());
                     final String[] arguments = pl.words().toArray(new String[0]);
                     cmd.execute(arguments);
-                } catch (UserInterruptException e) {
+                } catch (final UserInterruptException e) {
                     if (VERBOSE) {
                         Logger.trace("User interrupted shell: {}", e);
                     }
                     return;
-                } catch (EndOfFileException e) {
+                } catch (final EndOfFileException e) {
                     // exit shell
                     if (VERBOSE) {
                         Logger.trace(e);
@@ -111,14 +111,14 @@ public class ShellCommand implements Runnable {
                     Logger.error(e.getMessage());
                     // TODO all clients were disconnected
                     return;
-                } catch (Exception all) {
+                } catch (final Exception all) {
                     if (VERBOSE) {
                         Logger.error(all);
                     }
                     Logger.error(all.getMessage());
                 }
             }
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             if (VERBOSE) {
                 Logger.trace(t);
             }

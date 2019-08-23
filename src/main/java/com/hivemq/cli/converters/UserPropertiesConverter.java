@@ -21,8 +21,8 @@ public class UserPropertiesConverter implements CommandLine.ITypeConverter<Mqtt5
 
         Mqtt5UserPropertiesBuilder builder = Mqtt5UserProperties.builder();
 
-        for (String pair : keyValuePairs) {
-            String[] splittedKeyValue = pair.split("=");
+        for (final String pair : keyValuePairs) {
+            final String[] splittedKeyValue = pair.split("=");
 
             if (splittedKeyValue.length != 2) {
                 throw new Exception(KEY_VALUE_DELIMETER_ERROR);

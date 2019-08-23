@@ -57,8 +57,8 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
         final Set<String> clientKeys = clientCache.keySet();
 
         Comparator<String> comparator = (s, t1) -> {
-            String clientID1 = clientCache.get(s).getConfig().getClientIdentifier().toString();
-            String clientID2 = clientCache.get(t1).getConfig().getClientIdentifier().toString();
+            final String clientID1 = clientCache.get(s).getConfig().getClientIdentifier().toString();
+            final String clientID2 = clientCache.get(t1).getConfig().getClientIdentifier().toString();
             return clientID1.compareTo(clientID2);
         };
 
@@ -95,7 +95,7 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
                     "Server-Address");
         }
 
-        for (Map.Entry<String, MqttClient> entry : sortedClients.entrySet()) {
+        for (final Map.Entry<String, MqttClient> entry : sortedClients.entrySet()) {
 
             final String clientKey = entry.getKey();
             final MqttClient client = entry.getValue();

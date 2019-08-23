@@ -127,7 +127,7 @@ abstract class AbstractMqttClientExecutor {
 
         if (clientCache.hasKey(subscriber.getKey())) {
             final MqttClient client = clientCache.get(subscriber.getKey());
-            MqttClientState state = client.getConfig().getState();
+            final MqttClientState state = client.getConfig().getState();
             if (subscriber.isVerbose()) {
                 Logger.trace("in State: {}", state);
             }
@@ -155,12 +155,12 @@ abstract class AbstractMqttClientExecutor {
         throw new IllegalStateException("The MQTT Version specified is not supported. Version was " + connectCommand.getVersion());
     }
 
-    private @NotNull Mqtt5AsyncClient connectMqtt5Client(final @NotNull ConnectCommand connectCommand, String identifier) {
+    private @NotNull Mqtt5AsyncClient connectMqtt5Client(final @NotNull ConnectCommand connectCommand, final String identifier) {
         final MqttClientBuilder clientBuilder = createBuilder(connectCommand, identifier);
         final Mqtt5BlockingClient client = clientBuilder.useMqttVersion5().build().toBlocking();
         final @Nullable Mqtt5Publish willPublish = createMqtt5WillPublish(connectCommand);
 
-        Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
+        final Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
                 .sessionExpiryInterval(connectCommand.getSessionExpiryInterval())
                 .keepAlive(connectCommand.getKeepAlive())
                 .cleanStart(connectCommand.isCleanStart())
@@ -201,7 +201,7 @@ abstract class AbstractMqttClientExecutor {
         // only topic is mandatory for will message creation
         if (connectCommand.getWillTopic() != null) {
             final ByteBuffer willPayload = connectCommand.getWillMessage();
-            Mqtt5WillPublishBuilder.Complete builder = Mqtt5WillPublish.builder()
+            final Mqtt5WillPublishBuilder.Complete builder = Mqtt5WillPublish.builder()
                     .topic(connectCommand.getWillTopic())
                     .payload(willPayload)
                     .qos(connectCommand.getWillQos())

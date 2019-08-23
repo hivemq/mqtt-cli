@@ -40,7 +40,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         return topics;
     }
 
-    public void setTopics(String[] topics) {
+    public void setTopics(final String[] topics) {
         this.topics = topics;
     }
 
@@ -48,7 +48,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         return qos;
     }
 
-    public void setQos(MqttQos[] qos) {
+    public void setQos(final MqttQos[] qos) {
         this.qos = qos;
     }
 
@@ -56,7 +56,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         return message;
     }
 
-    public void setMessage(ByteBuffer message) {
+    public void setMessage(final ByteBuffer message) {
         this.message = message;
     }
 
@@ -64,7 +64,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         return retain;
     }
 
-    public void setRetain(boolean retain) {
+    public void setRetain(final boolean retain) {
         this.retain = retain;
     }
 
@@ -80,11 +80,13 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
             Logger.trace("Command: {} ", this);
         }
 
+        handleConnectOptions();
+
         try {
             mqttClientExecutor.publish(this);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             if (isDebug()) {
-                Logger.error(ex);
+                Logger.debug(ex);
             }
             Logger.error(ex.getMessage());
         }
@@ -98,6 +100,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", retain=" + retain +
+                ", connectOptions: {" + connectOptions() + "}" +
                 '}';
     }
 
