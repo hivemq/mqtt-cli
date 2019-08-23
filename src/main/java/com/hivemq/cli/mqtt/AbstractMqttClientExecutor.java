@@ -127,7 +127,7 @@ abstract class AbstractMqttClientExecutor {
 
         if (clientCache.hasKey(subscriber.getKey())) {
             final MqttClient client = clientCache.get(subscriber.getKey());
-            final MqttClientState state = client.getConfig().getState();
+            final MqttClientState state = client.getState();
             if (subscriber.isVerbose()) {
                 Logger.trace("in State: {}", state);
             }
@@ -206,7 +206,6 @@ abstract class AbstractMqttClientExecutor {
                     .payload(willPayload)
                     .qos(connectCommand.getWillQos())
                     .retain(connectCommand.isWillRetain())
-                    .messageExpiryInterval(connectCommand.getWillMessageExpiryInterval())
                     .delayInterval(connectCommand.getWillDelayInterval())
                     .payloadFormatIndicator(connectCommand.getWillPayloadFormatIndicator())
                     .contentType(connectCommand.getWillContentType())
@@ -215,11 +214,12 @@ abstract class AbstractMqttClientExecutor {
             if (connectCommand.getWillUserProperties() != null) { // user Properties can't be completed with null
                 builder.userProperties(connectCommand.getWillUserProperties());
             }
+            if (connectCommand.getWillMessageExpiryInterval() != -1) {
+                builder.messageExpiryInterval(connectCommand.getWillMessageExpiryInterval());
+            }
             return builder.build().asWill();
         } else if (connectCommand.getWillMessage() != null) {
-            if (connectCommand.isVerbose()) {
-                Logger.trace("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
-            }
+            Logger.warn("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
         }
         return null;
     }
@@ -234,9 +234,8 @@ abstract class AbstractMqttClientExecutor {
                     .retain(connectCommand.isWillRetain())
                     .build();
         } else if (connectCommand.getWillMessage() != null) {
-            if (connectCommand.isVerbose()) {
-                Logger.trace("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
-            }
+            Logger.warn("option -wt is missing if a will message is configured - command was: {} ", connectCommand.toString());
+
         }
         return null;
     }

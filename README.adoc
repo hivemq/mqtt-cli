@@ -26,7 +26,7 @@ toc::[]
 
 * Support of the main MQTT client methods: *subscribe*, *publish*, *connect*, *disconnect*
 * Interactive shell for client connection handling
-* MQTT 3.1.1 and MQTT 5.0 feature support
+* MQTT 3.1.1 and MQTT 5.0 support
 * SSL/TLS support
 * Authentication
 
@@ -209,7 +209,7 @@ Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
 
 | ``-wd`` | ``--willDelayInterval`` | Will delay interval in seconds. | ``0``
 
-| ``-wp``  | ``--willPayloadFormatIndicator`` |Payload Format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
+| ``-wp``  | ``--willPayloadFormatIndicator`` |Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 
 | ``-wc``   | ``--willContentType`` |   Description of the will message's content. |
 
@@ -325,9 +325,9 @@ hivemq-cli pub { [[Connect-Option] [Connect-Option]]
 | ``-t``   | ``--topic``| The MQTT topic where the message will be published. |
 | ``-m``| ``--message`` | The message which will be published on the topic. |
 | ``-r``| ``--retain`` | Message will be retained. | ``False``
-| ``-q`` | ``--qos`` | Use a defined quality of service on all topics if only one QoS is specified.
+| ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.
 
-You can define a specific QoS-Level for every topic. The corresponding QoS levels will be match by order to the given topics. | ``0``
+You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 
 |===
 
@@ -354,7 +354,7 @@ Therefore all Connect options can be used with subscribe.
 
 NOTE: This command can also be used in <<Shell>>-Mode.
 
-Subscribe a client to one or more topics.
+Subscribes a client to one or more topics.
 If the Subscribe command is not called in Shell-Mode it will block the console by default and write the received publishes to the console.
 
 === Simple Examples
@@ -392,9 +392,9 @@ hivemq-cli sub { [[Connect-Option] [Connect-Option]]
 |Option |Long Version | Explanation | Default
 
 | ``-t``   | ``--topic``| The MQTT topic the client will subscribe to. |
-| ``-q`` | ``--qos`` | Use a defined Quality of Service on all topics if only one QoS is specified.
+| ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.
 
-You can define a specific QoS-Level for every topic. The corresponding QoS levels will be match by order to the given topics. | ``0``
+You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` in Shell-Mode, else ``True``
 | ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
@@ -478,7 +478,7 @@ NOTE: In Shell-Mode the **-d** and **-vb** options for every command will be ove
 
 === Disconnect
 
-Disconnect a previously connected client.
+Disconnects a previously connected client.
 
 ==== Synopsis
 
@@ -526,7 +526,7 @@ hmq> con -i myClient -h localhost -p 1884 -v 3
 
 === List
 
-List all the connected clients.
+Lists all the connected clients.
 
 ==== Synopsis
 
@@ -573,7 +573,7 @@ So **-at** and **-ta** are valid options.
 
 === Clear
 
-Clear the terminal screen.
+Clears the terminal screen.
 
 Synopsis:
 

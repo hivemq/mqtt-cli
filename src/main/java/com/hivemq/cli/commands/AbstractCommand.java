@@ -38,7 +38,7 @@ abstract class AbstractCommand implements CliCommand {
             this.verbose = ShellCommand.VERBOSE;
             this.debug = ShellCommand.DEBUG;
             if (verbose) {
-                Logger.warn("-vb option is omitted in shell mode. Executing command with default shell debug level.");
+                Logger.warn("-vb option is omitted in shell mode. Executing command with default shell verbose level.");
             }
         } else if (verbose) {
             this.verbose = true;
@@ -54,15 +54,8 @@ abstract class AbstractCommand implements CliCommand {
         return debug;
     }
 
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
-
     public boolean isVerbose() {
         return verbose;
     }
 
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
 }

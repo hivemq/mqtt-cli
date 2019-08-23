@@ -77,7 +77,6 @@ public class ShellCommand implements Runnable {
 
 
         try {
-            IN_SHELL = true;
             final Terminal terminal = TerminalBuilder.builder().build();
             reader = (LineReaderImpl) LineReaderBuilder.builder()
                     .terminal(terminal)
