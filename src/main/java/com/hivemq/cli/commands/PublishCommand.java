@@ -13,7 +13,7 @@ import javax.inject.Inject;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-@CommandLine.Command(name = "pub", description = "Publish a message to a list of topics")
+@CommandLine.Command(name = "pub", aliases = "publish", description = "Publish a message to a list of topics")
 public class PublishCommand extends ConnectCommand implements MqttAction {
 
 
@@ -40,7 +40,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         return topics;
     }
 
-    public void setTopics(String[] topics) {
+    public void setTopics(final String[] topics) {
         this.topics = topics;
     }
 
@@ -48,7 +48,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         return qos;
     }
 
-    public void setQos(MqttQos[] qos) {
+    public void setQos(final MqttQos[] qos) {
         this.qos = qos;
     }
 
@@ -56,7 +56,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         return message;
     }
 
-    public void setMessage(ByteBuffer message) {
+    public void setMessage(final ByteBuffer message) {
         this.message = message;
     }
 
@@ -64,7 +64,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         return retain;
     }
 
-    public void setRetain(boolean retain) {
+    public void setRetain(final boolean retain) {
         this.retain = retain;
     }
 
@@ -76,18 +76,19 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
     @Override
     public void run() {
 
-        if (isDebug()) {
-            Logger.debug("Command: {} ", this);
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
         }
+
+        handleConnectOptions();
 
         try {
             mqttClientExecutor.publish(this);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             if (isDebug()) {
-                Logger.error(ex);
-            } else {
-                Logger.error(ex.getMessage());
+                Logger.debug(ex);
             }
+            Logger.error(ex.getMessage());
         }
 
     }
@@ -96,9 +97,10 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
     public String toString() {
         return "Publish:: {" +
                 "key=" + getKey() +
-                "topics=" + Arrays.toString(topics) +
+                ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", retain=" + retain +
+                ", connectOptions: {" + connectOptions() + "}" +
                 '}';
     }
 

@@ -3,17 +3,18 @@ package com.hivemq.cli.commands;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.pmw.tinylog.Configurator;
+import org.pmw.tinylog.Level;
+import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 @CommandLine.Command
 public abstract class MqttCommand extends AbstractCommand implements CliCommand {
 
+
     @CommandLine.Option(names = {"-v", "--version"}, defaultValue = "5", converter = MqttVersionConverter.class, description = "The mqtt version used by the client.")
     private MqttVersion version;
-
-    //TODO Implement
-    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "true", description = "Enable debug mode.")
-    private boolean debug;
 
     @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The host of the message broker..")
     private String host;
@@ -22,6 +23,7 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
     private int port;
 
     @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String.")
+    @Nullable
     private String identifier;
 
     public @NotNull MqttVersion getVersion() {
@@ -36,7 +38,7 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
         return host;
     }
 
-    public void setHost(String host) {
+    public void setHost(final String host) {
         this.host = host;
     }
 
@@ -44,7 +46,7 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
         return port;
     }
 
-    public void setPort(int port) {
+    public void setPort(final int port) {
         this.port = port;
     }
 
@@ -52,15 +54,8 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
         return identifier;
     }
 
-    public void setIdentifier(String identifier) {
+    public void setIdentifier(final @Nullable String identifier) {
         this.identifier = identifier;
     }
 
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
 }

@@ -23,7 +23,7 @@ public class CertificateConverterUtils {
     }
 
     public static boolean endsWithValidExtension(final @NotNull String fileName) {
-        for (String extension : FILE_EXTENSIONS) {
+        for (final String extension : FILE_EXTENSIONS) {
             if (fileName.endsWith(extension)) return true;
         }
         return false;

@@ -62,7 +62,6 @@ class FileToPrivateKeyConverterTest {
     void convert_DECRYPTED_MALFORMED_RSA_KEY_FAILURE() throws Exception {
         Exception e = assertThrows(Exception.class, () -> fileToPrivateKeyConverter.convert(pathToDecryptedMalformedRSAKey));
         assertEquals(FileToPrivateKeyConverter.MALFORMED_KEY, e.getMessage());
-        ;
     }
 
     @Test

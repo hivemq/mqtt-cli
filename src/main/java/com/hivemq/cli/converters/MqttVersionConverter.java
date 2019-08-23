@@ -12,7 +12,7 @@ public class MqttVersionConverter implements CommandLine.ITypeConverter<MqttVers
 
     @Override
     public @NotNull MqttVersion convert(final @NotNull String value) throws Exception {
-        int version;
+        final int version;
         try {
             version = Integer.parseInt(value);
         } catch (final NumberFormatException throwable) {

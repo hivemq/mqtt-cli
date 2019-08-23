@@ -33,7 +33,7 @@ public class DirectoryToCertificateCollectionConverter implements CommandLine.IT
 
         final Collection<X509Certificate> certificates = new ArrayList<>();
 
-        for (File validFile : validFiles) {
+        for (final File validFile : validFiles) {
             certificates.add(CertificateConverterUtils.generateX509Certificate(validFile));
         }
 

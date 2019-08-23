@@ -7,6 +7,7 @@ import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -14,9 +15,10 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
 
-@CommandLine.Command(name = "sub", description = "Subscribe an mqtt client to a list of topics")
+@CommandLine.Command(name = "sub", aliases = "subscribe", description = "Subscribe an mqtt client to a list of topics")
 public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
+    public static final int IDLE_TIME = 5000;
 
     @Inject
     public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -25,7 +27,6 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
     }
 
-
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "Set at least one Topic")
     private String[] topics;
 
@@ -33,6 +34,7 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "The file to which the received messages will be written.")
+    @Nullable
     private File receivedMessagesFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console.")
@@ -45,7 +47,7 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         return topics;
     }
 
-    public void setTopics(String[] topics) {
+    public void setTopics(final String[] topics) {
         this.topics = topics;
     }
 
@@ -53,7 +55,7 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         return qos;
     }
 
-    public void setQos(MqttQos[] qos) {
+    public void setQos(final MqttQos[] qos) {
         this.qos = qos;
     }
 
@@ -61,7 +63,7 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         return receivedMessagesFile;
     }
 
-    public void setReceivedMessagesFile(File receivedMessagesFile) {
+    public void setReceivedMessagesFile(@Nullable final File receivedMessagesFile) {
         this.receivedMessagesFile = receivedMessagesFile;
     }
 
@@ -69,7 +71,7 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         return printToSTDOUT;
     }
 
-    public void setPrintToSTDOUT(boolean printToSTDOUT) {
+    public void setPrintToSTDOUT(final boolean printToSTDOUT) {
         this.printToSTDOUT = printToSTDOUT;
     }
 
@@ -77,7 +79,7 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
         return base64;
     }
 
-    public void setBase64(boolean base64) {
+    public void setBase64(final boolean base64) {
         this.base64 = base64;
     }
 
@@ -89,19 +91,21 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     @Override
     public void run() {
 
-        if (isDebug()) {
-            Logger.debug("Command: {} ", this);
+
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
         }
+
+        handleConnectOptions();
 
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(this);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             if (isDebug()) {
                 Logger.error(ex);
-            } else {
-                Logger.error(ex.getMessage());
             }
+            Logger.error(ex.getMessage());
         }
 
         if (!ShellCommand.IN_SHELL) {
@@ -110,7 +114,10 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
             }
             try {
                 stay();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
+                if (isDebug()) {
+                    Logger.debug(e);
+                }
                 Logger.error(e.getMessage());
             }
         }
@@ -118,19 +125,19 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     }
 
     private void stay() throws InterruptedException {
-        synchronized (this) {
             while (mqttClientExecutor.isConnected(this)) {
-                this.wait(500);
+                Thread.sleep(IDLE_TIME);
             }
-            Logger.debug("Client disconnected.");
-        }
+            if (isVerbose()) {
+                Logger.trace("Client disconnected.");
+            }
     }
 
     @Override
     public String toString() {
         return "Subscribe:: {" +
                 "key=" + getKey() +
-                "topics=" + Arrays.toString(topics) +
+                ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", toFile=" + receivedMessagesFile +
                 '}';

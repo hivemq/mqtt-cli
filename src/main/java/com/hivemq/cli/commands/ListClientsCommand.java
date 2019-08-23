@@ -6,6 +6,7 @@ import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import org.jetbrains.annotations.NotNull;
+import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -16,10 +17,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-@CommandLine.Command(name = "ls",
+@CommandLine.Command(name = "ls", aliases = "list",
         description = "List all connected clients with their respective identifieres",
         mixinStandardHelpOptions = true)
-public class ListClientsCommand implements Runnable {
+public class ListClientsCommand extends AbstractCommand implements Runnable {
 
     private final MqttClientExecutor mqttClientExecutor;
 
@@ -41,16 +42,23 @@ public class ListClientsCommand implements Runnable {
     }
 
 
+
     @Override
     public void run() {
+
+
+        if (isVerbose()) {
+            Logger.trace("Command: {}", this);
+        }
+
 
         final ClientCache<String, MqttClient> clientCache = mqttClientExecutor.getClientCache();
         final Map<String, LocalDateTime> creationTimes = mqttClientExecutor.getClientCreationTimes();
         final Set<String> clientKeys = clientCache.keySet();
 
         Comparator<String> comparator = (s, t1) -> {
-            String clientID1 = clientCache.get(s).getConfig().getClientIdentifier().toString();
-            String clientID2 = clientCache.get(t1).getConfig().getClientIdentifier().toString();
+            final String clientID1 = clientCache.get(s).getConfig().getClientIdentifier().toString();
+            final String clientID2 = clientCache.get(t1).getConfig().getClientIdentifier().toString();
             return clientID1.compareTo(clientID2);
         };
 
@@ -87,7 +95,7 @@ public class ListClientsCommand implements Runnable {
                     "Server-Address");
         }
 
-        for (Map.Entry<String, MqttClient> entry : sortedClients.entrySet()) {
+        for (final Map.Entry<String, MqttClient> entry : sortedClients.entrySet()) {
 
             final String clientKey = entry.getKey();
             final MqttClient client = entry.getValue();
@@ -113,5 +121,18 @@ public class ListClientsCommand implements Runnable {
             }
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return "List:: {" +
+                "sortByTime=" + sortByTime +
+                ", detailedOutput" + outputDetailedClientInformation +
+                '}';
+    }
+
+    @Override
+    public Class getType() {
+        return ListClientsCommand.class;
     }
 }

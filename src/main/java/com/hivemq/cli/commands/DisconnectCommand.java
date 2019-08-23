@@ -8,13 +8,13 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-@CommandLine.Command(name = "dis", description = "Disconnects an mqtt client")
+@CommandLine.Command(name = "dis", aliases = "disconnect", description = "Disconnects an mqtt client")
 public class DisconnectCommand extends MqttCommand implements MqttAction {
 
-    private MqttClientExecutor mqttClientExecutor;
+    private final MqttClientExecutor mqttClientExecutor;
 
     @Inject
-    public DisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+    DisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
 
         this.mqttClientExecutor = mqttClientExecutor;
 
@@ -28,18 +28,18 @@ public class DisconnectCommand extends MqttCommand implements MqttAction {
     @Override
     public void run() {
 
-        if (isDebug()) {
-            Logger.debug("Command: {} ", this);
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
         }
 
         try {
             mqttClientExecutor.disconnect(this);
         } catch (final Exception ex) {
             if (isDebug()) {
-                Logger.error(ex);
-            } else {
-                Logger.error(ex.getMessage());
+                Logger.debug(ex);
             }
+            Logger.error(ex.getMessage());
+
         }
 
     }
