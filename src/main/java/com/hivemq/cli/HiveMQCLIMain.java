@@ -3,6 +3,7 @@ package com.hivemq.cli;
 import com.hivemq.cli.ioc.DaggerHiveMQCLI;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
+import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.labelers.TimestampLabeler;
 import org.pmw.tinylog.policies.SizePolicy;
 import org.pmw.tinylog.writers.ConsoleWriter;
@@ -13,7 +14,7 @@ import java.security.Security;
 
 public class HiveMQCLIMain {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
 
         Security.setProperty("crypto.policy", "unlimited");
 
@@ -25,6 +26,10 @@ public class HiveMQCLIMain {
                 .level(Level.INFO)
                 .activate();
 
+        if (args.length == 0) {
+            Logger.info(commandLine.getUsageMessage());
+            System.exit(0);
+        }
 
         final int exitCode = commandLine.execute(args);
 
