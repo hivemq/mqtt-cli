@@ -21,14 +21,10 @@ abstract class AbstractCommand implements CliCommand {
             if (debug) {
                 Logger.warn("-d option is omitted in shell mode. Executing command with default shell debug level.");
             }
-        } else if (debug) {
+        } else if (debug && !verbose) {
             this.debug = true;
             Configurator.currentConfig().level(Level.DEBUG).activate();
-        } else {
-            this.debug = false;
         }
-
-
     }
 
     @CommandLine.Option(names = {"-vb", "--verbose"}, defaultValue = "false", description = "Enable verbose mode.")

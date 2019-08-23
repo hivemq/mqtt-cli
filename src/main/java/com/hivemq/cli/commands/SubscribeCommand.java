@@ -125,14 +125,12 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     }
 
     private void stay() throws InterruptedException {
-        synchronized (this) {
             while (mqttClientExecutor.isConnected(this)) {
-                this.wait(IDLE_TIME);
+                Thread.sleep(IDLE_TIME);
             }
             if (isVerbose()) {
                 Logger.trace("Client disconnected.");
             }
-        }
     }
 
     @Override
