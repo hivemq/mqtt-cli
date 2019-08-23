@@ -73,7 +73,7 @@ Supported methods:
 ** <<List>>
 ** <<Clear>>
 
-See also ```hivemq-cli --help```.
+See also ``hivemq-cli --help``.
 
 === Examples
 
