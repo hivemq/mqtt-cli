@@ -331,7 +331,7 @@ hivemq-cli pub { [[Connect-Option] [Connect-Option]]
 | ``-t``   | ``--topic``| The MQTT topic where the message will be published. |
 | ``-m``| ``--message`` | The message which will be published on the topic. |
 | ``-r``| ``--retain`` | Message will be retained. | ``False``
-| ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.
+| ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified. |
 
 | ``-pc`` | ``--contentType`` | A description of publish message's content. |
 
