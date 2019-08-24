@@ -316,8 +316,7 @@ hivemq-cli pub { [[Connect-Option] [Connect-Option]]
                 [-pc <contentType>]
                 [-pd <correlationData>]
                 [-pe <checkMessageExpiryInterval>]
-                [-pi <prefixIdentifier>]
-                [-pp <payloadFormatIndicator>]
+                [-pf <payloadFormatIndicator>]
                 [-pr <responseTopic>]
                 [-pu <publishUserProperties>]
 }
@@ -334,11 +333,13 @@ hivemq-cli pub { [[Connect-Option] [Connect-Option]]
 | ``-r``| ``--retain`` | Message will be retained. | ``False``
 | ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.
 
+| ``-pc`` | ``--contentType`` | A description of publish message's content. |
+
+| ``-pd`` | ``--correlationData`` | The correlation data of the publish message |
+
 | ``-pe`` | ``--messageExpiryInterval`` | The lifetime of the publish message in seconds. |
 
 | ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
-
-| ``-pc`` | ``--contentType`` | A description of publish message's content. |
 
 | ``-pr`` | ``--responseTopic`` | The topic name for the publish message`s response message. |
 
