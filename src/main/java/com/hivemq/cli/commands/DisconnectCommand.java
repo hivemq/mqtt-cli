@@ -8,7 +8,10 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-@CommandLine.Command(name = "dis", aliases = "disconnect", description = "Disconnects an mqtt client")
+@CommandLine.Command(name = "dis",
+        aliases = "disconnect",
+        description = "Disconnects an mqtt client")
+
 public class DisconnectCommand extends MqttCommand implements MqttAction {
 
     private final MqttClientExecutor mqttClientExecutor;

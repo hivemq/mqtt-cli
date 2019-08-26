@@ -15,7 +15,10 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
 
-@CommandLine.Command(name = "sub", aliases = "subscribe", description = "Subscribe an mqtt client to a list of topics")
+@CommandLine.Command(name = "sub",
+        aliases = "subscribe",
+        description = "Subscribe an mqtt client to a list of topics")
+
 public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
     public static final int IDLE_TIME = 5000;
@@ -30,17 +33,17 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
     private String[] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default 0 for all)")
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default for all: 0)")
     private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
     @Nullable
     private File receivedMessagesFile;
 
-    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default false)")
+    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
 
-    @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default false)")
+    @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)")
     private boolean base64;
 
     public String[] getTopics() {

@@ -9,11 +9,11 @@ import org.pmw.tinylog.Level;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
-@CommandLine.Command
+@CommandLine.Command()
 public abstract class MqttCommand extends AbstractCommand implements CliCommand {
 
 
-    @CommandLine.Option(names = {"-v", "--version"}, defaultValue = "5", converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default 5)")
+    @CommandLine.Option(names = {"-V", "--version"}, defaultValue = "5", converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default: 5)")
     private MqttVersion version;
 
     @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")

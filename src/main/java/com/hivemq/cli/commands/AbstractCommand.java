@@ -6,17 +6,23 @@ import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
-@CommandLine.Command
+@CommandLine.Command(sortOptions = false,
+        synopsisHeading = "%n@|bold Usage|@:  ",
+        synopsisSubcommandLabel = "{ pub | sub | shell }",
+        descriptionHeading = "%n",
+        optionListHeading = "%n@|bold Options|@:%n",
+        commandListHeading = "%n@|boldCommands|@:%n",
+        separator = " ")
 abstract class AbstractCommand implements CliCommand {
 
     private boolean debug;
     private boolean verbose;
 
     @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode")
-    private void activateDebugMode(boolean debug) {
+    private void activateDebugMode(final boolean debug) {
 
         if (ShellCommand.IN_SHELL) {
-            this.verbose = ShellCommand.VERBOSE;
+            verbose = ShellCommand.VERBOSE;
             this.debug = ShellCommand.DEBUG;
             if (debug) {
                 Logger.warn("-d option is omitted in shell mode. Executing command with default shell debug level.");
@@ -27,18 +33,18 @@ abstract class AbstractCommand implements CliCommand {
         }
     }
 
-    @CommandLine.Option(names = {"-vb", "--verbose"}, defaultValue = "false", description = "Enable verbose mode")
-    private void activateVerboseMode(boolean verbose) {
+    @CommandLine.Option(names = {"-v", "--verbose"}, defaultValue = "false", description = "Enable verbose mode")
+    private void activateVerboseMode(final boolean verbose) {
 
         if (ShellCommand.IN_SHELL) {
             this.verbose = ShellCommand.VERBOSE;
-            this.debug = ShellCommand.DEBUG;
+            debug = ShellCommand.DEBUG;
             if (verbose) {
                 Logger.warn("-vb option is omitted in shell mode. Executing command with default shell verbose level.");
             }
         } else if (verbose) {
             this.verbose = true;
-            this.debug = true;
+            debug = true;
             Configurator.currentConfig().level(Level.TRACE).activate();
         } else {
             this.verbose = false;

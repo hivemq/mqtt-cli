@@ -28,7 +28,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-@CommandLine.Command(name = "con", aliases = "connect", description = "Connects an mqtt client")
+@CommandLine.Command(name = "con",
+        aliases = "connect",
+        description = "Connects an mqtt client",
+        abbreviateSynopsis = true)
+
 public class ConnectCommand extends MqttCommand implements MqttAction {
 
     final MqttClientExecutor mqttClientExecutor;
@@ -55,15 +59,49 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     @Nullable
     private String user;
 
-    @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for authentication")
+    @CommandLine.Option(names = {"-P", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for authentication")
     @Nullable
     private ByteBuffer password;
 
-    @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, defaultValue = "60", description = "A keep alive of the client (in seconds) (default 60)")
+    @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, defaultValue = "60", description = "A keep alive of the client (in seconds) (default: 60)")
     private int keepAlive;
 
-    @CommandLine.Option(names = {"-c", "--cleanStart"}, defaultValue = "true", description = "Define a clean start for the connection (default true)")
+    @CommandLine.Option(names = {"-c", "--cleanStart"}, defaultValue = "true", description = "Define a clean start for the connection (default: true)")
     private boolean cleanStart;
+
+    @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, defaultValue = "0", converter = UnsignedIntConverter.class, description = "The session expiry of the connection (default: 0)")
+    private long sessionExpiryInterval;
+
+    @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use default ssl configuration if no other ssl options are specified (default: false)")
+    private boolean useSsl;
+
+    @CommandLine.Option(names = {"--cafile"}, paramLabel = "FILE", converter = FileToCertificateConverter.class, description = "Path to a file containing trusted CA certificates to enable encrypted certificate based communication")
+    private void addCAFile(X509Certificate certificate) {
+        certificates.add(certificate);
+    }
+
+    @CommandLine.Option(names = {"--capath"}, paramLabel = "DIR", converter = DirectoryToCertificateCollectionConverter.class, description = {"Path to a directory containing certificate files to import to enable encrypted certificate based communication"})
+    private void addCACollection(Collection<X509Certificate> certs) {
+        certificates.addAll(certs);
+    }
+
+    @CommandLine.Option(names = {"--ciphers"}, split = ":", description = "The client supported cipher suites list in IANA format separated with ':'")
+    private Collection<String> cipherSuites;
+
+    @CommandLine.Option(names = {"--tls-version"}, description = "The TLS protocol version to use (default: {'TLSv.1.2'})")
+    private Collection<String> supportedTLSVersions;
+
+    @CommandLine.ArgGroup(exclusive = false)
+    private ClientSideAuthentication clientSideAuthentication;
+
+    static class ClientSideAuthentication {
+
+        @CommandLine.Option(names = {"--cert"}, required = true, converter = FileToCertificateConverter.class, description = "The client certificate to use for client side authentication")
+        @Nullable X509Certificate clientCertificate;
+
+        @CommandLine.Option(names = {"--key"}, required = true, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication")
+        @Nullable PrivateKey clientPrivateKey;
+    }
 
     @CommandLine.Option(names = {"-wt", "--willTopic"}, description = "The topic of the will message")
     @Nullable
@@ -73,18 +111,18 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     @Nullable
     private ByteBuffer willMessage;
 
-    @CommandLine.Option(names = {"-wq", "--willQualityOfService"}, converter = MqttQosConverter.class, defaultValue = "AT_MOST_ONCE", description = "Quality of service level for the will message (default 0)")
+    @CommandLine.Option(names = {"-wq", "--willQualityOfService"}, converter = MqttQosConverter.class, defaultValue = "AT_MOST_ONCE", description = "Quality of service level for the will message (default: 0)")
     @Nullable
     private MqttQos willQos;
 
-    @CommandLine.Option(names = {"-wr", "--willRetain"}, defaultValue = "false", description = "Will message as retained message (default false)")
+    @CommandLine.Option(names = {"-wr", "--willRetain"}, defaultValue = "false", description = "Will message as retained message (default: false)")
     private boolean willRetain;
 
-    @CommandLine.Option(names = {"-we", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the will message in seconds (default no message expiry)")
+    @CommandLine.Option(names = {"-we", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the will message in seconds (default: no message expiry)")
     @Nullable
     private Long willMessageExpiryInterval;
 
-    @CommandLine.Option(names = {"-wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, defaultValue = "0", description = "The Server delays publishing the client's will message until the will delay has passed (default 0)")
+    @CommandLine.Option(names = {"-wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, defaultValue = "0", description = "The Server delays publishing the client's will message until the will delay has passed (default: 0)")
     private long willDelayInterval;
 
     @CommandLine.Option(names = {"-wp", "--willPayloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the will message")
@@ -107,39 +145,6 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     @Nullable
     private Mqtt5UserProperties willUserProperties;
 
-    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, defaultValue = "0", converter = UnsignedIntConverter.class, description = "The session expiry of the connection (default 0)")
-    private long sessionExpiryInterval;
-
-    @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use default ssl configuration if no other ssl options are specified (default false)")
-    private boolean useSsl;
-
-    @CommandLine.Option(names = {"--cafile"}, converter = FileToCertificateConverter.class, description = "Path to a file containing trusted CA certificates to enable encrypted certificate based communication")
-    private void addCAFile(X509Certificate certificate) {
-        certificates.add(certificate);
-    }
-
-    @CommandLine.Option(names = {"--capath"}, converter = DirectoryToCertificateCollectionConverter.class, description = {"Path to a directory containing certificate files to import to enable encrypted certificate based communication"})
-    private void addCACollection(Collection<X509Certificate> certs) {
-        certificates.addAll(certs);
-    }
-
-    @CommandLine.Option(names = {"--ciphers"}, split = ":", description = "The client supported cipher suites list in IANA format separated with ':'")
-    private Collection<String> cipherSuites;
-
-    @CommandLine.Option(names = {"--tls-version"}, description = "The TLS protocol version to use (default {'TLSv.1.2'})")
-    private Collection<String> supportedTLSVersions;
-
-    @CommandLine.ArgGroup(exclusive = false)
-    private ClientSideAuthentication clientSideAuthentication;
-
-    static class ClientSideAuthentication {
-
-        @CommandLine.Option(names = {"--cert"}, required = true, converter = FileToCertificateConverter.class, description = "The client certificate to use for client side authentication")
-        @Nullable X509Certificate clientCertificate;
-
-        @CommandLine.Option(names = {"--key"}, required = true, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication")
-        @Nullable PrivateKey clientPrivateKey;
-    }
 
     @Override
     public void run() {

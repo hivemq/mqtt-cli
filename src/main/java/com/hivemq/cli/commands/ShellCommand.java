@@ -6,6 +6,8 @@ import org.jline.reader.impl.DefaultParser;
 import org.jline.reader.impl.LineReaderImpl;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
 import org.pmw.tinylog.Logger;
@@ -23,8 +25,9 @@ import java.util.Properties;
 
 @CommandLine.Command(name = "shell", aliases = "sh",
         description = "Starts HiveMQ-CLI in shell mode, to enable interactive mode with further sub commands.",
-        footer = {"", "Press Ctl-C to exit."},
+        footer = {"", "@|bold Press Ctl-C to exit.|@"},
         mixinStandardHelpOptions = true)
+
 public class ShellCommand implements Runnable {
 
     private static String prompt = "hmq> ";
@@ -95,6 +98,10 @@ public class ShellCommand implements Runnable {
             terminalWriter.flush();
 
             Logger.info("Writing Logfile to {}", logfilePath);
+            prompt = new AttributedStringBuilder()
+                    .style(AttributedStyle.BOLD.foreground(AttributedStyle.GREEN))
+                    .append(prompt)
+                    .toAnsi();
 
             String line;
             while (true) {

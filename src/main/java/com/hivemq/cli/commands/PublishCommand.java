@@ -16,7 +16,11 @@ import javax.inject.Inject;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-@CommandLine.Command(name = "pub", aliases = "publish", description = "Publish a message to a list of topics")
+@CommandLine.Command(name = "pub",
+        aliases = "publish",
+        description = "Publish a message to a list of topics",
+        abbreviateSynopsis = false)
+
 public class PublishCommand extends ConnectCommand implements MqttAction {
 
 
@@ -30,16 +34,16 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
     private String[] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default 0 for all)")
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default for all: 0)")
     private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message to publish")
     private ByteBuffer message;
 
-    @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false", description = "The message will be retained (default false)")
+    @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false", description = "The message will be retained (default: false)")
     private boolean retain;
 
-    @CommandLine.Option(names = {"-pe", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default no message expiry)")
+    @CommandLine.Option(names = {"-pe", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default: no message expiry)")
     @Nullable
     private Long messageExpiryInterval;
 
@@ -59,7 +63,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
     @Nullable
     private ByteBuffer correlationData;
 
-    @CommandLine.Option(names = {"-pu", "--publishUserProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
+    @CommandLine.Option(names = {"-pu", "--publishUserProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
     @Nullable
     private Mqtt5UserProperties publishUserProperties;
 

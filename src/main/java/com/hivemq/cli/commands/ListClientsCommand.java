@@ -17,9 +17,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-@CommandLine.Command(name = "ls", aliases = "list",
+@CommandLine.Command(name = "ls",
+        aliases = "list",
         description = "List all connected clients with their respective identifieres",
         mixinStandardHelpOptions = true)
+
 public class ListClientsCommand extends AbstractCommand implements Runnable {
 
     private final MqttClientExecutor mqttClientExecutor;
