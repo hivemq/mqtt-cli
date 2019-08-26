@@ -395,7 +395,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
         return willMessageExpiryInterval;
     }
 
-    public void setWillMessageExpiryInterval(@Nullable final Long willMessageExpiryInterval) {
+    public void setWillMessageExpiryInterval(final @Nullable Long willMessageExpiryInterval) {
         this.willMessageExpiryInterval = willMessageExpiryInterval;
     }
 
