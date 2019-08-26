@@ -337,7 +337,7 @@ You can define a specific QoS level for every topic. The corresponding QoS level
 
 | ``-pc`` | ``--contentType`` | A description of the content of the publish message. |
 
-| ``-pd`` | ``--correlationData`` | The correlation data of the publish message |
+| ``-pd`` | ``--correlationData`` | The correlation data of the publish message. |
 
 | ``-pe`` | ``--messageExpiryInterval`` | The lifetime of the publish message in seconds. |
 
