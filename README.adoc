@@ -335,7 +335,7 @@ hivemq-cli pub { [[Connect-Option] [Connect-Option]]
 
 You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 
-| ``-pc`` | ``--contentType`` | A description of publish message's content. |
+| ``-pc`` | ``--contentType`` | A description of the content of the publish message. |
 
 | ``-pd`` | ``--correlationData`` | The correlation data of the publish message |
 
