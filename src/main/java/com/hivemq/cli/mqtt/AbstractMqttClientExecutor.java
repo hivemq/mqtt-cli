@@ -211,11 +211,11 @@ abstract class AbstractMqttClientExecutor {
                     .contentType(connectCommand.getWillContentType())
                     .responseTopic(connectCommand.getWillResponseTopic())
                     .correlationData(connectCommand.getWillCorrelationData());
+            if (connectCommand.getWillMessageExpiryInterval() != null) {
+                builder.messageExpiryInterval(connectCommand.getWillMessageExpiryInterval());
+            }
             if (connectCommand.getWillUserProperties() != null) { // user Properties can't be completed with null
                 builder.userProperties(connectCommand.getWillUserProperties());
-            }
-            if (connectCommand.getWillMessageExpiryInterval() != -1) {
-                builder.messageExpiryInterval(connectCommand.getWillMessageExpiryInterval());
             }
             return builder.build().asWill();
         } else if (connectCommand.getWillMessage() != null) {

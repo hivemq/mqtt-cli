@@ -80,25 +80,9 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"-wr", "--willRetain"}, defaultValue = "false", description = "Will message as retained message")
     private boolean willRetain;
 
-    @CommandLine.Option(names = {"-we", "--willMessageExpiryInterval"}, defaultValue = "-1", description = "The lifetime of the Will Message in seconds.")
-    private void checkWillMessageExpiryInterval(final String value) {
-        if (Long.parseLong(value) == -1) {
-            willMessageExpiryInterval = -1;
-        } else {
-            final UnsignedIntConverter converter = new UnsignedIntConverter();
-            try {
-                willMessageExpiryInterval = converter.convert(value);
-            } catch (Exception ex) {
-                if (isDebug()) {
-                    Logger.debug(ex);
-                }
-                Logger.error(ex.getMessage());
-            }
-
-        }
-    }
-
-    private long willMessageExpiryInterval;
+    @CommandLine.Option(names = {"-we", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the Will Message in seconds.")
+    @Nullable
+    private Long willMessageExpiryInterval;
 
     @CommandLine.Option(names = {"-wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, defaultValue = "0", description = "The Server delays publishing the Client's Will Message until the Will Delay has passed.")
     private long willDelayInterval;
@@ -203,7 +187,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
             if (sessionExpiryInterval != 0) {
                 Logger.warn("Session Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
-            if (willMessageExpiryInterval != -1) {
+            if (willMessageExpiryInterval != null) {
                 Logger.warn("Will Message Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
             if (willPayloadFormatIndicator != null) {
@@ -407,11 +391,11 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
         this.cleanStart = cleanStart;
     }
 
-    public long getWillMessageExpiryInterval() {
+    public Long getWillMessageExpiryInterval() {
         return willMessageExpiryInterval;
     }
 
-    public void setWillMessageExpiryInterval(final long willMessageExpiryInterval) {
+    public void setWillMessageExpiryInterval(@Nullable final Long willMessageExpiryInterval) {
         this.willMessageExpiryInterval = willMessageExpiryInterval;
     }
 

@@ -244,7 +244,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .contentType(publishCommand.getContentType())
                 .responseTopic(publishCommand.getResponseTopic())
                 .correlationData(publishCommand.getCorrelationData());
-        if (publishCommand.getMessageExpiryInterval() != -1) {
+        if (publishCommand.getMessageExpiryInterval() != null) {
             publishBuilder.messageExpiryInterval(publishCommand.getMessageExpiryInterval());
         }
         if (publishCommand.getPublishUserProperties() != null) {

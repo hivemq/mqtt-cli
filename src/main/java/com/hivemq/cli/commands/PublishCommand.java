@@ -39,24 +39,9 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
     @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false", description = "The message will be retained.")
     private boolean retain;
 
-    private long messageExpiryInterval;
-
-    @CommandLine.Option(names = {"-pe", "--messageExpiryInterval"}, defaultValue = "-1", description = "The lifetime of the publish message in seconds.")
-    private void checkMessageExpiryInterval(final String value) {
-        if (Long.parseLong(value) == -1) {
-            messageExpiryInterval = -1;
-        } else {
-            final UnsignedIntConverter converter = new UnsignedIntConverter();
-            try {
-                messageExpiryInterval = converter.convert(value);
-            } catch (Exception ex) {
-                if (isDebug()) {
-                    Logger.debug(ex);
-                }
-                Logger.error(ex.getMessage());
-            }
-        }
-    }
+    @CommandLine.Option(names = {"-pe", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds.")
+    @Nullable
+    private Long messageExpiryInterval;
 
     @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the publish message.")
     @Nullable
@@ -110,11 +95,11 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
         this.retain = retain;
     }
 
-    public long getMessageExpiryInterval() {
+    public Long getMessageExpiryInterval() {
         return messageExpiryInterval;
     }
 
-    public void setMessageExpiryInterval(long messageExpiryInterval) {
+    public void setMessageExpiryInterval(@Nullable final Long messageExpiryInterval) {
         this.messageExpiryInterval = messageExpiryInterval;
     }
 
@@ -191,7 +176,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
 
     private void logUnusedPublishOptions() {
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
-            if (messageExpiryInterval != -1) {
+            if (messageExpiryInterval != null) {
                 Logger.warn("Publish message expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
             if (payloadFormatIndicator != null) {
