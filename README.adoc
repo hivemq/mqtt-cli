@@ -343,7 +343,7 @@ You can define a specific QoS level for every topic. The corresponding QoS level
 
 | ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
 
-| ``-pr`` | ``--responseTopic`` | The topic name for the publish message`s response message. |
+| ``-pr`` | ``--responseTopic`` | The topic name for the response message of the publish message. |
 
 | ``-pu`` | ``--publishUserProperties``  | The user property of the publish message. Usage: Key=Value, Key1=Value1:Key2=Value2 |
 
