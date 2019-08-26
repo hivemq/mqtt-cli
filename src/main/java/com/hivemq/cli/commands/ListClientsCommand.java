@@ -17,9 +17,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-@CommandLine.Command(name = "ls", aliases = "list",
+@CommandLine.Command(name = "ls",
+        aliases = "list",
         description = "List all connected clients with their respective identifieres",
         mixinStandardHelpOptions = true)
+
 public class ListClientsCommand extends AbstractCommand implements Runnable {
 
     private final MqttClientExecutor mqttClientExecutor;
@@ -29,10 +31,10 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
         this.mqttClientExecutor = mqttClientExecutor;
     }
 
-    @CommandLine.Option(names = {"-t", "--time"}, defaultValue = "false", description = "Sort clients ordered by their creation time")
+    @CommandLine.Option(names = {"-t", "--time"}, defaultValue = "false", description = "Sort clients ordered by their creation time (default false)")
     private boolean sortByTime;
 
-    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "List clients with detailed client inforamtion")
+    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "List clients with detailed client information (default false)")
     private boolean outputDetailedClientInformation;
 
     @CommandLine.Option(names = {"-at", "-ta"}, description = "List detailed client information sorted by client creation time")

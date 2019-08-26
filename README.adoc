@@ -139,12 +139,12 @@ hmq> con {  [-h <hostname>]
             [-p <port-number>]
             [-i <client-identifier>]
             [-d <debug>]
-            [-vb <verbose>]
+            [-v <verbose>]
             [-u <username>]
-            [-pw <password>]
+            [-P <password>]
             [-c <clean-session>]
             [-s <use-default-ssl>]
-            [-se <session-expiry>]
+            [-e <session-expiry>]
             [-wt <will-message-topic>]
             [-wq <will-quality-of-service>]
             [-wm <will-message-payload>]
@@ -180,11 +180,11 @@ hmq> con {  [-h <hostname>]
 
 | ``-d``    |   ``--debug``     | Print info level debug messages to the console. | ``False``
 
-| ``-vb``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
+| ``-v``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
 
 | ``-u``   | ``--user`` | A username for authentication can be defined. |
 
-| ``-pw``  | ``--password`` | A password for authentication can be defined directly.
+| ``-P``  | ``--password`` | A password for authentication can be defined directly.
 
 If left blank the user will be prompted for the password in console.
 |
@@ -193,7 +193,7 @@ If left blank the user will be prompted for the password in console.
 
 | ``-s``    | ``--secure``  | Use the default SSL configuration. | ``False``
 
-| ``-se``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
+| ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
 
 | ``-wt``  | ``--willTopic`` | Topic of the will message.  |
 
@@ -252,9 +252,9 @@ hmq> con -h myHost -p 1884
 Connect a client to the default host on default port using authentication:
 
 ```
-hmq> con -u username -pw password
+hmq> con -u username -P password
 # Or omit the password to get it prompted
-hmq> con -u username -pw
+hmq> con -u username -P
 Enter value for --password (The password for the client UTF-8 String.):
 ```
 
@@ -492,7 +492,7 @@ NOTE: A client is uniquely identified in the CLI by the **version**, **hostname*
 
 By default the Shell-Model logs all commands in verbose mode to a uniquely named logfile which is placed in a temp directory which is printed out at the start of the shell.
 
-NOTE: In Shell-Mode the **-d** and **-vb** options for every command will be overridden the default shell debug level.
+NOTE: In Shell-Mode the **-d** and **-v** options for every command will be overridden the default shell debug level.
 
 === Disconnect
 
@@ -504,7 +504,7 @@ Disconnects a previously connected client.
 hivemq-cli shell dis {  [-i <identifier>]
                         [-h <hostname>]
                         [-p <port>]
-                        [-v <version>]
+                        [-V <version>]
 }
 ```
 
@@ -519,7 +519,7 @@ hivemq-cli shell dis {  [-i <identifier>]
 
 | ``-p``| ``--port`` | The port on which the client is connected. | ``1883``
 
-| ``-v`` | ``--version`` |  The MQTT version which the connected client is using. | ``MQTT  v.5.0``
+| ``-V`` | ``--version`` |  The MQTT version which the connected client is using. | ``MQTT  v.5.0``
 
 |===
 
@@ -538,8 +538,8 @@ NOTE: Besides the **identifier** also **version**, **hostname** and **port** hav
 If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
 
 ```
-hmq> con -i myClient -h localhost -p 1884 -v 3
-hmq> con -i myClient -h localhost -p 1884 -v 3
+hmq> con -i myClient -h localhost -p 1884 -V 3
+hmq> con -i myClient -h localhost -p 1884 -V 3
 ```
 
 === List

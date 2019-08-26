@@ -12,10 +12,11 @@ import java.util.concurrent.Callable;
  * Command that clears the screen.
  */
 @CommandLine.Command(
-        name = "cls", aliases = "clear",
+        name = "cls",
+        aliases = "clear",
         mixinStandardHelpOptions = true,
-        description = "Clears the screen",
-        version = "1.0")
+        description = "Clears the screen")
+
 public class ClearScreenCommand implements Callable<Void> {
 
     @Inject

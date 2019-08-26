@@ -14,6 +14,8 @@ import java.security.Security;
 
 public class HiveMQCLIMain {
 
+    public static final int CLI_WIDTH = 160;
+
     public static void main(final String[] args) {
 
         Security.setProperty("crypto.policy", "unlimited");
@@ -26,10 +28,13 @@ public class HiveMQCLIMain {
                 .level(Level.INFO)
                 .activate();
 
+
         if (args.length == 0) {
-            Logger.info(commandLine.getUsageMessage());
+            System.out.println(commandLine.getUsageMessage());
             System.exit(0);
         }
+
+        commandLine.setUsageHelpWidth(CLI_WIDTH);
 
         final int exitCode = commandLine.execute(args);
 
