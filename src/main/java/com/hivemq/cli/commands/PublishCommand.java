@@ -27,39 +27,39 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
 
     }
 
-    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The Topic, at least one.")
+    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
     private String[] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of Service for the corresponding topic.")
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default 0 for all)")
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message that should be published.")
+    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message to publish")
     private ByteBuffer message;
 
-    @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false", description = "The message will be retained.")
+    @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false", description = "The message will be retained (default false)")
     private boolean retain;
 
-    @CommandLine.Option(names = {"-pe", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds.")
+    @CommandLine.Option(names = {"-pe", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default no message expiry)")
     @Nullable
     private Long messageExpiryInterval;
 
-    @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the publish message.")
+    @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the publish message")
     @Nullable
     private Mqtt5PayloadFormatIndicator payloadFormatIndicator;
 
-    @CommandLine.Option(names = {"-pc", "--contentType"}, description = "A description of publish message's content.")
+    @CommandLine.Option(names = {"-pc", "--contentType"}, description = "A description of publish message's content")
     @Nullable
     private String contentType;
 
-    @CommandLine.Option(names = {"-pr", "--responseTopic"}, description = "The topic name for the publish message`s response message.")
+    @CommandLine.Option(names = {"-pr", "--responseTopic"}, description = "The topic name for the publish message`s response message")
     @Nullable
     private String responseTopic;
 
-    @CommandLine.Option(names = {"-pd", "--correlationData"}, converter = ByteBufferConverter.class, description = "The correlation data of the publish message.")
+    @CommandLine.Option(names = {"-pd", "--correlationData"}, converter = ByteBufferConverter.class, description = "The correlation data of the publish message")
     @Nullable
     private ByteBuffer correlationData;
 
-    @CommandLine.Option(names = {"-pu", "--publishUserProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message. Usage: Key=Value, Key1=Value1|Key2=Value2")
+    @CommandLine.Option(names = {"-pu", "--publishUserProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
     @Nullable
     private Mqtt5UserProperties publishUserProperties;
 

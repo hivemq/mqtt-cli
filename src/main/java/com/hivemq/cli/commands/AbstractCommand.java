@@ -12,7 +12,7 @@ abstract class AbstractCommand implements CliCommand {
     private boolean debug;
     private boolean verbose;
 
-    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode.")
+    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode")
     private void activateDebugMode(boolean debug) {
 
         if (ShellCommand.IN_SHELL) {
@@ -27,7 +27,7 @@ abstract class AbstractCommand implements CliCommand {
         }
     }
 
-    @CommandLine.Option(names = {"-vb", "--verbose"}, defaultValue = "false", description = "Enable verbose mode.")
+    @CommandLine.Option(names = {"-vb", "--verbose"}, defaultValue = "false", description = "Enable verbose mode")
     private void activateVerboseMode(boolean verbose) {
 
         if (ShellCommand.IN_SHELL) {
