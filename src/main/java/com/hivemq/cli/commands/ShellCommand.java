@@ -27,6 +27,8 @@ import java.util.Properties;
         mixinStandardHelpOptions = true)
 public class ShellCommand implements Runnable {
 
+    private static String prompt = "hmq> ";
+
     static boolean IN_SHELL = false;
     static final boolean DEBUG = true;
     static final boolean VERBOSE = true;
@@ -34,7 +36,6 @@ public class ShellCommand implements Runnable {
 
     LineReaderImpl reader;
 
-    private static String prompt = "hmq> ";
 
     @SuppressWarnings("NullableProblems")
     @CommandLine.Spec
