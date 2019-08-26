@@ -18,6 +18,7 @@ import picocli.shell.jline3.PicocliJLineCompleter;
 
 import javax.inject.Inject;
 import java.io.PrintWriter;
+import java.util.Properties;
 
 
 @CommandLine.Command(name = "shell", aliases = "sh",
@@ -26,6 +27,8 @@ import java.io.PrintWriter;
         mixinStandardHelpOptions = true)
 public class ShellCommand implements Runnable {
 
+    private static String prompt = "hmq> ";
+
     static boolean IN_SHELL = false;
     static final boolean DEBUG = true;
     static final boolean VERBOSE = true;
@@ -33,7 +36,6 @@ public class ShellCommand implements Runnable {
 
     LineReaderImpl reader;
 
-    private static final String prompt = "hmq> ";
 
     @SuppressWarnings("NullableProblems")
     @CommandLine.Spec
@@ -66,6 +68,10 @@ public class ShellCommand implements Runnable {
                 .activate();
 
         logfilePath = logfileWriter.getFilename();
+
+        if (VERBOSE) {
+            Logger.trace("Command: {} ", this);
+        }
 
         final CommandLine cmd = new CommandLine(spec);
 
@@ -130,6 +136,7 @@ public class ShellCommand implements Runnable {
     @Override
     public String toString() {
         return "Shell:: {" +
+                "logfilePath=" + logfilePath +
                 "debug=" + DEBUG +
                 ", verbose=" + VERBOSE +
                 "}";

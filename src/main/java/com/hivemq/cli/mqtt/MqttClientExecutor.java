@@ -14,6 +14,8 @@ import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jline.utils.Log;
 import org.pmw.tinylog.Logger;
@@ -23,6 +25,7 @@ import javax.inject.Singleton;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import org.bouncycastle.util.encoders.Base64;
 
@@ -225,19 +228,30 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos) {
 
         if (publishCommand.isDebug()) {
-            Logger.debug("sending PUBLISH: (Topic: {}, QoS {},Message: '{}')", topic, qos, bufferToString(publishCommand.getMessage()));
+            Logger.debug("sending PUBLISH: (Topic: {}, QoS {}, Message: '{}')", topic, qos, bufferToString(publishCommand.getMessage()));
         }
 
         if (publishCommand.isVerbose()) {
             Logger.trace("sending PUBLISH with command: {}", publishCommand);
         }
 
-        client.publishWith()
+        final Mqtt5PublishBuilder.Complete publishBuilder = Mqtt5Publish.builder()
                 .topic(topic)
                 .qos(qos)
                 .retain(publishCommand.isRetain())
                 .payload(publishCommand.getMessage())
-                .send()
+                .payloadFormatIndicator(publishCommand.getPayloadFormatIndicator())
+                .contentType(publishCommand.getContentType())
+                .responseTopic(publishCommand.getResponseTopic())
+                .correlationData(publishCommand.getCorrelationData());
+        if (publishCommand.getMessageExpiryInterval() != null) {
+            publishBuilder.messageExpiryInterval(publishCommand.getMessageExpiryInterval());
+        }
+        if (publishCommand.getPublishUserProperties() != null) {
+            publishBuilder.userProperties(publishCommand.getPublishUserProperties());
+        }
+
+        client.publish(publishBuilder.build())
                 .whenComplete((publishResult, throwable) -> {
                     if (throwable != null) {
 
@@ -267,7 +281,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, final @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos) {
 
         if (publishCommand.isDebug()) {
-            Logger.debug("sending PUBLISH: (Topic: {}, QoS {},Message: '{}')", topic, qos, bufferToString(publishCommand.getMessage()));
+            Logger.debug("sending PUBLISH: (Topic: {}, QoS {}, Message: '{}')", topic, qos, bufferToString(publishCommand.getMessage()));
         }
 
         if (publishCommand.isVerbose()) {

@@ -313,6 +313,12 @@ hivemq-cli pub { [[Connect-Option] [Connect-Option]]
                 -m <message>
                 [-r <retain>]
                 [-q <qos>...]
+                [-pc <contentType>]
+                [-pd <correlationData>]
+                [-pe <checkMessageExpiryInterval>]
+                [-pf <payloadFormatIndicator>]
+                [-pr <responseTopic>]
+                [-pu <publishUserProperties>]
 }
 ```
 
@@ -328,6 +334,18 @@ hivemq-cli pub { [[Connect-Option] [Connect-Option]]
 | ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.
 
 You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
+
+| ``-pc`` | ``--contentType`` | A description of the content of the publish message. |
+
+| ``-pd`` | ``--correlationData`` | The correlation data of the publish message. |
+
+| ``-pe`` | ``--messageExpiryInterval`` | The lifetime of the publish message in seconds. |
+
+| ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
+
+| ``-pr`` | ``--responseTopic`` | The topic name for the response message of the publish message. |
+
+| ``-pu`` | ``--publishUserProperties``  | The user property of the publish message. Usage: Key=Value, Key1=Value1:Key2=Value2 |
 
 |===
 
