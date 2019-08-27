@@ -790,4 +790,3 @@ hmq> clear
 
 By default the Shell-Model logs all commands in verbose mode to a uniquely named logfile which is placed in a temp directory which is printed out at the start of the shell.
 
-NOTE: In Shell-Mode the **-d** and **-v** options for every command will be overridden the default shell debug level.
