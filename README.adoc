@@ -282,7 +282,7 @@ Enter private key password:
 NOTE: Publish supports all Connect options.
 Therefore all Connect options can be used with publish.
 
-NOTE: In Shell-Mode use the <<ContextPublish>> equivalent.
+NOTE: In Shell-Mode use the <<Publish (with context)>> equivalent.
 
 Publishes a message to one or more topics.
 
@@ -368,7 +368,7 @@ $ hivemq-cli pub -t topic1 -t topic2 -t topic3 -q 0 -q 1 -q 2
 NOTE: Subscribe supports all Connect options.
 Therefore all Connect options can be used with subscribe.
 
-NOTE: In Shell-Mode use the <<ContextSubscribe>> equivalent.
+NOTE: In Shell-Mode use the <<Subscribe (with context)>> equivalent.
 
 Subscribes a client to one or more topics.
 If the Subscribe command is not called in Shell-Mode it will block the console by default and write the received publishes to the console.
@@ -379,10 +379,10 @@ If the Subscribe command is not called in Shell-Mode it will block the console b
 |Command |Explanation
 
 | ``hivemq-cli sub -t topic``
-| Subscribe to a topic on <<Default Settings>> and block the console.
+| Subscribe to a topic on default settings and block the console.
 
 | ``hivemq-cli sub -t test1 -t test2``
-| Subscribe to the topics test1 and test2 on <<Default Settings>> and block the console.
+| Subscribe to the topics test1 and test2 on default settings and block the console.
 
 | ``hivemq-cli sub -t test -h localhost -p 1884``
 | Subscribe to topic test at localhost:1884.
