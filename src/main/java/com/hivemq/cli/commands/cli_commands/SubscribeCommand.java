@@ -23,6 +23,17 @@ import java.util.Arrays;
 public class SubscribeCommand extends ConnectCommand implements MqttAction, Subscribe {
 
     public static final int IDLE_TIME = 5000;
+    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
+    private String[] topics;
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default for all: 0)")
+    private MqttQos[] qos;
+    @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
+    @Nullable
+    private File receivedMessagesFile;
+    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
+    private boolean printToSTDOUT;
+    @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)")
+    private boolean base64;
 
     @Inject
     public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -30,22 +41,6 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction, Subs
         super(mqttClientExecutor);
 
     }
-
-    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
-    private String[] topics;
-
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default for all: 0)")
-    private MqttQos[] qos;
-
-    @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
-    @Nullable
-    private File receivedMessagesFile;
-
-    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
-    private boolean printToSTDOUT;
-
-    @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)")
-    private boolean base64;
 
     public String[] getTopics() {
         return topics;
@@ -112,29 +107,28 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction, Subs
             Logger.error(ex.getMessage());
         }
 
-        if (!ShellCommand.IN_SHELL) {
-            if (receivedMessagesFile == null && !printToSTDOUT) {
-                printToSTDOUT = true;
-            }
-            try {
-                stay();
-            } catch (final InterruptedException e) {
-                if (isDebug()) {
-                    Logger.debug(e);
-                }
-                Logger.error(e.getMessage());
-            }
+        if (receivedMessagesFile == null && !printToSTDOUT) {
+            printToSTDOUT = true;
         }
+        try {
+            stay();
+        } catch (final InterruptedException e) {
+            if (isDebug()) {
+                Logger.debug(e);
+            }
+            Logger.error(e.getMessage());
+        }
+
 
     }
 
     private void stay() throws InterruptedException {
-            while (mqttClientExecutor.isConnected(this)) {
-                Thread.sleep(IDLE_TIME);
-            }
-            if (isVerbose()) {
-                Logger.trace("Client disconnected.");
-            }
+        while (mqttClientExecutor.isConnected(this)) {
+            Thread.sleep(IDLE_TIME);
+        }
+        if (isVerbose()) {
+            Logger.trace("Client disconnected.");
+        }
     }
 
     @Override

@@ -40,7 +40,6 @@ public class ShellCommand implements Runnable {
 
     private static String prompt = "hmq> ";
 
-    public static boolean IN_SHELL = false;
     public static final boolean DEBUG = true;
     public static final boolean VERBOSE = true;
     private String logfilePath;
@@ -64,8 +63,6 @@ public class ShellCommand implements Runnable {
 
     @Override
     public void run() {
-
-        IN_SHELL = true;
 
         final String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}";
 

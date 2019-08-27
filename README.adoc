@@ -473,7 +473,7 @@ The Shell-Mode can be mainly used for connection handling as the Publish and Sub
 === Summary
 
 ```
-hivemq-cli shell { con | pub | sub | dis | ls | cls }
+hivemq-cli shell { con | dis | switch | cls | ls }
 
 ```
 
