@@ -260,7 +260,7 @@ Connect a client with default settings and use it to publish:
 
 ```
 hmq> con -i myClient
-hmq> pub -i myClient -t test -m "Hello World"
+myClient@localhost> pub -t test -m "Hello World"
 ```
 
 Connect a client with a will message:
