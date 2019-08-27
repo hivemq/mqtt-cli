@@ -1,9 +1,9 @@
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.cli_commands;
 
+import com.hivemq.cli.commands.shell_commands.ShellCommand;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
 import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
 @CommandLine.Command(sortOptions = false,
@@ -13,7 +13,7 @@ import picocli.CommandLine;
         optionListHeading = "%n@|bold Options|@:%n",
         commandListHeading = "%n@|boldCommands|@:%n",
         separator = " ")
-abstract class AbstractCommand implements CliCommand {
+public abstract class AbstractCommand implements CliCommand {
 
     private boolean debug;
     private boolean verbose;

@@ -1,5 +1,6 @@
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.cli_commands;
 
+import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -21,7 +22,7 @@ import java.util.Arrays;
         description = "Publish a message to a list of topics",
         abbreviateSynopsis = false)
 
-public class PublishCommand extends ConnectCommand implements MqttAction {
+public class PublishCommand extends ConnectCommand implements MqttAction, Publish {
 
 
     @Inject
@@ -214,7 +215,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction {
                 ", responseTopic=" + responseTopic +
                 ", correlationData=" + correlationData +
                 ", userProperties=" + publishUserProperties +
-                ", connectOptions: {" + connectOptions() + "}" +
+                ", Connect:: {" + connectOptions() + "}" +
                 '}';
     }
 

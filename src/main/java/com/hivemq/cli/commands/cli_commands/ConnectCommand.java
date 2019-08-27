@@ -1,4 +1,4 @@
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.cli_commands;
 
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
@@ -34,6 +34,8 @@ import java.util.UUID;
         abbreviateSynopsis = true)
 
 public class ConnectCommand extends MqttCommand implements MqttAction {
+
+    public MqttClient client;
 
     final MqttClientExecutor mqttClientExecutor;
 
@@ -178,7 +180,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
         }
 
         try {
-            mqttClientExecutor.connect(this);
+            client = mqttClientExecutor.connect(this);
         } catch (final Exception ex) {
             if (isDebug()) {
                 Logger.debug(ex);

@@ -1,13 +1,13 @@
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.ConnectCommand;
-import com.hivemq.cli.commands.DisconnectCommand;
-import com.hivemq.cli.commands.PublishCommand;
-import com.hivemq.cli.commands.SubscribeCommand;
+import com.hivemq.cli.commands.*;
+import com.hivemq.cli.commands.cli_commands.ConnectCommand;
+import com.hivemq.cli.commands.cli_commands.DisconnectCommand;
+import com.hivemq.cli.commands.cli_commands.PublishCommand;
+import com.hivemq.cli.commands.cli_commands.SubscribeCommand;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
-import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
@@ -33,77 +33,84 @@ import java.util.Map;
 
 abstract class AbstractMqttClientExecutor {
 
-    private final ClientCache<String, MqttClient> clientCache = new ClientCache<>();
-    private final Map<String, LocalDateTime> clientCreationTimes = new HashMap<>();
+    private static final ClientCache<String, MqttClient> clientCache = new ClientCache<>();
+    private static final Map<String, LocalDateTime> clientCreationTimes = new HashMap<>();
 
 
     abstract void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull ConnectCommand connectCommand);
 
     abstract void mqtt3Connect(final @NotNull Mqtt3BlockingClient client, final @NotNull Mqtt3Connect connectMessage, final @NotNull ConnectCommand connectCommand);
 
-    abstract void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    abstract void mqtt3Subscribe(final @NotNull Mqtt3AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt3Subscribe(final @NotNull Mqtt3AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    abstract void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    abstract void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
 
 
     public void subscribe(final @NotNull SubscribeCommand subscribeCommand) {
 
         final MqttClient client = getMqttClientFromCacheOrConnect(subscribeCommand);
 
+        subscribe(client, subscribeCommand);
+
+    }
+
+    public void subscribe(final @NotNull MqttClient client, final @NotNull Subscribe subscribe) {
         LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get());
 
-
-        for (int i = 0; i < subscribeCommand.getTopics().length; i++) {
-            final String topic = subscribeCommand.getTopics()[i];
-            final MqttQos qos = subscribeCommand.getQos()[i];
+        for (int i = 0; i < subscribe.getTopics().length; i++) {
+            final String topic = subscribe.getTopics()[i];
+            final MqttQos qos = subscribe.getQos()[i];
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    mqtt5Subscribe((Mqtt5AsyncClient) client, subscribeCommand, topic, qos);
+                    mqtt5Subscribe((Mqtt5AsyncClient) client, subscribe, topic, qos);
                     break;
                 case MQTT_3_1_1:
-                    mqtt3Subscribe((Mqtt3AsyncClient) client, subscribeCommand, topic, qos);
+                    mqtt3Subscribe((Mqtt3AsyncClient) client, subscribe, topic, qos);
                     break;
             }
         }
-
     }
 
     public void publish(final @NotNull PublishCommand publishCommand) {
 
         final MqttClient client = getMqttClientFromCacheOrConnect(publishCommand);
+        publish(client, publishCommand);
 
+    }
+
+    public void publish(final @NotNull MqttClient client, final @NotNull Publish publish) {
         LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get());
 
-        for (int i = 0; i < publishCommand.getTopics().length; i++) {
-            final String topic = publishCommand.getTopics()[i];
-            final MqttQos qos = publishCommand.getQos()[i];
+        for (int i = 0; i < publish.getTopics().length; i++) {
+            final String topic = publish.getTopics()[i];
+            final MqttQos qos = publish.getQos()[i];
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    mqtt5Publish((Mqtt5AsyncClient) client, publishCommand, topic, qos);
+                    mqtt5Publish((Mqtt5AsyncClient) client, publish, topic, qos);
                     break;
                 case MQTT_3_1_1:
-                    mqtt3Publish((Mqtt3AsyncClient) client, publishCommand, topic, qos);
+                    mqtt3Publish((Mqtt3AsyncClient) client, publish, topic, qos);
                     break;
             }
 
         }
     }
 
-    public void disconnect(final @NotNull DisconnectCommand disconnectCommand) {
+    public void disconnect(final @NotNull Context context) {
 
-        LoggingContext.put("identifier", disconnectCommand.getIdentifier());
+        LoggingContext.put("identifier", context.getIdentifier());
 
-        clientCache.setVerbose(disconnectCommand.isVerbose());
+        clientCache.setVerbose(context.isVerbose());
 
-        if (clientCache.hasKey(disconnectCommand.getKey())) {
-            final MqttClient client = clientCache.get(disconnectCommand.getKey());
-            clientCache.remove(disconnectCommand.getKey());
+        if (clientCache.hasKey(context.getKey())) {
+            final MqttClient client = clientCache.get(context.getKey());
+            clientCache.remove(context.getKey());
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
@@ -113,13 +120,14 @@ abstract class AbstractMqttClientExecutor {
                     ((Mqtt3AsyncClient) client).disconnect();
                     break;
             }
-        } else if (disconnectCommand.isDebug()) {
-            Logger.debug("client to disconnect is not connected: {} ", disconnectCommand.getKey());
+        } else if (context.isDebug()) {
+            Logger.debug("client to disconnect is not connected: {} ", context.getKey());
         }
 
     }
 
-    public boolean isConnected(final @NotNull SubscribeCommand subscriber) {
+
+    public boolean isConnected(final @NotNull Subscribe subscriber) {
 
         LoggingContext.put("identifier", subscriber.getIdentifier());
 
@@ -302,5 +310,17 @@ abstract class AbstractMqttClientExecutor {
             mqttClient = connect(connect);
         }
         return mqttClient;
+    }
+
+    public @Nullable MqttClient getMqttClientFromCache(final @NotNull Context context) {
+        clientCache.setVerbose(context.isVerbose());
+
+        MqttClient client = null;
+
+        if (clientCache.hasKey(context.getKey())) {
+            client = clientCache.get(context.getKey());
+        }
+
+        return client;
     }
 }

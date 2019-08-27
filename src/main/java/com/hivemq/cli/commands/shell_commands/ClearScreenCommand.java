@@ -1,6 +1,5 @@
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.shell_commands;
 
-import com.hivemq.cli.commands.ShellCommand;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -23,11 +22,15 @@ public class ClearScreenCommand implements Callable<Void> {
     ClearScreenCommand() {
     }
 
-    @CommandLine.ParentCommand
-    ShellCommand parent;
 
     public Void call() throws IOException {
-        parent.reader.clearScreen();
+
+        ShellCommand.clearScreen();
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "ClearScreen::";
     }
 }

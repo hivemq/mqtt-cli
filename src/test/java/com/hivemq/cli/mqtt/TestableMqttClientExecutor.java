@@ -1,8 +1,9 @@
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.ConnectCommand;
-import com.hivemq.cli.commands.PublishCommand;
-import com.hivemq.cli.commands.SubscribeCommand;
+import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.cli_commands.ConnectCommand;
+import com.hivemq.cli.commands.Publish;
+import com.hivemq.cli.commands.cli_commands.SubscribeCommand;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
@@ -50,22 +51,22 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    void mqtt5Subscribe(@NotNull Mqtt5AsyncClient client, @NotNull SubscribeCommand subscribeCommand, @NotNull String topic, @NotNull MqttQos qos) {
+    void mqtt5Subscribe(@NotNull Mqtt5AsyncClient client, @NotNull Subscribe subscribe, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
     @Override
-    void mqtt3Subscribe(@NotNull Mqtt3AsyncClient client, @NotNull SubscribeCommand subscribeCommand, @NotNull String topic, @NotNull MqttQos qos) {
+    void mqtt3Subscribe(@NotNull Mqtt3AsyncClient client, @NotNull Subscribe subscribe, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
     @Override
-    void mqtt5Publish(@NotNull Mqtt5AsyncClient client, @NotNull PublishCommand publishCommand, @NotNull String topic, @NotNull MqttQos qos) {
+    void mqtt5Publish(@NotNull Mqtt5AsyncClient client, @NotNull Publish publish, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
     @Override
-    void mqtt3Publish(@NotNull Mqtt3AsyncClient client, @NotNull PublishCommand publishCommand, @NotNull String topic, @NotNull MqttQos qos) {
+    void mqtt3Publish(@NotNull Mqtt3AsyncClient client, @NotNull Publish publish, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 }

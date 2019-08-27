@@ -1,6 +1,8 @@
 package com.hivemq.cli.ioc;
 
 import com.hivemq.cli.commands.*;
+import com.hivemq.cli.commands.cli_commands.PublishCommand;
+import com.hivemq.cli.commands.cli_commands.SubscribeCommand;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;

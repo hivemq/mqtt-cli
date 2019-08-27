@@ -1,13 +1,14 @@
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.shell_commands;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.converters.MqttQosConverter;
-import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jline.reader.UserInterruptException;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -17,17 +18,14 @@ import java.util.Arrays;
 
 @CommandLine.Command(name = "sub",
         aliases = "subscribe",
-        description = "Subscribe an mqtt client to a list of topics")
-
-public class SubscribeCommand extends ConnectCommand implements MqttAction {
+        description = "Subscribe this mqtt client to a list of topics")
+public class ContextSubscribeCommand extends ShellContextCommand implements Runnable, Subscribe {
 
     public static final int IDLE_TIME = 5000;
 
     @Inject
-    public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-
+    public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         super(mqttClientExecutor);
-
     }
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
@@ -43,8 +41,69 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
 
+    @CommandLine.Option(names = {"-s", "--stay"}, defaultValue = "false", description = "The subscribe will block the console and wait for publish messages to print (default: true)")
+    private boolean stay;
+
     @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)")
     private boolean base64;
+
+    @Override
+    public void run() {
+
+
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
+        }
+
+        try {
+            qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
+            mqttClientExecutor.subscribe(contextClient, this);
+        } catch (final Exception ex) {
+            if (isDebug()) {
+                Logger.error(ex);
+            }
+            Logger.error(ex.getMessage());
+        }
+
+        if (stay) {
+            final boolean consoleOutputBefore = printToSTDOUT;
+            printToSTDOUT = true;
+            try {
+                stay();
+            } catch (final InterruptedException e) {
+                if (isDebug()) {
+                    Logger.debug(e);
+                }
+                Logger.error(e.getMessage());
+            } finally {
+                printToSTDOUT = consoleOutputBefore;
+            }
+        }
+
+
+    }
+
+    private void stay() throws InterruptedException {
+        while (mqttClientExecutor.isConnected(this)) {
+            Thread.sleep(IDLE_TIME);
+        }
+        if (isVerbose()) {
+            Logger.trace("Client disconnected.");
+        }
+
+    }
+
+    @Override
+    public String toString() {
+        return "ContextSubscribe:: {" +
+                "key=" + getKey() +
+                ", topics=" + Arrays.toString(topics) +
+                ", qos=" + Arrays.toString(qos) +
+                ", toFile=" + receivedMessagesFile +
+                ", outputToConsole=" + printToSTDOUT +
+                ", base64=" + base64 +
+                '}';
+    }
 
     public String[] getTopics() {
         return topics;
@@ -84,66 +143,6 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction {
 
     public void setBase64(final boolean base64) {
         this.base64 = base64;
-    }
-
-    @Override
-    public Class getType() {
-        return SubscribeCommand.class;
-    }
-
-    @Override
-    public void run() {
-
-
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
-
-        handleConnectOptions();
-
-        try {
-            qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
-            mqttClientExecutor.subscribe(this);
-        } catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.error(ex);
-            }
-            Logger.error(ex.getMessage());
-        }
-
-        if (!ShellCommand.IN_SHELL) {
-            if (receivedMessagesFile == null && !printToSTDOUT) {
-                printToSTDOUT = true;
-            }
-            try {
-                stay();
-            } catch (final InterruptedException e) {
-                if (isDebug()) {
-                    Logger.debug(e);
-                }
-                Logger.error(e.getMessage());
-            }
-        }
-
-    }
-
-    private void stay() throws InterruptedException {
-            while (mqttClientExecutor.isConnected(this)) {
-                Thread.sleep(IDLE_TIME);
-            }
-            if (isVerbose()) {
-                Logger.trace("Client disconnected.");
-            }
-    }
-
-    @Override
-    public String toString() {
-        return "Subscribe:: {" +
-                "key=" + getKey() +
-                ", topics=" + Arrays.toString(topics) +
-                ", qos=" + Arrays.toString(qos) +
-                ", toFile=" + receivedMessagesFile +
-                '}';
     }
 
 

@@ -1,5 +1,9 @@
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.shell_commands;
 
+import com.hivemq.cli.HiveMQCLIMain;
+import com.hivemq.cli.commands.shell_commands.ShellContextCommand;
+import com.hivemq.cli.ioc.DaggerContextCommandLine;
+import com.hivemq.cli.ioc.HiveMQCLI;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
@@ -20,25 +24,34 @@ import picocli.shell.jline3.PicocliJLineCompleter;
 
 import javax.inject.Inject;
 import java.io.PrintWriter;
-import java.util.Properties;
 
 
 @CommandLine.Command(name = "shell", aliases = "sh",
         description = "Starts HiveMQ-CLI in shell mode, to enable interactive mode with further sub commands.",
         footer = {"", "@|bold Press Ctl-C to exit.|@"},
+        synopsisHeading = "%n@|bold Usage|@:  ",
+        descriptionHeading = "%n",
+        optionListHeading = "%n@|bold Options|@:%n",
+        commandListHeading = "%n@|bold Commands|@:%n",
+        separator = " ",
         mixinStandardHelpOptions = true)
 
 public class ShellCommand implements Runnable {
 
     private static String prompt = "hmq> ";
 
-    static boolean IN_SHELL = false;
-    static final boolean DEBUG = true;
-    static final boolean VERBOSE = true;
+    public static boolean IN_SHELL = false;
+    public static final boolean DEBUG = true;
+    public static final boolean VERBOSE = true;
     private String logfilePath;
 
-    LineReaderImpl reader;
+    private static LineReaderImpl currentReader;
+    private static LineReaderImpl shellReader;
+    private static LineReaderImpl contextReader;
 
+    private static CommandLine currentCommandLine;
+    private static CommandLine shellCommandLine;
+    private static CommandLine contextCommandLine;
 
     @SuppressWarnings("NullableProblems")
     @CommandLine.Spec
@@ -76,40 +89,52 @@ public class ShellCommand implements Runnable {
             Logger.trace("Command: {} ", this);
         }
 
-        final CommandLine cmd = new CommandLine(spec);
 
-        interact(cmd);
+        interact();
     }
 
 
-    private void interact(final @NotNull CommandLine cmd) {
+    private void interact() {
+        shellCommandLine = new CommandLine(spec);
+        contextCommandLine = DaggerContextCommandLine.create().contextCommandLine();
 
+        shellCommandLine.setColorScheme(HiveMQCLIMain.colorScheme);
+        contextCommandLine.setColorScheme(HiveMQCLIMain.colorScheme);
 
         try {
-            final Terminal terminal = TerminalBuilder.builder().build();
-            reader = (LineReaderImpl) LineReaderBuilder.builder()
+            final Terminal terminal = TerminalBuilder
+                    .builder()
+                    .build();
+
+            shellReader = (LineReaderImpl) LineReaderBuilder.builder()
                     .terminal(terminal)
-                    .completer(new PicocliJLineCompleter(cmd.getCommandSpec()))
+                    .completer(new PicocliJLineCompleter(shellCommandLine.getCommandSpec()))
                     .parser(new DefaultParser())
                     .build();
 
+            contextReader = (LineReaderImpl) LineReaderBuilder.builder()
+                    .terminal(terminal)
+                    .completer(new PicocliJLineCompleter(contextCommandLine.getCommandSpec()))
+                    .parser(new DefaultParser())
+                    .build();
+
+            readFromShell();
+
+
             final PrintWriter terminalWriter = terminal.writer();
-            terminalWriter.println(cmd.getUsageMessage());
+            terminalWriter.println(shellCommandLine.getUsageMessage());
             terminalWriter.flush();
 
             Logger.info("Writing Logfile to {}", logfilePath);
-            prompt = new AttributedStringBuilder()
-                    .style(AttributedStyle.BOLD.foreground(AttributedStyle.GREEN))
-                    .append(prompt)
-                    .toAnsi();
+
 
             String line;
             while (true) {
                 try {
-                    line = reader.readLine(prompt, null, (MaskingCallback) null, null);
-                    final ParsedLine pl = reader.getParser().parse(line, prompt.length());
+                    line = currentReader.readLine(prompt, null, (MaskingCallback) null, null);
+                    final ParsedLine pl = currentReader.getParser().parse(line, prompt.length());
                     final String[] arguments = pl.words().toArray(new String[0]);
-                    cmd.execute(arguments);
+                    currentCommandLine.execute(arguments);
                 } catch (final UserInterruptException e) {
                     if (VERBOSE) {
                         Logger.trace("User interrupted shell: {}", e);
@@ -139,12 +164,44 @@ public class ShellCommand implements Runnable {
         }
     }
 
+    static void readFromContext() {
+        currentReader = contextReader;
+        currentCommandLine = contextCommandLine;
+        prompt = new AttributedStringBuilder()
+                .style(AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW))
+                .append(ShellContextCommand.contextClient.getConfig().getClientIdentifier().get().toString())
+                .style(AttributedStyle.DEFAULT)
+                .append("@")
+                .style(AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW))
+                .append(ShellContextCommand.contextClient.getConfig().getServerHost())
+                .style(AttributedStyle.DEFAULT)
+                .append("> ")
+                .toAnsi();
+    }
+
+    static void readFromShell() {
+        currentReader = shellReader;
+        currentCommandLine = shellCommandLine;
+        prompt = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT)
+                .append("hmq> ")
+                .toAnsi();
+    }
+
+    static String getUsageMessage() {
+        return currentCommandLine.getUsageMessage();
+    }
+
+    static void clearScreen() {
+        currentReader.clearScreen();
+    }
+
 
     @Override
     public String toString() {
         return "Shell:: {" +
                 "logfilePath=" + logfilePath +
-                "debug=" + DEBUG +
+                ", debug=" + DEBUG +
                 ", verbose=" + VERBOSE +
                 "}";
     }

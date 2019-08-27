@@ -1,17 +1,16 @@
 package com.hivemq.cli.commands;
 
+import com.hivemq.cli.commands.cli_commands.AbstractCommand;
 import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientConfig;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
@@ -59,8 +58,10 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
         final Set<String> clientKeys = clientCache.keySet();
 
         Comparator<String> comparator = (s, t1) -> {
-            final String clientID1 = clientCache.get(s).getConfig().getClientIdentifier().toString();
-            final String clientID2 = clientCache.get(t1).getConfig().getClientIdentifier().toString();
+            MqttClient client1 = clientCache.get(s);
+            MqttClient client2 = clientCache.get(t1);
+            final String clientID1 = client1.getConfig().getClientIdentifier() + client1.getConfig().getServerHost() + client1.getConfig().getServerPort() + client1.getConfig().getMqttVersion();
+            final String clientID2 = client2.getConfig().getClientIdentifier() + client2.getConfig().getServerHost() + client2.getConfig().getServerPort() + client2.getConfig().getMqttVersion();
             return clientID1.compareTo(clientID2);
         };
 
@@ -129,7 +130,7 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
     public String toString() {
         return "List:: {" +
                 "sortByTime=" + sortByTime +
-                ", detailedOutput" + outputDetailedClientInformation +
+                ", detailedOutput=" + outputDetailedClientInformation +
                 '}';
     }
 

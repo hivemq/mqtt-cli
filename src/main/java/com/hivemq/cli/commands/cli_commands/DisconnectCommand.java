@@ -1,5 +1,6 @@
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.cli_commands;
 
+import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,7 @@ import javax.inject.Inject;
         aliases = "disconnect",
         description = "Disconnects an mqtt client")
 
-public class DisconnectCommand extends MqttCommand implements MqttAction {
+public class DisconnectCommand extends MqttCommand implements MqttAction, Context {
 
     private final MqttClientExecutor mqttClientExecutor;
 
