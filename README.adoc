@@ -530,11 +530,10 @@ Disconnects a previously connected client.
 ==== Synopsis (without client context)
 
 ```
-dis {   [-i <identifier>]
+dis     [-i <identifier>]
         [-h <hostname>]
         [-p <port>]
         [-V <version>]
-}
 ```
 
 ==== Synopsis (with client context):
