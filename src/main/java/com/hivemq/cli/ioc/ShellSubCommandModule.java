@@ -2,10 +2,7 @@ package com.hivemq.cli.ioc;
 
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli_commands.DisconnectCommand;
-import com.hivemq.cli.commands.shell_commands.ClearScreenCommand;
-import com.hivemq.cli.commands.shell_commands.ContextSwitchCommand;
-import com.hivemq.cli.commands.shell_commands.ShellCommand;
-import com.hivemq.cli.commands.shell_commands.ShellConnectCommand;
+import com.hivemq.cli.commands.shell_commands.*;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
@@ -25,13 +22,15 @@ public class ShellSubCommandModule {
                                                     final @NotNull DisconnectCommand disconnectCommand,
                                                     final @NotNull ContextSwitchCommand contextSwitchCommand,
                                                     final @NotNull ClearScreenCommand clearScreenCommand,
-                                                    final @NotNull ListClientsCommand listClientsCommand) {
+                                                    final @NotNull ListClientsCommand listClientsCommand,
+                                                    final @NotNull ShellExitCommand shellExitCommand) {
 
         return new CommandLine(shellCommand)
                 .addSubcommand(shellConnectCommand)
                 .addSubcommand(disconnectCommand)
-                .addSubcommand(clearScreenCommand)
                 .addSubcommand(contextSwitchCommand)
-                .addSubcommand(listClientsCommand);
+                .addSubcommand(listClientsCommand)
+                .addSubcommand(clearScreenCommand)
+                .addSubcommand(shellExitCommand);
     }
 }

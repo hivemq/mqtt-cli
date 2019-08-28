@@ -1,6 +1,7 @@
 package com.hivemq.cli.commands.shell_commands;
 
 
+import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
@@ -9,12 +10,12 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 
 @CommandLine.Command(name = "exit",
-        description = "Exit the current context")
-public class ContextExitCommand extends ShellContextCommand implements Runnable {
+        description = "Exit the shell")
+
+public class ShellExitCommand implements Runnable, CliCommand {
 
     @Inject
-    public ContextExitCommand(@NotNull MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
+    public ShellExitCommand() {
     }
 
     @Override
@@ -23,16 +24,28 @@ public class ContextExitCommand extends ShellContextCommand implements Runnable 
             Logger.trace("Command: {} ", this);
         }
 
-        removeContext();
+        ShellCommand.exitShell();
     }
 
     @Override
     public String toString() {
-        return "ContextExit::";
+        return "ShellExit::";
     }
+
 
     @Override
     public Class getType() {
-        return ContextExitCommand.class;
+        return ShellExitCommand.class;
+    }
+
+    @Override
+    public boolean isVerbose() {
+        return ShellCommand.isVerbose();
+    }
+
+    @Override
+    public boolean isDebug() {
+        return ShellCommand.isDebug();
     }
 }
+

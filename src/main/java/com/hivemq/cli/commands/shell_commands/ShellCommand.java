@@ -1,9 +1,8 @@
 package com.hivemq.cli.commands.shell_commands;
 
 import com.hivemq.cli.HiveMQCLIMain;
-import com.hivemq.cli.commands.shell_commands.ShellContextCommand;
+import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.ioc.DaggerContextCommandLine;
-import com.hivemq.cli.ioc.HiveMQCLI;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
@@ -38,7 +37,8 @@ import java.io.PrintWriter;
 
 public class ShellCommand implements Runnable {
 
-    private static String prompt = "hmq> ";
+    private static String defaultPrompt = "hivemq-cli> ";
+    private static String prompt = defaultPrompt;
 
     public static final boolean DEBUG = true;
     public static final boolean VERBOSE = true;
@@ -51,6 +51,11 @@ public class ShellCommand implements Runnable {
     private static CommandLine currentCommandLine;
     private static CommandLine shellCommandLine;
     private static CommandLine contextCommandLine;
+
+    private static boolean exitShell = false;
+
+    private static boolean verbose = false;
+    private static boolean debug = false;
 
     @SuppressWarnings("NullableProblems")
     @CommandLine.Spec
@@ -97,6 +102,7 @@ public class ShellCommand implements Runnable {
 
         shellCommandLine.setColorScheme(HiveMQCLIMain.colorScheme);
         contextCommandLine.setColorScheme(HiveMQCLIMain.colorScheme);
+        contextCommandLine.setUsageHelpWidth(HiveMQCLIMain.CLI_WIDTH);
 
         try {
             final Terminal terminal = TerminalBuilder
@@ -126,7 +132,7 @@ public class ShellCommand implements Runnable {
 
 
             String line;
-            while (true) {
+            while (!exitShell) {
                 try {
                     line = currentReader.readLine(prompt, null, (MaskingCallback) null, null);
                     final ParsedLine pl = currentReader.getParser().parse(line, prompt.length());
@@ -161,6 +167,10 @@ public class ShellCommand implements Runnable {
         }
     }
 
+    static void exitShell() {
+        exitShell = true;
+    }
+
     static void readFromContext() {
         currentReader = contextReader;
         currentCommandLine = contextCommandLine;
@@ -181,8 +191,12 @@ public class ShellCommand implements Runnable {
         currentCommandLine = shellCommandLine;
         prompt = new AttributedStringBuilder()
                 .style(AttributedStyle.DEFAULT)
-                .append("hmq> ")
+                .append(defaultPrompt)
                 .toAnsi();
+    }
+
+    static void usage(Object command) {
+        currentCommandLine.usage(command, System.out, HiveMQCLIMain.colorScheme);
     }
 
     static String getUsageMessage() {
@@ -194,6 +208,15 @@ public class ShellCommand implements Runnable {
     }
 
 
+    static boolean isVerbose() {
+        return VERBOSE;
+    }
+
+    static boolean isDebug() {
+        return DEBUG;
+    }
+
+
     @Override
     public String toString() {
         return "Shell:: {" +
@@ -202,5 +225,6 @@ public class ShellCommand implements Runnable {
                 ", verbose=" + VERBOSE +
                 "}";
     }
+
 
 }

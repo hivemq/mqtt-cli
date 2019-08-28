@@ -17,18 +17,15 @@ import java.util.Arrays;
         description = "switch the current context")
 public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
 
-    @CommandLine.Option(names = {"-V", "--version"}, defaultValue = "5", converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default: 5)")
-    private MqttVersion version;
+    @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
+    private String contextName;
+
+    @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
+    private String identifier;
 
     @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")
     private String host;
 
-    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = "1883", description = "The port of the message broker (default: 1883)")
-    private int port;
-
-    @CommandLine.Option(names = {"-i", "--identifier"}, required = true, description = "The client identifier UTF-8 String (default randomly generated string)")
-    @NotNull
-    private String identifier;
 
     @Inject
     public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -43,38 +40,67 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
             Logger.trace("Command: {} ", this);
         }
 
+        if (contextName != null) {
+            try {
+                extractKeyFromContextName(contextName);
+            } catch (IllegalArgumentException ex) {
+                if (isVerbose()) {
+                    Logger.error(ex);
+                }
+                Logger.error(ex.getMessage());
+                return;
+            }
+        }
+
+        if (identifier == null) {
+            ShellCommand.usage(this);
+            return;
+        }
+
         MqttClient client = mqttClientExecutor.getMqttClientFromCache(this);
 
         if (client != null) {
             updateContext(client);
         } else {
-            Logger.error("Client with key {} not found", getKey());
+            if (isDebug()) {
+                Logger.debug("Client with key: {} not in Cache", getKey());
+            }
+            Logger.error("Context {}@{} not found", identifier, host);
+        }
+    }
+
+    private void extractKeyFromContextName(String contextName) {
+        String[] context = contextName.split("@");
+
+        if (context.length == 1) {
+            identifier = context[0];
+        } else if (context.length == 2) {
+            identifier = context[0];
+            host = context[1];
+        } else {
+            throw new IllegalArgumentException("Context name is not valid: " + contextName);
         }
     }
 
     @Override
     public String getKey() {
         return "client {" +
-                "version=" + getVersion() +
+                "identifier='" + getIdentifier() + '\'' +
                 ", host='" + getHost() + '\'' +
-                ", port=" + getPort() +
-                ", identifier='" + getIdentifier() + '\'' +
                 '}';
     }
 
     @Override
     public String toString() {
         return "ContextSwitch:: {" +
-                "key=" + getKey() +
+                "contextName='" + contextName + '\'' +
+                ", key=" + getKey() +
                 '}';
     }
 
-    public MqttVersion getVersion() {
-        return version;
-    }
-
-    public void setVersion(final MqttVersion version) {
-        this.version = version;
+    @Override
+    public Class getType() {
+        return ContextSwitchCommand.class;
     }
 
     public String getHost() {
@@ -83,14 +109,6 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
 
     public void setHost(final String host) {
         this.host = host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(final int port) {
-        this.port = port;
     }
 
     @Override

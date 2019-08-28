@@ -35,4 +35,14 @@ public class ShellConnectCommand extends ConnectCommand {
     public String toString() {
         return "ShellConnectCommand:: " + super.toString();
     }
+
+    @Override
+    public boolean isDebug() {
+        return ShellCommand.isDebug();
+    }
+
+    @Override
+    public boolean isVerbose() {
+        return ShellCommand.isVerbose();
+    }
 }

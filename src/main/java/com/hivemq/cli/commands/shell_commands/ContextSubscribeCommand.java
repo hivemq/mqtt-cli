@@ -105,6 +105,11 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 '}';
     }
 
+    @Override
+    public Class getType() {
+        return ContextSubscribeCommand.class;
+    }
+
     public String[] getTopics() {
         return topics;
     }

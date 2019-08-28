@@ -1,10 +1,6 @@
 package com.hivemq.cli.commands;
 
-public interface Context {
-
-    boolean isDebug();
-
-    boolean isVerbose();
+public interface Context extends CliCommand {
 
     String getIdentifier();
 

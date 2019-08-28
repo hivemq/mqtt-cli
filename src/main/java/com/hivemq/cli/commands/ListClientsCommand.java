@@ -57,6 +57,7 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
         final Map<String, LocalDateTime> creationTimes = mqttClientExecutor.getClientCreationTimes();
         final Set<String> clientKeys = clientCache.keySet();
 
+
         Comparator<String> comparator = (s, t1) -> {
             MqttClient client1 = clientCache.get(s);
             MqttClient client2 = clientCache.get(t1);

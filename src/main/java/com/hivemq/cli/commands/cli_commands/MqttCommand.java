@@ -1,5 +1,6 @@
 package com.hivemq.cli.commands.cli_commands;
 
+import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;

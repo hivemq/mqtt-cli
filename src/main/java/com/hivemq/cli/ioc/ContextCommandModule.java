@@ -28,8 +28,8 @@ public class ContextCommandModule {
                 .addSubcommand(contextSubscribeCommand)
                 .addSubcommand(contextDisconnectCommand)
                 .addSubcommand(contextSwitchCommand)
-                .addSubcommand(contextExitCommand)
                 .addSubcommand(listClientsCommand)
-                .addSubcommand(clearScreenCommand);
+                .addSubcommand(clearScreenCommand)
+                .addSubcommand(contextExitCommand);
     }
 }

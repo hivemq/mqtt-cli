@@ -51,10 +51,8 @@ public class DisconnectCommand extends MqttCommand implements MqttAction, Contex
     @Override
     public String getKey() {
         return "client {" +
-                "version=" + getVersion() +
+                "identifier='" + getIdentifier() + '\'' +
                 ", host='" + getHost() + '\'' +
-                ", port=" + getPort() +
-                ", identifier='" + getIdentifier() + '\'' +
                 '}';
     }
 

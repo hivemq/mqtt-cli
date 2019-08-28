@@ -46,4 +46,8 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
                 "}";
     }
 
+    @Override
+    public Class getType() {
+        return ContextDisconnectCommand.class;
+    }
 }

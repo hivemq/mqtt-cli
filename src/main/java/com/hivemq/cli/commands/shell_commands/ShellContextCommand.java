@@ -1,7 +1,9 @@
 package com.hivemq.cli.commands.shell_commands;
 
+import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
+import jdk.nashorn.tools.Shell;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
@@ -19,7 +21,7 @@ import javax.inject.Inject;
         optionListHeading = "%n@|bold Options|@:%n",
         commandListHeading = "%n@|bold Commands|@:%n",
         separator = " ")
-public class ShellContextCommand implements Runnable {
+public class ShellContextCommand implements Runnable, CliCommand {
 
     public static @Nullable MqttClient contextClient;
     MqttClientExecutor mqttClientExecutor;
@@ -32,6 +34,9 @@ public class ShellContextCommand implements Runnable {
 
     static void updateContext(final @Nullable MqttClient client) {
         if (client != null && client.getConfig().getState().isConnectedOrReconnect()) {
+            if (ShellCommand.isVerbose()) {
+                Logger.trace("Update context to {}@{}", client.getConfig().getClientIdentifier().get(), client.getConfig().getServerHost());
+            }
             LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get().toString());
             contextClient = client;
             ShellCommand.readFromContext();
@@ -39,6 +44,9 @@ public class ShellContextCommand implements Runnable {
     }
 
     static void removeContext() {
+        if (ShellCommand.isVerbose()) {
+            Logger.trace("Remove context");
+        }
         contextClient = null;
         ShellCommand.readFromShell();
     }
@@ -50,13 +58,9 @@ public class ShellContextCommand implements Runnable {
 
     public String getKey() {
         return "client {" +
-                "version=" + contextClient.getConfig().getMqttVersion() +
+                "identifier='" + contextClient.getConfig().getClientIdentifier().get() + '\'' +
                 ", host='" + contextClient.getConfig().getServerHost() + '\'' +
-                ", port=" + contextClient.getConfig().getServerPort() +
-                ", identifier='" + contextClient.getConfig().getClientIdentifier().get() + '\'' +
                 '}';
-
-
     }
 
     public String getIdentifier() {
@@ -64,10 +68,15 @@ public class ShellContextCommand implements Runnable {
     }
 
     public boolean isDebug() {
-        return true;
+        return ShellCommand.isDebug();
+    }
+
+    @Override
+    public Class getType() {
+        return ShellContextCommand.class;
     }
 
     public boolean isVerbose() {
-        return true;
+        return ShellCommand.isVerbose();
     }
 }

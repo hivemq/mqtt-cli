@@ -1,9 +1,8 @@
 package com.hivemq.cli.commands.cli_commands;
 
-import com.hivemq.cli.commands.shell_commands.ShellCommand;
+import com.hivemq.cli.commands.CliCommand;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
-import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 @CommandLine.Command(sortOptions = false,
