@@ -35,6 +35,7 @@ import java.util.UUID;
 
 public class ConnectCommand extends MqttCommand implements MqttAction {
 
+    @Nullable
     public MqttClient client;
 
     final MqttClientExecutor mqttClientExecutor;
@@ -150,6 +151,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
 
     @Override
     public void run() {
+        client = null;
 
         handleConnectOptions();
 
