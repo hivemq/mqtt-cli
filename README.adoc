@@ -499,6 +499,7 @@ In Shell-Mode the following Commands are available **with** an active context:
 
 * <<Publish (with context)>>
 * <<Subscribe (with context)>>
+* <<Unsubscribe>>
 * <<Disconnect>>
 * <<Switch>>
 * <<Exit>>
@@ -665,6 +666,43 @@ myClient@localhost> pub -t test -m Hello -r
 myClient@localhost> sub -t test -s
 Hello
 ...
+```
+
+=== Unsubscribe
+
+Unsubscribes the currently active context client from a list of topics.
+
+==== Synopsis
+
+```
+unsub   -t <topics> [-t <topics>]...
+        [-u <userProperties>]
+```
+
+==== Options:
+
+|===
+|Option |Long Version | Explanation | Default
+
+| ``-t``   | ``--topic``| A topic from which the client will unsubscribe from. |
+
+| ``-u``| ``--userProperties`` | User properties of the unsubscribe message can be defined like
+
+``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
+
+
+|===
+
+==== Examples:
+
+Connect a client which is identified by myClient and subscribe it to two topics afterwards.
+Then unsubscribe from one of the two topics:
+
+```
+hmq> con -i myClient
+myClient@localhost> sub -t topic1 -t topic2
+myClient@localhost> unsub -t topic1
+hmq>
 ```
 
 === Switch
