@@ -20,6 +20,7 @@ import javax.inject.Inject;
         optionListHeading = "%n@|bold Options|@:%n",
         commandListHeading = "%n@|bold Commands|@:%n",
         separator = " ")
+
 public class ShellContextCommand implements Runnable, CliCommand {
 
     public static @Nullable MqttClient contextClient;

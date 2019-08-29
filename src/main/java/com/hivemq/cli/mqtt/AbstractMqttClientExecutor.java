@@ -289,7 +289,7 @@ abstract class AbstractMqttClientExecutor {
         }
     }
 
-    public ClientCache<String, MqttClient> getClientCache() {
+    public static ClientCache<String, MqttClient> getClientCache() {
         return clientCache;
     }
 

@@ -3,6 +3,7 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.cli_commands.ConnectCommand;
 import com.hivemq.cli.commands.Publish;
+import com.hivemq.cli.commands.cli_commands.PublishCommand;
 import com.hivemq.cli.commands.cli_commands.SubscribeCommand;
 import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -10,6 +11,7 @@ import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
@@ -17,6 +19,7 @@ import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishBuilder;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishResult;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 
@@ -25,6 +28,7 @@ import javax.inject.Singleton;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 
 import org.bouncycastle.util.encoders.Base64;
 
@@ -250,7 +254,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             publishBuilder.userProperties(publish.getPublishUserProperties());
         }
 
-        client.publish(publishBuilder.build())
+        final CompletableFuture<Mqtt5PublishResult> publishResultCompletableFuture = client.publish(publishBuilder.build())
                 .whenComplete((publishResult, throwable) -> {
                     if (throwable != null) {
 
@@ -274,6 +278,10 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
                     }
                 });
+
+        if (publish instanceof PublishCommand) {
+            publishResultCompletableFuture.join();
+        }
     }
 
 
@@ -287,7 +295,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.trace("sending PUBLISH with command: {}", publish);
         }
 
-        client.publishWith()
+        final CompletableFuture<Mqtt3Publish> publishCompletableFuture = client.publishWith()
                 .topic(topic)
                 .qos(qos)
                 .retain(publish.isRetain())
@@ -316,6 +324,10 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
                     }
                 });
+
+        if (publish instanceof PublishCommand) {
+            publishCompletableFuture.join();
+        }
     }
 
 
