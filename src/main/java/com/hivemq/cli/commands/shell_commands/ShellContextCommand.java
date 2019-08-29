@@ -53,7 +53,7 @@ public class ShellContextCommand implements Runnable, CliCommand {
 
     @Override
     public void run() {
-        Logger.info(ShellCommand.getUsageMessage());
+        System.out.println(ShellCommand.getUsageMessage());
     }
 
     public String getKey() {
