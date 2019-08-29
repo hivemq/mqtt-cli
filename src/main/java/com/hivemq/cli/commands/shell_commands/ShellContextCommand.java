@@ -15,7 +15,7 @@ import javax.inject.Inject;
         name = "> ",
         description = "In context mode all mqtt commands relate to the currently active client.",
         synopsisHeading = "%n@|bold Usage|@:  ",
-        synopsisSubcommandLabel = "{ pub | sub | dis | exit | switch | ls | cls }",
+        synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch| | ls | cls | exit }",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options|@:%n",
         commandListHeading = "%n@|bold Commands|@:%n",

@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "switch",
-        description = "switch the current context")
+        description = "Switch the current context")
 public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
 
     @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")

@@ -112,7 +112,6 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             }
         }));
 
-
         client.subscribeWith()
                 .topicFilter(topic)
                 .qos(qos)
