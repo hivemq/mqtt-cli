@@ -1,15 +1,18 @@
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.commands.cli_commands.ConnectCommand;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.cli_commands.SubscribeCommand;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,6 +70,16 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
 
     @Override
     void mqtt3Publish(@NotNull Mqtt3AsyncClient client, @NotNull Publish publish, @NotNull String topic, @NotNull MqttQos qos) {
+
+    }
+
+    @Override
+    void mqtt5Unsubscribe(@NotNull Mqtt5Client client, @NotNull Unsubscribe unsubscribe) {
+
+    }
+
+    @Override
+    void mqtt3Unsubscribe(@NotNull Mqtt3Client client, @NotNull Unsubscribe unsubscribe) {
 
     }
 }

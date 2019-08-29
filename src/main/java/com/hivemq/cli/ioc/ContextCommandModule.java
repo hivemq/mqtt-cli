@@ -17,6 +17,7 @@ public class ContextCommandModule {
     static @NotNull CommandLine provideCommandLine(final @NotNull ShellContextCommand main,
                                                    final @NotNull ContextPublishCommand contextPublishCommand,
                                                    final @NotNull ContextSubscribeCommand contextSubscribeCommand,
+                                                   final @NotNull ContextUnsubscribeCommand contextUnsubscribeCommand,
                                                    final @NotNull ContextDisconnectCommand contextDisconnectCommand,
                                                    final @NotNull ContextSwitchCommand contextSwitchCommand,
                                                    final @NotNull ContextExitCommand contextExitCommand,
@@ -26,6 +27,7 @@ public class ContextCommandModule {
         return new CommandLine(main)
                 .addSubcommand(contextPublishCommand)
                 .addSubcommand(contextSubscribeCommand)
+                .addSubcommand(contextUnsubscribeCommand)
                 .addSubcommand(contextDisconnectCommand)
                 .addSubcommand(contextSwitchCommand)
                 .addSubcommand(listClientsCommand)

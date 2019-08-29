@@ -1,6 +1,7 @@
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.commands.cli_commands.ConnectCommand;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.cli_commands.PublishCommand;
@@ -9,17 +10,22 @@ import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
+import com.hivemq.client.mqtt.mqtt3.message.unsubscribe.Mqtt3Unsubscribe;
+import com.hivemq.client.mqtt.mqtt3.message.unsubscribe.unsuback.Mqtt3UnsubAck;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishResult;
+import com.hivemq.client.mqtt.mqtt5.message.unsubscribe.unsuback.Mqtt5UnsubAck;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 
@@ -141,7 +147,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         if (subscribe.isDebug()) {
                             Logger.debug("SUBSCRIBE failed: {} ", topic, throwable.getStackTrace());
                         }
-                        Logger.error("SUBSCRIBE failed: {}", topic, throwable.getMessage());
+                        Logger.error("SUBSCRIBE to {} failed with {}", topic, throwable.getMessage());
                     } else {
 
                         if (subscribe.isDebug()) {
@@ -213,7 +219,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Logger.debug("SUBSCRIBE failed: {} ", topic, throwable.getStackTrace());
                         }
 
-                        Logger.error("SUBSCRIBE failed: {}", topic, throwable.getMessage());
+                        Logger.error("SUBSCRIBE to {} failed with {}", topic, throwable.getMessage());
                     } else {
 
                         if (subscribe.isDebug()) {
@@ -262,7 +268,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Logger.debug("PUBLISH failed: {} ", topic, throwable.getStackTrace());
                         }
 
-                        Logger.error("PUBLISH failed", topic, throwable.getMessage());
+                        Logger.error("PUBLISH to {} failed with {}", topic, throwable.getMessage());
 
                     } else {
 
@@ -308,7 +314,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Logger.debug("PUBLISH failed: {} ", topic, throwable.getStackTrace());
                         }
 
-                        Logger.error("PUBLISH failed", topic, throwable.getMessage());
+                        Logger.error("PUBLISH to {} failed with {}", topic, throwable.getMessage());
 
                     } else {
 
@@ -328,8 +334,88 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         if (publish instanceof PublishCommand) {
             publishCompletableFuture.join();
         }
+
     }
 
+    @Override
+    void mqtt5Unsubscribe(@NotNull final Mqtt5Client client, @NotNull final Unsubscribe unsubscribe) {
+
+        if (unsubscribe.isVerbose()) {
+            Logger.trace("Sending UNSUBSCRIBE with command: {}", unsubscribe);
+        }
+
+        for (String topic : unsubscribe.getTopics()) {
+
+            if (unsubscribe.isDebug()) {
+                Logger.debug("sending UNSUBSCRIBE: (Topic: {}, userProperties: {})", topic, unsubscribe.getUserProperties());
+            }
+
+            client.toAsync()
+                    .unsubscribeWith()
+                    .addTopicFilter(topic)
+                    .send()
+                    .whenComplete((Mqtt5UnsubAck unsubAck, Throwable throwable) -> {
+
+                        if (throwable != null) {
+                            if (unsubscribe.isDebug()) {
+                                Logger.debug("UNSUBSCRIBE failed: {}", throwable.getStackTrace());
+                            }
+
+                            Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());
+                        } else {
+
+                            if (unsubscribe.isVerbose()) {
+                                Logger.trace("received UNSUBACK: {}", unsubAck);
+                            }
+
+                            if (unsubscribe.isDebug()) {
+                                Logger.debug("received UNSUBACK: {}", unsubAck.getReasonCodes());
+                            }
+
+                        }
+                    });
+        }
+    }
+
+    @Override
+    void mqtt3Unsubscribe(@NotNull final Mqtt3Client client, @NotNull final Unsubscribe unsubscribe) {
+
+        if (unsubscribe.isVerbose()) {
+            Logger.trace("Sending UNSUBSCRIBE with command: {}", unsubscribe);
+        }
+
+        for (String topic : unsubscribe.getTopics()) {
+
+            if (unsubscribe.isDebug()) {
+                Logger.debug("Sending UNSUBSCRIBE: (Topic: {}, userProperties: {})", topic, unsubscribe.getUserProperties());
+            }
+
+            client.toAsync()
+                    .unsubscribeWith()
+                    .addTopicFilter(topic)
+                    .send()
+                    .whenComplete((Void unsubAck, Throwable throwable) -> {
+
+                        if (throwable != null) {
+                            if (unsubscribe.isDebug()) {
+                                Logger.debug("UNSUBSCRIBE failed: {}", throwable.getStackTrace());
+                            }
+
+                            Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());
+                        } else {
+
+                            if (unsubscribe.isVerbose()) {
+                                Logger.trace("received UNSUBACK");
+                            }
+
+                            if (unsubscribe.isDebug()) {
+                                Logger.debug("received UNSUBACK");
+                            }
+
+                        }
+                    });
+        }
+    }
 
     private @NotNull String applyBase64EncodingIfSet(final boolean encode, final byte[] payload) {
         if (encode) {

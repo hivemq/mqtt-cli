@@ -11,11 +11,13 @@ import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3ConnectBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5ConnectBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
@@ -48,6 +50,10 @@ abstract class AbstractMqttClientExecutor {
     abstract void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
 
     abstract void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
+
+    abstract void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull Unsubscribe unsubscribe);
+
+    abstract void mqtt3Unsubscribe(final @NotNull Mqtt3Client client, final @NotNull Unsubscribe unsubscribe);
 
 
     public void subscribe(final @NotNull SubscribeCommand subscribeCommand) {
@@ -122,6 +128,21 @@ abstract class AbstractMqttClientExecutor {
             }
         } else if (context.isDebug()) {
             Logger.debug("client to disconnect is not connected: {} ", context.getKey());
+        }
+
+    }
+
+    public void unsubscribe(final @NotNull MqttClient client, final @NotNull Unsubscribe unsubscribe) {
+
+        LoggingContext.put("identifier", unsubscribe.getIdentifier());
+
+        switch (client.getConfig().getMqttVersion()) {
+            case MQTT_5_0:
+                mqtt5Unsubscribe((Mqtt5Client) client, unsubscribe);
+                break;
+            case MQTT_3_1_1:
+                mqtt3Unsubscribe((Mqtt3Client) client, unsubscribe);
+                break;
         }
 
     }
