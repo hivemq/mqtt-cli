@@ -5,6 +5,7 @@ import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientConfig;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
@@ -58,12 +59,12 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
         final Set<String> clientKeys = clientCache.keySet();
 
 
-        Comparator<String> comparator = (s, t1) -> {
-            MqttClient client1 = clientCache.get(s);
-            MqttClient client2 = clientCache.get(t1);
-            final String clientID1 = client1.getConfig().getClientIdentifier() + client1.getConfig().getServerHost() + client1.getConfig().getServerPort() + client1.getConfig().getMqttVersion();
-            final String clientID2 = client2.getConfig().getClientIdentifier() + client2.getConfig().getServerHost() + client2.getConfig().getServerPort() + client2.getConfig().getMqttVersion();
-            return clientID1.compareTo(clientID2);
+        Comparator<String> comparator = (s1, s2) -> {
+            final MqttClient client1 = clientCache.get(s1);
+            final MqttClient client2 = clientCache.get(s2);
+            final String client1Key = getKey(client1);
+            final String client2Key = getKey(client2);
+            return client1Key.compareTo(client2Key);
         };
 
         if (sortByTime) {
@@ -138,5 +139,9 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
     @Override
     public Class getType() {
         return ListClientsCommand.class;
+    }
+
+    private String getKey(final MqttClient client) {
+        return client.getConfig().getClientIdentifier() + client.getConfig().getServerHost();
     }
 }
