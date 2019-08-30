@@ -54,6 +54,10 @@ abstract class AbstractMqttClientExecutor {
 
     abstract void mqtt3Unsubscribe(final @NotNull Mqtt3Client client, final @NotNull Unsubscribe unsubscribe);
 
+    abstract void mqtt5Disconnect(final @NotNull Mqtt5Client client, final @NotNull Disconnect disconnect);
+
+    abstract void mqtt3Disconnect(final @NotNull Mqtt3Client client, final @NotNull Disconnect disconnect);
+
 
     public void subscribe(final @NotNull SubscribeCommand subscribeCommand) {
 
@@ -107,26 +111,26 @@ abstract class AbstractMqttClientExecutor {
         }
     }
 
-    public void disconnect(final @NotNull Context context) {
+    public void disconnect(final @NotNull Disconnect disconnect) {
 
-        LoggingContext.put("identifier", context.getIdentifier());
+        LoggingContext.put("identifier", disconnect.getIdentifier());
 
-        clientCache.setVerbose(context.isVerbose());
+        clientCache.setVerbose(disconnect.isVerbose());
 
-        if (clientCache.hasKey(context.getKey())) {
-            final MqttClient client = clientCache.get(context.getKey());
-            clientCache.remove(context.getKey());
+        if (clientCache.hasKey(disconnect.getKey())) {
+            final MqttClient client = clientCache.get(disconnect.getKey());
+            clientCache.remove(disconnect.getKey());
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    ((Mqtt5AsyncClient) client).disconnect();
+                    mqtt5Disconnect((Mqtt5Client) client, disconnect);
                     break;
                 case MQTT_3_1_1:
-                    ((Mqtt3AsyncClient) client).disconnect();
+                    mqtt3Disconnect((Mqtt3Client) client, disconnect);
                     break;
             }
-        } else if (context.isDebug()) {
-            Logger.debug("client to disconnect is not connected: {} ", context.getKey());
+        } else if (disconnect.isDebug()) {
+            Logger.debug("client to disconnect is not connected: {} ", disconnect.getKey());
         }
 
     }

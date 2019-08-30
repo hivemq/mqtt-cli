@@ -1,11 +1,13 @@
 package com.hivemq.cli.mqtt;
 
+import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.commands.cli.ConnectCommand;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.utils.FileUtils;
+import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
@@ -19,6 +21,8 @@ import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 
+import com.hivemq.client.mqtt.mqtt5.message.disconnect.Mqtt5Disconnect;
+import com.hivemq.client.mqtt.mqtt5.message.disconnect.Mqtt5DisconnectBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishResult;
@@ -418,6 +422,60 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     });
         }
     }
+
+    @Override
+    void mqtt5Disconnect(@NotNull final Mqtt5Client client, @NotNull final Disconnect disconnect) {
+
+        if (disconnect.isVerbose()) {
+            Logger.trace("Sending DISCONNECT with command: {}", disconnect);
+        }
+
+        if (disconnect.isDebug()) {
+            Logger.debug("Sending DISCONNECT (Reason: {}, sessionExpiryInterval: {}, userProperties: {})", disconnect.getReasonString(), disconnect.getSessionExpiryInterval(), disconnect.getUserProperties());
+        }
+
+        final Mqtt5DisconnectBuilder.Send<CompletableFuture<Void>> builder = client.toAsync().disconnectWith()
+                .reasonString(disconnect.getReasonString());
+
+        if (disconnect.getSessionExpiryInterval() != null) {
+            builder.sessionExpiryInterval(disconnect.getSessionExpiryInterval());
+        }
+
+        if (disconnect.getUserProperties() != null) {
+            builder.userProperties(disconnect.getUserProperties());
+        }
+
+        builder.send();
+
+    }
+
+
+    @Override
+    void mqtt3Disconnect(@NotNull final Mqtt3Client client, @NotNull final Disconnect disconnect) {
+
+        if (disconnect.getSessionExpiryInterval() != null) {
+            Logger.warn("Session expiry interval set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
+        }
+        if (disconnect.getReasonString() != null) {
+            Logger.warn("Reason string was set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
+        }
+        if (disconnect.getUserProperties() != null) {
+            Logger.warn("User properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
+        }
+
+        if (disconnect.isVerbose()) {
+            Logger.trace("Sending DISCONNECT with command: {}", disconnect);
+        }
+
+        if (disconnect.isDebug()) {
+            Logger.debug("Sending DISCONNECT");
+        }
+
+
+        client.toAsync().disconnect();
+
+    }
+
 
     private @NotNull String applyBase64EncodingIfSet(final boolean encode, final byte[] payload) {
         if (encode) {

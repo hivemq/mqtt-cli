@@ -1,5 +1,6 @@
 package com.hivemq.cli.mqtt;
 
+import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.commands.cli.ConnectCommand;
@@ -79,6 +80,16 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
 
     @Override
     void mqtt3Unsubscribe(@NotNull Mqtt3Client client, @NotNull Unsubscribe unsubscribe) {
+
+    }
+
+    @Override
+    void mqtt5Disconnect(@NotNull Mqtt5Client client, @NotNull Disconnect disconnect) {
+
+    }
+
+    @Override
+    void mqtt3Disconnect(@NotNull Mqtt3Client client, @NotNull Disconnect disconnect) {
 
     }
 }

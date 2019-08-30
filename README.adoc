@@ -544,10 +544,11 @@ Disconnects a previously connected client.
 ==== Synopsis (without client context)
 
 ```
-dis     [-i <identifier>]
+dis     -i <identifier>
         [-h <hostname>]
-        [-p <port>]
-        [-V <version>]
+        [-e <sessionExpiryInterval>]
+        [-r <reasonString>]
+        [-up <userProperties>]
 ```
 
 ==== Synopsis (with client context):
@@ -555,7 +556,9 @@ dis     [-i <identifier>]
 Disconnects the currently active client context.
 
 ```
-client-context> dis
+dis     [-e <sessionExpiryInterval>]
+        [-r <reasonString>]
+        [-up <userProperties>]
 ```
 
 ==== Options:
@@ -567,9 +570,16 @@ client-context> dis
 
 | ``-h``| ``--host`` | The host the client is connected to. | ``localhost``
 
-| ``-p``| ``--port`` | The port on which the client is connected. | ``1883``
+| ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
 
-| ``-V`` | ``--version`` |  The MQTT version which the connected client is using. | ``MQTT  v.5.0``
+| ``-r``  | ``--reason``| Reason string for the disconnect |
+
+| ``-up`` | ``--userProperties``|  User properties of the disconnect message can be defined like
+
+``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs.
+|
+
+
 
 |===
 
