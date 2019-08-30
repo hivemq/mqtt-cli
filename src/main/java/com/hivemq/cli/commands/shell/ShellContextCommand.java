@@ -1,4 +1,4 @@
-package com.hivemq.cli.commands.shell_commands;
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
         name = "> ",
         description = "In context mode all mqtt commands relate to the currently active client.",
         synopsisHeading = "%n@|bold Usage|@:  ",
-        synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch| | ls | cls | exit }",
+        synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch | | ls | cls | exit }",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options|@:%n",
         commandListHeading = "%n@|bold Commands|@:%n",

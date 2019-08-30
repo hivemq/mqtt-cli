@@ -1,8 +1,8 @@
 package com.hivemq.cli.ioc;
 
 import com.hivemq.cli.commands.*;
-import com.hivemq.cli.commands.cli_commands.DisconnectCommand;
-import com.hivemq.cli.commands.shell_commands.*;
+import com.hivemq.cli.commands.cli.DisconnectCommand;
+import com.hivemq.cli.commands.shell.*;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;

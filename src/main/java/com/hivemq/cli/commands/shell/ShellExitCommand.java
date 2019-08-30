@@ -1,9 +1,7 @@
-package com.hivemq.cli.commands.shell_commands;
+package com.hivemq.cli.commands.shell;
 
 
 import com.hivemq.cli.commands.CliCommand;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
-import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 

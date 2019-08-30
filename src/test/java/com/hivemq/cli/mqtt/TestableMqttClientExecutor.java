@@ -2,9 +2,8 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.Unsubscribe;
-import com.hivemq.cli.commands.cli_commands.ConnectCommand;
+import com.hivemq.cli.commands.cli.ConnectCommand;
 import com.hivemq.cli.commands.Publish;
-import com.hivemq.cli.commands.cli_commands.SubscribeCommand;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;

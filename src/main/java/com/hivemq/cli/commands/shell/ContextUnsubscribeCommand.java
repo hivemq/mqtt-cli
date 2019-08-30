@@ -1,9 +1,8 @@
-package com.hivemq.cli.commands.shell_commands;
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.client.internal.mqtt.message.unsubscribe.MqttUnsubscribe;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

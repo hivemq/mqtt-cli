@@ -1,7 +1,6 @@
-package com.hivemq.cli.commands.shell_commands;
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.HiveMQCLIMain;
-import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.ioc.DaggerContextCommandLine;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
@@ -100,8 +99,8 @@ public class ShellCommand implements Runnable {
         shellCommandLine = new CommandLine(spec);
         contextCommandLine = DaggerContextCommandLine.create().contextCommandLine();
 
-        shellCommandLine.setColorScheme(HiveMQCLIMain.colorScheme);
-        contextCommandLine.setColorScheme(HiveMQCLIMain.colorScheme);
+        shellCommandLine.setColorScheme(HiveMQCLIMain.COLOR_SCHEME);
+        contextCommandLine.setColorScheme(HiveMQCLIMain.COLOR_SCHEME);
         contextCommandLine.setUsageHelpWidth(HiveMQCLIMain.CLI_WIDTH);
 
         try {
@@ -130,7 +129,6 @@ public class ShellCommand implements Runnable {
 
             Logger.info("Writing Logfile to {}", logfilePath);
 
-
             String line;
             while (!exitShell) {
                 try {
@@ -144,12 +142,10 @@ public class ShellCommand implements Runnable {
                     }
                     return;
                 } catch (final EndOfFileException e) {
-                    // exit shell
                     if (VERBOSE) {
                         Logger.trace(e);
                     }
                     Logger.error(e.getMessage());
-                    // TODO all clients were disconnected
                     return;
                 } catch (final Exception all) {
                     if (VERBOSE) {
@@ -196,7 +192,7 @@ public class ShellCommand implements Runnable {
     }
 
     static void usage(Object command) {
-        currentCommandLine.usage(command, System.out, HiveMQCLIMain.colorScheme);
+        currentCommandLine.usage(command, System.out, HiveMQCLIMain.COLOR_SCHEME);
     }
 
     static String getUsageMessage() {

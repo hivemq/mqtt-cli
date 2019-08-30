@@ -1,4 +1,4 @@
-package com.hivemq.cli.commands.cli_commands;
+package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;

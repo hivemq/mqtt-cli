@@ -4,9 +4,7 @@ import com.hivemq.cli.ioc.DaggerHiveMQCLI;
 import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
@@ -21,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class HiveMQCLIMain {
 
-    public static CommandLine.Help.ColorScheme colorScheme = new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)
+    public final static CommandLine.Help.ColorScheme COLOR_SCHEME = new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)
             .commands(CommandLine.Help.Ansi.Style.bold, CommandLine.Help.Ansi.Style.fg_yellow)
             .options(CommandLine.Help.Ansi.Style.italic, CommandLine.Help.Ansi.Style.fg_yellow)
             .parameters(CommandLine.Help.Ansi.Style.fg_yellow)
@@ -54,7 +52,7 @@ public class HiveMQCLIMain {
     private static CommandLine setupCommandLine() {
         final CommandLine commandLine = DaggerHiveMQCLI.create().commandLine();
 
-        commandLine.setColorScheme(colorScheme);
+        commandLine.setColorScheme(COLOR_SCHEME);
 
         Configurator.defaultConfig()
                 .writer(new ConsoleWriter())
@@ -78,13 +76,15 @@ public class HiveMQCLIMain {
 
             for (final String key : keys) {
                 final MqttClient client = cache.get(key);
-                switch (client.getConfig().getMqttVersion()) {
-                    case MQTT_5_0:
-                        disconnectFutures.add(((Mqtt5Client) client).toAsync().disconnect());
-                        break;
-                    case MQTT_3_1_1:
-                        disconnectFutures.add(((Mqtt3Client) client).toAsync().disconnect());
-                        break;
+                if (client.getConfig().getState().isConnectedOrReconnect()) {
+                    switch (client.getConfig().getMqttVersion()) {
+                        case MQTT_5_0:
+                            disconnectFutures.add(((Mqtt5Client) client).toAsync().disconnect());
+                            break;
+                        case MQTT_3_1_1:
+                            disconnectFutures.add(((Mqtt3Client) client).toAsync().disconnect());
+                            break;
+                    }
                 }
             }
 

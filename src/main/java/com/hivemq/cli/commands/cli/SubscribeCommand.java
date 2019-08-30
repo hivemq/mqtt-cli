@@ -1,7 +1,6 @@
-package com.hivemq.cli.commands.cli_commands;
+package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.commands.Subscribe;
-import com.hivemq.cli.commands.shell_commands.ShellCommand;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;

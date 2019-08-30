@@ -1,11 +1,10 @@
 package com.hivemq.cli.commands;
 
-import com.hivemq.cli.commands.cli_commands.AbstractCommand;
+import com.hivemq.cli.commands.cli.AbstractCommand;
 import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientConfig;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;

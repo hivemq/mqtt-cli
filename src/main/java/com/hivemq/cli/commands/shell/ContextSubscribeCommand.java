@@ -1,4 +1,4 @@
-package com.hivemq.cli.commands.shell_commands;
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.converters.MqttQosConverter;
@@ -84,6 +84,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     }
 
     private void stay() throws InterruptedException {
+
         while (mqttClientExecutor.isConnected(this)) {
             Thread.sleep(IDLE_TIME);
         }

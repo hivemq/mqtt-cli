@@ -1,4 +1,4 @@
-package com.hivemq.cli.commands.shell_commands;
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;

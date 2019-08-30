@@ -1,17 +1,13 @@
-package com.hivemq.cli.commands.shell_commands;
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Context;
-import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 
 @CommandLine.Command(name = "switch",
         description = "Switch the current context")
