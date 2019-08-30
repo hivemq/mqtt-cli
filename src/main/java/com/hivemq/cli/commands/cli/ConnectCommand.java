@@ -94,6 +94,9 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"--tls-version"}, description = "The TLS protocol version to use (default: {'TLSv.1.2'})")
     private Collection<String> supportedTLSVersions;
 
+    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the will message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
+    @Nullable Mqtt5UserProperties userProperties;
+
     @CommandLine.ArgGroup(exclusive = false)
     private ClientSideAuthentication clientSideAuthentication;
 
@@ -193,6 +196,9 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
 
     private void logUnusedOptions() {
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
+            if (userProperties != null) {
+                Logger.warn("User properties were set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
             if (sessionExpiryInterval != 0) {
                 Logger.warn("Session Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
@@ -330,11 +336,23 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
                 '}';
     }
 
+    public Mqtt5UserProperties getUserProperties() {
+        return userProperties;
+    }
+
+    public void setUserProperties(final Mqtt5UserProperties userProperties) {
+        this.userProperties = userProperties;
+    }
+
     public String connectOptions() {
         return "prefixIdentifier='" + prefixIdentifier + '\'' +
                 ", user='" + user + '\'' +
                 ", keepAlive=" + keepAlive +
                 ", cleanStart=" + cleanStart +
+                ", sessionExpiryInterval=" + sessionExpiryInterval +
+                ", useSsl=" + useSsl +
+                ", sslConfig=" + sslConfig +
+                ", userProperties" + userProperties +
                 ", willTopic='" + willTopic + '\'' +
                 ", willQos=" + willQos +
                 ", willMessage='" + willMessage + '\'' +
@@ -345,10 +363,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
                 ", willContentType='" + willContentType + '\'' +
                 ", willResponseTopic='" + willResponseTopic + '\'' +
                 ", willCorrelationData=" + willCorrelationData +
-                ", willUserProperties=" + willUserProperties +
-                ", sessionExpiryInterval=" + sessionExpiryInterval +
-                ", useSsl=" + useSsl +
-                ", sslConfig=" + sslConfig;
+                ", willUserProperties=" + willUserProperties;
     }
 
 

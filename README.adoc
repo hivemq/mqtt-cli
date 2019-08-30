@@ -143,6 +143,7 @@ hmq> con {  [-h <hostname>]
             [-c <clean-session>]
             [-s <use-default-ssl>]
             [-e <session-expiry>]
+            [-up <user-properties>]
             [-wt <will-message-topic>]
             [-wq <will-quality-of-service>]
             [-wm <will-message-payload>]
@@ -192,6 +193,11 @@ If left blank the user will be prompted for the password in console.
 | ``-s``    | ``--secure``  | Use the default SSL configuration. | ``False``
 
 | ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
+
+| ``-up``  | ``--userProperties`` | User properties of the connect message can be defined like
+
+``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs.
+|
 
 | ``-wt``  | ``--willTopic`` | Topic of the will message.  |
 

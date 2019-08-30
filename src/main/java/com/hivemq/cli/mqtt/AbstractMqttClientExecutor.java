@@ -194,6 +194,10 @@ abstract class AbstractMqttClientExecutor {
                 .cleanStart(connectCommand.isCleanStart())
                 .willPublish(willPublish);
 
+        if (connectCommand.getUserProperties() != null) {
+            connectBuilder.userProperties(connectCommand.getUserProperties());
+        }
+
         applyMqtt5Authentication(connectBuilder, connectCommand);
 
         mqtt5Connect(client, connectBuilder.build(), connectCommand);
