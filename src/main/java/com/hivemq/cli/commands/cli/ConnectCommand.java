@@ -352,7 +352,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
                 ", sessionExpiryInterval=" + sessionExpiryInterval +
                 ", useSsl=" + useSsl +
                 ", sslConfig=" + sslConfig +
-                ", userProperties" + userProperties +
+                ", userProperties=" + userProperties +
                 ", willTopic='" + willTopic + '\'' +
                 ", willQos=" + willQos +
                 ", willMessage='" + willMessage + '\'' +

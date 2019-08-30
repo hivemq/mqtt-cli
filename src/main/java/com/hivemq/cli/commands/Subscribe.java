@@ -1,29 +1,34 @@
 package com.hivemq.cli.commands;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
 public interface Subscribe extends Context {
 
-    public String[] getTopics();
+    String[] getTopics();
 
-    public void setTopics(final String[] topics);
+    void setTopics(final String[] topics);
 
-    public MqttQos[] getQos();
+    MqttQos[] getQos();
 
-    public void setQos(final MqttQos[] qos);
+    void setQos(final MqttQos[] qos);
 
-    public File getReceivedMessagesFile();
+    File getReceivedMessagesFile();
 
-    public void setReceivedMessagesFile(@Nullable final File receivedMessagesFile);
+    void setReceivedMessagesFile(@Nullable final File receivedMessagesFile);
 
-    public boolean isPrintToSTDOUT();
+    boolean isPrintToSTDOUT();
 
-    public void setPrintToSTDOUT(final boolean printToSTDOUT);
+    void setPrintToSTDOUT(final boolean printToSTDOUT);
 
-    public boolean isBase64();
+    boolean isBase64();
 
-    public void setBase64(final boolean base64);
+    void setBase64(final boolean base64);
+
+    @Nullable Mqtt5UserProperties getSubscribeUserProperties();
+
+    void setSubscribeUserProperties(@Nullable final Mqtt5UserProperties subscribeUserProperties);
 }

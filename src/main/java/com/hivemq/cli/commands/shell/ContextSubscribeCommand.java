@@ -2,10 +2,12 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.converters.MqttQosConverter;
+import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jline.reader.UserInterruptException;
@@ -33,6 +35,9 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default for all: 0)")
     private MqttQos[] qos;
+
+    @CommandLine.Option(names = {"-sup", "--subscribeUserProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the subscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
+    @Nullable Mqtt5UserProperties subscribeUserProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
     @Nullable
@@ -100,6 +105,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
+                ", userProperties=" + subscribeUserProperties +
                 ", toFile=" + receivedMessagesFile +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
@@ -152,4 +158,14 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     }
 
 
+    @Override
+    @Nullable
+    public Mqtt5UserProperties getSubscribeUserProperties() {
+        return subscribeUserProperties;
+    }
+
+    @Override
+    public void setSubscribeUserProperties(@Nullable final Mqtt5UserProperties subscribeUserProperties) {
+        this.subscribeUserProperties = subscribeUserProperties;
+    }
 }

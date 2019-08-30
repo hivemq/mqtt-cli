@@ -109,10 +109,16 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             }
         }));
 
-        client.subscribeWith()
+
+        final Mqtt5AsyncClient.Mqtt5SubscribeAndCallbackBuilder.Start.Complete builder = client.subscribeWith()
                 .topicFilter(topic)
-                .qos(qos)
-                .callback(publish -> {
+                .qos(qos);
+
+        if (subscribe.getSubscribeUserProperties() != null) {
+            builder.userProperties(subscribe.getSubscribeUserProperties());
+        }
+
+        builder.callback(publish -> {
 
                     byte[] payload = publish.getPayloadAsBytes();
                     final String payloadMessage = applyBase64EncodingIfSet(subscribe.isBase64(), payload);
