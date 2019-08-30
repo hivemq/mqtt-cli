@@ -1,6 +1,5 @@
 package com.hivemq.cli.ioc;
 
-import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.shell.*;
 import dagger.Module;
 import dagger.Provides;

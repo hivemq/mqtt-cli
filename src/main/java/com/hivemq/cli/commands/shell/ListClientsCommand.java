@@ -1,4 +1,4 @@
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.cli.AbstractCommand;
 import com.hivemq.cli.mqtt.ClientCache;
