@@ -1,6 +1,7 @@
-package com.hivemq.cli.commands.cli;
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Context;
+import com.hivemq.cli.commands.cli.MqttCommand;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import org.jetbrains.annotations.NotNull;
@@ -13,12 +14,12 @@ import javax.inject.Inject;
         aliases = "disconnect",
         description = "Disconnects an mqtt client")
 
-public class DisconnectCommand extends MqttCommand implements MqttAction, Context {
+public class ShellDisconnectCommand extends MqttCommand implements MqttAction, Context {
 
     private final MqttClientExecutor mqttClientExecutor;
 
     @Inject
-    DisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+    ShellDisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
 
         this.mqttClientExecutor = mqttClientExecutor;
 
@@ -26,7 +27,7 @@ public class DisconnectCommand extends MqttCommand implements MqttAction, Contex
 
     @Override
     public Class getType() {
-        return DisconnectCommand.class;
+        return ShellDisconnectCommand.class;
     }
 
     @Override
