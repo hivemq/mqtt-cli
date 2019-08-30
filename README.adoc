@@ -675,7 +675,7 @@ Unsubscribes the currently active context client from a list of topics.
 ==== Synopsis
 
 ```
-unsub   -t <topics> [-t <topics>]...
+unsub   -t <topic> [-t <topic>]...
         [-u <userProperties>]
 ```
 
