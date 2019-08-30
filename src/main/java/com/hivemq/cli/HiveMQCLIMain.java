@@ -4,20 +4,20 @@ import com.hivemq.cli.ioc.DaggerHiveMQCLI;
 import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.labelers.TimestampLabeler;
-import org.pmw.tinylog.policies.SizePolicy;
 import org.pmw.tinylog.writers.ConsoleWriter;
-import org.pmw.tinylog.writers.RollingFileWriter;
 import picocli.CommandLine;
 
-import javax.inject.Inject;
 import java.security.Security;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class HiveMQCLIMain {
 
@@ -43,7 +43,7 @@ public class HiveMQCLIMain {
             System.exit(0);
         }
 
-        Runtime.getRuntime().addShutdownHook(new disconnectAllClientsTask());
+        Runtime.getRuntime().addShutdownHook(new DisconnectAllClientsTask());
 
         final int exitCode = commandLine.execute(args);
 
@@ -66,7 +66,7 @@ public class HiveMQCLIMain {
         return commandLine;
     }
 
-    private static class disconnectAllClientsTask extends Thread {
+    private static class DisconnectAllClientsTask extends Thread {
 
         @Override
         public void run() {
@@ -74,17 +74,22 @@ public class HiveMQCLIMain {
             cache.setVerbose(false);
             final Set<String> keys = cache.keySet();
 
+            final List<CompletableFuture<Void>> disconnectFutures = new ArrayList<CompletableFuture<Void>>();
+
             for (final String key : keys) {
                 final MqttClient client = cache.get(key);
                 switch (client.getConfig().getMqttVersion()) {
                     case MQTT_5_0:
-                        ((Mqtt5Client) client).toAsync().disconnect().join();
+                        disconnectFutures.add(((Mqtt5Client) client).toAsync().disconnect());
                         break;
                     case MQTT_3_1_1:
-                        ((Mqtt3Client) client).toAsync().disconnect().join();
+                        disconnectFutures.add(((Mqtt3Client) client).toAsync().disconnect());
                         break;
                 }
             }
+
+            CompletableFuture.allOf(disconnectFutures.toArray(new CompletableFuture<?>[0]))
+                    .join();
         }
     }
 
