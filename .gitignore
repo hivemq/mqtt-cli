@@ -7,3 +7,4 @@
 /.idea/
 /hmq-mqtt-log.*.txt
 /dependency-reduced-pom.xml
+/build
