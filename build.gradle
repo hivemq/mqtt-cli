@@ -13,44 +13,38 @@ plugins {
     id 'java'
     id 'idea'
     id 'application'
-    id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '4.0.4' apply false
     id "com.github.hierynomus.license" version "0.15.0"
 }
 
-allprojects {
-    sourceCompatibility = 8
-    targetCompatibility = 8
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
-    compileJava.options.encoding = 'UTF-8'
-    compileTestJava.options.encoding = 'UTF-8'
-    javadoc.options.encoding = 'UTF-8'
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+javadoc.options.encoding = 'UTF-8'
 
-    group = 'com.hivemq'
-}
-
-apply plugin: 'idea'
-idea {
-    module {
-        sourceDirs += file('build/classes/java/main')
-        generatedSourceDirs += file('build/generated/sources/annotationProcessor/java/main')
-    }
-}
-
-apply plugin: 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
-
-
+group = 'com.hivemq'
 version = '1.0.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
-description = 'HiveMQ CLI is a Tool that provides a feature rich command line interface for connect, ' +
-            'publish and subscribe ' +
-            'various MQTT clients supporting  MQTT 5.0 and MQTT 3.1.1 ' +
-            'The CLI can be used in different modes'
-
+description = 'HiveMQ CLI is a tool that provides a feature rich command line interface for connecting, ' +
+        'publishing, subscribing, unsubscribing and disconnecting ' +
+        'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
 
 application {
     mainClassName = 'com.hivemq.cli.HiveMQCLIMain'
 }
+
+
+
+apply plugin: 'idea'
+idea {
+    module {
+        generatedSourceDirs += file('build/generated/sources/annotationProcessor/java/main')
+    }
+}
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
 
 
 ext {
@@ -63,23 +57,8 @@ ext {
     scmDeveloperConnection = 'scm:git:ssh://git@github.com/' + githubOrg + '/' + githubRepo + '.git'
     issuesUrl = githubUrl + '/issues'
     docUrl = 'https://' + githubOrg + '.github.io/' + githubRepo + '/'
-    licenseShortName = 'Apache-2.0'
-    licenseReadableName = 'The Apache License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    shadedAppendix = 'shaded'
     prevVersion = ''
 }
-
-
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
-
 
 repositories {
     mavenLocal()
@@ -130,15 +109,12 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterParamVersion
 }
 
-
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 jar {
 
     manifest () {
         attributes 'Main-Class': application.mainClassName
         attributes 'Manifest-Version': version
-        attributes 'Implementation-Title': 'HiveMQ MQTT Command line interface'
+        attributes 'Implementation-Title': 'HiveMQ MQTT Command Line Interface'
         attributes 'Implementation-Vendor': 'HiveMQ GmbH'
         attributes 'Implementation-Version': version
     }
@@ -152,8 +128,6 @@ jar {
 }
 
 license {
-    exclude "**/*.properties"
-    excludes(["**/*.txt", "**/*.conf"])
     include "**/*.java"
     header = file('HEADER')
 }
@@ -172,15 +146,10 @@ test {
     
 }
 
-task execute(type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
-    main = project.hasProperty("mainClass") ? project.getProperty("mainClass") : ""
-    systemProperties = System.properties
-}
-
 
 compileJava {
-    if (!System.properties['java.version'].startsWith('11')) {
-        throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use JRE 11 instead.')
+    def jv = System.properties['java.version']
+    if ( jv.startsWith('6') || jv.startsWith('7')  ) {
+        throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
     }
 }
