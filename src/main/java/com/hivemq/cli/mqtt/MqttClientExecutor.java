@@ -471,7 +471,6 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.debug("Sending DISCONNECT");
         }
 
-
         client.toAsync().disconnect();
 
     }

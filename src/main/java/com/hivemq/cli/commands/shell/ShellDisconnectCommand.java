@@ -111,6 +111,11 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
         return reasonString;
     }
 
+    @NotNull
+    public String getHost() {
+        return host;
+    }
+
     @Override
     public @Nullable Mqtt5UserProperties getUserProperties() {
         return userProperties;
@@ -128,10 +133,6 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
         this.identifier = identifier;
     }
 
-    @NotNull
-    public String getHost() {
-        return host;
-    }
 
     public void setHost(@NotNull final String host) {
         this.host = host;

@@ -36,8 +36,8 @@ import java.io.PrintWriter;
 
 public class ShellCommand implements Runnable {
 
-    private static String defaultPrompt = "hivemq-cli> ";
-    private static String prompt = defaultPrompt;
+    private static final String DEFAULT_PROMPT = "hivemq-cli> ";
+    private static String prompt = DEFAULT_PROMPT;
 
     public static final boolean DEBUG = true;
     public static final boolean VERBOSE = true;
@@ -187,7 +187,7 @@ public class ShellCommand implements Runnable {
         currentCommandLine = shellCommandLine;
         prompt = new AttributedStringBuilder()
                 .style(AttributedStyle.DEFAULT)
-                .append(defaultPrompt)
+                .append(DEFAULT_PROMPT)
                 .toAnsi();
     }
 
