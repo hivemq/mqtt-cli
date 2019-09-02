@@ -41,11 +41,6 @@ public class ClearScreenCommand implements CliCommand, Callable<Void> {
     }
 
     @Override
-    public Class getType() {
-        return ShellCommand.class;
-    }
-
-    @Override
     public boolean isVerbose() {
         return ShellCommand.isVerbose();
     }

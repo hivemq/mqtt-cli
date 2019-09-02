@@ -31,8 +31,4 @@ public class ContextExitCommand extends ShellContextCommand implements Runnable 
         return "ContextExit::";
     }
 
-    @Override
-    public Class getType() {
-        return ContextExitCommand.class;
-    }
 }

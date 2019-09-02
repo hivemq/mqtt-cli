@@ -107,9 +107,4 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
         this.userProperties = userProperties;
     }
-
-    @Override
-    public Class getType() {
-        return ContextDisconnectCommand.class;
-    }
 }

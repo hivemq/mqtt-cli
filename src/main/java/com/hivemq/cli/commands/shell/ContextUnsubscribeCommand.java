@@ -57,11 +57,6 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
                 '}';
     }
 
-    @Override
-    public Class getType() {
-        return ContextUnsubscribeCommand.class;
-    }
-
     public String[] getTopics() {
         return topics;
     }

@@ -26,11 +26,6 @@ public class ShellConnectCommand extends ConnectCommand {
     }
 
     @Override
-    public Class getType() {
-        return ShellContextCommand.class;
-    }
-
-    @Override
     public String toString() {
         return "ShellConnectCommand:: " + super.toString();
     }

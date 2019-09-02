@@ -123,11 +123,6 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
                 '}';
     }
 
-    @Override
-    public Class getType() {
-        return ContextPublishCommand.class;
-    }
-
     public String[] getTopics() {
         return topics;
     }

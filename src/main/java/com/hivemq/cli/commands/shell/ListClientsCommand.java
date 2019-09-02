@@ -135,11 +135,6 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
                 '}';
     }
 
-    @Override
-    public Class getType() {
-        return ListClientsCommand.class;
-    }
-
     private String getKey(final MqttClient client) {
         return client.getConfig().getClientIdentifier() + client.getConfig().getServerHost();
     }

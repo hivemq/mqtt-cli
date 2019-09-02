@@ -52,11 +52,6 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     private Mqtt5UserProperties userProperties;
 
     @Override
-    public Class getType() {
-        return ShellDisconnectCommand.class;
-    }
-
-    @Override
     public boolean isVerbose() {
         return false;
     }

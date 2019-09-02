@@ -30,12 +30,6 @@ public class ShellExitCommand implements Runnable, CliCommand {
         return "ShellExit::";
     }
 
-
-    @Override
-    public Class getType() {
-        return ShellExitCommand.class;
-    }
-
     @Override
     public boolean isVerbose() {
         return ShellCommand.isVerbose();

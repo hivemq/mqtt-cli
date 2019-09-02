@@ -71,11 +71,6 @@ public class ShellContextCommand implements Runnable, CliCommand {
         return ShellCommand.isDebug();
     }
 
-    @Override
-    public Class getType() {
-        return ShellContextCommand.class;
-    }
-
     public boolean isVerbose() {
         return ShellCommand.isVerbose();
     }

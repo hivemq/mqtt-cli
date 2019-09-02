@@ -235,11 +235,6 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     }
 
     @Override
-    public Class getType() {
-        return ConnectCommand.class;
-    }
-
-    @Override
     public String getKey() {
         return "client {" +
                 "identifier='" + getIdentifier() + '\'' +

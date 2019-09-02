@@ -9,49 +9,49 @@ import java.nio.ByteBuffer;
 
 public interface Publish extends Context {
 
-    public String[] getTopics();
+    String[] getTopics();
 
-    public void setTopics(final String[] topics);
+    void setTopics(final String[] topics);
 
-    public MqttQos[] getQos();
+    MqttQos[] getQos();
 
-    public void setQos(final MqttQos[] qos);
+    void setQos(final MqttQos[] qos);
 
-    public ByteBuffer getMessage();
+    ByteBuffer getMessage();
 
-    public void setMessage(final ByteBuffer message);
+    void setMessage(final ByteBuffer message);
 
-    public boolean isRetain();
+    boolean isRetain();
 
-    public void setRetain(final boolean retain);
+    void setRetain(final boolean retain);
 
-    public Long getMessageExpiryInterval();
+    Long getMessageExpiryInterval();
 
-    public void setMessageExpiryInterval(@Nullable final Long messageExpiryInterval);
-
-    @Nullable
-    public Mqtt5PayloadFormatIndicator getPayloadFormatIndicator();
-
-    public void setPayloadFormatIndicator(@Nullable final Mqtt5PayloadFormatIndicator payloadFormatIndicator);
+    void setMessageExpiryInterval(@Nullable final Long messageExpiryInterval);
 
     @Nullable
-    public String getContentType();
+    Mqtt5PayloadFormatIndicator getPayloadFormatIndicator();
 
-    public void setContentType(@Nullable final String contentType);
-
-    @Nullable
-    public String getResponseTopic();
-
-    public void setResponseTopic(@Nullable final String responseTopic);
+    void setPayloadFormatIndicator(@Nullable final Mqtt5PayloadFormatIndicator payloadFormatIndicator);
 
     @Nullable
-    public ByteBuffer getCorrelationData();
+    String getContentType();
 
-    public void setCorrelationData(@Nullable final ByteBuffer correlationData);
+    void setContentType(@Nullable final String contentType);
 
     @Nullable
-    public Mqtt5UserProperties getPublishUserProperties();
+    String getResponseTopic();
 
-    public void setPublishUserProperties(@Nullable final Mqtt5UserProperties publishUserProperties);
+    void setResponseTopic(@Nullable final String responseTopic);
+
+    @Nullable
+    ByteBuffer getCorrelationData();
+
+    void setCorrelationData(@Nullable final ByteBuffer correlationData);
+
+    @Nullable
+    Mqtt5UserProperties getPublishUserProperties();
+
+    void setPublishUserProperties(@Nullable final Mqtt5UserProperties publishUserProperties);
 
 }

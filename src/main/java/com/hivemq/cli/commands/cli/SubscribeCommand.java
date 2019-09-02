@@ -101,11 +101,6 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction, Subs
     }
 
     @Override
-    public Class getType() {
-        return SubscribeCommand.class;
-    }
-
-    @Override
     public void run() {
 
 

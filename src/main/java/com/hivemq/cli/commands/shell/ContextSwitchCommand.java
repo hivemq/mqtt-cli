@@ -53,7 +53,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
             return;
         }
 
-        MqttClient client = mqttClientExecutor.getMqttClientFromCache(this);
+        final MqttClient client = mqttClientExecutor.getMqttClientFromCache(this);
 
         if (client != null) {
             updateContext(client);
@@ -65,8 +65,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
         }
     }
 
-    private void extractKeyFromContextName(String contextName) {
-        String[] context = contextName.split("@");
+    private void extractKeyFromContextName(final String contextName) {
+        final String[] context = contextName.split("@");
 
         if (context.length == 1) {
             identifier = context[0];
@@ -92,11 +92,6 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
                 "contextName='" + contextName + '\'' +
                 ", key=" + getKey() +
                 '}';
-    }
-
-    @Override
-    public Class getType() {
-        return ContextSwitchCommand.class;
     }
 
     public String getHost() {

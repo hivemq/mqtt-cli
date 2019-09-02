@@ -154,11 +154,6 @@ public class PublishCommand extends ConnectCommand implements MqttAction, Publis
     }
 
     @Override
-    public Class getType() {
-        return PublishCommand.class;
-    }
-
-    @Override
     public void run() {
 
         if (isVerbose()) {

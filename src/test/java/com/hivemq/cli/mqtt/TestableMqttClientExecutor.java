@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
 
     private static TestableMqttClientExecutor instance = null;
-    private Mqtt5Connect connectMgs;
+    private Mqtt5Connect connectMsg;
     private ArrayList<String> subscribeTopic;
 
     private TestableMqttClientExecutor() {
@@ -34,8 +34,8 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
         return instance;
     }
 
-    public Mqtt5Connect getConnectMgs() {
-        return connectMgs;
+    public Mqtt5Connect getConnectMsg() {
+        return connectMsg;
     }
 
     public ArrayList<String> getSubscribeTopic() {
