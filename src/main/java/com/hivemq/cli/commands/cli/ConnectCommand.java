@@ -94,7 +94,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     @CommandLine.Option(names = {"--tls-version"}, description = "The TLS protocol version to use (default: {'TLSv.1.2'})")
     private Collection<String> supportedTLSVersions;
 
-    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the will message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
+    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the connect message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
     @Nullable Mqtt5UserProperties userProperties;
 
     @CommandLine.ArgGroup(exclusive = false)
