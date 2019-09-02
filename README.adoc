@@ -65,13 +65,11 @@ $ hivemq-cli [flags] [METHOD] [OPTION [OPTION]]
 
 Supported methods:
 
-* <<Connect>>
+* <<Connect>> (Used for Publish / Subscribe)
 * <<Publish>>
 * <<Subscribe>>
 * <<Shell>>
-** <<Disconnect>>
-** <<List>>
-** <<Clear>>
+
 
 See also ``hivemq-cli --help``.
 
@@ -145,6 +143,7 @@ hmq> con {  [-h <hostname>]
             [-c <clean-session>]
             [-s <use-default-ssl>]
             [-e <session-expiry>]
+            [-up <user-properties>]
             [-wt <will-message-topic>]
             [-wq <will-quality-of-service>]
             [-wm <will-message-payload>]
@@ -194,6 +193,11 @@ If left blank the user will be prompted for the password in console.
 | ``-s``    | ``--secure``  | Use the default SSL configuration. | ``False``
 
 | ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
+
+| ``-up``  | ``--userProperties`` | User properties of the connect message can be defined like
+
+``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs.
+|
 
 | ``-wt``  | ``--willTopic`` | Topic of the will message.  |
 
@@ -262,7 +266,7 @@ Connect a client with default settings and use it to publish:
 
 ```
 hmq> con -i myClient
-hmq> pub -i myClient -t test -m "Hello World"
+myClient@localhost> pub -t test -m "Hello World"
 ```
 
 Connect a client with a will message:
@@ -284,7 +288,7 @@ Enter private key password:
 NOTE: Publish supports all Connect options.
 Therefore all Connect options can be used with publish.
 
-NOTE: This command can also be used in <<Shell>>-Mode.
+NOTE: In Shell-Mode use the <<Publish (with context)>> equivalent.
 
 Publishes a message to one or more topics.
 
@@ -309,13 +313,13 @@ See also ``hivemq-cli pub --help``
 
 ```
 hivemq-cli pub { [[Connect-Option] [Connect-Option]]
-                -t <message-topic>...
+                -t <topic> [-t <topic>]...
                 -m <message>
-                [-r <retain>]
-                [-q <qos>...]
+                [-q <qos>]...
+                [-r]
                 [-pc <contentType>]
                 [-pd <correlationData>]
-                [-pe <checkMessageExpiryInterval>]
+                [-pe <messageExpiryInterval>]
                 [-pf <payloadFormatIndicator>]
                 [-pr <responseTopic>]
                 [-pu <publishUserProperties>]
@@ -370,7 +374,7 @@ $ hivemq-cli pub -t topic1 -t topic2 -t topic3 -q 0 -q 1 -q 2
 NOTE: Subscribe supports all Connect options.
 Therefore all Connect options can be used with subscribe.
 
-NOTE: This command can also be used in <<Shell>>-Mode.
+NOTE: In Shell-Mode use the <<Subscribe (with context)>> equivalent.
 
 Subscribes a client to one or more topics.
 If the Subscribe command is not called in Shell-Mode it will block the console by default and write the received publishes to the console.
@@ -381,10 +385,10 @@ If the Subscribe command is not called in Shell-Mode it will block the console b
 |Command |Explanation
 
 | ``hivemq-cli sub -t topic``
-| Subscribe to a topic on <<Default Settings>> and block the console.
+| Subscribe to a topic on default settings and block the console.
 
 | ``hivemq-cli sub -t test1 -t test2``
-| Subscribe to the topics test1 and test2 on <<Default Settings>> and block the console.
+| Subscribe to the topics test1 and test2 on default settings and block the console.
 
 | ``hivemq-cli sub -t test -h localhost -p 1884``
 | Subscribe to topic test at localhost:1884.
@@ -396,11 +400,12 @@ See also ``hivemq-cli sub --help``
 
 ```
 hivemq-cli sub { [[Connect-Option] [Connect-Option]]
-                -t <message-topic>...
-                [-q <qos>...]
-                [-of <output-to-file>]
-                [-oc <output-to-console>]
-                [-b64 <base64>]
+                -t <topic> [-t <topic>]...
+                [-q <qos>]...
+                [-sup <userProperties>]
+                [-b64]
+                [-oc]
+                [-of <receivedMessagesFile>]
 }
 ```
 
@@ -413,6 +418,10 @@ hivemq-cli sub { [[Connect-Option] [Connect-Option]]
 | ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.
 
 You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
+| ``-sup``  | ``--subscribeUserProperties`` | User properties of the subscribe message can be defined like
+
+``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs.
+|
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` in Shell-Mode, else ``True``
 | ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
@@ -468,45 +477,281 @@ Open HiveMQ-CLI in an interactive shell session.
 The shell uses https://github.com/jline/jline3[JLine] for handling console input.
 Therefore tab-completion, command-history, password-masking and other familiar shell features are available.
 
-The Shell-Mode can be mainly used for connection handling as the Publish and Subscribe commands drop the connections after they are done.
+The Shell-Mode is based around a client context driven use case.
+Therefore methods like Connect and Disconnect switch the current context of the shell and commands like Publish and Subscribe always relate to the currently active client context.
+
+Example:
+
+```
+hivemq-cli shell                # starts the shell
+
+hmq> con -i myClient            # connect client with identifier
+myClient> pub -t test -m msg    # publish with new context client
+myClient> dis                   # disconnect and remove context
+hmq> ...
+```
 
 === Summary
-
-```
-hivemq-cli shell { con | pub | sub | dis | ls | cls }
-
-```
-
-
 
 Start interactive shell with:
 ```
 $ hivemq-cli shell
 ```
 
-NOTE: The commands **Connect**, **Disconnect**, **List** and **Clear** are only available in Shell-Mode.
+In Shell-Mode the following Commands are available **without** an active context:
+
+* <<Connect (in shell)>>
+* <<Disconnect>>
+* <<Switch>>
+* <<List>>
+* <<Clear>>
+
+In Shell-Mode the following Commands are available **with** an active context:
+
+* <<Publish (with context)>>
+* <<Subscribe (with context)>>
+* <<Unsubscribe>>
+* <<Disconnect>>
+* <<Switch>>
+* <<Exit>>
+* <<List>>
+* <<Clear>>
+
+
 
 NOTE: A client is uniquely identified in the CLI by the **version**, **hostname**, **port** and the unique **identifier**.
 
-=== Logging
+=== Connect (in shell)
 
-By default the Shell-Model logs all commands in verbose mode to a uniquely named logfile which is placed in a temp directory which is printed out at the start of the shell.
+Please refer to <<Connect>> for usage information.
 
-NOTE: In Shell-Mode the **-d** and **-v** options for every command will be overridden the default shell debug level.
+Connect switches the current client context to the newly connected client.
+
+Example:
+
+```
+hmq> con -i clientID
+
+clientID@localhost>
+```
+
+NOTE: The **--debug** and **--verbose** options are overridden by the default values of the shell.
 
 === Disconnect
 
 Disconnects a previously connected client.
 
+==== Synopsis (without client context)
+
+```
+dis     -i <identifier>
+        [-h <hostname>]
+        [-e <sessionExpiryInterval>]
+        [-r <reasonString>]
+        [-up <userProperties>]
+```
+
+==== Synopsis (with client context):
+
+Disconnects the currently active client context.
+
+```
+dis     [-e <sessionExpiryInterval>]
+        [-r <reasonString>]
+        [-up <userProperties>]
+```
+
+==== Options:
+
+|===
+|Option |Long Version | Explanation | Default
+
+| ``-i``   | ``--identifier``| The unique identifier of a client. |
+
+| ``-h``| ``--host`` | The host the client is connected to. | ``localhost``
+
+| ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
+
+| ``-r``  | ``--reason``| Reason string for the disconnect |
+
+| ``-up`` | ``--userProperties``|  User properties of the disconnect message can be defined like
+
+``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs.
+|
+
+
+
+|===
+
+==== Examples:
+
+Connect a client which is identified by myClient and disconnect it afterwards using default settings:
+
+```
+hmq> con -i myClient
+myClient@localhost> dis
+hmq>
+```
+
+Connect a client which is identified by myClient on specific settings and disconnect it afterwards:
+
+NOTE: Besides the **identifier** also **version**, **hostname** and **port** have to be given to uniquely identify the client.
+If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
+
+```
+hmq> con -i myClient -h broker.hivemq.com -V 3
+myClient@localhost> exit  # client is still connected
+hmq> dis -i myClient -h broker.hivemq.com -V 3
+```
+
+=== Publish (with context)
+
+The publish with a context works almost the same as <<Publish>> but it will not create a new connection and publish with a new client.
+Instead it uses the currently active context client.
+
+==== Synopsis:
+
+```
+clientID> pub   -t <topic> [-t <topic>]...
+                -m <message>
+                [-q <qos>]...
+                [-r]
+                [-pc <contentType>]
+                [-pd <correlationData>]
+                [-pe <messageExpiryInterval>]
+                [-pf <payloadFormatIndicator>]
+                [-pr <responseTopic>]
+                [-pu <publishUserProperties>]
+```
+
+NOTE: The default options are the same as in <<Publish>>
+
+==== Options
+
+See <<Publish>>
+
+==== Example
+
+Publish with a client identified with "myClient" to the default settings:
+
+```
+hmq> con -i myClient
+myClient@localhost> pub -t test -m msg
+```
+
+=== Subscribe (with context)
+
+The subscribe with a context subscribes the currently active context client to the given topics.
+By default it doesn't block the console like the <<Subscribe>>
+without a context does.
+To enable this behavior you can use the **-s** option.
+
 ==== Synopsis
 
 ```
-hivemq-cli shell dis {  [-i <identifier>]
-                        [-h <hostname>]
-                        [-p <port>]
-                        [-V <version>]
-}
+clientID> sub   -t <topics> [-t <topics>]...
+                [-q <qos>]...
+                [-s]
+                [-b64]
+                [-oc]
+                [-of <receivedMessagesFile>]
+
+
 ```
+
+====  Options
+
+See <<Subscribe>>
+
+|===
+|Option |Long Version | Explanation | Default
+
+| ``-s``   | ``--stay``| The subscribe will block the console and wait for publish messages to print.  | ``false``
+
+|===
+
+==== Example:
+
+Subscribe to test topic on default settings (output will be written to Logfile.
+See <<Logging>>):
+
+```
+hmq> con -i myClient
+myClient@localhost> sub -t test
+```
+
+Subscribe to test topic on default settings, block console and write received publishes to console:
+
+```
+myClient@localhost> pub -t test -m Hello -r
+myClient@localhost> sub -t test -s
+Hello
+...
+```
+
+=== Unsubscribe
+
+Unsubscribes the currently active context client from a list of topics.
+
+==== Synopsis
+
+```
+unsub   -t <topic> [-t <topic>]...
+        [-u <userProperties>]
+```
+
+==== Options:
+
+|===
+|Option |Long Version | Explanation | Default
+
+| ``-t``   | ``--topic``| A topic from which the client will unsubscribe from. |
+
+| ``-u``| ``--userProperties`` | User properties of the unsubscribe message can be defined like
+
+``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
+
+
+|===
+
+==== Examples:
+
+Connect a client which is identified by myClient and subscribe it to two topics afterwards.
+Then unsubscribe from one of the two topics:
+
+```
+hmq> con -i myClient
+myClient@localhost> sub -t topic1 -t topic2
+myClient@localhost> unsub -t topic1
+hmq>
+```
+
+=== Switch
+
+Switches the currently active context client.
+
+==== Synopsis
+
+```
+{ hmq | clientID }> switch  [<contextName>]
+                            -i <identifier>
+                            [-h <host>]
+```
+
+==== Parameters
+
+|===
+|Parameter Name | Explanation | Examples
+
+| ``contextName``   | The context name of a client consisting of the the client identifier concatenated by a @ with the hostname.
+The hostname may be omitted and will be filled with the default host.
+| ``myClient@localhost``
+
+``client2@broker.hivemq.com``
+
+``clientID`` (default @localhost will be added)
+
+|===
 
 ==== Options
 
@@ -517,29 +762,37 @@ hivemq-cli shell dis {  [-i <identifier>]
 
 | ``-h``| ``--host`` | The host the client is connected to. | ``localhost``
 
-| ``-p``| ``--port`` | The port on which the client is connected. | ``1883``
-
-| ``-V`` | ``--version`` |  The MQTT version which the connected client is using. | ``MQTT  v.5.0``
-
 |===
 
-==== Examples
+==== Example
 
-Connect a client which is identified by myClient and disconnect it afterwards using default settings:
-
-```
-hmq> con -i myClient
-hmq> dis -i myClient
-```
-
-Connect a client which is identified by myClient on specific settings and disconnect it afterwards:
-
-NOTE: Besides the **identifier** also **version**, **hostname** and **port** have to be given to uniquely identify the client.
-If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
+Connect two clients and switch the active context to the first connected client:
 
 ```
-hmq> con -i myClient -h localhost -p 1884 -V 3
-hmq> con -i myClient -h localhost -p 1884 -V 3
+hmq> con -i client1
+client1@localhost> exit
+hmq> con -i client2 -h broker.hivemq.com
+client2@broker.hivemq.com> switch client1
+client1@localhost> switch client2@broker.hivemq.com
+client2@broker.hivemq.com>
+```
+
+=== Exit
+
+Exits the currently active client context.
+
+==== Synopsis
+
+```
+clientID> exit
+```
+
+==== Example
+
+```
+hmq> con -i client
+client@localhost> exit
+hmq>
 ```
 
 === List
@@ -549,9 +802,9 @@ Lists all the connected clients.
 ==== Synopsis
 
 ```
-hivemq-cli shell ls {   [-t <sort-by-time>]
+{ hmq | clientID }> ls [-t <sort-by-time>]
                         [-a <all>]
-}
+
 ```
 
 ==== Options
@@ -593,14 +846,19 @@ So **-at** and **-ta** are valid options.
 
 Clears the terminal screen.
 
-Synopsis:
+==== Synopsis
 
 ```
-hivemq-cli shell { cls | clear }
+{ hmq | clientID }> clear
 ```
 
-Example:
+==== Example
 
 ```
 hmq> clear
 ```
+
+=== Logging
+
+By default the Shell-Model logs all commands in verbose mode to a uniquely named logfile which is placed in a temp directory which is printed out at the start of the shell.
+

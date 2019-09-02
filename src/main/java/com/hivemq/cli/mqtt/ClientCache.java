@@ -34,7 +34,7 @@ public class ClientCache<K, V> {
         return verbose;
     }
 
-    void setVerbose(boolean verbose) {
+    public void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
 

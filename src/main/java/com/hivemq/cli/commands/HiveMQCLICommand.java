@@ -12,7 +12,7 @@ import javax.inject.Inject;
         synopsisSubcommandLabel = "{ pub | sub | shell }",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%@|bold Commands:|@%n",
+        commandListHeading = "%n@|bold Commands:|@%n",
         mixinStandardHelpOptions = true,
         version = HiveMQCLICommand.VERSION_STRING)
 

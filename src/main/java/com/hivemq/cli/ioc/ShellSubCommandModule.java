@@ -1,7 +1,7 @@
 package com.hivemq.cli.ioc;
 
-import com.hivemq.cli.commands.*;
-import com.hivemq.cli.commands.ClearScreenCommand;
+import com.hivemq.cli.commands.shell.ShellDisconnectCommand;
+import com.hivemq.cli.commands.shell.*;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
@@ -17,19 +17,19 @@ public class ShellSubCommandModule {
     @Provides
     @Named("shell-sub-command")
     static @NotNull CommandLine provideShellCommand(final @NotNull ShellCommand shellCommand,
-                                                    final @NotNull ConnectCommand connectCommand,
-                                                    final @NotNull SubscribeCommand subscribeCommand,
-                                                    final @NotNull PublishCommand publishCommand,
-                                                    final @NotNull DisconnectCommand disconnectCommand,
+                                                    final @NotNull ShellConnectCommand shellConnectCommand,
+                                                    final @NotNull ShellDisconnectCommand disconnectCommand,
+                                                    final @NotNull ContextSwitchCommand contextSwitchCommand,
                                                     final @NotNull ClearScreenCommand clearScreenCommand,
-                                                    final @NotNull ListClientsCommand listClientsCommand) {
+                                                    final @NotNull ListClientsCommand listClientsCommand,
+                                                    final @NotNull ShellExitCommand shellExitCommand) {
 
         return new CommandLine(shellCommand)
-                .addSubcommand(connectCommand)
-                .addSubcommand(subscribeCommand)
-                .addSubcommand(publishCommand)
+                .addSubcommand(shellConnectCommand)
                 .addSubcommand(disconnectCommand)
+                .addSubcommand(contextSwitchCommand)
+                .addSubcommand(listClientsCommand)
                 .addSubcommand(clearScreenCommand)
-                .addSubcommand(listClientsCommand);
+                .addSubcommand(shellExitCommand);
     }
 }

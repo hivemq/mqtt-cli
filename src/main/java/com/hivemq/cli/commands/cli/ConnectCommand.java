@@ -1,4 +1,4 @@
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
@@ -34,6 +34,9 @@ import java.util.UUID;
         abbreviateSynopsis = true)
 
 public class ConnectCommand extends MqttCommand implements MqttAction {
+
+    @Nullable
+    public MqttClient client;
 
     final MqttClientExecutor mqttClientExecutor;
 
@@ -90,6 +93,10 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
 
     @CommandLine.Option(names = {"--tls-version"}, description = "The TLS protocol version to use (default: {'TLSv.1.2'})")
     private Collection<String> supportedTLSVersions;
+
+    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the connect message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
+    @Nullable Mqtt5UserProperties userProperties;
+
 
     @CommandLine.ArgGroup(exclusive = false)
     private ClientSideAuthentication clientSideAuthentication;
@@ -148,6 +155,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
 
     @Override
     public void run() {
+        client = null;
 
         handleConnectOptions();
 
@@ -178,7 +186,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
         }
 
         try {
-            mqttClientExecutor.connect(this);
+            client = mqttClientExecutor.connect(this);
         } catch (final Exception ex) {
             if (isDebug()) {
                 Logger.debug(ex);
@@ -189,6 +197,9 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
 
     private void logUnusedOptions() {
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
+            if (userProperties != null) {
+                Logger.warn("User properties were set but are unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
             if (sessionExpiryInterval != 0) {
                 Logger.warn("Session Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
@@ -225,17 +236,10 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     }
 
     @Override
-    public Class getType() {
-        return ConnectCommand.class;
-    }
-
-    @Override
     public String getKey() {
         return "client {" +
-                "version=" + getVersion() +
+                "identifier='" + getIdentifier() + '\'' +
                 ", host='" + getHost() + '\'' +
-                ", port=" + getPort() +
-                ", identifier='" + getIdentifier() + '\'' +
                 '}';
     }
 
@@ -328,11 +332,23 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
                 '}';
     }
 
+    public Mqtt5UserProperties getUserProperties() {
+        return userProperties;
+    }
+
+    public void setUserProperties(final Mqtt5UserProperties userProperties) {
+        this.userProperties = userProperties;
+    }
+
     public String connectOptions() {
         return "prefixIdentifier='" + prefixIdentifier + '\'' +
                 ", user='" + user + '\'' +
                 ", keepAlive=" + keepAlive +
                 ", cleanStart=" + cleanStart +
+                ", sessionExpiryInterval=" + sessionExpiryInterval +
+                ", useSsl=" + useSsl +
+                ", sslConfig=" + sslConfig +
+                ", userProperties=" + userProperties +
                 ", willTopic='" + willTopic + '\'' +
                 ", willQos=" + willQos +
                 ", willMessage='" + willMessage + '\'' +
@@ -343,10 +359,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
                 ", willContentType='" + willContentType + '\'' +
                 ", willResponseTopic='" + willResponseTopic + '\'' +
                 ", willCorrelationData=" + willCorrelationData +
-                ", willUserProperties=" + willUserProperties +
-                ", sessionExpiryInterval=" + sessionExpiryInterval +
-                ", useSsl=" + useSsl +
-                ", sslConfig=" + sslConfig;
+                ", willUserProperties=" + willUserProperties;
     }
 
 

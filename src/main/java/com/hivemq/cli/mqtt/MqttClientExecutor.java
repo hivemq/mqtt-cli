@@ -1,23 +1,33 @@
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.ConnectCommand;
-import com.hivemq.cli.commands.PublishCommand;
-import com.hivemq.cli.commands.SubscribeCommand;
+import com.hivemq.cli.commands.Disconnect;
+import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.Unsubscribe;
+import com.hivemq.cli.commands.cli.ConnectCommand;
+import com.hivemq.cli.commands.Publish;
+import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.utils.FileUtils;
+import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 
+import com.hivemq.client.mqtt.mqtt5.message.disconnect.Mqtt5Disconnect;
+import com.hivemq.client.mqtt.mqtt5.message.disconnect.Mqtt5DisconnectBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishBuilder;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishResult;
+import com.hivemq.client.mqtt.mqtt5.message.unsubscribe.unsuback.Mqtt5UnsubAck;
 import org.jetbrains.annotations.NotNull;
-import org.jline.utils.Log;
 import org.pmw.tinylog.Logger;
 
 import javax.inject.Inject;
@@ -25,7 +35,7 @@ import javax.inject.Singleton;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.bouncycastle.util.encoders.Base64;
 
@@ -82,19 +92,19 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     }
 
-    void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final @NotNull String topic, final @NotNull MqttQos qos) {
+    void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos) {
 
-        if (subscribeCommand.isDebug()) {
+        if (subscribe.isDebug()) {
             Logger.debug("sending SUBSCRIBE: (Topic: {}, QoS: {})", topic, qos);
         }
 
-        if (subscribeCommand.isVerbose()) {
-            Logger.trace("sending SUBSCRIBE with Command: {}", subscribeCommand);
+        if (subscribe.isVerbose()) {
+            Logger.trace("sending SUBSCRIBE with Command: {}", subscribe);
         }
 
         PrintWriter fileWriter = null;
-        if (subscribeCommand.getReceivedMessagesFile() != null) {
-            fileWriter = FileUtils.createFileAppender(subscribeCommand.getReceivedMessagesFile());
+        if (subscribe.getReceivedMessagesFile() != null) {
+            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
         }
         final PrintWriter finalFileWriter = fileWriter;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -104,28 +114,33 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         }));
 
 
-        client.subscribeWith()
+        final Mqtt5AsyncClient.Mqtt5SubscribeAndCallbackBuilder.Start.Complete builder = client.subscribeWith()
                 .topicFilter(topic)
-                .qos(qos)
-                .callback(publish -> {
+                .qos(qos);
+
+        if (subscribe.getSubscribeUserProperties() != null) {
+            builder.userProperties(subscribe.getSubscribeUserProperties());
+        }
+
+        builder.callback(publish -> {
 
                     byte[] payload = publish.getPayloadAsBytes();
-                    final String payloadMessage = applyBase64EncodingIfSet(subscribeCommand.isBase64(), payload);
+                    final String payloadMessage = applyBase64EncodingIfSet(subscribe.isBase64(), payload);
 
                     if (finalFileWriter != null) {
                         finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
                         finalFileWriter.flush();
                     }
 
-                    if (subscribeCommand.isPrintToSTDOUT()) {
+                    if (subscribe.isPrintToSTDOUT()) {
                         System.out.println(payloadMessage);
                     }
 
-                    if (subscribeCommand.isDebug()) {
+                    if (subscribe.isDebug()) {
                         Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", publish.getTopic(), payloadMessage);
                     }
 
-                    if (subscribeCommand.isVerbose()) {
+                    if (subscribe.isVerbose()) {
                         Logger.trace("received PUBLISH: {}", publish);
                     }
 
@@ -135,17 +150,17 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((subAck, throwable) -> {
 
                     if (throwable != null) {
-                        if (subscribeCommand.isDebug()) {
+                        if (subscribe.isDebug()) {
                             Logger.debug("SUBSCRIBE failed: {} ", topic, throwable.getStackTrace());
                         }
-                        Logger.error("SUBSCRIBE failed: {}", topic, throwable.getMessage());
+                        Logger.error("SUBSCRIBE to {} failed with {}", topic, throwable.getMessage());
                     } else {
 
-                        if (subscribeCommand.isDebug()) {
+                        if (subscribe.isDebug()) {
                             Logger.debug("received SUBACK: {}", subAck.getReasonCodes());
                         }
 
-                        if (subscribeCommand.isVerbose()) {
+                        if (subscribe.isVerbose()) {
                             Logger.trace("received SUBACK: {}", subAck);
                         }
 
@@ -154,19 +169,19 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 });
     }
 
-    void mqtt3Subscribe(final @NotNull Mqtt3AsyncClient client, final @NotNull SubscribeCommand subscribeCommand, final @NotNull String topic, final @NotNull MqttQos qos) {
+    void mqtt3Subscribe(final @NotNull Mqtt3AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos) {
 
-        if (subscribeCommand.isDebug()) {
+        if (subscribe.isDebug()) {
             Logger.debug("sending SUBSCRIBE: (Topic: {}, QoS: {})", topic, qos);
         }
 
-        if (subscribeCommand.isVerbose()) {
-            Logger.trace("sending SUBSCRIBE with Command: {}", subscribeCommand);
+        if (subscribe.isVerbose()) {
+            Logger.trace("sending SUBSCRIBE with Command: {}", subscribe);
         }
 
         PrintWriter fileWriter = null;
-        if (subscribeCommand.getReceivedMessagesFile() != null) {
-            fileWriter = FileUtils.createFileAppender(subscribeCommand.getReceivedMessagesFile());
+        if (subscribe.getReceivedMessagesFile() != null) {
+            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
         }
         final PrintWriter finalFileWriter = fileWriter;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -181,22 +196,22 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .callback(publish -> {
 
                     byte[] payload = publish.getPayloadAsBytes();
-                    final String payloadMessage = applyBase64EncodingIfSet(subscribeCommand.isBase64(), payload);
+                    final String payloadMessage = applyBase64EncodingIfSet(subscribe.isBase64(), payload);
 
                     if (finalFileWriter != null) {
                         finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
                         finalFileWriter.flush();
                     }
 
-                    if (subscribeCommand.isPrintToSTDOUT()) {
+                    if (subscribe.isPrintToSTDOUT()) {
                         System.out.println(payloadMessage);
                     }
 
-                    if (subscribeCommand.isDebug()) {
+                    if (subscribe.isDebug()) {
                         Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", publish.getTopic(), payloadMessage);
                     }
 
-                    if (subscribeCommand.isVerbose()) {
+                    if (subscribe.isVerbose()) {
                         Logger.trace("received PUBLISH: {}", publish);
                     }
 
@@ -206,18 +221,18 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
 
-                        if (subscribeCommand.isDebug()) {
+                        if (subscribe.isDebug()) {
                             Logger.debug("SUBSCRIBE failed: {} ", topic, throwable.getStackTrace());
                         }
 
-                        Logger.error("SUBSCRIBE failed: {}", topic, throwable.getMessage());
+                        Logger.error("SUBSCRIBE to {} failed with {}", topic, throwable.getMessage());
                     } else {
 
-                        if (subscribeCommand.isDebug()) {
+                        if (subscribe.isDebug()) {
                             Logger.debug("received SUBACK: {}", subAck.getReturnCodes());
                         }
 
-                        if (subscribeCommand.isVerbose()) {
+                        if (subscribe.isVerbose()) {
                             Logger.trace("received SUBACK: {}", subAck);
                         }
 
@@ -225,98 +240,239 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 });
     }
 
-    void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos) {
+    void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos) {
 
-        if (publishCommand.isDebug()) {
-            Logger.debug("sending PUBLISH: (Topic: {}, QoS {}, Message: '{}')", topic, qos, bufferToString(publishCommand.getMessage()));
+        if (publish.isDebug()) {
+            Logger.debug("sending PUBLISH: (Topic: {}, QoS {}, Message: '{}')", topic, qos, bufferToString(publish.getMessage()));
         }
 
-        if (publishCommand.isVerbose()) {
-            Logger.trace("sending PUBLISH with command: {}", publishCommand);
+        if (publish.isVerbose()) {
+            Logger.trace("sending PUBLISH with command: {}", publish);
         }
 
         final Mqtt5PublishBuilder.Complete publishBuilder = Mqtt5Publish.builder()
                 .topic(topic)
                 .qos(qos)
-                .retain(publishCommand.isRetain())
-                .payload(publishCommand.getMessage())
-                .payloadFormatIndicator(publishCommand.getPayloadFormatIndicator())
-                .contentType(publishCommand.getContentType())
-                .responseTopic(publishCommand.getResponseTopic())
-                .correlationData(publishCommand.getCorrelationData());
-        if (publishCommand.getMessageExpiryInterval() != null) {
-            publishBuilder.messageExpiryInterval(publishCommand.getMessageExpiryInterval());
+                .retain(publish.isRetain())
+                .payload(publish.getMessage())
+                .payloadFormatIndicator(publish.getPayloadFormatIndicator())
+                .contentType(publish.getContentType())
+                .responseTopic(publish.getResponseTopic())
+                .correlationData(publish.getCorrelationData());
+        if (publish.getMessageExpiryInterval() != null) {
+            publishBuilder.messageExpiryInterval(publish.getMessageExpiryInterval());
         }
-        if (publishCommand.getPublishUserProperties() != null) {
-            publishBuilder.userProperties(publishCommand.getPublishUserProperties());
+        if (publish.getPublishUserProperties() != null) {
+            publishBuilder.userProperties(publish.getPublishUserProperties());
         }
 
-        client.publish(publishBuilder.build())
+        final CompletableFuture<Mqtt5PublishResult> publishResultCompletableFuture = client.publish(publishBuilder.build())
                 .whenComplete((publishResult, throwable) -> {
                     if (throwable != null) {
 
-                        if (publishCommand.isDebug()) {
+                        if (publish.isDebug()) {
                             Logger.debug("PUBLISH failed: {} ", topic, throwable.getStackTrace());
                         }
 
-                        Logger.error("PUBLISH failed", topic, throwable.getMessage());
+                        Logger.error("PUBLISH to {} failed with {}", topic, throwable.getMessage());
 
                     } else {
 
-                        final String p = bufferToString(publishCommand.getMessage());
+                        final String p = bufferToString(publish.getMessage());
 
-                        if (publishCommand.isDebug()) {
+                        if (publish.isDebug()) {
                             Logger.debug("received RESULT: '{}' for PUBLISH to Topic:  {}", trimMessage(p), topic);
                         }
 
-                        if (publishCommand.isVerbose()) {
+                        if (publish.isVerbose()) {
                             Logger.trace("received RESULT: '{}' for PUBLISH to Topic: {}", publishResult, topic);
                         }
 
                     }
                 });
+
+        if (publish instanceof PublishCommand) {
+            publishResultCompletableFuture.join();
+        }
     }
 
 
-    void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, final @NotNull PublishCommand publishCommand, final @NotNull String topic, final @NotNull MqttQos qos) {
+    void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos) {
 
-        if (publishCommand.isDebug()) {
-            Logger.debug("sending PUBLISH: (Topic: {}, QoS {}, Message: '{}')", topic, qos, bufferToString(publishCommand.getMessage()));
+        if (publish.isDebug()) {
+            Logger.debug("sending PUBLISH: (Topic: {}, QoS {}, Message: '{}')", topic, qos, bufferToString(publish.getMessage()));
         }
 
-        if (publishCommand.isVerbose()) {
-            Logger.trace("sending PUBLISH with command: {}", publishCommand);
+        if (publish.isVerbose()) {
+            Logger.trace("sending PUBLISH with command: {}", publish);
         }
 
-        client.publishWith()
+        final CompletableFuture<Mqtt3Publish> publishCompletableFuture = client.publishWith()
                 .topic(topic)
                 .qos(qos)
-                .retain(publishCommand.isRetain())
-                .payload(publishCommand.getMessage())
+                .retain(publish.isRetain())
+                .payload(publish.getMessage())
                 .send()
                 .whenComplete((publishResult, throwable) -> {
                     if (throwable != null) {
 
-                        if (publishCommand.isDebug()) {
+                        if (publish.isDebug()) {
                             Logger.debug("PUBLISH failed: {} ", topic, throwable.getStackTrace());
                         }
 
-                        Logger.error("PUBLISH failed", topic, throwable.getMessage());
+                        Logger.error("PUBLISH to {} failed with {}", topic, throwable.getMessage());
 
                     } else {
 
-                        final String p = bufferToString(publishCommand.getMessage());
+                        final String p = bufferToString(publish.getMessage());
 
-                        if (publishCommand.isDebug()) {
+                        if (publish.isDebug()) {
                             Logger.debug("received RESULT: '{}' for PUBLISH to Topic:  {}", trimMessage(p), topic);
                         }
 
-                        if (publishCommand.isVerbose()) {
+                        if (publish.isVerbose()) {
                             Logger.trace("received RESULT: '{}' for PUBLISH to Topic: {}", publishResult, topic);
                         }
 
                     }
                 });
+
+        if (publish instanceof PublishCommand) {
+            publishCompletableFuture.join();
+        }
+
+    }
+
+    @Override
+    void mqtt5Unsubscribe(@NotNull final Mqtt5Client client, @NotNull final Unsubscribe unsubscribe) {
+
+        if (unsubscribe.isVerbose()) {
+            Logger.trace("Sending UNSUBSCRIBE with command: {}", unsubscribe);
+        }
+
+        for (String topic : unsubscribe.getTopics()) {
+
+            if (unsubscribe.isDebug()) {
+                Logger.debug("sending UNSUBSCRIBE: (Topic: {}, userProperties: {})", topic, unsubscribe.getUserProperties());
+            }
+
+            client.toAsync()
+                    .unsubscribeWith()
+                    .addTopicFilter(topic)
+                    .send()
+                    .whenComplete((Mqtt5UnsubAck unsubAck, Throwable throwable) -> {
+
+                        if (throwable != null) {
+                            if (unsubscribe.isDebug()) {
+                                Logger.debug("UNSUBSCRIBE failed: {}", throwable.getStackTrace());
+                            }
+
+                            Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());
+                        } else {
+
+                            if (unsubscribe.isVerbose()) {
+                                Logger.trace("received UNSUBACK: {}", unsubAck);
+                            }
+
+                            if (unsubscribe.isDebug()) {
+                                Logger.debug("received UNSUBACK: {}", unsubAck.getReasonCodes());
+                            }
+
+                        }
+                    });
+        }
+    }
+
+    @Override
+    void mqtt3Unsubscribe(@NotNull final Mqtt3Client client, @NotNull final Unsubscribe unsubscribe) {
+
+        if (unsubscribe.isVerbose()) {
+            Logger.trace("Sending UNSUBSCRIBE with command: {}", unsubscribe);
+        }
+
+        for (String topic : unsubscribe.getTopics()) {
+
+            if (unsubscribe.isDebug()) {
+                Logger.debug("Sending UNSUBSCRIBE: (Topic: {}, userProperties: {})", topic, unsubscribe.getUserProperties());
+            }
+
+            client.toAsync()
+                    .unsubscribeWith()
+                    .addTopicFilter(topic)
+                    .send()
+                    .whenComplete((Void unsubAck, Throwable throwable) -> {
+
+                        if (throwable != null) {
+                            if (unsubscribe.isDebug()) {
+                                Logger.debug("UNSUBSCRIBE failed: {}", throwable.getStackTrace());
+                            }
+
+                            Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());
+                        } else {
+
+                            if (unsubscribe.isVerbose()) {
+                                Logger.trace("received UNSUBACK");
+                            }
+
+                            if (unsubscribe.isDebug()) {
+                                Logger.debug("received UNSUBACK");
+                            }
+
+                        }
+                    });
+        }
+    }
+
+    @Override
+    void mqtt5Disconnect(@NotNull final Mqtt5Client client, @NotNull final Disconnect disconnect) {
+
+        if (disconnect.isVerbose()) {
+            Logger.trace("Sending DISCONNECT with command: {}", disconnect);
+        }
+
+        if (disconnect.isDebug()) {
+            Logger.debug("Sending DISCONNECT (Reason: {}, sessionExpiryInterval: {}, userProperties: {})", disconnect.getReasonString(), disconnect.getSessionExpiryInterval(), disconnect.getUserProperties());
+        }
+
+        final Mqtt5DisconnectBuilder.Send<CompletableFuture<Void>> builder = client.toAsync().disconnectWith()
+                .reasonString(disconnect.getReasonString());
+
+        if (disconnect.getSessionExpiryInterval() != null) {
+            builder.sessionExpiryInterval(disconnect.getSessionExpiryInterval());
+        }
+
+        if (disconnect.getUserProperties() != null) {
+            builder.userProperties(disconnect.getUserProperties());
+        }
+
+        builder.send();
+
+    }
+
+
+    @Override
+    void mqtt3Disconnect(@NotNull final Mqtt3Client client, @NotNull final Disconnect disconnect) {
+
+        if (disconnect.getSessionExpiryInterval() != null) {
+            Logger.warn("Session expiry interval set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
+        }
+        if (disconnect.getReasonString() != null) {
+            Logger.warn("Reason string was set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
+        }
+        if (disconnect.getUserProperties() != null) {
+            Logger.warn("User properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
+        }
+
+        if (disconnect.isVerbose()) {
+            Logger.trace("Sending DISCONNECT with command: {}", disconnect);
+        }
+
+        if (disconnect.isDebug()) {
+            Logger.debug("Sending DISCONNECT");
+        }
+
+        client.toAsync().disconnect();
+
     }
 
 

@@ -1,8 +1,9 @@
 package com.hivemq.cli.commands;
 
-interface CliCommand<T extends CliCommand> {
+public interface CliCommand {
 
-    Class<T> getType();
+    boolean isVerbose();
 
+    boolean isDebug();
 
 }
