@@ -197,7 +197,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     private void logUnusedOptions() {
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
             if (userProperties != null) {
-                Logger.warn("User properties were set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("User properties were set but are unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
             if (sessionExpiryInterval != 0) {
                 Logger.warn("Session Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
