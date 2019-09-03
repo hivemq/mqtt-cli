@@ -2,6 +2,7 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.ioc.DaggerContextCommandLine;
+import com.hivemq.cli.utils.PropertiesUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
@@ -21,6 +22,7 @@ import picocli.CommandLine;
 import picocli.shell.jline3.PicocliJLineCompleter;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.PrintWriter;
 
 
@@ -39,8 +41,8 @@ public class ShellCommand implements Runnable {
     private static final String DEFAULT_PROMPT = "hivemq-cli> ";
     private static String prompt = DEFAULT_PROMPT;
 
-    public static final boolean DEBUG = true;
-    public static final boolean VERBOSE = true;
+    public static boolean DEBUG;
+    public static boolean VERBOSE;
     private String logfilePath;
 
     private static LineReaderImpl currentReader;
@@ -52,9 +54,6 @@ public class ShellCommand implements Runnable {
     private static CommandLine contextCommandLine;
 
     private static boolean exitShell = false;
-
-    private static boolean verbose = false;
-    private static boolean debug = false;
 
     @SuppressWarnings("NullableProblems")
     @CommandLine.Spec
@@ -68,16 +67,20 @@ public class ShellCommand implements Runnable {
     @Override
     public void run() {
 
+        final Level debugLevel = setDebugLevel(PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
+
+        final String dir = PropertiesUtils.DEFAULT_LOGFILE_PATH;
+
+        final File dirFile = new File(dir);
+        dirFile.mkdirs();
+
         final String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}";
 
-        final String tmpDir = System.getProperty("java.io.tmpdir");
+        final RollingFileWriter logfileWriter = new RollingFileWriter(dir + "hmq-cli.log", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
 
-        final RollingFileWriter logfileWriter = new RollingFileWriter(tmpDir + "/hmq-mqtt-log.txt", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
-
-        // TODO Read default config for debug and verbose from a property file
         Configurator.defaultConfig()
                 .writer(logfileWriter,
-                        Level.TRACE,
+                        debugLevel,
                         logfileFormatPattern)
                 .addWriter(new ConsoleWriter(),
                         Level.INFO,
@@ -191,6 +194,7 @@ public class ShellCommand implements Runnable {
                 .toAnsi();
     }
 
+
     static void usage(Object command) {
         currentCommandLine.usage(command, System.out, HiveMQCLIMain.COLOR_SCHEME);
     }
@@ -203,6 +207,25 @@ public class ShellCommand implements Runnable {
         currentReader.clearScreen();
     }
 
+    static Level setDebugLevel(final @NotNull PropertiesUtils.DEBUG_LEVEL debugLevel) {
+
+        switch (debugLevel) {
+            case VERBOSE:
+                VERBOSE = true;
+                DEBUG = true;
+                return Level.TRACE;
+            case DEBUG:
+                VERBOSE = false;
+                DEBUG = true;
+                return Level.DEBUG;
+            case INFO:
+                VERBOSE = false;
+                DEBUG = false;
+                return Level.INFO;
+        }
+
+        throw new IllegalArgumentException();
+    }
 
     static boolean isVerbose() {
         return VERBOSE;

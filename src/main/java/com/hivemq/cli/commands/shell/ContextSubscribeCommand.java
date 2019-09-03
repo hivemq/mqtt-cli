@@ -5,6 +5,7 @@ import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
+import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
@@ -60,6 +61,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
             Logger.trace("Command: {} ", this);
         }
 
+        setDefaultOptions();
+
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(contextClient, this);
@@ -110,6 +113,14 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
                 '}';
+    }
+
+    public void setDefaultOptions() {
+
+        if (receivedMessagesFile == null && PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
+            receivedMessagesFile = new File(PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+        }
+
     }
 
     public String[] getTopics() {

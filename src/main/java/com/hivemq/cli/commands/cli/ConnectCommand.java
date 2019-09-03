@@ -54,10 +54,6 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
 
     private final List<X509Certificate> certificates = new ArrayList<>();
 
-    //TODO Implement
-    @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String")
-    private String prefixIdentifier;
-
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for authentication")
     @Nullable
     private String user;
@@ -157,12 +153,16 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     public void run() {
         client = null;
 
+        setDefaultOptions();
+
         handleConnectOptions();
 
         connect();
     }
 
     void handleConnectOptions() {
+
+
         if (useBuiltSslConfig()) {
             try {
                 buildSslConfig();
@@ -274,12 +274,6 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
                 .build();
     }
 
-    public String createIdentifier() {
-        if (getIdentifier() == null) {
-            this.setIdentifier("hmqClient" + this.getVersion() + "-" + UUID.randomUUID().toString());
-        }
-        return getIdentifier();
-    }
 
 
     private TrustManagerFactory buildTrustManagerFactory(final @NotNull Collection<X509Certificate> certCollection) throws Exception {
@@ -341,7 +335,7 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
     }
 
     public String connectOptions() {
-        return "prefixIdentifier='" + prefixIdentifier + '\'' +
+        return super.toString() +
                 ", user='" + user + '\'' +
                 ", keepAlive=" + keepAlive +
                 ", cleanStart=" + cleanStart +
@@ -367,14 +361,6 @@ public class ConnectCommand extends MqttCommand implements MqttAction {
 
     public void setUseSsl(final boolean useSsl) {
         this.useSsl = useSsl;
-    }
-
-    public String getPrefixIdentifier() {
-        return prefixIdentifier;
-    }
-
-    public void setPrefixIdentifier(final String prefixIdentifier) {
-        this.prefixIdentifier = prefixIdentifier;
     }
 
     public String getUser() {

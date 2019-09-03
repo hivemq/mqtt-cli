@@ -160,6 +160,8 @@ public class PublishCommand extends ConnectCommand implements MqttAction, Publis
             Logger.trace("Command: {} ", this);
         }
 
+        setDefaultOptions();
+
         handleConnectOptions();
         
         logUnusedPublishOptions();
@@ -200,7 +202,6 @@ public class PublishCommand extends ConnectCommand implements MqttAction, Publis
     @Override
     public String toString() {
         return "Publish:: {" +
-                "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", retain=" + retain +
