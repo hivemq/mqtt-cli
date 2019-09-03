@@ -3,7 +3,7 @@ description: A feature-rich MQTT Command line interface
 logo: assets/images/hivemq-cli-neg.svg
 version: 1.0.0
 
-remote_theme: ahelmbr/just-the-docs
+remote_theme: SgtSilvio/just-the-docs
 
 search_enabled: true
 
