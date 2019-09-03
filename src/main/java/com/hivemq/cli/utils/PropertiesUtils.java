@@ -16,15 +16,14 @@
  */
 package com.hivemq.cli.utils;
 
+import com.hivemq.cli.DefaultProperties;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
 
 import java.io.*;
 import java.util.Properties;
-import java.util.function.Consumer;
 
 public class PropertiesUtils {
 
@@ -34,34 +33,28 @@ public class PropertiesUtils {
         INFO, DEBUG, VERBOSE;
     }
 
-    public static final String PROPERTIES_FILE_PATH = getPropertiesPath();
+    public static final String PROPERTIES_FILE_PATH = DefaultProperties.PROPERTIES_FILE_PATH;
 
-    public static MqttVersion DEFAULT_MQTT_VERSION = MqttVersion.MQTT_5_0;
+    public static MqttVersion DEFAULT_MQTT_VERSION = DefaultProperties.MQTT_VERSION;
 
-    public static String DEFAULT_MQTT_VERSION_STRING = "5";
+    public static String DEFAULT_MQTT_VERSION_STRING = DefaultProperties.MQTT_VERSION_STRING;
 
-    public static String DEFAULT_HOST = "localhost";
+    public static String DEFAULT_HOST = DefaultProperties.HOST;
 
-    public static int DEFAULT_PORT = 1883;
+    public static int DEFAULT_PORT = DefaultProperties.PORT;
 
-    public static DEBUG_LEVEL DEFAULT_SHELL_DEBUG_LEVEL = DEBUG_LEVEL.VERBOSE;
+    public static DEBUG_LEVEL DEFAULT_SHELL_DEBUG_LEVEL = DefaultProperties.SHELL_DEBUG_LEVEL;
 
-    public static String DEFAULT_CLIENT_PREFIX = "hmqClient";
+    public static String DEFAULT_CLIENT_PREFIX = DefaultProperties.CLIENT_PREFIX;
 
-    public static String DEFAULT_LOGFILE_PATH = getLogfilePath();
+    public static String DEFAULT_LOGFILE_PATH = DefaultProperties.LOGFILE_PATH;
 
-    public static String DEFAULT_SUBSCRIBE_OUTPUT_FILE;
+    public static String DEFAULT_SUBSCRIBE_OUTPUT_FILE = DefaultProperties.SUBSCRIBE_OUTPUT_FILE;
 
     public static Properties DEFAULT_PROPERTIES = getDefaultProperties();
 
 
-    private static String getPropertiesPath() {
-        return System.getProperty("user.home") + File.separator + ".hivemq-cli" + File.separator + "config.properties";
-    }
 
-    private static String getLogfilePath() {
-        return System.getProperty("user.home") + File.separator + ".hivemq-cli" + File.separator + "logs" + File.separator;
-    }
 
     public static Properties getDefaultProperties() {
         final Properties properties = new Properties();
@@ -72,7 +65,9 @@ public class PropertiesUtils {
         properties.setProperty("debug.level.shell", DEFAULT_SHELL_DEBUG_LEVEL.name());
         properties.setProperty("debug.logfile.path", DEFAULT_LOGFILE_PATH);
         properties.setProperty("client.prefix", DEFAULT_CLIENT_PREFIX);
-        //properties.setProperty("client.subscriber.output" ...
+        if (DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
+            properties.setProperty("client.subscribe.output", DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+        }
 
         return properties;
     }
@@ -123,6 +118,18 @@ public class PropertiesUtils {
         DEFAULT_SUBSCRIBE_OUTPUT_FILE = properties.getProperty("client.subscribe.output");
 
         DEFAULT_PROPERTIES = properties;
+    }
+
+    public static void resetDefaultProperties() {
+        DEFAULT_MQTT_VERSION = DefaultProperties.MQTT_VERSION;
+        DEFAULT_HOST = DefaultProperties.HOST;
+        DEFAULT_PORT = DefaultProperties.PORT;
+        DEFAULT_SHELL_DEBUG_LEVEL = DefaultProperties.SHELL_DEBUG_LEVEL;
+        DEFAULT_LOGFILE_PATH = DefaultProperties.LOGFILE_PATH;
+        DEFAULT_CLIENT_PREFIX = DefaultProperties.CLIENT_PREFIX;
+        DEFAULT_SUBSCRIBE_OUTPUT_FILE = DefaultProperties.SUBSCRIBE_OUTPUT_FILE;
+
+        DEFAULT_PROPERTIES = getDefaultProperties();
     }
 
 }
