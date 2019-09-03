@@ -1,0 +1,33 @@
+title: HiveMQ CLI
+description: A feature-rich MQTT Command line interface
+logo: assets/images/hivemq-mqtt-cli-neg.svg
+version: 1.0.0
+
+remote_theme: ahelmbr/just-the-docs
+
+search_enabled: true
+
+color_scheme: dark
+
+aux_links:
+  "News":
+    - "https://hivemq.github.io/hivemq-cli/news"
+  "GitHub":
+    - "https://github.com/hivemq/hivemq-cli"
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-relative-links
+
+github: [metadata]
+
+sass:
+  style: compressed
+
+compress_html:
+  clippings: all
+  comments: all
+  endings: all
+  startings: []
+  blank_lines: false
+  profile: false
