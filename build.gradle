@@ -1,0 +1,155 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:4.2.0'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '4.0.4' apply false
+    id "com.github.hierynomus.license" version "0.15.0"
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+javadoc.options.encoding = 'UTF-8'
+
+group = 'com.hivemq'
+version = '1.0.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
+description = 'HiveMQ CLI is a tool that provides a feature rich command line interface for connecting, ' +
+        'publishing, subscribing, unsubscribing and disconnecting ' +
+        'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
+
+application {
+    mainClassName = 'com.hivemq.cli.HiveMQCLIMain'
+}
+
+
+
+apply plugin: 'idea'
+idea {
+    module {
+        generatedSourceDirs += file('build/generated/sources/annotationProcessor/java/main')
+    }
+}
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+
+
+ext {
+    moduleName = 'com.hivemq.cli'
+    readableName = 'hivemq-cli'
+    githubOrg = 'hivemq'
+    githubRepo = 'hivemq-cli'
+    githubUrl = 'https://github.com/' + githubOrg + '/' + githubRepo
+    scmConnection = 'scm:git:git://github.com/' + githubOrg + '/' + githubRepo + '.git'
+    scmDeveloperConnection = 'scm:git:ssh://git@github.com/' + githubOrg + '/' + githubRepo + '.git'
+    issuesUrl = githubUrl + '/issues'
+    docUrl = 'https://' + githubOrg + '.github.io/' + githubRepo + '/'
+    prevVersion = ''
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+ext {
+    picoclishell3Version = '4.0.3'
+    picocliVersion = '4.0.3'
+    jline3Version = '3.11.0' 
+    daggerVersion = '2.21'
+    guavaVersion ='27.0.1-jre'
+    hivemqclientVersion = '1.1.1'
+    tinylogVersion = '1.3.6'
+    jcToolsVersion = '2.1.2'
+    jetbrainsAnnotationsVersion = '17.0.0'
+    bouncycastleVersion='1.62'
+}
+
+dependencies {
+
+    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion 
+    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion 
+
+    implementation group: 'info.picocli', name: 'picocli', version: picocliVersion
+    implementation group: 'info.picocli', name: 'picocli-shell-jline3', version: picoclishell3Version
+    implementation group: 'org.jline', name: 'jline', version: jline3Version
+    
+    implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
+    implementation group: 'org.tinylog', name: 'tinylog', version: tinylogVersion
+    implementation group: 'org.jetbrains', name: 'annotations', version: jetbrainsAnnotationsVersion
+    
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: bouncycastleVersion
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: bouncycastleVersion
+    
+    implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: hivemqclientVersion
+    
+    def junitVintageVersion = '5.2.0'
+    def junitJupiterVersion = '5.5.1'
+    def junitJupiterParamVersion = '5.4.2'
+    
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
+    testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine', version: junitVintageVersion
+    
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterParamVersion
+}
+
+jar {
+
+    manifest () {
+        attributes 'Main-Class': application.mainClassName
+        attributes 'Manifest-Version': version
+        attributes 'Implementation-Title': 'HiveMQ MQTT Command Line Interface'
+        attributes 'Implementation-Vendor': 'HiveMQ GmbH'
+        attributes 'Implementation-Version': version
+    }
+    
+    from(configurations.runtime.resolve().collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/*.SF'
+        exclude 'META-INF/*.DSA'
+        exclude 'META-INF/*.RSA'
+    }
+}
+
+license {
+    include "**/*.java"
+    header = file('HEADER')
+}
+
+
+test {
+    useJUnitPlatform()
+    if (project.hasProperty("test_temp_dir")) {
+        jvmArgs "-Djava.io.tmpdir=" + test_temp_dir
+    } else {
+        def tempDir = System.properties['java.io.tmpdir']
+        if (tempDir) {
+            jvmArgs "-Djava.io.tmpdir=" + tempDir
+        }
+    }
+    
+}
+
+
+compileJava {
+    def jv = System.properties['java.version']
+    if ( jv.startsWith('6') || jv.startsWith('7')  ) {
+        throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
+    }
+}
