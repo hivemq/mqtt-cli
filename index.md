@@ -22,7 +22,7 @@ HiveMQ CLI is an Open Source project backed by [HiveMQ](https://www.hivemq.com/)
 # Features
 
 - **All MQTT 3.1.1 and MQTT 5.0 features** are supported
-- **interactive** and direct and verbose Mode for all MQTT Commands
+- **interactive**, direct and verbose Mode for all MQTT Commands
 - Shell behavior with Syntax Highlighting, Command history
 - ability to connect simultaneously various MQTT Clients to different Broker
 - Various distributions available
