@@ -38,52 +38,127 @@ import java.util.Arrays;
         description = "Publish a message to a list of topics",
         abbreviateSynopsis = false)
 
-public class PublishCommand extends ConnectCommand implements MqttAction, Publish {
+public class PublishCommand extends AbstractConnectFlags implements MqttAction, Publish {
 
+    private final MqttClientExecutor mqttClientExecutor;
 
     @Inject
     public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
 
-        super(mqttClientExecutor);
+        this.mqttClientExecutor = mqttClientExecutor;
 
     }
 
-    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
+    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to", order = 1)
+    @NotNull
     private String[] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default for all: 0)")
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default for all: 0)", order = 1)
+    @NotNull
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message to publish")
+    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message to publish", order = 1)
+    @NotNull
     private ByteBuffer message;
 
-    @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false", description = "The message will be retained (default: false)")
-    private boolean retain;
-
-    @CommandLine.Option(names = {"-pe", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default: no message expiry)")
+    @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, description = "The message will be retained (default: false)", order = 1)
     @Nullable
-    private Long messageExpiryInterval;
+    private Boolean retain;
 
-    @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the publish message")
+    @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default: no message expiry)", order = 1)
+    @Nullable
+    private Long publishExpiryInterval;
+
+    @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the publish message", order = 1)
     @Nullable
     private Mqtt5PayloadFormatIndicator payloadFormatIndicator;
 
-    @CommandLine.Option(names = {"-pc", "--contentType"}, description = "A description of publish message's content")
+    @CommandLine.Option(names = {"-ct", "--contentType"}, description = "A description of publish message's content", order = 1)
     @Nullable
     private String contentType;
 
-    @CommandLine.Option(names = {"-pr", "--responseTopic"}, description = "The topic name for the publish message`s response message")
+    @CommandLine.Option(names = {"-rt", "--responseTopic"}, description = "The topic name for the publish message`s response message", order = 1)
     @Nullable
     private String responseTopic;
 
-    @CommandLine.Option(names = {"-pd", "--correlationData"}, converter = ByteBufferConverter.class, description = "The correlation data of the publish message")
+    @CommandLine.Option(names = {"-cd", "--correlationData"}, converter = ByteBufferConverter.class, description = "The correlation data of the publish message", order = 1)
     @Nullable
     private ByteBuffer correlationData;
 
-    @CommandLine.Option(names = {"-pu", "--publishUserProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
+    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'", order = 1)
     @Nullable
     private Mqtt5UserProperties publishUserProperties;
 
+    @Override
+    public void run() {
+
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
+        }
+
+        setDefaultOptions();
+
+        handleCommonOptions();
+
+        logUnusedOptions();
+
+        try {
+            mqttClientExecutor.publish(this);
+        }
+        catch (final Exception ex) {
+            if (isDebug()) {
+                Logger.debug(ex);
+            }
+            Logger.error(ex.getMessage());
+        }
+
+    }
+
+    public void logUnusedOptions() {
+
+        super.logUnusedOptions();
+
+        if (getVersion() == MqttVersion.MQTT_3_1_1) {
+            if (publishExpiryInterval != null) {
+                Logger.warn("Publish message expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (payloadFormatIndicator != null) {
+                Logger.warn("Publish payload format indicator was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (contentType != null) {
+                Logger.warn("Publish content type was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (responseTopic != null) {
+                Logger.warn("Publish response topic was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (correlationData != null) {
+                Logger.warn("Publish correlation data was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+            if (publishUserProperties != null) {
+                Logger.warn("Publish user properties were set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+        }
+
+    }
+
+    @Override
+    public String toString() {
+        return "Publish:: {" +
+                "topics=" + Arrays.toString(topics) +
+                ", qos=" + Arrays.toString(qos) +
+                ", retain=" + retain +
+                ", messageExpiryInterval=" + publishExpiryInterval +
+                ", payloadFormatIndicator=" + payloadFormatIndicator +
+                ", contentType=" + contentType +
+                ", responseTopic=" + responseTopic +
+                ", correlationData=" + correlationData +
+                ", userProperties=" + publishUserProperties +
+                ", Connect:: {" + connectOptions() + "}" +
+                '}';
+    }
+
+
+    @NotNull
     public String[] getTopics() {
         return topics;
     }
@@ -92,6 +167,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction, Publis
         this.topics = topics;
     }
 
+    @NotNull
     public MqttQos[] getQos() {
         return qos;
     }
@@ -100,6 +176,7 @@ public class PublishCommand extends ConnectCommand implements MqttAction, Publis
         this.qos = qos;
     }
 
+    @NotNull
     public ByteBuffer getMessage() {
         return message;
     }
@@ -108,20 +185,21 @@ public class PublishCommand extends ConnectCommand implements MqttAction, Publis
         this.message = message;
     }
 
-    public boolean isRetain() {
+    @Nullable
+    public Boolean getRetain() {
         return retain;
     }
 
-    public void setRetain(final boolean retain) {
+    public void setRetain(final @Nullable Boolean retain) {
         this.retain = retain;
     }
 
-    public Long getMessageExpiryInterval() {
-        return messageExpiryInterval;
+    public Long getPublishExpiryInterval() {
+        return publishExpiryInterval;
     }
 
-    public void setMessageExpiryInterval(@Nullable final Long messageExpiryInterval) {
-        this.messageExpiryInterval = messageExpiryInterval;
+    public void setPublishExpiryInterval(@Nullable final Long publishExpiryInterval) {
+        this.publishExpiryInterval = publishExpiryInterval;
     }
 
     @Nullable
@@ -169,66 +247,5 @@ public class PublishCommand extends ConnectCommand implements MqttAction, Publis
         this.publishUserProperties = publishUserProperties;
     }
 
-    @Override
-    public void run() {
-
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
-
-        setDefaultOptions();
-
-        handleConnectOptions();
-        
-        logUnusedPublishOptions();
-        try {
-            mqttClientExecutor.publish(this);
-        } catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
-            }
-            Logger.error(ex.getMessage());
-        }
-
-    }
-
-    private void logUnusedPublishOptions() {
-        if (getVersion() == MqttVersion.MQTT_3_1_1) {
-            if (messageExpiryInterval != null) {
-                Logger.warn("Publish message expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            }
-            if (payloadFormatIndicator != null) {
-                Logger.warn("Publish payload format indicator was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            }
-            if (contentType != null) {
-                Logger.warn("Publish content type was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            }
-            if (responseTopic != null) {
-                Logger.warn("Publish response topic was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            }
-            if (correlationData != null) {
-                Logger.warn("Publish correlation data was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            }
-            if (publishUserProperties != null) {
-                Logger.warn("Publish user properties were set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-            }
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Publish:: {" +
-                ", topics=" + Arrays.toString(topics) +
-                ", qos=" + Arrays.toString(qos) +
-                ", retain=" + retain +
-                ", messageExpiryInterval=" + messageExpiryInterval +
-                ", payloadFormatIndicator=" + payloadFormatIndicator +
-                ", contentType=" + contentType +
-                ", responseTopic=" + responseTopic +
-                ", correlationData=" + correlationData +
-                ", userProperties=" + publishUserProperties +
-                ", Connect:: {" + connectOptions() + "}" +
-                '}';
-    }
 
 }

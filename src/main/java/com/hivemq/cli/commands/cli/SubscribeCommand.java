@@ -39,83 +39,37 @@ import java.util.Arrays;
         aliases = "subscribe",
         description = "Subscribe an mqtt client to a list of topics")
 
-public class SubscribeCommand extends ConnectCommand implements MqttAction, Subscribe {
+public class SubscribeCommand extends AbstractConnectFlags implements MqttAction, Subscribe {
+
+    private final MqttClientExecutor mqttClientExecutor;
 
     public static final int IDLE_TIME = 5000;
-    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
-    private String[] topics;
-
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default for all: 0)")
-    private MqttQos[] qos;
-
-    @CommandLine.Option(names = {"-sup", "--subscribeUserProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the subscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
-    @Nullable Mqtt5UserProperties subscribeUserProperties;
-
-    @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
-    @Nullable
-    private File receivedMessagesFile;
-
-    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
-    private boolean printToSTDOUT;
-
-    @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)")
-    private boolean base64;
-
 
     @Inject
     public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
 
-        super(mqttClientExecutor);
+        this.mqttClientExecutor = mqttClientExecutor;
 
     }
 
-    public String[] getTopics() {
-        return topics;
-    }
+    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to", order = 1)
+    private String[] topics;
 
-    public void setTopics(final String[] topics) {
-        this.topics = topics;
-    }
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default for all: 0)", order = 1)
+    private MqttQos[] qos;
 
-    public MqttQos[] getQos() {
-        return qos;
-    }
+    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the subscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')", order = 1)
+    @Nullable Mqtt5UserProperties subscribeUserProperties;
 
-    public void setQos(final MqttQos[] qos) {
-        this.qos = qos;
-    }
+    @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written", order = 1)
+    @Nullable
+    private File receivedMessagesFile;
 
-    public File getReceivedMessagesFile() {
-        return receivedMessagesFile;
-    }
+    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)", order = 1)
+    private boolean printToSTDOUT;
 
-    public void setReceivedMessagesFile(@Nullable final File receivedMessagesFile) {
-        this.receivedMessagesFile = receivedMessagesFile;
-    }
-
-    public boolean isPrintToSTDOUT() {
-        return printToSTDOUT;
-    }
-
-    public void setPrintToSTDOUT(final boolean printToSTDOUT) {
-        this.printToSTDOUT = printToSTDOUT;
-    }
-
-    public boolean isBase64() {
-        return base64;
-    }
-
-    public void setBase64(final boolean base64) {
-        this.base64 = base64;
-    }
-
-    public Mqtt5UserProperties getSubscribeUserProperties() {
-        return subscribeUserProperties;
-    }
-
-    public void setSubscribeUserProperties(final Mqtt5UserProperties subscribeUserProperties) {
-        this.subscribeUserProperties = subscribeUserProperties;
-    }
+    @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)", order = 1)
+    private boolean base64;
 
     @Override
     public void run() {
@@ -127,9 +81,9 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction, Subs
 
         setDefaultOptions();
 
-        handleConnectOptions();
+        handleCommonOptions();
 
-        logUnusedSubscribeOption();
+        logUnusedOptions();
 
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
@@ -156,9 +110,11 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction, Subs
 
     }
 
-    private void logUnusedSubscribeOption() {
+    @Override
+    public void logUnusedOptions() {
+        super.logUnusedOptions();
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
-            if (userProperties != null) {
+            if (subscribeUserProperties != null) {
                 Logger.warn("Subscribe user properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
             }
         }
@@ -178,6 +134,9 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction, Subs
         super.setDefaultOptions();
 
         if (receivedMessagesFile == null && PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
+            if (isVerbose()) {
+                Logger.trace("Setting value of 'toFile' to {}", PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+            }
             receivedMessagesFile = new File(PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
         }
 
@@ -193,9 +152,61 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction, Subs
                 ", toFile=" + receivedMessagesFile +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
-                ", Connect:: {" + connectOptions() + "}" +
+                ", Connect:: {" + commonOptions() + "}" +
                 '}';
     }
 
+
+    @NotNull
+    public String[] getTopics() {
+        return topics;
+    }
+
+    public void setTopics(final String[] topics) {
+        this.topics = topics;
+    }
+
+    @NotNull
+    public MqttQos[] getQos() {
+        return qos;
+    }
+
+    public void setQos(final MqttQos[] qos) {
+        this.qos = qos;
+    }
+
+    @Nullable
+    public File getReceivedMessagesFile() {
+        return receivedMessagesFile;
+    }
+
+    public void setReceivedMessagesFile(@Nullable final File receivedMessagesFile) {
+        this.receivedMessagesFile = receivedMessagesFile;
+    }
+
+    public boolean isPrintToSTDOUT() {
+        return printToSTDOUT;
+    }
+
+    public void setPrintToSTDOUT(final boolean printToSTDOUT) {
+        this.printToSTDOUT = printToSTDOUT;
+    }
+
+    public boolean isBase64() {
+        return base64;
+    }
+
+    public void setBase64(final boolean base64) {
+        this.base64 = base64;
+    }
+
+    @Nullable
+    public Mqtt5UserProperties getSubscribeUserProperties() {
+        return subscribeUserProperties;
+    }
+
+    public void setSubscribeUserProperties(@Nullable final Mqtt5UserProperties subscribeUserProperties) {
+        this.subscribeUserProperties = subscribeUserProperties;
+    }
 
 }
