@@ -16,9 +16,17 @@
  */
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.cli.ConnectCommand;
+import com.hivemq.cli.commands.AbstractCommonFlags;
+import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.converters.UnsignedIntConverter;
+import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.MqttVersion;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -28,22 +36,82 @@ import javax.inject.Inject;
         description = "Connects an mqtt client",
         abbreviateSynopsis = true)
 
-public class ShellConnectCommand extends ConnectCommand {
+public class ShellConnectCommand extends AbstractCommonFlags implements Runnable, Connect {
+
+    private final MqttClientExecutor mqttClientExecutor;
+
+    @Nullable
+    public MqttClient client;
 
     @Inject
     public ShellConnectCommand(@NotNull final MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
+
+        this.mqttClientExecutor = mqttClientExecutor;
+    }
+
+    @CommandLine.Option(names = {"-e", "--connectSessionExpiry"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client'")
+    @Nullable
+    private Long connectSessionExpiryInterval;
+
+    @CommandLine.Option(names = {"-up", "--connectUserProperties"}, converter = UserPropertiesConverter.class, description = "The user properties of the connect message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
+    @Nullable
+    private Mqtt5UserProperties connectUserProperties;
+
+
+    public void run() {
+        client = null;
+
+        setDefaultOptions();
+
+        handleCommonOptions();
+
+        logUnusedOptions();
+
+        connect();
+
+        ShellContextCommand.updateContext(client);
+    }
+
+    private void connect() {
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
+        }
+
+        try {
+            client = mqttClientExecutor.connect(this);
+        }
+        catch (final Exception ex) {
+            if (isDebug()) {
+                Logger.debug(ex);
+            }
+            Logger.error(ex.getMessage());
+        }
     }
 
     @Override
-    public void run() {
-        super.run();
-        ShellContextCommand.updateContext(client);
+    public void logUnusedOptions() {
+        super.logUnusedOptions();
+        if (getVersion() == MqttVersion.MQTT_3_1_1) {
+            if (connectSessionExpiryInterval != null) {
+                Logger.warn("Connect session expiry interval was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+
+            if (connectUserProperties != null) {
+                Logger.warn("Connect user properties were set but are unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+        }
+    }
+
+    String connectOptions() {
+        return commonOptions() +
+                ", sessionExpiryInterval= " + connectSessionExpiryInterval +
+                ", userProperties=" + connectUserProperties +
+                ", " + connectRestrictionOptions();
     }
 
     @Override
     public String toString() {
-        return "ShellConnectCommand:: " + super.toString();
+        return "ShellConnectCommand:: {" + connectOptions() + "}";
     }
 
     @Override
@@ -54,5 +122,23 @@ public class ShellConnectCommand extends ConnectCommand {
     @Override
     public boolean isVerbose() {
         return ShellCommand.isVerbose();
+    }
+
+    @Nullable
+    public Long getConnectSessionExpiryInterval() {
+        return connectSessionExpiryInterval;
+    }
+
+    public void setConnectSessionExpiryInterval(@Nullable final Long connectSessionExpiryInterval) {
+        this.connectSessionExpiryInterval = connectSessionExpiryInterval;
+    }
+
+    @Nullable
+    public Mqtt5UserProperties getConnectUserProperties() {
+        return connectUserProperties;
+    }
+
+    public void setConnectUserProperties(@Nullable final Mqtt5UserProperties connectUserProperties) {
+        this.connectUserProperties = connectUserProperties;
     }
 }
