@@ -17,10 +17,12 @@
 package com.hivemq.cli.commands;
 
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface Unsubscribe extends Context {
 
-    String[] getTopics();
+    @NotNull String[] getTopics();
 
-    Mqtt5UserProperties getUserProperties();
+    @Nullable Mqtt5UserProperties getUnsubscribeUserProperties();
 }

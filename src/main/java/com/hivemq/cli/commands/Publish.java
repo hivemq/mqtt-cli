@@ -19,55 +19,32 @@ package com.hivemq.cli.commands;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 
 public interface Publish extends Context {
 
-    String[] getTopics();
+    @NotNull String[] getTopics();
 
-    void setTopics(final String[] topics);
+    @NotNull MqttQos[] getQos();
 
-    MqttQos[] getQos();
+    @NotNull ByteBuffer getMessage();
 
-    void setQos(final MqttQos[] qos);
+    @Nullable Boolean getRetain();
 
-    ByteBuffer getMessage();
+    @Nullable Long getPublishExpiryInterval();
 
-    void setMessage(final ByteBuffer message);
+    @Nullable Mqtt5PayloadFormatIndicator getPayloadFormatIndicator();
 
-    boolean isRetain();
+    @Nullable String getContentType();
 
-    void setRetain(final boolean retain);
+    @Nullable String getResponseTopic();
 
-    Long getMessageExpiryInterval();
+    @Nullable ByteBuffer getCorrelationData();
 
-    void setMessageExpiryInterval(@Nullable final Long messageExpiryInterval);
+    @Nullable Mqtt5UserProperties getPublishUserProperties();
 
-    @Nullable
-    Mqtt5PayloadFormatIndicator getPayloadFormatIndicator();
-
-    void setPayloadFormatIndicator(@Nullable final Mqtt5PayloadFormatIndicator payloadFormatIndicator);
-
-    @Nullable
-    String getContentType();
-
-    void setContentType(@Nullable final String contentType);
-
-    @Nullable
-    String getResponseTopic();
-
-    void setResponseTopic(@Nullable final String responseTopic);
-
-    @Nullable
-    ByteBuffer getCorrelationData();
-
-    void setCorrelationData(@Nullable final ByteBuffer correlationData);
-
-    @Nullable
-    Mqtt5UserProperties getPublishUserProperties();
-
-    void setPublishUserProperties(@Nullable final Mqtt5UserProperties publishUserProperties);
 
 }
