@@ -1,6 +1,6 @@
 title: HiveMQ CLI
 description: A feature-rich MQTT Command line interface
-logo: assets/images/hivemq-cli-neg.svg
+logo: assets/images/02-hivemq-cli-neg.svg
 version: 1.0.0
 
 remote_theme: SgtSilvio/just-the-docs
