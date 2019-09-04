@@ -22,6 +22,7 @@ import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
+import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
@@ -124,6 +125,8 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction, Subs
             Logger.trace("Command: {} ", this);
         }
 
+        setDefaultOptions();
+
         handleConnectOptions();
 
         logUnusedSubscribeOption();
@@ -168,6 +171,16 @@ public class SubscribeCommand extends ConnectCommand implements MqttAction, Subs
         if (isVerbose()) {
             Logger.trace("Client disconnected.");
         }
+    }
+
+    @Override
+    public void setDefaultOptions() {
+        super.setDefaultOptions();
+
+        if (receivedMessagesFile == null && PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
+            receivedMessagesFile = new File(PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+        }
+
     }
 
     @Override

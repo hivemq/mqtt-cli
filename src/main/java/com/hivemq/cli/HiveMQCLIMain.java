@@ -19,21 +19,25 @@ package com.hivemq.cli;
 import com.hivemq.cli.ioc.DaggerHiveMQCLI;
 import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
+import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class HiveMQCLIMain {
+
 
     public final static CommandLine.Help.ColorScheme COLOR_SCHEME = new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)
             .commands(CommandLine.Help.Ansi.Style.bold, CommandLine.Help.Ansi.Style.fg_yellow)
@@ -43,6 +47,7 @@ public class HiveMQCLIMain {
             .build();
 
     public static final int CLI_WIDTH = 160;
+
 
 
     public static void main(final String[] args) {
@@ -57,6 +62,14 @@ public class HiveMQCLIMain {
             System.exit(0);
         }
 
+        try {
+            setupProperties();
+        }
+        catch (final Exception e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+
         Runtime.getRuntime().addShutdownHook(new DisconnectAllClientsTask());
 
         final int exitCode = commandLine.execute(args);
@@ -64,6 +77,21 @@ public class HiveMQCLIMain {
         System.exit(exitCode);
 
     }
+
+    private static void setupProperties() throws Exception {
+        Properties properties = null;
+
+        properties = PropertiesUtils.readDefaultProperties(PropertiesUtils.PROPERTIES_FILE_PATH);
+
+        if (properties == null) {
+            PropertiesUtils.createDefaultPropertiesFile(PropertiesUtils.DEFAULT_PROPERTIES, PropertiesUtils.PROPERTIES_FILE_PATH);
+        }
+        else {
+            PropertiesUtils.setDefaultProperties(properties);
+        }
+    }
+
+
 
     private static CommandLine setupCommandLine() {
         final CommandLine commandLine = DaggerHiveMQCLI.create().commandLine();
