@@ -20,6 +20,7 @@ import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -30,12 +31,15 @@ import javax.inject.Inject;
 public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
 
     @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
+    @Nullable
     private String contextName;
 
     @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
+    @Nullable
     private String identifier;
 
     @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")
+    @Nullable
     private String host;
 
 
@@ -48,14 +52,16 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     @Override
     public void run() {
 
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
+        if (contextName == null && identifier == null) {
+            ShellCommand.usage(this);
+            return;
         }
 
         if (contextName != null) {
             try {
                 extractKeyFromContextName(contextName);
-            } catch (IllegalArgumentException ex) {
+            }
+            catch (final IllegalArgumentException ex) {
                 if (isVerbose()) {
                     Logger.error(ex);
                 }
@@ -64,9 +70,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
             }
         }
 
-        if (identifier == null) {
-            ShellCommand.usage(this);
-            return;
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
         }
 
         final MqttClient client = mqttClientExecutor.getMqttClientFromCache(this);
@@ -110,6 +115,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
                 '}';
     }
 
+    @NotNull
     public String getHost() {
         return host;
     }
@@ -119,6 +125,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     }
 
     @Override
+    @NotNull
     public String getIdentifier() {
         return identifier;
     }
