@@ -97,7 +97,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
             if (willPayloadFormatIndicator != null) {
                 Logger.warn("Will Payload Format was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
-            if (willDelayInterval != 0) {
+            if (willDelayInterval != null) {
                 Logger.warn("Will Delay Interval was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
             if (willContentType != null) {

@@ -45,7 +45,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
     @NotNull
     private String[] topics;
 
-    @CommandLine.Option(names = {"-u", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the unsubscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
+    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the unsubscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
     @Nullable
     private Mqtt5UserProperties unsubscribeUserProperties;
 
