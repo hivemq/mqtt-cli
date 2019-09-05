@@ -571,7 +571,7 @@ In Shell-Mode the following Commands are available **with** an active context:
 
 
 
-NOTE: A client is uniquely identified in the CLI by the **version**, **hostname**, **port** and the unique **identifier**.
+NOTE: A client is uniquely identified in the CLI by the **hostname** and the unique **identifier**.
 
 === Connect (in shell)
 
@@ -647,13 +647,13 @@ hmq>
 
 Connect a client which is identified by myClient on specific settings and disconnect it afterwards:
 
-NOTE: Besides the **identifier** also **version**, **hostname** and **port** have to be given to uniquely identify the client.
+NOTE: Besides the **identifier** also the **hostname** has to be given to uniquely identify the client.
 If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
 
 ```
-hmq> con -i myClient -h broker.hivemq.com -V 3
+hmq> con -i myClient -h broker.hivemq.com
 myClient@localhost> exit  # client is still connected
-hmq> dis -i myClient -h broker.hivemq.com -V 3
+hmq> dis -i myClient -h broker.hivemq.com
 ```
 
 === Publish (with context)
