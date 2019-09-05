@@ -466,7 +466,7 @@ hivemq-cli sub { [[Connect-Option] [Connect-Option]]
 | ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.
 
 You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
-| ``-sup``  | ``--subscribeUserProperties`` | User properties of the subscribe message can be defined like
+| ``-up``  | ``--subscribeUserProperties`` | User properties of the subscribe message can be defined like
 
 ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs.
 |

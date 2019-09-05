@@ -58,32 +58,35 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     public void logUnusedOptions() {
         super.logUnusedOptions();
 
-        if (receiveMaximum != null) {
-            Logger.warn("Restriction receive maximum was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-        }
 
-        if (sendMaximum != null) {
-            Logger.warn("Restriction send maximum was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-        }
+        if (getVersion() == MqttVersion.MQTT_3_1_1) {
+            if (receiveMaximum != null) {
+                Logger.warn("Restriction receive maximum was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
 
-        if (maximumPacketSize != null) {
-            Logger.warn("Restriction maximum packet size was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-        }
+            if (sendMaximum != null) {
+                Logger.warn("Restriction send maximum was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
 
-        if (topicAliasMaximum != null) {
-            Logger.warn("Restriction topic alias maximum was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-        }
+            if (maximumPacketSize != null) {
+                Logger.warn("Restriction maximum packet size was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
 
-        if (sendTopicAliasMaximum != null) {
-            Logger.warn("Restriction send topic alias maximum was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-        }
+            if (topicAliasMaximum != null) {
+                Logger.warn("Restriction topic alias maximum was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
 
-        if (requestProblemInformation != null) {
-            Logger.warn("Restriction request problem information was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
-        }
+            if (sendTopicAliasMaximum != null) {
+                Logger.warn("Restriction send topic alias maximum was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
 
-        if (requestResponseInformation != null) {
-            Logger.warn("Restriction request response information was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            if (requestProblemInformation != null) {
+                Logger.warn("Restriction request problem information was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+
+            if (requestResponseInformation != null) {
+                Logger.warn("Restriction request response information was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
         }
     }
 
