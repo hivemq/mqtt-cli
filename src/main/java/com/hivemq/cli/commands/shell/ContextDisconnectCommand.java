@@ -98,6 +98,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     }
 
     @Nullable
+    @Override
     public Long getSessionExpiryInterval() {
         return sessionExpiryInterval;
     }
@@ -107,6 +108,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     }
 
     @Nullable
+    @Override
     public String getReasonString() {
         return reasonString;
     }
@@ -115,6 +117,8 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
         this.reasonString = reasonString;
     }
 
+    @Nullable
+    @Override
     public Mqtt5UserProperties getDisconnectUserProperties() {
         return disconnectUserProperties;
     }

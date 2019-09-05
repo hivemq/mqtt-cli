@@ -37,12 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@CommandLine.Command(name = "con",
-        aliases = "connect",
-        description = "Connects an mqtt client",
-        abbreviateSynopsis = true)
-
-public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlags {
+public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlags implements Connect {
 
     private static final String DEFAULT_TLS_VERSION = "TLSv1.2";
 
@@ -55,7 +50,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @Nullable
     private String user;
 
-    @CommandLine.Option(names = {"-P", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for authentication", order = 2)
+    @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for authentication", order = 2)
     @Nullable
     private ByteBuffer password;
 
@@ -63,6 +58,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     private @Nullable Integer keepAlive;
 
     @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true, description = "Define a clean start for the connection (default: true)", order = 2)
+    @Nullable
     private Boolean cleanStart;
 
     @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use default ssl configuration if no other ssl options are specified (default: false)", order = 2)
@@ -79,6 +75,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     }
 
     @CommandLine.Option(names = {"--ciphers"}, split = ":", description = "The client supported cipher suites list in IANA format separated with ':'", order = 2)
+    @Nullable
     private Collection<String> cipherSuites;
 
     @CommandLine.Option(names = {"--tls-version"}, description = "The TLS protocol version to use (default: {'TLSv.1.2'})", order = 2)
@@ -86,9 +83,10 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
 
 
     @CommandLine.ArgGroup(exclusive = false)
+    @Nullable
     private ClientSideAuthentication clientSideAuthentication;
 
-    static class ClientSideAuthentication {
+    private static class ClientSideAuthentication {
 
         @CommandLine.Option(names = {"--cert"}, required = true, converter = FileToCertificateConverter.class, description = "The client certificate to use for client side authentication", order = 2)
         @Nullable X509Certificate clientCertificate;
@@ -112,9 +110,6 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 return;
             }
         }
-        else {
-            sslConfig = null;
-        }
     }
 
 
@@ -127,8 +122,6 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     }
 
     private void buildSslConfig() throws Exception {
-        // use ssl Port if the user forgot to set it
-        if (getPort() == MqttClient.DEFAULT_SERVER_PORT) setPort(MqttClient.DEFAULT_SERVER_PORT_SSL);
 
         // build trustManagerFactory for server side authentication and to enable tls
         TrustManagerFactory trustManagerFactory = null;
@@ -231,7 +224,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         return user;
     }
 
-    public void setUser(final String user) {
+    public void setUser(final @Nullable String user) {
         this.user = user;
     }
 
@@ -240,7 +233,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         return password;
     }
 
-    public void setPassword(final ByteBuffer password) {
+    public void setPassword(final @Nullable ByteBuffer password) {
         this.password = password;
     }
 
@@ -267,7 +260,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         return sslConfig;
     }
 
-    public void setSslConfig(@Nullable MqttClientSslConfig sslConfig) {
+    public void setSslConfig(final @Nullable MqttClientSslConfig sslConfig) {
         this.sslConfig = sslConfig;
     }
 

@@ -37,7 +37,8 @@ import java.util.Arrays;
 
 @CommandLine.Command(name = "sub",
         aliases = "subscribe",
-        description = "Subscribe an mqtt client to a list of topics")
+        description = "Subscribe an mqtt client to a list of topics",
+        abbreviateSynopsis = true)
 
 public class SubscribeCommand extends AbstractConnectFlags implements MqttAction, Subscribe {
 
@@ -53,9 +54,11 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     }
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to", order = 1)
+    @NotNull
     private String[] topics;
 
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default for all: 0)", order = 1)
+    @NotNull
     private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the subscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')", order = 1)
@@ -158,6 +161,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
 
     @NotNull
+    @Override
     public String[] getTopics() {
         return topics;
     }
@@ -167,6 +171,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     }
 
     @NotNull
+    @Override
     public MqttQos[] getQos() {
         return qos;
     }
@@ -176,6 +181,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     }
 
     @Nullable
+    @Override
     public File getReceivedMessagesFile() {
         return receivedMessagesFile;
     }
@@ -201,6 +207,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     }
 
     @Nullable
+    @Override
     public Mqtt5UserProperties getSubscribeUserProperties() {
         return subscribeUserProperties;
     }

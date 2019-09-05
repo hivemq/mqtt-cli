@@ -128,6 +128,7 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
     }
 
     @NotNull
+    @Override
     public String getIdentifier() {
         return identifier;
     }

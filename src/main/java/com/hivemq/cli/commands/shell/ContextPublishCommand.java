@@ -144,6 +144,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @NotNull
+    @Override
     public String[] getTopics() {
         return topics;
     }
@@ -153,6 +154,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @NotNull
+    @Override
     public MqttQos[] getQos() {
         return qos;
     }
@@ -162,6 +164,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @NotNull
+    @Override
     public ByteBuffer getMessage() {
         return message;
     }
@@ -171,6 +174,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public Boolean getRetain() {
         return retain;
     }
@@ -180,6 +184,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public Long getPublishExpiryInterval() {
         return publishExpiryInterval;
     }
@@ -189,6 +194,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public Mqtt5PayloadFormatIndicator getPayloadFormatIndicator() {
         return payloadFormatIndicator;
     }
@@ -198,6 +204,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public String getContentType() {
         return contentType;
     }
@@ -207,6 +214,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public String getResponseTopic() {
         return responseTopic;
     }
@@ -216,6 +224,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public ByteBuffer getCorrelationData() {
         return correlationData;
     }
@@ -225,6 +234,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public Mqtt5UserProperties getPublishUserProperties() {
         return publishUserProperties;
     }

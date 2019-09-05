@@ -159,6 +159,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
 
     @NotNull
+    @Override
     public String[] getTopics() {
         return topics;
     }
@@ -168,6 +169,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     }
 
     @NotNull
+    @Override
     public MqttQos[] getQos() {
         return qos;
     }
@@ -177,6 +179,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     }
 
     @NotNull
+    @Override
     public ByteBuffer getMessage() {
         return message;
     }
@@ -186,6 +189,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     }
 
     @Nullable
+    @Override
     public Boolean getRetain() {
         return retain;
     }
@@ -194,6 +198,8 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         this.retain = retain;
     }
 
+    @Override
+    @Nullable
     public Long getPublishExpiryInterval() {
         return publishExpiryInterval;
     }
@@ -203,6 +209,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     }
 
     @Nullable
+    @Override
     public Mqtt5PayloadFormatIndicator getPayloadFormatIndicator() {
         return payloadFormatIndicator;
     }
@@ -212,6 +219,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     }
 
     @Nullable
+    @Override
     public String getContentType() {
         return contentType;
     }
@@ -221,6 +229,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     }
 
     @Nullable
+    @Override
     public String getResponseTopic() {
         return responseTopic;
     }
@@ -230,6 +239,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     }
 
     @Nullable
+    @Override
     public ByteBuffer getCorrelationData() {
         return correlationData;
     }
@@ -239,6 +249,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     }
 
     @Nullable
+    @Override
     public Mqtt5UserProperties getPublishUserProperties() {
         return publishUserProperties;
     }

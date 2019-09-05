@@ -139,7 +139,7 @@ hmq> con {  [-h <host>]
             [-pi <prefixIdentifier>]
             [-cdsv]
             [-u <user>]
-            [-P [<password>]]
+            [-pw [<password>]]
             [-e <connectSessionExpiryInterval>]
             [-k <keepAlive>]
             [-up <connectUserProperties>]
@@ -165,8 +165,8 @@ hmq> con {  [-h <host>]
             [--sendMaxPacketSize <sendMaximumPacketSize>]
             [--sendTopicAliasMax <sendTopicAliasMaximum>]
             [--topicAliasMax <topicAliasMaximum>]
-            [--[no-]reqProblemInformation]
-            [--[no-]reqResponseInformation]
+            [--[no-]reqProblemInfo]
+            [--[no-]reqResponseInfo]
 }
 ```
 
@@ -206,7 +206,7 @@ hmq> con {  [-h <host>]
 |===
 | ``-u``   | ``--user`` | A username for authentication can be defined. |
 
-| ``-P``  | ``--password`` | A password for authentication can be defined directly.
+| ``-pw``  | ``--password`` | A password for authentication can be defined directly.
 
 If left blank the user will be prompted for the password in console.
 |
@@ -279,9 +279,9 @@ Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
 
 |   |  ``--sendTopicAliasMax``  |  The maximum amount of topic aliases the client sends to the server.  | ``16``
 
-|   |  `` --[no-]reqProblemInformation`` |  The client requests problem information from the server.  | ``true``
+|   |  `` --[no-]reqProblemInfo`` |  The client requests problem information from the server.  | ``true``
 
-|   |  ``--[no-]reqResponseInformation``  | The client requests response information from the server. | ``false``
+|   |  ``--[no-]reqResponseInfo``  | The client requests response information from the server. | ``false``
 
 |===
 
@@ -296,9 +296,9 @@ hmq> con -h myHost -p 1884
 Connect a client to the default host on default port using authentication:
 
 ```
-hmq> con -u username -P password
+hmq> con -u username -pw password
 # Or omit the password to get it prompted
-hmq> con -u username -P
+hmq> con -u username -pw
 Enter value for --password (The password for the client UTF-8 String.):
 ```
 

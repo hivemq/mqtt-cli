@@ -33,7 +33,8 @@ import javax.inject.Inject;
 
 @CommandLine.Command(name = "con",
         aliases = "connect",
-        description = "Connects an mqtt client")
+        description = "Connects an mqtt client",
+        abbreviateSynopsis = true)
 
 public class ShellConnectCommand extends AbstractCommonFlags implements Runnable, Connect {
 

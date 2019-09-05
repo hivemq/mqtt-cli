@@ -21,6 +21,7 @@ import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
@@ -28,7 +29,7 @@ import picocli.CommandLine;
 import java.nio.ByteBuffer;
 
 @CommandLine.Command
-public abstract class AbstractWillFlags extends MqttCommand {
+public abstract class AbstractWillFlags extends MqttCommand implements Will {
 
     @CommandLine.Option(names = {"-Wt", "--willTopic"}, description = "The topic of the will message", order = 3)
     @Nullable
@@ -50,7 +51,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     @Nullable
     private Long willMessageExpiryInterval;
 
-    @CommandLine.Option(names = {"-Wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, description = "The Server delays publishing the client's will message until the will delay has passed (default: 0)", order = 3)
+    @CommandLine.Option(names = {"-Wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, description = "The Server delays publishing the client's will message until the will delay has passed (default: " + Mqtt5WillPublish.DEFAULT_DELAY_INTERVAL + ")", order = 3)
     @Nullable
     private Long willDelayInterval;
 
@@ -116,6 +117,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public String getWillTopic() {
         return willTopic;
     }
@@ -125,6 +127,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public ByteBuffer getWillMessage() {
         return willMessage;
     }
@@ -134,6 +137,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public MqttQos getWillQos() {
         return willQos;
     }
@@ -143,6 +147,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public Boolean getWillRetain() {
         return willRetain;
     }
@@ -152,6 +157,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public Long getWillMessageExpiryInterval() {
         return willMessageExpiryInterval;
     }
@@ -161,6 +167,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public Long getWillDelayInterval() {
         return willDelayInterval;
     }
@@ -170,6 +177,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public Mqtt5PayloadFormatIndicator getWillPayloadFormatIndicator() {
         return willPayloadFormatIndicator;
     }
@@ -179,6 +187,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public String getWillContentType() {
         return willContentType;
     }
@@ -188,6 +197,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public String getWillResponseTopic() {
         return willResponseTopic;
     }
@@ -197,6 +207,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public ByteBuffer getWillCorrelationData() {
         return willCorrelationData;
     }
@@ -206,6 +217,7 @@ public abstract class AbstractWillFlags extends MqttCommand {
     }
 
     @Nullable
+    @Override
     public Mqtt5UserProperties getWillUserProperties() {
         return willUserProperties;
     }

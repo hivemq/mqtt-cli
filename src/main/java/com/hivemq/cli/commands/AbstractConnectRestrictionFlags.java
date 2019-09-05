@@ -48,10 +48,12 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     @Nullable
     private Integer sendTopicAliasMaximum;
 
-    @CommandLine.Option(names = {"--reqProblemInformation"}, negatable = true, description = "The client requests problem information from the server. (default: " + Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION + ")", order = 3)
+    @CommandLine.Option(names = {"--reqProblemInfo"}, negatable = true, description = "The client requests problem information from the server. (default: " + Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION + ")", order = 3)
+    @Nullable
     private Boolean requestProblemInformation;
 
-    @CommandLine.Option(names = {"--reqResponseInformation"}, negatable = true, description = "The client requests response information from the server. (default: " + Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION + ")", order = 3)
+    @CommandLine.Option(names = {"--reqResponseInfo"}, negatable = true, description = "The client requests response information from the server. (default: " + Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION + ")", order = 3)
+    @Nullable
     private Boolean requestResponseInformation;
 
     @Override
@@ -70,6 +72,10 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
 
             if (maximumPacketSize != null) {
                 Logger.warn("Restriction maximum packet size was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+
+            if (sendMaximumPacketSize != null) {
+                Logger.warn("Restriction send maximum packet size was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
 
             if (topicAliasMaximum != null) {
@@ -94,6 +100,7 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
         return "receiveMaximum=" + receiveMaximum +
                 ", sendMaximum=" + sendMaximum +
                 ", maximumPacketSize=" + maximumPacketSize +
+                ", sendMaximumPacketSize=" + sendMaximumPacketSize +
                 ", topicAliasMaximum=" + topicAliasMaximum +
                 ", sendTopicAliasMaximum=" + sendTopicAliasMaximum +
                 ", requestProblemInformation=" + requestProblemInformation +
@@ -131,6 +138,7 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     }
 
     @Nullable
+    @Override
     public Integer getSendMaximumPacketSize() {
         return sendMaximumPacketSize;
     }
@@ -140,6 +148,7 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     }
 
     @Nullable
+    @Override
     public Integer getTopicAliasMaximum() {
         return topicAliasMaximum;
     }
@@ -149,6 +158,7 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     }
 
     @Nullable
+    @Override
     public Integer getSendTopicAliasMaximum() {
         return sendTopicAliasMaximum;
     }
@@ -158,6 +168,7 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     }
 
     @Nullable
+    @Override
     public Boolean getRequestProblemInformation() {
         return requestProblemInformation;
     }
@@ -167,6 +178,7 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     }
 
     @Nullable
+    @Override
     public Boolean getRequestResponseInformation() {
         return requestResponseInformation;
     }
