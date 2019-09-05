@@ -716,7 +716,9 @@ See <<Subscribe>>
 |===
 |Option |Long Version | Explanation | Default
 
-| ``-s``   | ``--stay``| The subscribe will block the console and wait for publish messages to print.  | ``false``
+| ``-s``   | ``--stay``| The subscribe will block the console and wait for publish messages to print.
+
+Press enter to exit the subscription context. Note that this will also unsubscribe the previously subscribed topics. | ``false``
 
 |===
 
