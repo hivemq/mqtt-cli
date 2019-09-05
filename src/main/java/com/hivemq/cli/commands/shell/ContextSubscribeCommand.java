@@ -17,6 +17,7 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -34,13 +35,17 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @CommandLine.Command(name = "sub",
         aliases = "subscribe",
         description = "Subscribe this mqtt client to a list of topics")
-public class ContextSubscribeCommand extends ShellContextCommand implements Runnable, Subscribe {
+public class ContextSubscribeCommand extends ShellContextCommand implements Runnable, Subscribe, Unsubscribe {
 
-    public static final int IDLE_TIME = 5000;
+    public static final int IDLE_TIME = 1000;
 
     @Inject
     public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -83,6 +88,11 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
         logUnusedOptions();
 
+        if (stay) {
+            printToSTDOUT = true;
+        }
+
+
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(contextClient, this);
@@ -94,8 +104,6 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         }
 
         if (stay) {
-            final boolean consoleOutputBefore = printToSTDOUT;
-            printToSTDOUT = true;
             try {
                 stay();
             } catch (final InterruptedException e) {
@@ -103,21 +111,55 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                     Logger.debug(e);
                 }
                 Logger.error(e.getMessage());
-            } finally {
-                printToSTDOUT = consoleOutputBefore;
             }
         }
-
-
     }
 
     private void stay() throws InterruptedException {
 
-        while (mqttClientExecutor.isConnected(this)) {
-            Thread.sleep(IDLE_TIME);
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        final Thread waitForDisconnectThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while (contextClient.getState().isConnected()) {
+                    try {
+                        Thread.sleep(IDLE_TIME);
+                    }
+                    catch (final InterruptedException e) {
+                        return;
+                    }
+                }
+                latch.countDown();
+            }
+        });
+
+        final Thread waitForExitCommandThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final Scanner scanner = new Scanner(System.in);
+                scanner.nextLine();
+                latch.countDown();
+                return;
+            }
+        });
+
+        final ExecutorService WORKER_THREADS = Executors.newFixedThreadPool(2);
+
+        WORKER_THREADS.submit(waitForDisconnectThread);
+        WORKER_THREADS.submit(waitForExitCommandThread);
+
+        latch.await();
+
+        WORKER_THREADS.shutdownNow();
+
+        if (!contextClient.getState().isConnectedOrReconnect()) {
+            Logger.info("Client disconnected.");
+            removeContext();
         }
-        if (isVerbose()) {
-            Logger.trace("Client disconnected.");
+        else {
+            mqttClientExecutor.unsubscribe(contextClient, this);
         }
 
     }
@@ -157,6 +199,11 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @NotNull
     public String[] getTopics() {
         return topics;
+    }
+
+    @Override
+    public @Nullable Mqtt5UserProperties getUnsubscribeUserProperties() {
+        return null;
     }
 
     public void setTopics(final String[] topics) {
