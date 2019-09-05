@@ -1,11 +1,10 @@
 ---
 layout: default
 title: Logging
-nav_order: 5
+nav_order: 6
 ---
 
 # Logging
-
 
 * Starting the hivemq-cli in shell mode a log file will be always created and all Information will be logged to the file.
 * Verbose mode allows you to get more information about each MQTT Message and the parameters.

@@ -32,6 +32,7 @@ See also ``hivemq-cli con --help``
 hmq> con {  [-h <hostname>]
             [-V <mqtt-version>]
             [-p <port-number>]
+            [-pi <prefix-identifier>]
             [-i <client-identifier>]
             [-d <debug>]
             [-v <verbose>]
@@ -68,6 +69,7 @@ hmq> con {  [-h <hostname>]
 | ``-h``  | ``--host``     | The MQTT host. | ``localhost`` |
 | ``-V``  | ``--version``  | The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``|
 | ``-p``  | ``--port``     | The MQTT port. | ``1883`` |
+| ``-pi`` | ``--prefixIdentifier``| The prefix identifier which will prepend the randomly generated client name if no identifier is given. | ``hmqClient``
 | ``-i``  | ``--identifier`` | A unique client identifier can be defined. | A randomly defined UTF-8 String will be generated.|
 | ``-d``  |   ``--debug``    | Print info level debug messages to the console. | ``False``|
 | ``-v``  |   ``--verbose``  | Print detailed debug level messages to the console. | ``False``
