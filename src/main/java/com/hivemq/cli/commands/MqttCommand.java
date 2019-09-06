@@ -16,8 +16,6 @@
  */
 package com.hivemq.cli.commands;
 
-import com.hivemq.cli.commands.AbstractCommand;
-import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -45,8 +43,8 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
     @Nullable
     private String identifier;
 
-    @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String", order = 2)
-    private String prefixIdentifier;
+    @CommandLine.Option(names = {"-ip", "--identifierPrefix"}, description = "The prefix of the client Identifier UTF-8 String", order = 2)
+    private String identifierPrefix;
 
     public void setDefaultOptions() {
         if (version == null) {
@@ -70,8 +68,8 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
             port = PropertiesUtils.DEFAULT_PORT;
         }
 
-        if (prefixIdentifier == null) {
-            prefixIdentifier = PropertiesUtils.DEFAULT_CLIENT_PREFIX;
+        if (identifierPrefix == null) {
+            identifierPrefix = PropertiesUtils.DEFAULT_CLIENT_PREFIX;
         }
 
         if (identifier == null) {
@@ -83,7 +81,7 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
     }
 
     public String createIdentifier() {
-        return prefixIdentifier + "-" + this.getVersion() + "-" + UUID.randomUUID().toString();
+        return identifierPrefix + "-" + this.getVersion() + "-" + UUID.randomUUID().toString();
     }
 
     @Override
@@ -138,11 +136,11 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
     }
 
     @Nullable
-    public String getPrefixIdentifier() {
-        return prefixIdentifier;
+    public String getIdentifierPrefix() {
+        return identifierPrefix;
     }
 
-    public void setPrefixIdentifier(final String prefixIdentifier) {
-        this.prefixIdentifier = prefixIdentifier;
+    public void setIdentifierPrefix(final String identifierPrefix) {
+        this.identifierPrefix = identifierPrefix;
     }
 }

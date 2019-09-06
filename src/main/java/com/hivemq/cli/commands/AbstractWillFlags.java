@@ -55,7 +55,7 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
     @Nullable
     private Long willDelayInterval;
 
-    @CommandLine.Option(names = {"-Wp", "--willPayloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the will message", order = 3)
+    @CommandLine.Option(names = {"-Wpf", "--willPayloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the will message", order = 3)
     @Nullable
     private Mqtt5PayloadFormatIndicator willPayloadFormatIndicator;
 

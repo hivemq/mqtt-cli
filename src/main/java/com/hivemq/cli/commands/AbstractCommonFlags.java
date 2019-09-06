@@ -79,6 +79,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     private Collection<String> cipherSuites;
 
     @CommandLine.Option(names = {"--tls-version"}, description = "The TLS protocol version to use (default: {'TLSv.1.2'})", order = 2)
+    @Nullable
     private Collection<String> supportedTLSVersions;
 
 

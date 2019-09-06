@@ -136,7 +136,7 @@ hmq> con {  [-h <host>]
             [-p <port>]
             [-V <version>]
             [-i <identifier>]
-            [-pi <prefixIdentifier>]
+            [-ip <identifierPrefix>]
             [-cdsv]
             [-u <user>]
             [-pw [<password>]]
@@ -153,7 +153,7 @@ hmq> con {  [-h <host>]
             [-Wd <willDelayInterval>]
             [-We <willMessageExpiryInterval>]
             [-Wm <willMessage>]
-            [-Wp <willPayloadFormatIndicator>]
+            [-Wpf <willPayloadFormatIndicator>]
             [-Wq <willQos>]
             [-Wr]
             [-Wrt <willResponseTopic>]
@@ -184,7 +184,7 @@ hmq> con {  [-h <host>]
 
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly defined UTF-8 String will be generated.
 
-| ``-pi``  | ``--prefixIdentifier``| The prefix identifier which will prepend the randomly generated client name if no identifier is given. | ``hmqClient``
+| ``-ip``  | ``--identifierPrefix``| The prefix identifier which will prepend the randomly generated client name if no identifier is given. | ``hmqClient``
 
 | ``-d``    |   ``--debug``     | Print info level debug messages to the console. | ``False``
 
@@ -249,7 +249,7 @@ Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
 
 | ``-Wm``  | ``--willPayload`` | Payload of the will message. |
 
-| ``-Wp``  | ``--willPayloadFormatIndicator`` |Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
+| ``-Wpf``  | ``--willPayloadFormatIndicator`` |Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 
 | ``-Wq``   | ``--willQualityOfService`` | QoS level of the will message. | ``0``
 
