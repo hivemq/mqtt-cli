@@ -2,7 +2,7 @@
 layout: default
 title: Unsubscribe
 parent: Shell
-nav_order: 3
+nav_order: 5
 ---
 
 # Unsubscribe
@@ -24,3 +24,16 @@ unsub   -t <topic> [-t <topic>]...
 | ------- | -------------- | ------------------------- | -------- |
 | ``-t``   | ``--topic``| A topic from which the client will unsubscribe from. |
 | ``-u``| ``--userProperties`` | User properties of the unsubscribe message can be defined like  ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
+
+
+#### Examples:
+
+Connect a client which is identified by myClient and subscribe it to two topics afterwards.
+Then unsubscribe from one of the two topics:
+
+```
+hivemq-cli> con -i myClient
+myClient@localhost> sub -t topic1 -t topic2
+myClient@localhost> unsub -t topic1
+hivemq-cli>
+```

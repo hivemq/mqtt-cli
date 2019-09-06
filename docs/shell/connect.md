@@ -3,7 +3,7 @@ layout: default
 title: Connect
 parent: Shell
 nav_order: 1
----
+--- 
 
 {:.main-header-color-yellow}
 # Connect
@@ -170,4 +170,23 @@ Connect a client with SSL using client side and server side authentication with 
 hivemq-cli> con --cafile pathToServerCertificate.pem --tls-version TLSv.1.3
          --cert pathToClientCertificate.pem --key pathToClientKey.pem
 Enter private key password:
+```
+
+Connect a client which is identified by myClient and disconnect it afterwards using default settings:
+
+```
+hivemq-cli> con -i myClient
+myClient@localhost> dis
+hivemq-cli>
+```
+
+Connect a client which is identified by myClient on specific settings and disconnect it afterwards:
+
+NOTE: Besides the **identifier** also **hostname** has to be given to uniquely identify the client.
+If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
+
+```
+hivemq-cli> con -i myClient -h broker.hivemq.com -V 3
+myClient@localhost> exit  # client is still connected
+hivemq-cli> dis -i myClient -h broker.hivemq.com -V 3
 ```
