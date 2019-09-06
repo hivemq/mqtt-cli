@@ -1,11 +1,13 @@
 ---
 layout: default
 title: Configuration
-nav_order: 3
+nav_order: 8
 has_children: false
 ---
 
-## Default Properties
+{:.main-header-color-yellow}
+# Default Properties
+***
 
 HiveMQ-CLI uses some default values which can be overwritten.
 HiveMQ-CLI stores the default values in a properties file which is located under the user home directory of your OS under `~/.hivemq-cli/config.properties`.

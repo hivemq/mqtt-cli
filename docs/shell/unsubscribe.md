@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Unsubscribe
-parent: MQTT Commands
-nav_order: 4
+parent: Shell
+nav_order: 3
 ---
 
 # Unsubscribe

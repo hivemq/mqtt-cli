@@ -5,15 +5,17 @@ nav_order: 1
 search_exclude: true
 ---
 
+{:.main-header-color-yellow}
 # Quick Start
-
+***
 ## Usage
 
-The simplest way to start the CLI is typing:
-``` $ hivemq-cli ```
-See also ``hivemq-cli --help``.
 
-This results in the output of how to use:
+The easiest way to start the CLI is by typing:
+``` $ hivemq-cli ```
+See also ``$ hivemq-cli --help``.
+
+With this you get an output on how to use HiveMQ CLI:
 ```
 Usage:  hivemq-cli [-hV] { pub | sub | shell }
 
@@ -30,19 +32,58 @@ Commands:
 
 ```
 
-### Synopsis
+#### Synopsis
 ```
 $ hivemq-cli [flags] [METHOD] [OPTION [OPTION]]
 ```
 
-#### Supported methods at start:
+#### Supported commands at start
 
 * [Publish](mqtt_commands/publish.md)
 * [Subscribe](mqtt_commands/subscribe.md)
-* [Shell](modes/shell.md) 
+* [Shell](05_shell.md) 
 
-
-
-
-`Note:` As latency-issues may slow down the CLI under **Mac OS X** please verify that you have the entry ``127.0.0.1 localhost your-pc-name`` specified under ``/etc/hosts``.
+> **NOTE**: As latency-issues may slow down the CLI under **Mac OS X** please verify that you have the entry ``127.0.0.1 localhost your-pc-name`` specified under ``/etc/hosts``.
 You can use ``sudo sh -c "echo 127.0.0.1 localhost $(hostname) >> /etc/hosts"`` to append this configuration to your hosts file.
+
+***
+
+## Basic Publish
+
+```
+$ hivemq-cli pub -t topic -m "Hello World"
+```
+This command:
+* connects an mqtt client to a broker located on default host (localhost) and default port (1883), 
+* publishes a message to a defined topic, 
+* disconnects the mqtt client from the broker
+
+> See [Publish](03_publish.md) for a detailed overview about the publish command
+
+***
+
+## Basic Subscribe
+#### (will block the console to output published mesages)
+
+```
+$ hivemq-cli sub -t topic
+>
+```
+This command:
+* connects an mqtt client to a broker located on default host (localhost) and default port (1883), 
+* stays connected to retrieve messages published to the given topic
+* exits and disconnects the client on **Ctrl + C** 
+
+> See [Subscribe](04_subscribe.md) for a detailed overview about the subscribe command
+
+***
+
+## Starting the interactive Shell
+
+```
+$ hivemq-cli shell
+hivemq-cli>
+```
+
+In shell mode you get a couple of commands - see [Shell](05_shell.md) 
+

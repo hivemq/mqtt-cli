@@ -1,31 +1,36 @@
 ---
 layout: default
 title: Shell
-parent: Modes
-nav_order: 1
+nav_order: 5
+has_children: true
 ---
 
+
+{:.main-header-color-yellow}
 # Shell Mode
+***
 
 Open HiveMQ-CLI in an interactive shell session.
-The shell uses https://github.com/jline/jline3[JLine] for handling console input.
-Therefore tab-completion, command-history, password-masking and other familiar shell features are available.
+The shell uses **[JLine](https://github.com/jline/jline3)** for handling console input.
+Therefore **tab-completion**, **command-history**, **password-masking** and other familiar shell features are available.
 
 The Shell-Mode is based around a client context driven use case.
 Therefore methods like Connect and Disconnect switch the current context of the shell and commands like Publish and Subscribe always relate to the currently active client context.
 
-**Example:**
+## Example
 
 ```
 hivemq-cli shell                # starts the shell
 
-hmq> con -i myClient            # connect client with identifier
+hivemq-cli> con -i myClient     # connect client with identifier
 myClient> pub -t test -m msg    # publish with new context client
 myClient> dis                   # disconnect and remove context
-hmq> ...
+hivemq-cli> ...
 ```
 
-### Summary
+***
+
+## Summary
 
 Start interactive shell with:
 ```
@@ -34,65 +39,73 @@ $ hivemq-cli shell
 
 In Shell-Mode the following Commands are available **without** an active context:
 
-* [Connect (in shell)]
-* [Disconnect]
-* [Switch]
-* [List]
-* [Clear]
+* [Connect](shell/connect)
+* [Disconnect](shell/disconnect)
+* [Switch](shell/switch)
+* [List](shell/list)
+* [Clear](shell/clear)
+* [Exit](shell/exit)
 
 In Shell-Mode the following Commands are available **with** an active context:
 
-* [Publish (with context)]
-* [Subscribe (with context)]
-* [Unsubscribe]
-* [Disconnect]
-* [Switch]
-* [Exit]
-* [List]
-* [Clear]
+* [Publish](shell/publish)
+* [Subscribe](shell/subscribe)
+* [Unsubscribe](shell/unsubscribe)
+* [Disconnect](shell/disconnect)
+* [Switch](shell/switch)
+* [List](shell/list)
+* [Clear](shell/clear)
+* [Exit](shell/exit)
 
 
 
-`NOTE:` A client is uniquely identified in the CLI by the **version**, **hostname**, **port** and the unique **identifier**.
+> **NOTE**: A client is uniquely identified in the CLI by the **hostname** and the unique **identifier**.
 
-### Example Connect (in shell)
 
-Please refer to [Connect](../mqtt_commands/connect.md) for usage information.
+
+
+***
+
+## Command Overview
+
+### Connect
+
+Please refer to [Connect](shell/connect) for usage information.
 
 Connect switches the current client context to the newly connected client.
 
 ```
-hmq> con -i clientID
+hivemq-cli> con -i clientID
 
 clientID@localhost>
 ```
 
-`NOTE:` The **--debug** and **--verbose** options are overridden by the default values of the shell.
+> **NOTE**: The **--debug** and **--verbose** options are overridden by the default values of the shell.
 
 #### Examples:
 
 Connect a client which is identified by myClient and disconnect it afterwards using default settings:
 
 ```
-hmq> con -i myClient
+hivemq-cli> con -i myClient
 myClient@localhost> dis
-hmq>
+hivemq-cli>
 ```
 
 Connect a client which is identified by myClient on specific settings and disconnect it afterwards:
 
-NOTE: Besides the **identifier** also **version**, **hostname** and **port** have to be given to uniquely identify the client.
+NOTE: Besides the **identifier** also **hostname** has to be given to uniquely identify the client.
 If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
 
 ```
-hmq> con -i myClient -h broker.hivemq.com -V 3
+hivemq-cli> con -i myClient -h broker.hivemq.com -V 3
 myClient@localhost> exit  # client is still connected
-hmq> dis -i myClient -h broker.hivemq.com -V 3
+hivemq-cli> dis -i myClient -h broker.hivemq.com -V 3
 ```
 
-### Publish (with context)
+### [Publish](shell/publish)
 
-The publish with a context works almost the same as [Publish] but it will not create a new connection and publish with a new client.
+The publish with a context works almost the same as [Publish](publish) but it will not create a new connection and publish with a new client.
 Instead it uses the currently active context client.
 
 #### Synopsis:
@@ -121,14 +134,14 @@ See [Publish]
 Publish with a client identified with "myClient" to the default settings:
 
 ```
-hmq> con -i myClient
+hivemq-cli> con -i myClient
 myClient@localhost> pub -t test -m msg
 ```
 
 ### Subscribe (with context)
 
 The subscribe with a context subscribes the currently active context client to the given topics.
-By default it doesn't block the console like the [Subscribe](../mqtt_commands/subscribe.md) without a context does.
+By default it doesn't block the console like the [Subscribe](mqtt_commands/subscribe.md) without a context does.
 To enable this behavior you can use the **-s** option.
 
 #### Synopsis
@@ -146,7 +159,7 @@ clientID> sub   -t <topics> [-t <topics>]...
 
 ####  Options
 
-See [Subscribe](../mqtt_commands/subscribe.md)
+See [Subscribe](mqtt_commands/subscribe.md)
 
 |Option    |Long Version | Explanation                  | Default  |
 |----------|-------------|------------------------------|----------|
@@ -159,7 +172,7 @@ Subscribe to test topic on default settings (output will be written to Logfile.
 See [Logging]):
 
 ```
-hmq> con -i myClient
+hivemq-cli> con -i myClient
 myClient@localhost> sub -t test
 ```
 
@@ -176,7 +189,7 @@ Hello
 
 Unsubscribes the currently active context client from a list of topics.
 
-See [Unsubscribe](../mqtt_commands/unsubscribe.md)
+See [Unsubscribe](shell/unsubscribe.md)
 
 #### Examples:
 
@@ -184,10 +197,10 @@ Connect a client which is identified by myClient and subscribe it to two topics 
 Then unsubscribe from one of the two topics:
 
 ```
-hmq> con -i myClient
+hivemq-cli> con -i myClient
 myClient@localhost> sub -t topic1 -t topic2
 myClient@localhost> unsub -t topic1
-hmq>
+hivemq-cli>
 ```
 
 ### Switch MQTT Client context 
@@ -221,9 +234,9 @@ Switches the currently active context client.
 Connect two clients and switch the active context to the first connected client:
 
 ```
-hmq> con -i client1
+hivemq-cli> con -i client1
 client1@localhost> exit
-hmq> con -i client2 -h broker.hivemq.com
+hivemq-cli> con -i client2 -h broker.hivemq.com
 client2@broker.hivemq.com> switch client1
 client1@localhost> switch client2@broker.hivemq.com
 client2@broker.hivemq.com>
@@ -242,9 +255,9 @@ clientID> exit
 #### Example
 
 ```
-hmq> con -i client
+hivemq-cli> con -i client
 client@localhost> exit
-hmq>
+hivemq-cli>
 ```
 
 ### List
@@ -272,9 +285,9 @@ Lists all the connected clients.
 Connect two clients and list them by default settings:
 
 ```
-hmq> con -i client1
-hmq> con -i client2
-hmq> ls
+hivemq-cli> con -i client1
+hivemq-cli> con -i client2
+hivemq-cli> ls
 Client-ID            Server-Address
 client1              localhost:1883
 client2              localhost:1883
@@ -283,8 +296,8 @@ client2              localhost:1883
 Connect a client and show detailed information about it:
 
 ```
-hmq> con -i client
-hmq> ls -a
+hivemq-cli> con -i client
+hivemq-cli> ls -a
 Created-At                     Client-ID            Host                 Port       Server-Address            MQTT version    SSL
 2019-08-21T10:47:35.745179     client               localhost            1883       localhost:1883            MQTT_5_0        false
 ```
@@ -305,5 +318,5 @@ Clears the terminal screen.
 #### Example
 
 ```
-hmq> clear
+hivemq-cli> clear
 ```

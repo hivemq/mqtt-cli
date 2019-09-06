@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Disconnect
-parent: MQTT Commands
-nav_order: 5
+parent: Shell
+nav_order: 2
 ---
 
 # Disconnect
@@ -48,9 +48,9 @@ dis     [-e <sessionExpiryInterval>]
 Connect a client which is identified by myClient and disconnect it afterwards using default settings:
 
 ```
-hmq> con -i myClient
+hivemq-cli> con -i myClient
 myClient@localhost> dis
-hmq>
+hivemq-cli>
 ```
 
 Connect a client which is identified by myClient on specific settings and disconnect it afterwards:
@@ -59,6 +59,6 @@ Connect a client which is identified by myClient on specific settings and discon
 If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
 
 ```
-hmq> con -i myClient -h broker.hivemq.com -V 3
+hivemq-cli> con -i myClient -h broker.hivemq.com -V 3
 myClient@localhost> exit  # client is still connected
-hmq> dis -i myClient -h broker.hivemq.com -V 3
+hivemq-cli> dis -i myClient -h broker.hivemq.com -V 3
