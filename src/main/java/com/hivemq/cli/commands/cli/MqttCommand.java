@@ -18,27 +18,70 @@ package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.converters.MqttVersionConverter;
+import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
+import java.util.UUID;
+
 @CommandLine.Command()
 public abstract class MqttCommand extends AbstractCommand implements CliCommand {
 
 
-    @CommandLine.Option(names = {"-V", "--version"}, defaultValue = "5", converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default: 5)")
+    @CommandLine.Option(names = {"-V", "--version"}, converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default: 5)")
     private MqttVersion version;
 
-    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")
+    @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')")
     private String host;
 
-    @CommandLine.Option(names = {"-p", "--port"}, defaultValue = "1883", description = "The port of the message broker (default: 1883)")
-    private int port;
+    @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)")
+    private Integer port;
 
     @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
     @Nullable
     private String identifier;
+
+    @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String")
+    private String prefixIdentifier;
+
+    public void setDefaultOptions() {
+        if (version == null) {
+            version = PropertiesUtils.DEFAULT_MQTT_VERSION;
+        }
+
+        if (host == null) {
+            host = PropertiesUtils.DEFAULT_HOST;
+        }
+
+        if (port == null) {
+            port = PropertiesUtils.DEFAULT_PORT;
+        }
+
+        if (prefixIdentifier == null) {
+            prefixIdentifier = PropertiesUtils.DEFAULT_CLIENT_PREFIX;
+        }
+
+        if (identifier == null) {
+            identifier = createIdentifier();
+        }
+    }
+
+    public String createIdentifier() {
+        if (getIdentifier() == null) {
+            this.setIdentifier(prefixIdentifier + "-" + this.getVersion() + "-" + UUID.randomUUID().toString());
+        }
+        return getIdentifier();
+    }
+
+    @Override
+    public String toString() {
+        return "host=" + host +
+                ", port=" + port +
+                ", version=" + version +
+                ", identifier=" + identifier;
+    }
 
     public @NotNull MqttVersion getVersion() {
         return version;
@@ -72,4 +115,11 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
         this.identifier = identifier;
     }
 
+    public String getPrefixIdentifier() {
+        return prefixIdentifier;
+    }
+
+    public void setPrefixIdentifier(final String prefixIdentifier) {
+        this.prefixIdentifier = prefixIdentifier;
+    }
 }
