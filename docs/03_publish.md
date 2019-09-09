@@ -167,7 +167,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 
 ## Further Examples
 
-Publish a message with default QoS set to Exactly Once:
+> Publish a message with default QoS set to ``Exactly Once``
 
 > **NOTE**: If you only specify one QoS but more than one topic the QoS will be used as default QoS for all topics.
 
@@ -175,7 +175,7 @@ Publish a message with default QoS set to Exactly Once:
 $ hivemq-cli pub -t topic1 -t topic2 -q 2
 ```
 
-Publish a message with a given QoS for each topic. (topic1 will have QoS 0, topic2 QoS 1, topic2 QoS 2):
+> Publish a message with a given QoS for each topic. (topic1 will have QoS 0, topic2 QoS 1, topic2 QoS 2)
 
 ```
 $ hivemq-cli pub -t topic1 -t topic2 -t topic3 -q 0 -q 1 -q 2

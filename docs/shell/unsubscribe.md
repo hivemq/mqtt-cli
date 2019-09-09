@@ -1,34 +1,40 @@
 ---
 layout: default
 title: Unsubscribe
-parent: Shell
+parent: Shell-Mode
 nav_order: 5
 ---
 
+{:.main-header-color-yellow}
 # Unsubscribe
+***
 
 Unsubscribes the currently active context client from a list of topics
 and is therefore only available in Shell mode.
 
-#### Synopsis
+## Synopsis
 
 ```
-unsub   -t <topic> [-t <topic>]...
-        [-u <userProperties>]
+clientID@Host>  unsub   {   -t <topic> [-t <topic>]...
+                            [-u <userProperties>]
+}
 ```
 
-#### Options:
+***
+
+## Options
 
 
 |Option |Long Version | Explanation | Default |
 | ------- | -------------- | ------------------------- | -------- |
 | ``-t``   | ``--topic``| A topic from which the client will unsubscribe from. |
-| ``-u``| ``--userProperties`` | User properties of the unsubscribe message can be defined like  ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
+| ``-u``| ``--userProperties`` | User properties of the unsubscribe message can be defined like  ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs. |
 
+***
 
-#### Examples:
+## Examples
 
-Connect a client which is identified by myClient and subscribe it to two topics afterwards.
+> Connect a client which is identified by myClient and subscribe it to two topics afterwards.
 Then unsubscribe from one of the two topics:
 
 ```

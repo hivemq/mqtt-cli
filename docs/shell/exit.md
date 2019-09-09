@@ -1,21 +1,24 @@
 ---
 layout: default
 title: Exit
-parent: Shell
+parent: Shell-Mode
 nav_order: 9
 --- 
 
-### Exit
+{:.main-header-color-yellow}
+# Exit
+***
 
 Exits the currently active client context.
 
-#### Synopsis
+## Synopsis
 
 ```
-clientID> exit
+clientID@host> exit
 ```
+***
 
-#### Example
+## Example
 
 ```
 hivemq-cli> con -i client

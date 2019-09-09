@@ -1,51 +1,53 @@
 ---
 layout: default
 title: List
-parent: Shell
+parent: Shell-Mode
 nav_order: 6
 --- 
 
-### List
+{:.main-header-color-yellow}
+# List
+***
 
 Lists all the connected clients.
 
-#### Synopsis
+## Synopsis
 
 ```
-{ hmq | clientID }> ls [-t <sort-by-time>]
-                        [-a <all>]
-
+hivemq-cli> ls  {   [-at]
+}
 ```
 
-#### Options
+***
+
+## Options
 
 |Option |Long Version | Explanation | Default
 |---------------|-------------|------------------------------|
-| ``-t``   | ``--time``| Sort the clients by their creation time. | ``False``
 | ``-a``    | ``--all`` | Show detailed information about the clients. | ``False``
+| ``-t``   | ``--time``| Sort the clients by their creation time. | ``False``
 
+***
 
-#### Examples
+## Examples
 
-Connect two clients and list them by default settings:
+> Connect two clients and list them by default settings
 
 ```
 hivemq-cli> con -i client1
+client1@localhost> exit
 hivemq-cli> con -i client2
-hivemq-cli> ls
+client2@localhost> ls
 Client-ID            Server-Address
 client1              localhost:1883
 client2              localhost:1883
 ```
 
-Connect a client and show detailed information about it:
+> Connect a client and show detailed information about it
 
 ```
 hivemq-cli> con -i client
-hivemq-cli> ls -a
+client@localhost> ls -a
 Created-At                     Client-ID            Host                 Port       Server-Address            MQTT version    SSL
 2019-08-21T10:47:35.745179     client               localhost            1883       localhost:1883            MQTT_5_0        false
 ```
-
-NOTE: The list options can be combined in a single command.
-So **-at** and **-ta** are valid options.

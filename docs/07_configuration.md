@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Configuration
-nav_order: 8
+nav_order: 7
 has_children: false
 ---
 
@@ -20,7 +20,7 @@ client.prefix=hmqClient
 mqtt.host=localhost
 mqtt.version=5
 debug.level.shell=VERBOSE
-debug.logfile.path=/Users/tseeberg/.hivemq-cli/logs/
+debug.logfile.path=~/.hivemq-cli/logs/
 ```
 
 A properties file lists all the properties as key-value pairs.

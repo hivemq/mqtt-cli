@@ -157,35 +157,35 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 
 ## Further Examples
 
-Subscribe to one topic with default QoS Exactly Once:
+> Subscribe to one topic with default QoS ``Exactly Once``
 
 > **NOTE:** If you only specify one QoS but more than one topic the QoS will be used as default QoS for all topics.
 
 ```
-$ hivemq-cli sub -t topic1 -t topic2 -q 2
+$ hivemq-cli sub -t topic1 -t topic2 -q 2  
 ```
 
-Subscribe to the given topics with a QoS specified for each: (topic1 will have QoS 0, topic2 QoS 1, topic2 QoS 2)
+> Subscribe to the given topics with a QoS specified for each (topic1 will have QoS 0, topic2 QoS 1, topic2 QoS 2)
 
 ```
 $ hivemq-cli sub -t topic1 -t topic2 -t topic3 -q 0 -q 1 -q 2
 ```
 
-Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in the current directory:
+> Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in the current directory
 
-`NOTE:` If the file is not created yet it will be created by the CLI. If it is present the received publish messages will be appended to the file.
+> **NOTE**: If the file is not created yet it will be created by the CLI. If it is present the received publish messages will be appended to the file.
 
 ```
 $ hivemq-cli sub -t topic -of publishes.log
 ```
 
-Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in a specified ``/usr/local/var`` directory:
+> Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in a specified ``/usr/local/var`` directory
 
 ```
 $ hivemq-cli sub -t topic -of /usr/local/var/publishes.log
 ```
 
-Subscribe to a topic and output all the received messages in base64 encoding:
+> Subscribe to a topic and output all the received messages in base64 encoding
 
 ```
 $ hivemq-cli sub -t topic -b64

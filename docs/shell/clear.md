@@ -1,21 +1,24 @@
 ---
 layout: default
 title: Clear
-parent: Shell
+parent: Shell-Mode
 nav_order: 8
 --- 
 
-### Clear
+{:.main-header-color-yellow}
+# Clear
+***
 
 Clears the terminal screen.
 
-#### Synopsis
+## Synopsis
 
 ```
-{ hmq | clientID }> clear
+hivemq-cli> clear   {
+}
 ```
 
-#### Example
+## Example
 
 ```
 hivemq-cli> clear

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Connect
-parent: Shell
+parent: Shell-Mode
 nav_order: 1
 --- 
 
@@ -10,8 +10,8 @@ nav_order: 1
 ***
 
 The Connect command creates a client and connects it to the specified broker.
-The client will stay connected until it is disconnected by the broker or the <<Disconnect>> method is called.
-To list all of the connected clients use the <<List>> method.
+The client will stay connected until it is disconnected by the broker or the [Disconnect](disconnect) method is called.
+To list all of the connected clients use the [List](list) method.
 
 ## Simple Examples
 
@@ -21,51 +21,48 @@ To list all of the connected clients use the <<List>> method.
 | ``hivemq-cli> con -v 3 -h myHost``        | Creates and connects an MQTT 3.1.1 client at myHost with the default port
 | ``hivemq-cli> con -i hmq-client -p 1884`` | Creates and connects an MQTT client at localhost with port 1884 which is identified by "hmq-client".
 
-See also 
-```
-hivemq-cli con --help
-``` 
-
 *** 
 ## Synopsis
 ```
-hivemq-cli> con {  [-h <host>]
-            [-p <port>]
-            [-V <version>]
-            [-i <identifier>]
-            [-ip <identifierPrefix>]
-            [-cdsv]
-            [-u <user>]
-            [-pw [<password>]]
-            [-e <connectSessionExpiryInterval>]
-            [-k <keepAlive>]
-            [-up <connectUserProperties>]
-            [--cert <clientCertificate> --key <clientPrivateKey>]
-            [--cafile FILE]
-            [--capath DIR]...
-            [--ciphers <cipherSuites>[:<cipherSuites>...]]...
-            [--tls-version <supportedTLSVersions>]...
-            [-Wcd <willCorrelationData>]
-            [-Wct <willContentType>]
-            [-Wd <willDelayInterval>]
-            [-We <willMessageExpiryInterval>]
-            [-Wm <willMessage>]
-            [-Wpf <willPayloadFormatIndicator>]
-            [-Wq <willQos>]
-            [-Wr]
-            [-Wrt <willResponseTopic>]
-            [-Wt <willTopic>]
-            [-Wup <willUserProperties>]
-            [--rcvMax <receiveMaximum>]
-            [--sendMax <sendMaximum>]
-            [--maxPacketSize <maximumPacketSize>]
-            [--sendMaxPacketSize <sendMaximumPacketSize>]
-            [--sendTopicAliasMax <sendTopicAliasMaximum>]
-            [--topicAliasMax <topicAliasMaximum>]
-            [--[no-]reqProblemInfo]
-            [--[no-]reqResponseInfo]
+hivemq-cli> con {   [-h <host>]
+                    [-p <port>]
+                    [-V <version>]
+                    [-i <identifier>]
+                    [-ip <identifierPrefix>]
+                    [-cdsv]
+                    [-u <user>]
+                    [-pw [<password>]]
+                    [-e <connectSessionExpiryInterval>]
+                    [-k <keepAlive>]
+                    [-up <connectUserProperties>]
+                    [--cert <clientCertificate> --key <clientPrivateKey>]
+                    [--cafile FILE]
+                    [--capath DIR]...
+                    [--ciphers <cipherSuites>[:<cipherSuites>...]]...
+                    [--tls-version <supportedTLSVersions>]...
+                    [-Wcd <willCorrelationData>]
+                    [-Wct <willContentType>]
+                    [-Wd <willDelayInterval>]
+                    [-We <willMessageExpiryInterval>]
+                    [-Wm <willMessage>]
+                    [-Wpf <willPayloadFormatIndicator>]
+                    [-Wq <willQos>]
+                    [-Wr]
+                    [-Wrt <willResponseTopic>]
+                    [-Wt <willTopic>]
+                    [-Wup <willUserProperties>]
+                    [--rcvMax <receiveMaximum>]
+                    [--sendMax <sendMaximum>]
+                    [--maxPacketSize <maximumPacketSize>]
+                    [--sendMaxPacketSize <sendMaximumPacketSize>]
+                    [--sendTopicAliasMax <sendTopicAliasMaximum>]
+                    [--topicAliasMax <topicAliasMaximum>]
+                    [--[no-]reqProblemInfo]
+                    [--[no-]reqResponseInfo]
 }
 ```
+
+***
 
 ## Options
 
@@ -83,6 +80,7 @@ hivemq-cli> con {  [-h <host>]
 | ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
 | ``-up``  | ``--userProperties`` | User properties of the connect message can be defined like <br>``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs.
 
+***
 
 ## Security Options
 
@@ -136,13 +134,13 @@ hivemq-cli> con {  [-h <host>]
 
 ## Further Examples
 
-Connect a client to myHost on port 1884:
+> Connect a client to myHost on port 1884
 
 ```
 hivemq-cli> con -h myHost -p 1884
 ```
 
-Connect a client to the default host on default port using authentication:
+> Connect a client to the default host on default port using authentication
 
 ```
 hivemq-cli> con -u username -P password
@@ -151,20 +149,20 @@ hivemq-cli> con -u username -P
 Enter value for --password (The password for the client UTF-8 String.):
 ```
 
-Connect a client with default settings and use it to publish:
+> Connect a client with default settings and use it to publish
 
 ```
 hivemq-cli> con -i myClient
 myClient@localhost> pub -t test -m "Hello World"
 ```
 
-Connect a client with a will message:
+> Connect a client with a will message
 
 ```
 hivemq-cli> con -wt willtopic -wq 2 -wm "Client disconnected ungracefully"
 ```
 
-Connect a client with SSL using client side and server side authentication with a password encrypted private key:
+> Connect a client with SSL using client side and server side authentication with a password encrypted private key
 
 ```
 hivemq-cli> con --cafile pathToServerCertificate.pem --tls-version TLSv.1.3
@@ -172,7 +170,7 @@ hivemq-cli> con --cafile pathToServerCertificate.pem --tls-version TLSv.1.3
 Enter private key password:
 ```
 
-Connect a client which is identified by myClient and disconnect it afterwards using default settings:
+> Connect a client which is identified by myClient and disconnect it afterwards using default settings
 
 ```
 hivemq-cli> con -i myClient
@@ -180,13 +178,14 @@ myClient@localhost> dis
 hivemq-cli>
 ```
 
-Connect a client which is identified by myClient on specific settings and disconnect it afterwards:
-
-NOTE: Besides the **identifier** also **hostname** has to be given to uniquely identify the client.
-If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
+> Connect a client which is identified by myClient on specific settings and disconnect it afterwards
 
 ```
 hivemq-cli> con -i myClient -h broker.hivemq.com -V 3
 myClient@localhost> exit  # client is still connected
 hivemq-cli> dis -i myClient -h broker.hivemq.com -V 3
 ```
+
+> **NOTE**: Besides the **identifier** also **hostname** has to be given to uniquely identify the client.
+If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
+

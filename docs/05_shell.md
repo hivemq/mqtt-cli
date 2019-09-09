@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Shell
+title: Shell-Mode
 nav_order: 5
 has_children: true
 ---
 
 
 {:.main-header-color-yellow}
-# Shell Mode
+# Shell-Mode
 ***
 
 Open HiveMQ-CLI in an interactive shell session.
@@ -37,7 +37,7 @@ Start interactive shell with:
 $ hivemq-cli shell
 ```
 
-In Shell-Mode the following Commands are available **without** an active context:
+### Commands **without** an active context
 
 * [Connect](shell/connect)
 * [Disconnect](shell/disconnect)
@@ -46,7 +46,7 @@ In Shell-Mode the following Commands are available **without** an active context
 * [Clear](shell/clear)
 * [Exit](shell/exit)
 
-In Shell-Mode the following Commands are available **with** an active context:
+### Commands **with** an active context
 
 * [Publish](shell/publish)
 * [Subscribe](shell/subscribe)

@@ -1,39 +1,55 @@
 ---
 layout: default
 title: Publish
-parent: Shell
+parent: Shell-Mode
 nav_order: 3
 ---
 
-# [Publish](shell/publish)
+{:.main-header-color-yellow}
+# Publish
+***
 
-The publish with a context works almost the same as [Publish](publish) but it will not create a new connection and publish with a new client.
+The publish with a context works almost the same as [Publish](/docs/03_publish) but it will not create a new connection and publish with a new client.
 Instead it uses the currently active context client.
 
-#### Synopsis:
+## Synopsis
 
 ```
-clientID> pub   -t <topic> [-t <topic>]...
-                -m <message>
-                [-q <qos>]...
-                [-r]
-                [-pc <contentType>]
-                [-pd <correlationData>]
-                [-pe <messageExpiryInterval>]
-                [-pf <payloadFormatIndicator>]
-                [-pr <responseTopic>]
-                [-pu <publishUserProperties>]
+clientID> pub   {   -t <topic> [-t <topic>]...
+                    -m <message>
+                    [-q <qos>]...
+                    [-r]
+                    [-e <messageExpiryInterval>]
+                    [-ct <contentType>]
+                    [-cd <correlationData>]
+                    [-pf <payloadFormatIndicator>]
+                    [-rt <responseTopic>]
+                    [-up <publishUserProperties>]
+}
 ```
 
-`NOTE:` The default options are the same as in [Publish]
+***
 
-#### Options
+## Options
 
-See [Publish]
+|Option   |Long Version    | Explanation                                         | Default|
+|---------|----------------|-----------------------------------------------------|---------|
+| ``-t``   | ``--topic``| The MQTT topic where the message will be published. |
+| ``-m``| ``--message`` | The message which will be published on the topic. |
+| ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
+| ``-r``| ``--[no-]retain`` | Message will be retained. | ``False``
+| ``-e`` | ``--publishExpiryInterval`` | The lifetime of the publish message in seconds. |
+| ``-ct`` | ``--contentType`` | A description of the content of the publish message. |
+| ``-cd`` | ``--correlationData`` | The correlation data of the publish message. |
+| ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
+| ``-rt`` | ``--responseTopic`` | The topic name for the response message of the publish message. |
+| ``-up`` | ``--userProperties``  | The user property of the publish message. Usage: `Key=Value`, `sKey1=Value1|Key2=Value2` |
 
-#### Example
+***
 
-Publish with a client identified with "myClient" to the default settings:
+## Example
+
+> Publish with a client identified with "myClient" to the default settings:
 
 ```
 hivemq-cli> con -i myClient
