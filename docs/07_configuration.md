@@ -29,11 +29,11 @@ Therefore you have to specify the values to the following keys if you want to ov
 
 |Key      | Explanation    | Default |
 | ------- | -------------- | ------------------------- | 
-| ``mqtt.host``   | The default host which the client will connect to.| ``localhost``
-| ``mqtt.port``   | The default port which the client will connect to.| ``1883``
-| ``mqtt.version``| The default mqtt version with which the client will be connected. | ``5``
-| ``client.prefix`` | The default client prefix which will be prepended to the randomly generated client name if no identifier is given | ``hmqClient``
-| ``client.subscribe.output``| The default filepath to which all the received publishes of a subscribed client will be written to See `sub -of` option |
+| ``mqtt.host``   | The default address of the broker which the client will connect to.| ``localhost``
+| ``mqtt.port``   | The default port of the broker which the client will connect to.| ``1883``
+| ``mqtt.version``| The default mqtt version witch client will use. | ``5``
+| ``client.prefix`` | The default client prefix which will be prepended to the randomly generated client names. | ``hmqClient``
+| ``client.subscribe.output``| The default filepath to which all the received publishes of a subscribed client will be written to. See `sub -of` option |
 | ``debug.level.shell``| The default debug level of the shell which may be one of the following values: ``{INFO \| DEBUG \| VERBOSE}`` | ``VERBOSE``
 | ``debug.logfile.path`` | The default path to the logfile directory to which all the logs will be written | `~/.hivemq-cli/logs`
 

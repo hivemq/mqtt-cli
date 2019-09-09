@@ -14,9 +14,9 @@ Publishes a message to one or more topics.
 
 |Command                                                |Explanation                                                              |
 |-------------------------------------------------------|-------------------------------------------------------------------------|
-| ``hivemq-cli pub -t test -m "Hello" `` | Publish the message "Hello" to the test topics with the default settings
-| ``hivemq-cli pub -t test1 -t test2 -m "Hello Tests"`` | Publish the message "Hello Tests" on both test topics with the default settings
-| ``hivemq-cli pub -t test -m "Hello" -h localhost -p 1884``| Publish the message "Hello" on localhost:1884|
+| ``hivemq-cli pub -t test -m "Hello" `` | Publish the message "Hello" with topic 'topic' using the default settings
+| ``hivemq-cli pub -t test1 -t test2 -m "Hello Tests"`` | Publish the message "Hello Tests" with topics 'test1' and 'test2'
+| ``hivemq-cli pub -t test -m "Hello" -h localhost -p 1884``| Publish the message "Hello" with topic 'topic' to a broker at localhost:1884|
 
 See also 
 ```
@@ -86,16 +86,16 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-t``   | ``--topic``| The MQTT topic where the message will be published. |
+| ``-t``   | ``--topic``| The MQTT topic with witch the message will be published. |
 | ``-m``| ``--message`` | The message which will be published on the topic. |
-| ``-r``| ``--[no-]retain`` | Message will be retained. | ``False``
-| ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
+| ``-r``| ``--[no-]retain`` | Whether the message will be retained. | ``False``
+| ``-q`` | ``--qos`` | Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 | ``-e`` | ``--publishExpiryInterval`` | The lifetime of the publish message in seconds. |
 | ``-ct`` | ``--contentType`` | A description of the content of the publish message. |
 | ``-cd`` | ``--correlationData`` | The correlation data of the publish message. |
 | ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
 | ``-rt`` | ``--responseTopic`` | The topic name for the response message of the publish message. |
-| ``-up`` | ``--userProperties``  | The user property of the publish message. Usage: Key=Value, Key1=Value1:Key2=Value2 |
+| ``-up`` | ``--userProperties``  | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs |
 | ``-d``    |   ``--debug``     | Print debug level messages to the console. | ``False``
 | ``-v``    |   ``--verbose``   | Print trace level messages to the console. | ``False``
 
@@ -107,11 +107,11 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-h``   | ``--host``| The MQTT host. | ``localhost``
 | ``-p``  | ``--port``| The MQTT port. | ``1883``
-| ``-V``   | ``--version``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
-| ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly defined UTF-8 String will be generated.
-| ``-ip``  | ``--identifierPrefix``| The prefix identifier which will prepend the randomly generated client name if no identifier is given. | ``hmqClient``
-| ``-c``   | ``--[no-]cleanStart`` | Enable clean start if set. | ``True``
-| ``-Ce``  | ``--connectSessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
+| ``-V``   | ``--version``| The MQTT version can be set to 3 or 5. | ``5``
+| ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
+| ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier is given. | ``hmqClient``
+| ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
+| ``-Ce``  | ``--connectSessionExpiry`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
 
 ***
@@ -120,13 +120,13 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-s``    | ``--secure``  | Use the default SSL configuration. | ``False``
-| ``-u``   | ``--user`` | A username for authentication can be defined. |
-| ``-pw``  | ``--password`` | A password for authentication can be defined directly. <br> If left blank the user will be prompted for the password in console. |
+| ``-s``    | ``--secure``  | Whether a custom SSL configuration is used. | ``False``
+| ``-u``   | ``--user`` | Define the username for authentication. |
+| ``-pw``  | ``--password`` | Define the password for authentication directly. <br> If left blank the user will be prompted for the password in console. |
 |   |   ``--cert``  |   The path to the client certificate to use for client-side authentication. |
-|   |   ``--key``   |   The path to the client certificate corresponding  private key to use for client-side authentication.    |
-|   | ``--cafile``    | Path to a file containing a trusted CA certificate to enable encrypted certificate based communication. |
-|   | ``--capath``  | Path to a directory containing trusted CA certificates to enable encrypted certificate based communication. |
+|   |   ``--key``   |   The path to the corresponding private key for the given client certificate.    |
+|   | ``--cafile``    | The path to the file containing a trusted CA certificate to enable encrypted certificate based communication. |
+|   | ``--capath``  | The path to the directory containing trusted CA certificates to enable encrypted certificate based communication. |
 |   | ``--ciphers``  | The supported cipher suites in IANA string format concatenated by the ':' character if more than one cipher should be supported. <br> e.g ``TLS_CIPHER_1:TLS_CIPHER_2`` <br> See https://www.iana.org/assignments/tls-parameters/tls-parameters.xml for supported cipher suite strings. |
 |   |   ``--tls-version``   |   The TLS version to use - ``TLSv1.1`` ``TLSv1.2`` ``TLSv1.3`` | ``TLSv1.2`` |
 
@@ -144,7 +144,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 | ``-Wt``  | ``--willTopic`` | Topic of the will message.  |
 | ``-Wcd``  | ``--willCorrelationData`` | Correlation data of the will message  |
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
-| ``-Wpf``  | ``--willPayloadFormatIndicator`` |Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
+| ``-Wpf``  | ``--willPayloadFormatIndicator`` | Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 | ``-Wrt``  | ``--willResponseTopic`` | Topic Name for a response message.   |
 | ``-Wup``   | ``--willUserProperties``  | User properties of the will message can be defined like <br> ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
 
@@ -169,14 +169,18 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 
 > Publish a message with default QoS set to ``Exactly Once``
 
-> **NOTE**: If you only specify one QoS but more than one topic the QoS will be used as default QoS for all topics.
+> **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
 
 ```
 $ hivemq-cli pub -t topic1 -t topic2 -q 2
 ```
 
-> Publish a message with a given QoS for each topic. (topic1 will have QoS 0, topic2 QoS 1, topic2 QoS 2)
+***
+
+> Publish a message with a specific QoS for each topic. ('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic2' QoS 2)
 
 ```
-$ hivemq-cli pub -t topic1 -t topic2 -t topic3 -q 0 -q 1 -q 2
+$ hivemq-cli pub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 ```
+
+***

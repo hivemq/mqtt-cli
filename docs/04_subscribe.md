@@ -9,16 +9,16 @@ has_children: true
 # Subscribe
 *** 
 Subscribes a client to one or more topics.
-If the Subscribe command is not called in Shell-Mode it will block the console by default and write the received publishes to the console.
+If the Subscribe command is not called in Shell-Mode, it will block the console and write the received publishes to the console.
 
 ## Simple Examples
 
  
 |Command                                         |Explanation                                                              |
 |------------------------------------------------|-------------------------------------------------------------------------|
-| ``hivemq-cli sub -t topic`` | Subscribe to a topic on default settings and block the console.
-| ``hivemq-cli sub -t test1 -t test2``| Subscribe to the topics test1 and test2 on default settings and block the console.
-| ``hivemq-cli sub -t test -h localhost -p 1884``| Subscribe to topic test at localhost:1884.
+| ``hivemq-cli sub -t topic`` | Subscribe to a topic with default settings and block the console.
+| ``hivemq-cli sub -t test1 -t test2``| Subscribe to the topics 'test1' and 'test2' with default settings and block the console.
+| ``hivemq-cli sub -t test -h localhost -p 1884``| Subscribe to topic 'test' at a broker with the address 'localhost:1884'.
 
 
 See also 
@@ -83,10 +83,10 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 |Option    |Long Version                    | Explanation                                        | Default
 |----------|--------------------------------|--------------------------------------------------------------------------------------|--------------|
 | ``-t``   | ``--topic``| The MQTT topic the client will subscribe to. |
-| ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified. You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
+| ``-q`` | ``--qos`` |  Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` 
-| ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
+| ``-b64``| ``--base64``| Whether the received publish messages will be base64 encoded. | ``False``
 | ``-up``  | ``--userProperties`` | User properties of the subscribe message can be defined like ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
 
 ***
@@ -98,10 +98,10 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 | ``-h``   | ``--host``| The MQTT host. | ``localhost``
 | ``-p``  | ``--port``| The MQTT port. | ``1883``
 | ``-V``   | ``--version``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
-| ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly defined UTF-8 String will be generated.
-| ``-ip``  | ``--identifierPrefix``| The prefix identifier which will prepend the randomly generated client name if no identifier is given. | ``hmqClient``
-| ``-c``   | ``--[no-]cleanStart`` | Enable clean start if set. | ``True``
-| ``-Ce``  | ``--connectSessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
+| ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
+| ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier given. | ``hmqClient``
+| ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
+| ``-Ce``  | ``--connectSessionExpiry`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
 
 ***
@@ -110,13 +110,13 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-s``    | ``--secure``  | Use the default SSL configuration. | ``False``
-| ``-u``   | ``--user`` | A username for authentication can be defined. |
-| ``-pw``  | ``--password`` | A password for authentication can be defined directly. <br> If left blank the user will be prompted for the password in console. |
+| ``-s``    | ``--secure``  | Whether a custom SSL configuration is used. | ``False``
+| ``-u``   | ``--user`` | Define the username for authentication. |
+| ``-pw``  | ``--password`` | Define the password for authentication directly. <br> If left blank the user will be prompted for the password in console. |
 |   |   ``--cert``  |   The path to the client certificate to use for client-side authentication. |
-|   |   ``--key``   |   The path to the client certificate corresponding  private key to use for client-side authentication.    |
-|   | ``--cafile``    | Path to a file containing a trusted CA certificate to enable encrypted certificate based communication. |
-|   | ``--capath``  | Path to a directory containing trusted CA certificates to enable encrypted certificate based communication. |
+|   |   ``--key``   |   The path to the corresponding private key for the given client certificate.    |
+|   | ``--cafile``    | The path to the file containing a trusted CA certificate to enable encrypted certificate based communication. |
+|   | ``--capath``  | The path to the directory containing trusted CA certificates to enable encrypted certificate based communication. |
 |   | ``--ciphers``  | The supported cipher suites in IANA string format concatenated by the ':' character if more than one cipher should be supported. <br> e.g ``TLS_CIPHER_1:TLS_CIPHER_2`` <br> See https://www.iana.org/assignments/tls-parameters/tls-parameters.xml for supported cipher suite strings. |
 |   |   ``--tls-version``   |   The TLS version to use - ``TLSv1.1`` ``TLSv1.2`` ``TLSv1.3`` | ``TLSv1.2`` |
 
@@ -157,19 +157,23 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 
 ## Further Examples
 
-> Subscribe to one topic with default QoS ``Exactly Once``
+> Subscribe to one topic with default QoS ``At Most Once``
 
-> **NOTE:** If you only specify one QoS but more than one topic the QoS will be used as default QoS for all topics.
+> **NOTE:** If you specify one QoS and multiple topics, the QoS will be used for all topics.
 
 ```
 $ hivemq-cli sub -t topic1 -t topic2 -q 2  
 ```
 
-> Subscribe to the given topics with a QoS specified for each (topic1 will have QoS 0, topic2 QoS 1, topic2 QoS 2)
+***
+
+> Subscribe to the given topics with a specific QoS for each topic. ('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic2' QoS 2)
 
 ```
-$ hivemq-cli sub -t topic1 -t topic2 -t topic3 -q 0 -q 1 -q 2
+$ hivemq-cli sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 ```
+
+***
 
 > Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in the current directory
 
@@ -179,14 +183,21 @@ $ hivemq-cli sub -t topic1 -t topic2 -t topic3 -q 0 -q 1 -q 2
 $ hivemq-cli sub -t topic -of publishes.log
 ```
 
+***
+
 > Subscribe to a topic and output the received publish messages to the file ``publishes.log`` in a specified ``/usr/local/var`` directory
 
+> **NOTE**: If the file is not created yet it will be created by the CLI. If it is present the received publish messages will be appended to the file.
 ```
 $ hivemq-cli sub -t topic -of /usr/local/var/publishes.log
 ```
+
+***
 
 > Subscribe to a topic and output all the received messages in base64 encoding
 
 ```
 $ hivemq-cli sub -t topic -b64
 ```
+
+***

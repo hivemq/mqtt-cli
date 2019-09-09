@@ -8,8 +8,8 @@ nav_order: 6
 # Logging
 ***
 
-* By starting HiveMQ-CLI in Shell-Mode a log file will be created and all Information will be logged in trace level to the file.
-* Verbose mode allows you to get more information about each MQTT Message and the parameters.
+* By starting HiveMQ-CLI in Shell-Mode a log file will be created and all trace level information will be logged to the file.
+* Verbose mode allows you to get more information about each MQTT message and the parameters.
 * By default the Shell-Mode logs all commands in verbose mode to a uniquely named logfile which is placed in ``~.hivemq-cli/logs`` which is printed out at the start of the shell.
 
 ```
