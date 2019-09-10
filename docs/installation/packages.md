@@ -9,9 +9,9 @@ nav_order: 1
 # Installation using a package manager
 ***
 
-At least Java 8 is required to run HiveMQ-CLI.
+> **NOTE**: At least Java 8 is required to run HiveMQ-CLI.
 
-### Homebrew
+## Homebrew
 For **Mac OS X** and **Linux** systems use **[Homebrew](https://brew.sh/)** to install HiveMQ-CLI via the **[HiveMQ-CLI Tap](https://github.com/hivemq/homebrew-hivemq-cli)**.
 ```
 $ brew tap hivemq/hivemq-cli

@@ -14,15 +14,16 @@ Publishes a message to one or more topics.
 
 |Command                                                |Explanation                                                              |
 |-------------------------------------------------------|-------------------------------------------------------------------------|
-| ``hivemq-cli pub -t test -m "Hello" `` | Publish the message "Hello" with topic 'topic' using the default settings
-| ``hivemq-cli pub -t test1 -t test2 -m "Hello Tests"`` | Publish the message "Hello Tests" with topics 'test1' and 'test2'
-| ``hivemq-cli pub -t test -m "Hello" -h localhost -p 1884``| Publish the message "Hello" with topic 'topic' to a broker at localhost:1884|
+| ``hivemq-cli pub -t test -m "Hello" `` | Publish the message ``Hello`` with topic 'topic' using the default settings
+| ``hivemq-cli pub -t test1 -t test2 -m "Hello Tests"`` | Publish the message ``Hello Tests`` with topics 'test1' and 'test2'
+| ``hivemq-cli pub -t test -m "Hello" -h localhost -p 1884``| Publish the message ``Hello`` with topic 'topic' to a broker at localhost:1884|
 
+<!---
 See also 
 ```
 hivemq-cli pub --help
 ```
-
+-->
 
 *** 
 
@@ -95,7 +96,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 | ``-cd`` | ``--correlationData`` | The correlation data of the publish message. |
 | ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
 | ``-rt`` | ``--responseTopic`` | The topic name for the response message of the publish message. |
-| ``-up`` | ``--userProperties``  | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs |
+| ``-up`` | ``--userProperties``  | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1Subscribekey2=value2`` for multiple pairs |
 | ``-d``    |   ``--debug``     | Print debug level messages to the console. | ``False``
 | ``-v``    |   ``--verbose``   | Print trace level messages to the console. | ``False``
 
@@ -112,7 +113,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier is given. | ``hmqClient``
 | ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
 | ``-Ce``  | ``--connectSessionExpiry`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
-| ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
+| ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1Subscribekey2=value2`` for multiple pairs. |
 
 ***
 
@@ -146,7 +147,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
 | ``-Wpf``  | ``--willPayloadFormatIndicator`` | Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 | ``-Wrt``  | ``--willResponseTopic`` | Topic Name for a response message.   |
-| ``-Wup``   | ``--willUserProperties``  | User properties of the will message can be defined like <br> ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
+| ``-Wup``   | ``--willUserProperties``  | User properties of the will message can be defined like <br> ``key=value`` for single pair or ``key1=value1Subscribekey2=value2`` for multiple pairs. |
 
 *** 
 
@@ -177,7 +178,7 @@ $ hivemq-cli pub -t topic1 -t topic2 -q 2
 
 ***
 
-> Publish a message with a specific QoS for each topic. ('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic2' QoS 2)
+> Publish a message with a specific QoS for each topic. ``('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic3' QoS 2)``
 
 ```
 $ hivemq-cli pub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2

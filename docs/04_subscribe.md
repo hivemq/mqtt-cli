@@ -20,11 +20,12 @@ If the Subscribe command is not called in Shell-Mode, it will block the console 
 | ``hivemq-cli sub -t test1 -t test2``| Subscribe to the topics 'test1' and 'test2' with default settings and block the console.
 | ``hivemq-cli sub -t test -h localhost -p 1884``| Subscribe to topic 'test' at a broker with the address 'localhost:1884'.
 
-
+<!---
 See also 
 ```
 hivemq-cli sub --help
 ```
+--> 
 
 ## Synopsis
 
@@ -87,7 +88,7 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` 
 | ``-b64``| ``--base64``| Whether the received publish messages will be base64 encoded. | ``False``
-| ``-up``  | ``--userProperties`` | User properties of the subscribe message can be defined like ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
+| ``-up``  | ``--userProperties`` | User properties of the subscribe message can be defined like ``key=value`` for single pair or ``key1=value1Subscribekey2=value2`` for multiple pairs. |
 
 ***
 
@@ -102,7 +103,7 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier given. | ``hmqClient``
 | ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
 | ``-Ce``  | ``--connectSessionExpiry`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
-| ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
+| ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1Subscribekey2=value2`` for multiple pairs. |
 
 ***
 
@@ -117,7 +118,7 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 |   |   ``--key``   |   The path to the corresponding private key for the given client certificate.    |
 |   | ``--cafile``    | The path to the file containing a trusted CA certificate to enable encrypted certificate based communication. |
 |   | ``--capath``  | The path to the directory containing trusted CA certificates to enable encrypted certificate based communication. |
-|   | ``--ciphers``  | The supported cipher suites in IANA string format concatenated by the ':' character if more than one cipher should be supported. <br> e.g ``TLS_CIPHER_1:TLS_CIPHER_2`` <br> See https://www.iana.org/assignments/tls-parameters/tls-parameters.xml for supported cipher suite strings. |
+|   | ``--ciphers``  | The supported cipher suites in IANA string format concatenated by the ':' character if more than one cipher should be supported. <br> e.g ``TLS_CIPHER_1:TLS_CIPHER_2`` <br> See [IANA Format](https://www.iana.org/assignments/tls-parameters/tls-parameters.xml) for supported cipher suite strings. |
 |   |   ``--tls-version``   |   The TLS version to use - ``TLSv1.1`` ``TLSv1.2`` ``TLSv1.3`` | ``TLSv1.2`` |
 
 *** 
@@ -136,7 +137,7 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
 | ``-Wpf``  | ``--willPayloadFormatIndicator`` |Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 | ``-Wrt``  | ``--willResponseTopic`` | Topic Name for a response message.   |
-| ``-Wup``   | ``--willUserProperties``  | User properties of the will message can be defined like <br> ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
+| ``-Wup``   | ``--willUserProperties``  | User properties of the will message can be defined like <br> ``key=value`` for single pair or ``key1=value1Subscribekey2=value2`` for multiple pairs. |
 
 *** 
 

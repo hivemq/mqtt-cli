@@ -49,7 +49,7 @@ clientID> pub   {   -t <topic> [-t <topic>]...
 
 ## Example
 
-> Publish with a client identified with "myClient" to the default settings:
+> Publish with a client identified with ``myClient`` to the default settings:
 
 ```
 hivemq-cli> con -i myClient
