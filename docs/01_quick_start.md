@@ -10,6 +10,7 @@ search_exclude: true
 ***
 ## Usage
 
+To install HiveMQ-CLI on your system please follow the [Installation instructions](02_installation).
 
 The easiest way to start the CLI is by typing:
 ``` $ hivemq-cli ```
@@ -32,12 +33,12 @@ Commands:
 
 ```
 
-#### Synopsis
+## Synopsis 
 ```
 $ hivemq-cli [flags] [METHOD] [OPTION [OPTION]]
 ```
 
-#### Supported commands at start
+## Supported commands at start
 
 * [Publish](mqtt_commands/publish.md)
 * [Subscribe](mqtt_commands/subscribe.md)
@@ -58,12 +59,13 @@ This command:
 * publishes a message to a defined topic, 
 * disconnects the mqtt client from the broker
 
-> See [Publish](03_publish.md) for a detailed overview about the publish command
+> See [Publish](03_publish.md) for a detailed overview of the publish command
 
 ***
 
 ## Basic Subscribe
-#### (will block the console to output published mesages)
+
+> **NOTE**: Subscribe will block the console to output published messages
 
 ```
 $ hivemq-cli sub -t topic
@@ -74,16 +76,16 @@ This command:
 * stays connected to retrieve messages published to the given topic
 * exits and disconnects the client on **Ctrl + C** 
 
-> See [Subscribe](04_subscribe.md) for a detailed overview about the subscribe command
+> See [Subscribe](04_subscribe.md) for a detailed overview of the subscribe command
 
 ***
 
-## Starting the interactive Shell
+### Starting the interactive Shell
 
 ```
 $ hivemq-cli shell
 hivemq-cli>
 ```
 
-In shell mode you get a couple of commands - see [Shell](05_shell.md) 
+The shell mode enables you to execute more complex MQTT behaviour - see [Shell](05_shell.md) 
 

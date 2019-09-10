@@ -48,7 +48,7 @@ clientID@host>  dis {   [-e <sessionExpiryInterval>]
 
 ***
 
-## Examples:
+## Examples
 
 > Connect a client which is identified by myClient and disconnect it afterwards using default settings
 
@@ -57,6 +57,8 @@ hivemq-cli> con -i myClient
 myClient@localhost> dis
 hivemq-cli>
 ```
+
+***
 
 > Connect a client which is identified by myClient on specific settings and disconnect it afterwards
 

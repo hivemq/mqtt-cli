@@ -7,6 +7,7 @@ nav_order: 4
 
 {:.main-header-color-yellow}
 # Subscribe
+***
 
 The subscribe with a context subscribes the currently active context client to the given topics.
 By default it doesn't block the console like the [Subscribe](/docs/04_subscribe) without a context does.
@@ -41,7 +42,7 @@ clientID@host> sub  {   -t <topics> [-t <topics>]...
 | ``-up``  | ``--subscribeUserProperties`` | User properties of the subscribe message can be defined like ``key=value`` for single pair or ``key1=value1\|key2=value2`` for multiple pairs. |
 
 
-## Example:
+## Examples
 
 > Subscribe to test topic on default settings (output will be written to Logfile.
 See [Logging](/docs/06_logging)):
@@ -50,6 +51,8 @@ See [Logging](/docs/06_logging)):
 hivemq-cli> con -i myClient
 myClient@localhost> sub -t test
 ```
+
+***
 
 > Subscribe to test topic on default settings, block console and write received publishes to console:
 
