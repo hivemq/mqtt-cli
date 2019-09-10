@@ -80,7 +80,7 @@ This command:
 
 ***
 
-### Starting the interactive Shell
+## Starting the interactive Shell
 
 ```
 $ hivemq-cli shell
