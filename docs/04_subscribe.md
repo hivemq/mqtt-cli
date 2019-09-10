@@ -88,7 +88,7 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` 
 | ``-b64``| ``--base64``| Whether the received publish messages will be base64 encoded. | ``False``
-| ``-up``  | ``--userProperties`` | User properties of the subscribe message can be defined like ``key=value`` for single pair or ``key1=value1Subscribekey2=value2`` for multiple pairs. |
+| ``-up``  | ``--userProperties`` | User properties of the subscribe message can be defined like ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs. |
 
 ***
 
@@ -103,7 +103,7 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier given. | ``hmqClient``
 | ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
 | ``-Ce``  | ``--connectSessionExpiry`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
-| ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1Subscribekey2=value2`` for multiple pairs. |
+| ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs. |
 
 ***
 
@@ -137,7 +137,7 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
 | ``-Wpf``  | ``--willPayloadFormatIndicator`` |Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 | ``-Wrt``  | ``--willResponseTopic`` | Topic Name for a response message.   |
-| ``-Wup``   | ``--willUserProperties``  | User properties of the will message can be defined like <br> ``key=value`` for single pair or ``key1=value1Subscribekey2=value2`` for multiple pairs. |
+| ``-Wup``   | ``--willUserProperties``  | User properties of the will message can be defined like <br> ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs. |
 
 *** 
 
