@@ -20,8 +20,14 @@ clientID@host> exit
 
 ## Example
 
+> Connect a client with identifier ``client`` and exit it's context afterwards
+
 ```
 hivemq-cli> con -i client
 client@localhost> exit
 hivemq-cli>
 ```
+
+> **NOTE**: The client is still connected in the shell
+ 
+

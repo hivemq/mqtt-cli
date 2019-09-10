@@ -86,7 +86,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-t``   | ``--topic``| The MQTT topic with witch the message will be published. |
+| ``-t``   | ``--topic``| The MQTT topic with which the message will be published. |
 | ``-m``| ``--message`` | The message which will be published on the topic. |
 | ``-r``| ``--[no-]retain`` | Whether the message will be retained. | ``False``
 | ``-q`` | ``--qos`` | Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
@@ -127,7 +127,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 |   |   ``--key``   |   The path to the corresponding private key for the given client certificate.    |
 |   | ``--cafile``    | The path to the file containing a trusted CA certificate to enable encrypted certificate based communication. |
 |   | ``--capath``  | The path to the directory containing trusted CA certificates to enable encrypted certificate based communication. |
-|   | ``--ciphers``  | The supported cipher suites in IANA string format concatenated by the ':' character if more than one cipher should be supported. <br> e.g ``TLS_CIPHER_1:TLS_CIPHER_2`` <br> See https://www.iana.org/assignments/tls-parameters/tls-parameters.xml for supported cipher suite strings. |
+|   | ``--ciphers``  | The supported cipher suites in IANA string format concatenated by the ':' character if more than one cipher should be supported. <br> e.g ``TLS_CIPHER_1:TLS_CIPHER_2`` <br> See [IANA Format](https://www.iana.org/assignments/tls-parameters/tls-parameters.xml) for supported cipher suite strings. |
 |   |   ``--tls-version``   |   The TLS version to use - ``TLSv1.1`` ``TLSv1.2`` ``TLSv1.3`` | ``TLSv1.2`` |
 
 *** 
@@ -182,5 +182,3 @@ $ hivemq-cli pub -t topic1 -t topic2 -q 2
 ```
 $ hivemq-cli pub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 ```
-
-***

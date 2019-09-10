@@ -18,8 +18,8 @@ To list all of the connected clients use the [List](list) method.
 |Command                             |Explanation |
 | -----------------------------------|:-----------|
 | ``hivemq-cli> con ``                      | Creates and connect a new MQTT client with the default settings
-| ``hivemq-cli> con -v 3 -h myHost``        | Creates and connects an MQTT 3.1.1 client at myHost with the default port
-| ``hivemq-cli> con -i hmq-client -p 1884`` | Creates and connects an MQTT client at localhost with port 1884 which is identified by "hmq-client".
+| ``hivemq-cli> con -V 3 -h myHost``        | Creates and connects an MQTT 3.1.1 client at myHost with the default port
+| ``hivemq-cli> con -i hmq-client -p 1884`` | Creates and connects an MQTT client at localhost with port 1884 which is identified by ``hmq-client``.
 
 *** 
 ## Synopsis
@@ -132,13 +132,15 @@ hivemq-cli> con {   [-h <host>]
 *** 
 
 
-## Further Examples
+## Examples
 
 > Connect a client to myHost on port 1884
 
 ```
 hivemq-cli> con -h myHost -p 1884
 ```
+
+***
 
 > Connect a client to the default host on default port using authentication
 
@@ -149,6 +151,8 @@ hivemq-cli> con -u username -P
 Enter value for --password (The password for the client UTF-8 String.):
 ```
 
+***
+
 > Connect a client with default settings and use it to publish
 
 ```
@@ -156,11 +160,15 @@ hivemq-cli> con -i myClient
 myClient@localhost> pub -t test -m "Hello World"
 ```
 
+***
+
 > Connect a client with a will message
 
 ```
 hivemq-cli> con -wt willtopic -wq 2 -wm "Client disconnected ungracefully"
 ```
+
+***
 
 > Connect a client with SSL using client side and server side authentication with a password encrypted private key
 
@@ -170,6 +178,8 @@ hivemq-cli> con --cafile pathToServerCertificate.pem --tls-version TLSv.1.3
 Enter private key password:
 ```
 
+***
+
 > Connect a client which is identified by myClient and disconnect it afterwards using default settings
 
 ```
@@ -177,6 +187,8 @@ hivemq-cli> con -i myClient
 myClient@localhost> dis
 hivemq-cli>
 ```
+
+***
 
 > Connect a client which is identified by myClient on specific settings and disconnect it afterwards
 

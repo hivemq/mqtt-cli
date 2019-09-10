@@ -43,6 +43,8 @@ client1              localhost:1883
 client2              localhost:1883
 ```
 
+***
+
 > Connect a client and show detailed information about it
 
 ```

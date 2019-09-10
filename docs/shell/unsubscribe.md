@@ -32,7 +32,7 @@ clientID@Host>  unsub   {   -t <topic> [-t <topic>]...
 
 ***
 
-## Examples
+## Example
 
 > Connect a client which is identified by myClient and subscribe it to two topics afterwards.
 Then unsubscribe from one of the two topics:

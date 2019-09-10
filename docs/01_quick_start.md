@@ -10,7 +10,7 @@ search_exclude: true
 ***
 ## Usage
 
-// TODO something like 'before you start make sure you installed the cli in accordance to #ref install'
+To install HiveMQ-CLI on your system please follow the [Installation instructions](02_installation).
 
 The easiest way to start the CLI is by typing:
 ``` $ hivemq-cli ```
@@ -33,7 +33,7 @@ Commands:
 
 ```
 
-#### Synopsis 
+## Synopsis 
 ```
 $ hivemq-cli [flags] [METHOD] [OPTION [OPTION]]
 ```
@@ -49,7 +49,7 @@ You can use ``sudo sh -c "echo 127.0.0.1 localhost $(hostname) >> /etc/hosts"`` 
 
 ***
 
-### Basic Publish
+## Basic Publish
 
 ```
 $ hivemq-cli pub -t topic -m "Hello World"
@@ -63,8 +63,9 @@ This command:
 
 ***
 
-### Basic Subscribe
-#### (will block the console to output published messages)
+## Basic Subscribe
+
+> **NOTE**: Subscribe will block the console to output published messages
 
 ```
 $ hivemq-cli sub -t topic

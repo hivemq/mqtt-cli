@@ -157,9 +157,9 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 
 ## Further Examples
 
-> Subscribe to one topic with default QoS ``At Most Once``
+> Subscribe to one topic with default QoS ``Exactly Once``
 
-> **NOTE:** If you specify one QoS and multiple topics, the QoS will be used for all topics.
+> **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
 
 ```
 $ hivemq-cli sub -t topic1 -t topic2 -q 2  
@@ -167,7 +167,7 @@ $ hivemq-cli sub -t topic1 -t topic2 -q 2
 
 ***
 
-> Subscribe to the given topics with a specific QoS for each topic. ('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic2' QoS 2)
+> Subscribe to the given topics with a specific QoS for each topic. ``('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic3' QoS 2)``
 
 ```
 $ hivemq-cli sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
@@ -199,5 +199,3 @@ $ hivemq-cli sub -t topic -of /usr/local/var/publishes.log
 ```
 $ hivemq-cli sub -t topic -b64
 ```
-
-***
