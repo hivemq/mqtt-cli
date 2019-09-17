@@ -29,12 +29,15 @@ import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
+import java.io.Console;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+
+import org.fusesource.jansi.AnsiConsole;
 
 public class HiveMQCLIMain {
 
@@ -51,7 +54,6 @@ public class HiveMQCLIMain {
 
 
     public static void main(final String[] args) {
-
 
         Security.setProperty("crypto.policy", "unlimited");
 
