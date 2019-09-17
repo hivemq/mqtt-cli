@@ -124,8 +124,8 @@ public class ShellCommand implements Runnable {
         contextCommandLine.setUsageHelpWidth(HiveMQCLIMain.CLI_WIDTH);
 
         try {
-            final Terminal terminal = TerminalBuilder
-                    .builder()
+            final Terminal terminal = TerminalBuilder.builder()
+                    .system(true)
                     .build();
 
             shellReader = (LineReaderImpl) LineReaderBuilder.builder()

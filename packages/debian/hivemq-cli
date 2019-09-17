@@ -1,0 +1,3 @@
+#!/bin/bash
+# Runs HiveMQ-ClI
+java -jar @@jarPath@@ "$@"

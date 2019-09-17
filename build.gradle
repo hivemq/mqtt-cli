@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         mavenCentral()
@@ -15,7 +14,14 @@ plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow' version '4.0.4' apply false
     id "com.github.hierynomus.license" version "0.15.0"
+    id 'org.gradle.crypto.checksum' version '1.1.0'
+    id "nebula.ospackage" version "7.1.0"
+    id 'edu.sc.seis.launch4j' version '2.4.6'
+    id 'com.palantir.graal' version '0.4.0'
+    id 'de.thetaphi.forbiddenapis' version '2.6' apply false
 }
+
+// Project settings
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -35,8 +41,9 @@ application {
 }
 
 
-
 apply plugin: 'idea'
+apply plugin: 'nebula.ospackage'
+
 idea {
     module {
         generatedSourceDirs += file('build/generated/sources/annotationProcessor/java/main')
@@ -45,11 +52,17 @@ idea {
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
 
 
 ext {
     moduleName = 'com.hivemq.cli'
     readableName = 'hivemq-cli'
+    appName = 'HiveMQ CLI'
     githubOrg = 'hivemq'
     githubRepo = 'hivemq-cli'
     githubUrl = 'https://github.com/' + githubOrg + '/' + githubRepo
@@ -58,18 +71,47 @@ ext {
     issuesUrl = githubUrl + '/issues'
     docUrl = 'https://' + githubOrg + '.github.io/' + githubRepo + '/'
     prevVersion = ''
-}
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    jcenter()
-}
+    appJarName = "${readableName}.jar"
+    appExe = "${readableName}.exe"
 
-ext {
+    // Directories
+    
+    iconsDir = "${projectDir}/icons"
+
+    resDir = "${projectDir}/res"
+    dmgDir = "${projectDir}/dmg"
+    pkgDir = "${projectDir}/packages"
+    brewDir = "${pkgDir}/homebrew"
+    debDir = "${pkgDir}/debian"
+    rpmDir = "${pkgDir}/rpm"
+    winDir = "${pkgDir}/windows"
+
+    buildLaunch4j = "$buildDir/launch4j"
+
+    buildPkgDir = "${buildDir}/packages"
+    buildBrewDir =  "${buildPkgDir}/homebrew"
+    buildDebDir = "${buildPkgDir}/debian"
+    buildRpmDir = "${buildPkgDir}/rpm"
+    buildWinDir = "${buildPkgDir}/windows"
+
+    // Icons
+    hmqIco = "${iconsDir}/hmq.ico"
+    hmqLogo = "${iconsDir}/hivemq-cli-logo.png"
+
+    // Vendor details
+
+    copyright = "Copyright 2019 HiveMQ and the HiveMQ Community"
+    vendor = "HiveMQ GmbH"
+    website = "https://www.hivemq.com/"
+    license = "${projectDir}/LICENSE"
+
+    // Dependency versions
+
     picoclishell3Version = '4.0.3'
     picocliVersion = '4.0.3'
-    jline3Version = '3.11.0' 
+    jline3Version = '3.11.0'
+    jline3JansiVersion = '3.12.1'
     daggerVersion = '2.21'
     guavaVersion ='27.0.1-jre'
     hivemqclientVersion = '1.1.1'
@@ -77,6 +119,7 @@ ext {
     jcToolsVersion = '2.1.2'
     jetbrainsAnnotationsVersion = '17.0.0'
     bouncycastleVersion='1.62'
+    jansiVersion = '1.8'
 }
 
 dependencies {
@@ -87,6 +130,7 @@ dependencies {
     implementation group: 'info.picocli', name: 'picocli', version: picocliVersion
     implementation group: 'info.picocli', name: 'picocli-shell-jline3', version: picoclishell3Version
     implementation group: 'org.jline', name: 'jline', version: jline3Version
+    implementation group: 'org.jline', name: 'jline-terminal-jansi', version: jline3JansiVersion
     
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
     implementation group: 'org.tinylog', name: 'tinylog', version: tinylogVersion
@@ -94,7 +138,7 @@ dependencies {
     
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: bouncycastleVersion
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: bouncycastleVersion
-    
+
     implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: hivemqclientVersion
     
     def junitVintageVersion = '5.2.0'
@@ -112,19 +156,30 @@ dependencies {
 jar {
 
     manifest () {
-        attributes 'Main-Class': application.mainClassName
-        attributes 'Manifest-Version': version
-        attributes 'Implementation-Title': 'HiveMQ MQTT Command Line Interface'
-        attributes 'Implementation-Vendor': 'HiveMQ GmbH'
-        attributes 'Implementation-Version': version
+        attributes(
+                'Built-JDK': System.getProperty('java.version'),
+                'Implementation-Title': project.appName,
+                'Implementation-Version': project.version,
+                'Implementation-Vendor': project.vendor,
+                'Specification-Title': project.appName,
+                'Specification-Version': project.version,
+                'Specification-Vendor': project.vendor,
+                'Main-Class': application.mainClassName,
+                // 'Class-Path': configurations.compile.collect { 'lib/' + it.getName() }.join(' '),
+                'Built-Date': new Date().format("yyyy-MM-dd HH:mm:ss"),
+                // 'SplashScreen-Image': '01-hivemq-cli.svg',
+                // 'Sealed': 'true'
+        )
     }
-    
+
     from(configurations.runtime.resolve().collect { it.isDirectory() ? it : zipTree(it) }) {
         exclude 'META-INF/MANIFEST.MF'
         exclude 'META-INF/*.SF'
         exclude 'META-INF/*.DSA'
         exclude 'META-INF/*.RSA'
     }
+
+    finalizedBy shadowJar
 }
 
 license {
@@ -153,3 +208,204 @@ compileJava {
         throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
     }
 }
+
+
+
+ext {
+    nettyVersion = '4.1.37.Final'
+}
+
+dependencies {
+    implementation 'com.hivemq:hivemq-mqtt-client:1.1.2'
+    implementation group: 'io.netty', name: 'netty-handler', version: nettyVersion
+    implementation group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
+    implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
+    compileOnly 'com.oracle.substratevm:svm:19.2.0'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+graal {
+    graalVersion '19.2.0'
+    outputName "${rootProject.name}"
+    mainClass application.mainClassName
+    option '-H:+PrintClassInitialization'
+    option '--allow-incomplete-classpath'
+    option '--report-unsupported-elements-at-runtime'
+    option '--initialize-at-build-time'
+    //option '--initialize-at-build-time=org.jctools'
+    option '--initialize-at-run-time=' +
+            'io.netty.channel.unix.Errors,' +
+            'io.netty.channel.unix.IovArray,' +
+            'io.netty.channel.unix.Limits,' +
+            'io.netty.channel.unix.Socket,' +
+            'io.netty.channel.epoll.EpollEventArray,' +
+            'io.netty.channel.epoll.EpollEventLoop,' +
+            'io.netty.channel.epoll.Native,' +
+            'io.netty.handler.ssl.ConscryptAlpnSslEngine,' +
+            'io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator,' +
+            'io.netty.handler.ssl.JettyNpnSslEngine,' +
+            'io.netty.handler.ssl.ReferenceCountedOpenSslEngine,' +
+            'io.netty.handler.ssl.ReferenceCountedOpenSslContext,' +
+            'io.netty.handler.codec.http.HttpObjectEncoder,' +
+            'io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder,' +
+            'com.hivemq.client.internal.mqtt.codec.encoder.MqttPingReqEncoder,' +
+            'com.hivemq.client.internal.mqtt.codec.encoder.mqtt3.Mqtt3DisconnectEncoder'
+//    option '--initialize-at-run-time=' +
+//            'io.netty.handler.ssl.util.ThreadLocalInsecureRandom,' +
+//            'com.sun.jndi.dns.DnsClient,' +
+//            'io.netty.handler.ssl.util.BouncyCastleSelfSignedCertGenerator,' +
+}
+
+// Homebrew
+
+task buildPackageBrew(type: Zip) {
+    dependsOn shadowJar
+
+    archiveFileName = project.readableName + '-' + project.version + '-distribution.zip'
+    destinationDirectory = file(project.buildBrewDir)
+
+    from shadowJar.archiveFile
+    from "$brewDir/hivemq-cli"
+
+    into('brew') {
+        from shadowJar.archiveFile
+        from "$brewDir/hivemq-cli"
+    }
+
+    from(projectDir) {
+        include 'LICENSE'
+        into 'licenses'
+    }
+}
+
+
+task buildBrewFormula(type: Copy) {
+    dependsOn buildPackageBrew
+
+    from "$brewDir/hivemq-cli.rb"
+    into "$buildBrewDir"
+
+    doLast {
+        ant.replace(file: "$buildBrewDir/hivemq-cli.rb", token: "@@description@@", value: project.description)
+        ant.replace(file: "$buildBrewDir/hivemq-cli.rb", token: "@@filename@@", value: buildPackageBrew.archiveFileName.get())
+        ant.replace(file: "$buildBrewDir/hivemq-cli.rb", token: "@@shasum@@", value: checkSum(buildPackageBrew.archiveFile.get().getAsFile()))
+    }
+
+}
+
+// DEB & RPM
+
+ospackage {
+    packageName project.readableName
+    version project.version
+
+    url project.website
+
+    summary 'MQTT Client Tool'
+    packageDescription project.description
+    license 'apache2'
+    packager ''
+    vendor project.vendor
+
+    os LINUX
+    type BINARY
+
+    user 'root'
+    permissionGroup 'root'
+
+    into "/opt/$packageName"
+    from(shadowJar.outputs.files)
+    from(configurations.runtime) {
+        into 'lib'
+    }
+    from('lib') {
+        into 'lib'
+    }
+    from(projectDir) {
+        include 'LICENSE'
+        into 'licenses'
+        fileType LICENSE
+    }
+    from(debDir) {
+        include 'hivemq-cli'
+        fileMode 0755
+        filter {
+            it.replaceAll("@@jarPath@@", "/opt/${packageName}/${shadowJar.archiveFileName.get()}")
+        }
+    }
+
+
+    link('/usr/bin/hivemq-cli', "/opt/$packageName/hivemq-cli", 0755)
+
+}
+
+buildDeb {
+    requires("default-jre").or("java8-runtime")
+}
+
+buildRpm {
+    arch NOARCH
+    requires('jre', '1.8.0', GREATER | EQUAL)
+}
+
+task buildDebianPackage(type: Copy) {
+    from buildDeb
+    into project.buildDebDir
+}
+
+task buildRpmPackage(type: Copy) {
+    from buildRpm
+    into project.buildRpmDir
+}
+
+// Windows
+launch4j {
+    outputDir = 'packages/windows'
+    headerType = "console"
+    mainClassName = application.mainClassName
+    icon = project.hmqIco
+    jar = "lib/${project.tasks.shadowJar.archiveFileName.get()}"
+    outfile = project.appExe
+    copyright = project.copyright
+    companyName = project.vendor
+    downloadUrl = "https://openjdk.java.net/install/"
+    jreMinVersion = "1.8"
+    windowTitle = project.appName
+    version = project.version
+    textVersion = project.version
+}
+
+task buildWindowsZip(type: Zip) {
+    dependsOn createExe
+
+    archiveFileName = "${project.readableName}-${project.version}-distribution.zip"
+    destinationDirectory = file(project.buildWinDir)
+
+    from ("${project.winDir}") {
+        include '*'
+        filter { line ->
+            line.replace('@@exeName@@', project.appExe)
+        }
+    }
+    from launch4j.dest
+    from project.license
+}
+
+// Package tasks
+
+task buildPackageAll {
+    dependsOn buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip
+}
+
+// Helpers
+import java.security.DigestInputStream
+import java.security.MessageDigest
+static def checkSum(File file) {
+        file.withInputStream {
+            new DigestInputStream(it, MessageDigest.getInstance('SHA-256')).withStream {
+                it.eachByte {}
+                it.messageDigest.digest().encodeHex() as String
+            }
+        }
+}
+
