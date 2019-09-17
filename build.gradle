@@ -21,6 +21,10 @@ plugins {
     id 'de.thetaphi.forbiddenapis' version '2.6' apply false
 }
 
+apply plugin: 'de.thetaphi.forbiddenapis'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
 // Project settings
 
 sourceCompatibility = '1.8'
@@ -40,10 +44,6 @@ application {
     mainClassName = 'com.hivemq.cli.HiveMQCLIMain'
 }
 
-
-apply plugin: 'idea'
-apply plugin: 'nebula.ospackage'
-
 idea {
     module {
         generatedSourceDirs += file('build/generated/sources/annotationProcessor/java/main')
@@ -53,7 +53,6 @@ apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
-    mavenLocal()
     mavenCentral()
     jcenter()
 }
@@ -120,6 +119,7 @@ ext {
     jetbrainsAnnotationsVersion = '17.0.0'
     bouncycastleVersion='1.62'
     jansiVersion = '1.8'
+    nettyVersion = '4.1.37.Final'
 }
 
 dependencies {
@@ -140,6 +140,12 @@ dependencies {
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: bouncycastleVersion
 
     implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: hivemqclientVersion
+
+    implementation group: 'io.netty', name: 'netty-handler', version: nettyVersion
+    implementation group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
+    implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
+    compileOnly 'com.oracle.substratevm:svm:19.2.0'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
     
     def junitVintageVersion = '5.2.0'
     def junitJupiterVersion = '5.5.1'
@@ -151,6 +157,74 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterParamVersion
+
+}
+
+/**************
+ * Compliance *
+ **************/
+
+downloadLicenses {
+    ext.apacheTwo = license('Apache License, Version 2.0', 'http://opensource.org/licenses/Apache-2.0')
+    ext.cddlOnePointZero = license('CDDL, Version 1.0', 'http://glassfish.java.net/public/CDDLv1.0.html')
+    ext.cddlOnePointOne = license('CDDL, Version 1.1', 'http://glassfish.java.net/public/CDDL+GPL_1_1.html')
+    ext.lgplTwoPointOne = license('LGPL, Version 2.1', 'http://www.gnu.org/licenses/lgpl-2.1.html')
+    ext.eplOnePointZero = license('EPL, Version 1.0', 'http://www.eclipse.org/legal/epl-v10.html')
+
+    aliases = [
+            (apacheTwo)       : ['Apache License 2', 'Apache Software License - Version 2.0', 'The Apache Software License, Version 2.0', 'Apache 2', 'Apache License Version 2.0', 'Apache License, Version 2.0', 'Apache License 2.0', 'Apache 2.0', 'The Apache License, Version 2.0', license('Apache License', 'http://www.apache.org/licenses/LICENSE-2.0')],
+            (cddlOnePointZero): ['Common Development and Distribution License (CDDL) v1.0', 'COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0'],
+            (cddlOnePointOne) : ['CDDL 1.1'],
+            (lgplTwoPointOne) : ['LGPL 2.1', 'GNU Lesser General Public License'],
+            (eplOnePointZero) : ['Eclipse Public License - Version 1.0', 'Eclipse Public License', 'Eclipse Public License - v 1.0']
+    ]
+}
+
+license {
+    include "**/*.java"
+    header = file('HEADER')
+}
+
+
+task updateThirdPartyLicenses {
+    group 'license'
+    dependsOn ':downloadLicenses'
+    doLast {
+        javaexec {
+            main = '-jar'
+            args = ["${rootDir}/gradle/tools/license-third-party-tool-1.0.jar",
+                    "${buildDir}/reports/license/dependency-license.xml",
+                    "${projectDir}/src/packaging/third-party-licenses/licenses",
+                    "${projectDir}/src/packaging/third-party-licenses/licenses.html"
+            ]
+        }
+    }
+}
+
+forbiddenApisMain {
+    exclude '**/LoggingBootstrap.class'
+}
+
+forbiddenApis {
+    bundledSignatures = ['jdk-system-out']
+    ignoreFailures = true
+}
+
+//disable
+forbiddenApisTest.enabled = false
+
+
+test {
+    useJUnitPlatform()
+    if (project.hasProperty("test_temp_dir")) {
+        jvmArgs "-Djava.io.tmpdir=" + test_temp_dir
+    } else {
+        def tempDir = System.properties['java.io.tmpdir']
+        if (tempDir) {
+            jvmArgs "-Djava.io.tmpdir=" + tempDir
+        }
+    }
+
 }
 
 jar {
@@ -205,23 +279,8 @@ test {
 compileJava {
     def jv = System.properties['java.version']
     if ( jv.startsWith('6') || jv.startsWith('7')  ) {
-        throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
-    }
+    throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
 }
-
-
-
-ext {
-    nettyVersion = '4.1.37.Final'
-}
-
-dependencies {
-    implementation 'com.hivemq:hivemq-mqtt-client:1.1.2'
-    implementation group: 'io.netty', name: 'netty-handler', version: nettyVersion
-    implementation group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
-    implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
-    compileOnly 'com.oracle.substratevm:svm:19.2.0'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 graal {
@@ -301,7 +360,7 @@ ospackage {
 
     url project.website
 
-    summary 'MQTT Client Tool'
+    summary 'HiveMQ MQTT client interface for interacting with a MQTT broker'
     packageDescription project.description
     license 'apache2'
     packager ''
