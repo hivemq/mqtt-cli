@@ -155,7 +155,9 @@ public class ShellCommand implements Runnable {
                     line = currentReader.readLine(prompt, null, (MaskingCallback) null, null);
                     final ParsedLine pl = currentReader.getParser().parse(line, prompt.length());
                     final String[] arguments = pl.words().toArray(new String[0]);
-                    currentCommandLine.execute(arguments);
+                    if (arguments.length != 0) {
+                        currentCommandLine.execute(arguments);
+                    }
                 } catch (final UserInterruptException e) {
                     if (VERBOSE) {
                         Logger.trace("User interrupted shell: {}", e);
