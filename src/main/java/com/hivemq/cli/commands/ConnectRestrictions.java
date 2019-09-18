@@ -16,15 +16,24 @@
  */
 package com.hivemq.cli.commands;
 
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import org.jetbrains.annotations.Nullable;
 
-public interface Disconnect extends Context {
+public interface ConnectRestrictions {
 
-    @Nullable Long getSessionExpiryInterval();
+    @Nullable Integer getReceiveMaximum();
 
-    @Nullable String getReasonString();
+    @Nullable Integer getSendMaximum();
 
-    @Nullable Mqtt5UserProperties getUserProperties();
+    @Nullable Integer getMaximumPacketSize();
+
+    @Nullable Integer getSendMaximumPacketSize();
+
+    @Nullable Integer getTopicAliasMaximum();
+
+    @Nullable Integer getSendTopicAliasMaximum();
+
+    @Nullable Boolean getRequestProblemInformation();
+
+    @Nullable Boolean getRequestResponseInformation();
 
 }

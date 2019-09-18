@@ -14,65 +14,74 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.commands.cli;
+package com.hivemq.cli.commands;
 
-import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.util.UUID;
 
 @CommandLine.Command()
-public abstract class MqttCommand extends AbstractCommand implements CliCommand {
+public abstract class MqttCommand extends AbstractCommand implements Context {
 
 
-    @CommandLine.Option(names = {"-V", "--version"}, converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default: 5)")
+    @CommandLine.Option(names = {"-V", "--version"}, converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default: 5)", order = 1)
     private MqttVersion version;
 
-    @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')")
+    @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')", order = 1)
     private String host;
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)")
+    @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)", order = 1)
     private Integer port;
 
-    @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
+    @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)", order = 1)
     @Nullable
     private String identifier;
 
-    @CommandLine.Option(names = {"-pi", "--prefixIdentifier"}, description = "The prefix of the client Identifier UTF-8 String")
-    private String prefixIdentifier;
+    @CommandLine.Option(names = {"-ip", "--identifierPrefix"}, description = "The prefix of the client Identifier UTF-8 String", order = 2)
+    private String identifierPrefix;
 
     public void setDefaultOptions() {
         if (version == null) {
+            if (isVerbose()) {
+                Logger.trace("Setting value of 'version' to default value: {}", PropertiesUtils.DEFAULT_MQTT_VERSION);
+            }
             version = PropertiesUtils.DEFAULT_MQTT_VERSION;
         }
 
         if (host == null) {
+            if (isVerbose()) {
+                Logger.trace("Setting value of 'host' to default value: {}", PropertiesUtils.DEFAULT_HOST);
+            }
             host = PropertiesUtils.DEFAULT_HOST;
         }
 
         if (port == null) {
+            if (isVerbose()) {
+                Logger.trace("Setting value of 'port' to default value: {}", PropertiesUtils.DEFAULT_PORT);
+            }
             port = PropertiesUtils.DEFAULT_PORT;
         }
 
-        if (prefixIdentifier == null) {
-            prefixIdentifier = PropertiesUtils.DEFAULT_CLIENT_PREFIX;
+        if (identifierPrefix == null) {
+            identifierPrefix = PropertiesUtils.DEFAULT_CLIENT_PREFIX;
         }
 
         if (identifier == null) {
             identifier = createIdentifier();
+            if (isVerbose()) {
+                Logger.trace("Created 'identifier': {}", identifier);
+            }
         }
     }
 
     public String createIdentifier() {
-        if (getIdentifier() == null) {
-            this.setIdentifier(prefixIdentifier + "-" + this.getVersion() + "-" + UUID.randomUUID().toString());
-        }
-        return getIdentifier();
+        return identifierPrefix + "-" + this.getVersion() + "-" + UUID.randomUUID().toString();
     }
 
     @Override
@@ -83,6 +92,14 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
                 ", identifier=" + identifier;
     }
 
+    @Override
+    public String getKey() {
+        return "client {" +
+                "identifier='" + getIdentifier() + '\'' +
+                ", host='" + getHost() + '\'' +
+                '}';
+    }
+
     public @NotNull MqttVersion getVersion() {
         return version;
     }
@@ -91,6 +108,7 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
         this.version = version;
     }
 
+    @NotNull
     public String getHost() {
         return host;
     }
@@ -107,6 +125,8 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
         this.port = port;
     }
 
+    @NotNull
+    @Override
     public String getIdentifier() {
         return identifier;
     }
@@ -115,11 +135,12 @@ public abstract class MqttCommand extends AbstractCommand implements CliCommand 
         this.identifier = identifier;
     }
 
-    public String getPrefixIdentifier() {
-        return prefixIdentifier;
+    @Nullable
+    public String getIdentifierPrefix() {
+        return identifierPrefix;
     }
 
-    public void setPrefixIdentifier(final String prefixIdentifier) {
-        this.prefixIdentifier = prefixIdentifier;
+    public void setIdentifierPrefix(final String identifierPrefix) {
+        this.identifierPrefix = identifierPrefix;
     }
 }

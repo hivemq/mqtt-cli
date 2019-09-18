@@ -17,9 +17,7 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.commands.Disconnect;
-import com.hivemq.cli.commands.cli.MqttCommand;
 import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.impl.MqttAction;
@@ -96,7 +94,6 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
         }
 
     }
-
 
     @Override
     public String getIdentifier() {

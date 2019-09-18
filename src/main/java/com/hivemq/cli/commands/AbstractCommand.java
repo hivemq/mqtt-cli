@@ -15,7 +15,7 @@
  *
  */
 
-package com.hivemq.cli.commands.cli;
+package com.hivemq.cli.commands;
 
 import com.hivemq.cli.commands.CliCommand;
 import org.pmw.tinylog.Configurator;
@@ -34,7 +34,7 @@ public abstract class AbstractCommand implements CliCommand {
     private boolean debug;
     private boolean verbose;
 
-    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode")
+    @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode", order = 0)
     private void activateDebugMode(final boolean debug) {
 
         if (debug && !verbose) {
@@ -43,7 +43,7 @@ public abstract class AbstractCommand implements CliCommand {
         }
     }
 
-    @CommandLine.Option(names = {"-v", "--verbose"}, defaultValue = "false", description = "Enable verbose mode")
+    @CommandLine.Option(names = {"-v", "--verbose"}, defaultValue = "false", description = "Enable verbose mode", order = 0)
     private void activateVerboseMode(final boolean verbose) {
 
         if (verbose) {

@@ -16,11 +16,7 @@
  */
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.Disconnect;
-import com.hivemq.cli.commands.Subscribe;
-import com.hivemq.cli.commands.Unsubscribe;
-import com.hivemq.cli.commands.cli.ConnectCommand;
-import com.hivemq.cli.commands.Publish;
+import com.hivemq.cli.commands.*;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
@@ -60,12 +56,12 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
 
 
     @Override
-    void mqtt5Connect(@NotNull Mqtt5BlockingClient client, @NotNull Mqtt5Connect connectMessage, @NotNull ConnectCommand connectCommand) {
+    void mqtt5Connect(@NotNull Mqtt5BlockingClient client, @NotNull Mqtt5Connect connectMessage, @NotNull Connect connect) {
 
     }
 
     @Override
-    void mqtt3Connect(@NotNull Mqtt3BlockingClient client, @NotNull Mqtt3Connect connectMessage, @NotNull ConnectCommand connectCommand) {
+    void mqtt3Connect(@NotNull Mqtt3BlockingClient client, @NotNull Mqtt3Connect connectMessage, @NotNull Connect connect) {
 
     }
 

@@ -16,7 +16,8 @@
  */
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.cli.AbstractCommand;
+import com.hivemq.cli.commands.AbstractCommand;
+import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -37,7 +38,7 @@ import java.util.TreeMap;
         description = "List all connected clients with their respective identifieres",
         mixinStandardHelpOptions = true)
 
-public class ListClientsCommand extends AbstractCommand implements Runnable {
+public class ListClientsCommand implements Runnable, CliCommand {
 
     private final MqttClientExecutor mqttClientExecutor;
 
@@ -153,5 +154,15 @@ public class ListClientsCommand extends AbstractCommand implements Runnable {
 
     private String getKey(final MqttClient client) {
         return client.getConfig().getClientIdentifier() + client.getConfig().getServerHost();
+    }
+
+    @Override
+    public boolean isVerbose() {
+        return ShellCommand.isVerbose();
+    }
+
+    @Override
+    public boolean isDebug() {
+        return ShellCommand.isDebug();
     }
 }

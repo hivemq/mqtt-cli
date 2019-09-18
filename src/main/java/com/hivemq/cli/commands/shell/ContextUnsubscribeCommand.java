@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.shell;
 import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,9 +42,10 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
     }
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
+    @NotNull
     private String[] topics;
 
-    @CommandLine.Option(names = {"-u", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the unsubscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
+    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the unsubscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
     @Nullable
     private Mqtt5UserProperties userProperties;
 
@@ -64,6 +66,14 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
         }
     }
 
+    private void logUnusedUnsubscribeOptions() {
+        if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
+            if (userProperties != null) {
+                Logger.warn("Unsubscribe user properties were set but are unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return "ContextUnsubscribe:: {" +
@@ -73,6 +83,8 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
                 '}';
     }
 
+    @Override
+    @NotNull
     public String[] getTopics() {
         return topics;
     }
@@ -81,6 +93,8 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
         this.topics = topics;
     }
 
+    @Override
+    @Nullable
     public Mqtt5UserProperties getUserProperties() {
         return userProperties;
     }
