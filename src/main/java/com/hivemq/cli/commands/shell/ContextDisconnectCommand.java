@@ -50,7 +50,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
 
     @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the disconnect message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
     @Nullable
-    private Mqtt5UserProperties disconnectUserProperties;
+    private Mqtt5UserProperties userProperties;
 
     @Override
     public void run() {
@@ -84,7 +84,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
                 Logger.warn("Reason string was set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
             }
 
-            if (disconnectUserProperties != null) {
+            if (userProperties != null) {
                 Logger.warn("User properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
             }
         }
@@ -119,11 +119,11 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
 
     @Nullable
     @Override
-    public Mqtt5UserProperties getDisconnectUserProperties() {
-        return disconnectUserProperties;
+    public Mqtt5UserProperties getUserProperties() {
+        return userProperties;
     }
 
-    public void setDisconnectUserProperties(@Nullable final Mqtt5UserProperties disconnectUserProperties) {
-        this.disconnectUserProperties = disconnectUserProperties;
+    public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
+        this.userProperties = userProperties;
     }
 }

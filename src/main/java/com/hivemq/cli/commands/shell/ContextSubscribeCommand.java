@@ -60,8 +60,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @NotNull
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-up", "--subscribeUserProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the subscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
-    @Nullable Mqtt5UserProperties subscribeUserProperties;
+    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the subscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
+    @Nullable Mqtt5UserProperties userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
     @Nullable
@@ -119,7 +119,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        final Thread waitForDisconnectThread = new Thread(new Runnable() {
+        final Runnable waitForDisconnectRunnable = new Runnable() {
 
             @Override
             public void run() {
@@ -133,9 +133,9 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 }
                 latch.countDown();
             }
-        });
+        };
 
-        final Thread waitForExitCommandThread = new Thread(new Runnable() {
+        final Runnable waitForExitCommandRunnable = new Runnable() {
             @Override
             public void run() {
                 final Scanner scanner = new Scanner(System.in);
@@ -143,12 +143,12 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 latch.countDown();
                 return;
             }
-        });
+        };
 
         final ExecutorService WORKER_THREADS = Executors.newFixedThreadPool(2);
 
-        WORKER_THREADS.submit(waitForDisconnectThread);
-        WORKER_THREADS.submit(waitForExitCommandThread);
+        WORKER_THREADS.submit(waitForDisconnectRunnable);
+        WORKER_THREADS.submit(waitForExitCommandRunnable);
 
         latch.await();
 
@@ -170,7 +170,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
-                ", userProperties=" + subscribeUserProperties +
+                ", userProperties=" + userProperties +
                 ", toFile=" + receivedMessagesFile +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
@@ -190,7 +190,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     private void logUnusedOptions() {
         if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
-            if (subscribeUserProperties != null) {
+            if (userProperties != null) {
                 Logger.warn("Subscribe user properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
             }
         }
@@ -199,11 +199,6 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @NotNull
     public String[] getTopics() {
         return topics;
-    }
-
-    @Override
-    public @Nullable Mqtt5UserProperties getUnsubscribeUserProperties() {
-        return null;
     }
 
     public void setTopics(final String[] topics) {
@@ -246,11 +241,11 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     @Override
     @Nullable
-    public Mqtt5UserProperties getSubscribeUserProperties() {
-        return subscribeUserProperties;
+    public Mqtt5UserProperties getUserProperties() {
+        return userProperties;
     }
 
-    public void setSubscribeUserProperties(@Nullable final Mqtt5UserProperties subscribeUserProperties) {
-        this.subscribeUserProperties = subscribeUserProperties;
+    public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
+        this.userProperties = userProperties;
     }
 }

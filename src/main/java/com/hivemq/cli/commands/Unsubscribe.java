@@ -24,5 +24,5 @@ public interface Unsubscribe extends Context {
 
     @NotNull String[] getTopics();
 
-    @Nullable Mqtt5UserProperties getUnsubscribeUserProperties();
+    @Nullable Mqtt5UserProperties getUserProperties();
 }

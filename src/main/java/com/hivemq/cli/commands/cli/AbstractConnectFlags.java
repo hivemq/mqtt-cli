@@ -28,9 +28,9 @@ import picocli.CommandLine;
 
 public class AbstractConnectFlags extends AbstractCommonFlags implements Connect {
 
-    @CommandLine.Option(names = {"-Ce", "--connectSessionExpiry"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client", order = 2)
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client", order = 2)
     @Nullable
-    private Long connectSessionExpiryInterval;
+    private Long sessionExpiryInterval;
 
     @CommandLine.Option(names = {"-Cup", "--connectUserProperties"}, converter = UserPropertiesConverter.class, description = "The user properties of the connect message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'", order = 2)
     @Nullable
@@ -39,7 +39,7 @@ public class AbstractConnectFlags extends AbstractCommonFlags implements Connect
 
     String connectOptions() {
         return commonOptions() +
-                ", sessionExpiryInterval= " + connectSessionExpiryInterval +
+                ", sessionExpiryInterval= " + sessionExpiryInterval +
                 ", userProperties=" + connectUserProperties +
                 ", " + connectRestrictionOptions();
 
@@ -49,7 +49,7 @@ public class AbstractConnectFlags extends AbstractCommonFlags implements Connect
     public void logUnusedOptions() {
         super.logUnusedOptions();
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
-            if (connectSessionExpiryInterval != null) {
+            if (sessionExpiryInterval != null) {
                 Logger.warn("Connect session expiry interval was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
 
@@ -60,12 +60,12 @@ public class AbstractConnectFlags extends AbstractCommonFlags implements Connect
     }
 
     @Nullable
-    public Long getConnectSessionExpiryInterval() {
-        return connectSessionExpiryInterval;
+    public Long getSessionExpiryInterval() {
+        return sessionExpiryInterval;
     }
 
-    public void setConnectSessionExpiryInterval(@Nullable final Long connectSessionExpiryInterval) {
-        this.connectSessionExpiryInterval = connectSessionExpiryInterval;
+    public void setSessionExpiryInterval(@Nullable final Long sessionExpiryInterval) {
+        this.sessionExpiryInterval = sessionExpiryInterval;
     }
 
     @Nullable

@@ -34,7 +34,7 @@ public interface Publish extends Context {
 
     @Nullable Boolean getRetain();
 
-    @Nullable Long getPublishExpiryInterval();
+    @Nullable Long getMessageExpiryInterval();
 
     @Nullable Mqtt5PayloadFormatIndicator getPayloadFormatIndicator();
 
@@ -44,7 +44,7 @@ public interface Publish extends Context {
 
     @Nullable ByteBuffer getCorrelationData();
 
-    @Nullable Mqtt5UserProperties getPublishUserProperties();
+    @Nullable Mqtt5UserProperties getUserProperties();
 
 
 }

@@ -25,6 +25,6 @@ public interface Disconnect extends Context {
 
     @Nullable String getReasonString();
 
-    @Nullable Mqtt5UserProperties getDisconnectUserProperties();
+    @Nullable Mqtt5UserProperties getUserProperties();
 
 }

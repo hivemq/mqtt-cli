@@ -47,7 +47,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
 
     @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the unsubscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
     @Nullable
-    private Mqtt5UserProperties unsubscribeUserProperties;
+    private Mqtt5UserProperties userProperties;
 
 
     @Override
@@ -68,7 +68,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
 
     private void logUnusedUnsubscribeOptions() {
         if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
-            if (unsubscribeUserProperties != null) {
+            if (userProperties != null) {
                 Logger.warn("Unsubscribe user properties were set but are unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
         }
@@ -79,10 +79,11 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
         return "ContextUnsubscribe:: {" +
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
-                ", userProperties=" + unsubscribeUserProperties +
+                ", userProperties=" + userProperties +
                 '}';
     }
 
+    @Override
     @NotNull
     public String[] getTopics() {
         return topics;
@@ -92,12 +93,13 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
         this.topics = topics;
     }
 
+    @Override
     @Nullable
-    public Mqtt5UserProperties getUnsubscribeUserProperties() {
-        return unsubscribeUserProperties;
+    public Mqtt5UserProperties getUserProperties() {
+        return userProperties;
     }
 
-    public void setUnsubscribeUserProperties(final Mqtt5UserProperties unsubscribeUserProperties) {
-        this.unsubscribeUserProperties = unsubscribeUserProperties;
+    public void setUserProperties(final Mqtt5UserProperties userProperties) {
+        this.userProperties = userProperties;
     }
 }

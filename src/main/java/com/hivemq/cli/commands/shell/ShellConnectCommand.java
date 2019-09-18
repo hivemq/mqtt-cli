@@ -49,9 +49,9 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
         this.mqttClientExecutor = mqttClientExecutor;
     }
 
-    @CommandLine.Option(names = {"-e", "--connectSessionExpiry"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client'")
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client'")
     @Nullable
-    private Long connectSessionExpiryInterval;
+    private Long sessionExpiryInterval;
 
     @CommandLine.Option(names = {"-up", "--connectUserProperties"}, converter = UserPropertiesConverter.class, description = "The user properties of the connect message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
     @Nullable
@@ -92,7 +92,7 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     public void logUnusedOptions() {
         super.logUnusedOptions();
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
-            if (connectSessionExpiryInterval != null) {
+            if (sessionExpiryInterval != null) {
                 Logger.warn("Connect session expiry interval was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
 
@@ -104,7 +104,7 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
     String connectOptions() {
         return commonOptions() +
-                ", sessionExpiryInterval= " + connectSessionExpiryInterval +
+                ", sessionExpiryInterval= " + sessionExpiryInterval +
                 ", userProperties=" + connectUserProperties +
                 ", " + connectRestrictionOptions();
     }
@@ -125,12 +125,12 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     }
 
     @Nullable
-    public Long getConnectSessionExpiryInterval() {
-        return connectSessionExpiryInterval;
+    public Long getSessionExpiryInterval() {
+        return sessionExpiryInterval;
     }
 
-    public void setConnectSessionExpiryInterval(@Nullable final Long connectSessionExpiryInterval) {
-        this.connectSessionExpiryInterval = connectSessionExpiryInterval;
+    public void setSessionExpiryInterval(@Nullable final Long sessionExpiryInterval) {
+        this.sessionExpiryInterval = sessionExpiryInterval;
     }
 
     @Nullable

@@ -62,7 +62,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the subscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')", order = 1)
-    @Nullable Mqtt5UserProperties subscribeUserProperties;
+    @Nullable Mqtt5UserProperties userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written", order = 1)
     @Nullable
@@ -117,7 +117,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     public void logUnusedOptions() {
         super.logUnusedOptions();
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
-            if (subscribeUserProperties != null) {
+            if (userProperties != null) {
                 Logger.warn("Subscribe user properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
             }
         }
@@ -151,7 +151,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
-                ", userProperties=" + subscribeUserProperties +
+                ", userProperties=" + userProperties +
                 ", toFile=" + receivedMessagesFile +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
@@ -208,12 +208,12 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     @Nullable
     @Override
-    public Mqtt5UserProperties getSubscribeUserProperties() {
-        return subscribeUserProperties;
+    public Mqtt5UserProperties getUserProperties() {
+        return userProperties;
     }
 
-    public void setSubscribeUserProperties(@Nullable final Mqtt5UserProperties subscribeUserProperties) {
-        this.subscribeUserProperties = subscribeUserProperties;
+    public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
+        this.userProperties = userProperties;
     }
 
 }

@@ -131,7 +131,7 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     }
 
     @Override
-    public @Nullable Mqtt5UserProperties getDisconnectUserProperties() {
+    public @Nullable Mqtt5UserProperties getUserProperties() {
         return userProperties;
     }
 

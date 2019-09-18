@@ -17,7 +17,6 @@
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.*;
-import com.hivemq.cli.commands.AbstractCommonFlags;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
 import com.hivemq.client.mqtt.MqttClient;
@@ -27,6 +26,7 @@ import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
+import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3ConnectBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
@@ -34,6 +34,7 @@ import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3PublishBuilder;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
+import com.hivemq.client.mqtt.mqtt5.message.auth.Mqtt5SimpleAuth;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5ConnectBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5ConnectRestrictions;
@@ -224,15 +225,15 @@ abstract class AbstractMqttClientExecutor {
             connectBuilder.keepAlive(connect.getKeepAlive());
         }
 
-        if (connect.getConnectSessionExpiryInterval() != null) {
-            connectBuilder.sessionExpiryInterval(connect.getConnectSessionExpiryInterval());
+        if (connect.getSessionExpiryInterval() != null) {
+            connectBuilder.sessionExpiryInterval(connect.getSessionExpiryInterval());
         }
 
         if (connect.getConnectUserProperties() != null) {
             connectBuilder.userProperties(connect.getConnectUserProperties());
         }
 
-        applyMqtt5Authentication(connectBuilder, connect);
+        connectBuilder.simpleAuth(buildMqtt5Authentication(connect));
 
         mqtt5Connect(client, connectBuilder.build(), connect);
 
@@ -259,7 +260,7 @@ abstract class AbstractMqttClientExecutor {
             connectBuilder.keepAlive(connect.getKeepAlive());
         }
 
-        applyMqtt3Authentication(connectBuilder, connect);
+        connectBuilder.simpleAuth(buildMqtt3Authentication(connect));
 
         mqtt3Connect(client, connectBuilder.build(), connect);
 
@@ -372,40 +373,42 @@ abstract class AbstractMqttClientExecutor {
                 .identifier(connect.getIdentifier());
     }
 
-    private void applyMqtt5Authentication(final @NotNull Mqtt5ConnectBuilder connectBuilder, final @NotNull Connect connect) {
+    private @Nullable Mqtt5SimpleAuth buildMqtt5Authentication(final @NotNull Connect connect) {
         if (connect.getUser() != null && connect.getPassword() != null) {
-            connectBuilder.simpleAuth()
+            return Mqtt5SimpleAuth.builder()
                     .username(connect.getUser())
                     .password(connect.getPassword())
-                    .applySimpleAuth();
+                    .build();
         }
         else if (connect.getPassword() != null) {
-            connectBuilder.simpleAuth()
+            return Mqtt5SimpleAuth.builder()
                     .password(connect.getPassword())
-                    .applySimpleAuth();
+                    .build();
         }
         else if (connect.getUser() != null) {
-            connectBuilder.simpleAuth()
+            return Mqtt5SimpleAuth.builder()
                     .username(connect.getUser())
-                    .applySimpleAuth();
+                    .build();
         }
+        return null;
     }
 
-    private void applyMqtt3Authentication(final @NotNull Mqtt3ConnectBuilder connectBuilder, final @NotNull Connect connect) {
+    private @Nullable Mqtt3SimpleAuth buildMqtt3Authentication(final @NotNull Connect connect) {
         if (connect.getUser() != null && connect.getPassword() != null) {
-            connectBuilder.simpleAuth()
+            return Mqtt3SimpleAuth.builder()
                     .username(connect.getUser())
                     .password(connect.getPassword())
-                    .applySimpleAuth();
+                    .build();
         }
         else if (connect.getUser() != null) {
-            connectBuilder.simpleAuth()
+            Mqtt3SimpleAuth.builder()
                     .username(connect.getUser())
-                    .applySimpleAuth();
+                    .build();
         }
         else if (connect.getPassword() != null) {
             throw new IllegalArgumentException("Password-Only Authentication is not allowed in MQTT 3");
         }
+        return null;
     }
 
     public static ClientCache<String, MqttClient> getClientCache() {

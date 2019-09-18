@@ -19,7 +19,6 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.utils.FileUtils;
-import com.hivemq.client.internal.mqtt.message.disconnect.MqttDisconnect;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
@@ -135,8 +134,8 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .topicFilter(topic)
                 .qos(qos);
 
-        if (subscribe.getSubscribeUserProperties() != null) {
-            builder.userProperties(subscribe.getSubscribeUserProperties());
+        if (subscribe.getUserProperties() != null) {
+            builder.userProperties(subscribe.getUserProperties());
         }
 
 
@@ -286,11 +285,11 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         if (publish.getRetain() != null) {
             publishBuilder.retain(publish.getRetain());
         }
-        if (publish.getPublishExpiryInterval() != null) {
-            publishBuilder.messageExpiryInterval(publish.getPublishExpiryInterval());
+        if (publish.getMessageExpiryInterval() != null) {
+            publishBuilder.messageExpiryInterval(publish.getMessageExpiryInterval());
         }
-        if (publish.getPublishUserProperties() != null) {
-            publishBuilder.userProperties(publish.getPublishUserProperties());
+        if (publish.getUserProperties() != null) {
+            publishBuilder.userProperties(publish.getUserProperties());
         }
 
         final Mqtt5Publish publishMessage = publishBuilder.build();
@@ -390,7 +389,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         for (String topic : unsubscribe.getTopics()) {
 
             if (unsubscribe.isDebug()) {
-                Logger.debug("sending UNSUBSCRIBE: (Topic: {}, userProperties: {})", topic, unsubscribe.getUnsubscribeUserProperties());
+                Logger.debug("sending UNSUBSCRIBE: (Topic: {}, userProperties: {})", topic, unsubscribe.getUserProperties());
             }
 
             final Mqtt5Unsubscribe unsubscribeMessage = Mqtt5Unsubscribe.builder()
@@ -433,7 +432,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         for (String topic : unsubscribe.getTopics()) {
 
             if (unsubscribe.isDebug()) {
-                Logger.debug("Sending UNSUBSCRIBE: (Topic: {}, userProperties: {})", topic, unsubscribe.getUnsubscribeUserProperties());
+                Logger.debug("Sending UNSUBSCRIBE: (Topic: {}, userProperties: {})", topic, unsubscribe.getUserProperties());
             }
 
             final Mqtt3Unsubscribe unsubscribeMessage = Mqtt3Unsubscribe.builder()
@@ -473,7 +472,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     void mqtt5Disconnect(@NotNull final Mqtt5Client client, @NotNull final Disconnect disconnect) {
 
         if (disconnect.isDebug()) {
-            Logger.debug("Sending DISCONNECT (Reason: {}, sessionExpiryInterval: {}, userProperties: {})", disconnect.getReasonString(), disconnect.getSessionExpiryInterval(), disconnect.getDisconnectUserProperties());
+            Logger.debug("Sending DISCONNECT (Reason: {}, sessionExpiryInterval: {}, userProperties: {})", disconnect.getReasonString(), disconnect.getSessionExpiryInterval(), disconnect.getUserProperties());
         }
 
 
@@ -487,8 +486,8 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             disconnectBuilder.sessionExpiryInterval(disconnect.getSessionExpiryInterval());
         }
 
-        if (disconnect.getDisconnectUserProperties() != null) {
-            disconnectBuilder.userProperties(disconnect.getDisconnectUserProperties());
+        if (disconnect.getUserProperties() != null) {
+            disconnectBuilder.userProperties(disconnect.getUserProperties());
         }
 
         final Mqtt5Disconnect disconnectMessage = disconnectBuilder.build();
@@ -512,7 +511,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         if (disconnect.getReasonString() != null) {
             Logger.warn("Reason string was set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
         }
-        if (disconnect.getDisconnectUserProperties() != null) {
+        if (disconnect.getUserProperties() != null) {
             Logger.warn("User properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
         }
 

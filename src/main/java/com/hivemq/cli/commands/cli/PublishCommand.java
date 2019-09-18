@@ -67,7 +67,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default: no message expiry)", order = 1)
     @Nullable
-    private Long publishExpiryInterval;
+    private Long messageExpiryInterval;
 
     @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the publish message", order = 1)
     @Nullable
@@ -87,7 +87,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'", order = 1)
     @Nullable
-    private Mqtt5UserProperties publishUserProperties;
+    private Mqtt5UserProperties userProperties;
 
     @Override
     public void run() {
@@ -119,7 +119,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         super.logUnusedOptions();
 
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
-            if (publishExpiryInterval != null) {
+            if (messageExpiryInterval != null) {
                 Logger.warn("Publish message expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
             if (payloadFormatIndicator != null) {
@@ -134,7 +134,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
             if (correlationData != null) {
                 Logger.warn("Publish correlation data was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
-            if (publishUserProperties != null) {
+            if (userProperties != null) {
                 Logger.warn("Publish user properties were set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
         }
@@ -147,12 +147,12 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
                 "topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", retain=" + retain +
-                ", messageExpiryInterval=" + publishExpiryInterval +
+                ", messageExpiryInterval=" + messageExpiryInterval +
                 ", payloadFormatIndicator=" + payloadFormatIndicator +
                 ", contentType=" + contentType +
                 ", responseTopic=" + responseTopic +
                 ", correlationData=" + correlationData +
-                ", userProperties=" + publishUserProperties +
+                ", userProperties=" + userProperties +
                 ", Connect:: {" + connectOptions() + "}" +
                 '}';
     }
@@ -200,12 +200,12 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     @Override
     @Nullable
-    public Long getPublishExpiryInterval() {
-        return publishExpiryInterval;
+    public Long getMessageExpiryInterval() {
+        return messageExpiryInterval;
     }
 
-    public void setPublishExpiryInterval(@Nullable final Long publishExpiryInterval) {
-        this.publishExpiryInterval = publishExpiryInterval;
+    public void setMessageExpiryInterval(@Nullable final Long messageExpiryInterval) {
+        this.messageExpiryInterval = messageExpiryInterval;
     }
 
     @Nullable
@@ -250,12 +250,12 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     @Nullable
     @Override
-    public Mqtt5UserProperties getPublishUserProperties() {
-        return publishUserProperties;
+    public Mqtt5UserProperties getUserProperties() {
+        return userProperties;
     }
 
-    public void setPublishUserProperties(@Nullable final Mqtt5UserProperties publishUserProperties) {
-        this.publishUserProperties = publishUserProperties;
+    public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
+        this.userProperties = userProperties;
     }
 
 

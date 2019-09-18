@@ -63,7 +63,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
 
     @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default: no message expiry)")
     @Nullable
-    private Long publishExpiryInterval;
+    private Long messageExpiryInterval;
 
     @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the publish message")
     @Nullable
@@ -81,9 +81,9 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     @Nullable
     private ByteBuffer correlationData;
 
-    @CommandLine.Option(names = {"-up", "--publishUserProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
+    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
     @Nullable
-    private Mqtt5UserProperties publishUserProperties;
+    private Mqtt5UserProperties userProperties;
 
 
     @Override
@@ -106,7 +106,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
 
     private void logUnusedOptions() {
         if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
-            if (publishExpiryInterval != null) {
+            if (messageExpiryInterval != null) {
                 Logger.warn("Publish message expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
             if (payloadFormatIndicator != null) {
@@ -121,7 +121,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
             if (correlationData != null) {
                 Logger.warn("Publish correlation data was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
-            if (publishUserProperties != null) {
+            if (userProperties != null) {
                 Logger.warn("Publish user properties were set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
         }
@@ -134,12 +134,12 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", retain=" + retain +
-                ", messageExpiryInterval=" + publishExpiryInterval +
+                ", messageExpiryInterval=" + messageExpiryInterval +
                 ", payloadFormatIndicator=" + payloadFormatIndicator +
                 ", contentType=" + contentType +
                 ", responseTopic=" + responseTopic +
                 ", correlationData=" + correlationData +
-                ", userProperties=" + publishUserProperties +
+                ", userProperties=" + userProperties +
                 '}';
     }
 
@@ -185,12 +185,12 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
 
     @Nullable
     @Override
-    public Long getPublishExpiryInterval() {
-        return publishExpiryInterval;
+    public Long getMessageExpiryInterval() {
+        return messageExpiryInterval;
     }
 
-    public void setPublishExpiryInterval(@Nullable final Long publishExpiryInterval) {
-        this.publishExpiryInterval = publishExpiryInterval;
+    public void setMessageExpiryInterval(@Nullable final Long messageExpiryInterval) {
+        this.messageExpiryInterval = messageExpiryInterval;
     }
 
     @Nullable
@@ -235,11 +235,11 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
 
     @Nullable
     @Override
-    public Mqtt5UserProperties getPublishUserProperties() {
-        return publishUserProperties;
+    public Mqtt5UserProperties getUserProperties() {
+        return userProperties;
     }
 
-    public void setPublishUserProperties(@Nullable final Mqtt5UserProperties publishUserProperties) {
-        this.publishUserProperties = publishUserProperties;
+    public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
+        this.userProperties = userProperties;
     }
 }

@@ -46,7 +46,7 @@ public interface Connect extends Context, Will, ConnectRestrictions {
 
     @Nullable MqttClientSslConfig getSslConfig();
 
-    @Nullable Long getConnectSessionExpiryInterval();
+    @Nullable Long getSessionExpiryInterval();
 
     @Nullable Mqtt5UserProperties getConnectUserProperties();
 
