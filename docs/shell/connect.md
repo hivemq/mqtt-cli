@@ -32,7 +32,7 @@ hivemq-cli> con {   [-h <host>]
                     [-cdsv]
                     [-u <user>]
                     [-pw [<password>]]
-                    [-e <connectSessionExpiryInterval>]
+                    [-se <sessionExpiryInterval>]
                     [-k <keepAlive>]
                     [-up <connectUserProperties>]
                     [--cert <clientCertificate> --key <clientPrivateKey>]
@@ -77,7 +77,7 @@ hivemq-cli> con {   [-h <host>]
 | ``-d``    |   ``--debug``     | Print info level debug messages to the console. | ``False``
 | ``-v``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
 | ``-c``   | ``--[no-]cleanStart`` | Enable clean start if set. | ``True``
-| ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
+| ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (No Expiry)
 | ``-up``  | ``--userProperties`` | User properties of the connect message can be defined like <br>``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs.
 
 ***

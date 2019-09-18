@@ -36,7 +36,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
                     [-r]
                     [-d]
                     [-v]
-                    [-e <publishExpiryInterval>]
+                    [-e <messageExpiryInterval>]
                     [-cd <correlationData>]
                     [-ct <contentType>]
                     [-pf <payloadFormatIndicator>]
@@ -49,7 +49,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
                     [-ip <identifierPrefix>]
                     [-c]               
                     [-k <keepAlive>]
-                    [-Ce <connectSessionExpiryInterval>]
+                    [-se <sessionExpiryInterval>]
                     [-Cup <connectUserProperties>]
                     [-s]
                     [-u <user>]
@@ -112,7 +112,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier is given. | ``hmqClient``
 | ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
-| ``-Ce``  | ``--connectSessionExpiry`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
+| ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs. |
 
 ***
