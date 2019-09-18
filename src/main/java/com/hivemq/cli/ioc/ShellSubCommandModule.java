@@ -33,6 +33,7 @@ public class ShellSubCommandModule {
     @Provides
     @Named("shell-sub-command")
     static @NotNull CommandLine provideShellCommand(final @NotNull ShellCommand shellCommand,
+                                                    final @NotNull VersionCommand versionCommand,
                                                     final @NotNull ShellConnectCommand shellConnectCommand,
                                                     final @NotNull ShellDisconnectCommand disconnectCommand,
                                                     final @NotNull ContextSwitchCommand contextSwitchCommand,
@@ -41,6 +42,8 @@ public class ShellSubCommandModule {
                                                     final @NotNull ShellExitCommand shellExitCommand) {
 
         return new CommandLine(shellCommand)
+                .addSubcommand(CommandLine.HelpCommand.class)
+                .addSubcommand(versionCommand)
                 .addSubcommand(shellConnectCommand)
                 .addSubcommand(disconnectCommand)
                 .addSubcommand(contextSwitchCommand)

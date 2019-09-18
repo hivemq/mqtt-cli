@@ -25,11 +25,9 @@ import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
-import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
-import java.io.Console;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +35,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import org.fusesource.jansi.AnsiConsole;
 
 public class HiveMQCLIMain {
 
@@ -50,7 +47,6 @@ public class HiveMQCLIMain {
             .build();
 
     public static final int CLI_WIDTH = 160;
-
 
 
     public static void main(final String[] args) {
@@ -139,4 +135,20 @@ public class HiveMQCLIMain {
         }
     }
 
+    public static class CLIVersionProvider implements CommandLine.IVersionProvider {
+
+        @Override
+        public String[] getVersion() throws Exception {
+            String version = getClass().getPackage().getImplementationVersion();
+            if (version == null) {
+                version = "DEVELOPMENT";
+            }
+            return new String[]{version,
+                    "Picocli " + CommandLine.VERSION,
+                    "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
+                    "OS: ${os.name} ${os.version} ${os.arch}"};
+        }
+    }
 }
+
+

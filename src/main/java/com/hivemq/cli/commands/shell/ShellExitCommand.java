@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.CliCommand;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
@@ -30,6 +31,9 @@ public class ShellExitCommand implements Runnable, CliCommand {
     @Inject
     public ShellExitCommand() {
     }
+
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @Override
     public void run() {

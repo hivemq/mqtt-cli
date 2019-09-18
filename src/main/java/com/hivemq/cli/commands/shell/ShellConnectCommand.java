@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.AbstractCommonFlags;
 import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.converters.UnsignedIntConverter;
@@ -48,6 +49,9 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
         this.mqttClientExecutor = mqttClientExecutor;
     }
+
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client'")
     @Nullable

@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands;
 
+import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.ioc.HiveMQCLI;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
@@ -30,11 +31,9 @@ import javax.inject.Inject;
         optionListHeading = "%n@|bold Options:|@%n",
         commandListHeading = "%n@|bold Commands:|@%n",
         mixinStandardHelpOptions = true,
-        version = HiveMQCLICommand.VERSION_STRING)
+        versionProvider = HiveMQCLIMain.CLIVersionProvider.class)
 
 public class HiveMQCLICommand {
-
-    public static final @NotNull String VERSION_STRING = "1.0";
 
     @Inject
     HiveMQCLICommand() {

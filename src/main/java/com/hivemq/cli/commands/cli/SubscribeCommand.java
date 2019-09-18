@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.cli;
 
+import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.converters.UserPropertiesConverter;
@@ -36,9 +37,10 @@ import java.io.File;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "sub",
+        versionProvider = HiveMQCLIMain.CLIVersionProvider.class,
         aliases = "subscribe",
         description = "Subscribe an mqtt client to a list of topics",
-        abbreviateSynopsis = true)
+        abbreviateSynopsis = false)
 
 public class SubscribeCommand extends AbstractConnectFlags implements MqttAction, Subscribe {
 
@@ -52,6 +54,12 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         this.mqttClientExecutor = mqttClientExecutor;
 
     }
+
+    @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
+    boolean versionInfoRequested;
+
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to", order = 1)
     @NotNull

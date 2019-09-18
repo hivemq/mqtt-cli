@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -46,7 +47,6 @@ public class ShellContextCommand implements Runnable, CliCommand {
     public ShellContextCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;
     }
-
 
     static void updateContext(final @Nullable MqttClient client) {
         if (client != null && client.getConfig().getState().isConnectedOrReconnect()) {

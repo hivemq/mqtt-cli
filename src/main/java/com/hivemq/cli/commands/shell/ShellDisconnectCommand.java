@@ -17,6 +17,7 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.converters.UserPropertiesConverter;
@@ -45,6 +46,9 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
         this.mqttClientExecutor = mqttClientExecutor;
 
     }
+
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-i", "--identifier"}, required = true, description = "The client identifier UTF-8 String (default randomly generated string)")
     @NotNull

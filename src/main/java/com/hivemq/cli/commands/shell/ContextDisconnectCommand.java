@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.converters.UserPropertiesConverter;
@@ -39,6 +40,9 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     public ContextDisconnectCommand(final @NotNull MqttClientExecutor executor) {
         super(executor);
     }
+
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The session expiry of the disconnect (default: 0)")
     @Nullable

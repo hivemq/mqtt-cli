@@ -45,6 +45,9 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
         super(executor);
     }
 
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
     @NotNull
     private String[] topics;

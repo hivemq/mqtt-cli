@@ -44,14 +44,14 @@ import java.io.PrintWriter;
 
 
 @CommandLine.Command(name = "shell", aliases = "sh",
+        versionProvider = HiveMQCLIMain.CLIVersionProvider.class,
         description = "Starts HiveMQ-CLI in shell mode, to enable interactive mode with further sub commands.",
         footer = {"", "@|bold Press Ctl-C to exit.|@"},
         synopsisHeading = "%n@|bold Usage|@:  ",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options|@:%n",
         commandListHeading = "%n@|bold Commands|@:%n",
-        separator = " ",
-        mixinStandardHelpOptions = true)
+        separator = " ")
 
 public class ShellCommand implements Runnable {
 
@@ -80,6 +80,11 @@ public class ShellCommand implements Runnable {
     ShellCommand() {
     }
 
+    @CommandLine.Option(names = {"--version", "-V"}, versionHelp = true, description = "display version info")
+    boolean versionInfoRequested;
+
+    @CommandLine.Option(names = {"--help", "-h"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @Override
     public void run() {

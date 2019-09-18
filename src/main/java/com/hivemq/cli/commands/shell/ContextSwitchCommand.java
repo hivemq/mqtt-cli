@@ -30,6 +30,10 @@ import javax.inject.Inject;
         description = "Switch the current context")
 public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
 
+
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
     @Nullable
     private String contextName;

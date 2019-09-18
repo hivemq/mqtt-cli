@@ -16,9 +16,11 @@
  */
 package com.hivemq.cli.commands.cli;
 
+import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
+import com.hivemq.cli.ioc.HiveMQCLI;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -34,6 +36,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "pub",
+        versionProvider = HiveMQCLIMain.CLIVersionProvider.class,
         aliases = "publish",
         description = "Publish a message to a list of topics",
         abbreviateSynopsis = false)
@@ -48,6 +51,12 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         this.mqttClientExecutor = mqttClientExecutor;
 
     }
+
+    @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
+    boolean versionInfoRequested;
+
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to", order = 1)
     @NotNull

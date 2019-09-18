@@ -52,6 +52,10 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         super(mqttClientExecutor);
     }
 
+
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
     @NotNull
     private String[] topics;

@@ -30,7 +30,7 @@ import java.util.UUID;
 public abstract class MqttCommand extends AbstractCommand implements Context {
 
 
-    @CommandLine.Option(names = {"-V", "--version"}, converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default: 5)", order = 1)
+    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default: 5)", order = 1)
     private MqttVersion version;
 
     @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')", order = 1)

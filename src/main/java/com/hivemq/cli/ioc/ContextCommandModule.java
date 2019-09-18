@@ -37,9 +37,12 @@ public class ContextCommandModule {
                                                    final @NotNull ContextSwitchCommand contextSwitchCommand,
                                                    final @NotNull ContextExitCommand contextExitCommand,
                                                    final @NotNull ListClientsCommand listClientsCommand,
-                                                   final @NotNull ClearScreenCommand clearScreenCommand) {
+                                                   final @NotNull ClearScreenCommand clearScreenCommand,
+                                                   final @NotNull VersionCommand versionCommand) {
 
         return new CommandLine(main)
+                .addSubcommand(CommandLine.HelpCommand.class)
+                .addSubcommand(versionCommand)
                 .addSubcommand(contextPublishCommand)
                 .addSubcommand(contextSubscribeCommand)
                 .addSubcommand(contextUnsubscribeCommand)

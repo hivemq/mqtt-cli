@@ -16,8 +16,10 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.AbstractCommand;
 import com.hivemq.cli.commands.CliCommand;
+import com.hivemq.cli.ioc.HiveMQCLI;
 import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -35,8 +37,8 @@ import java.util.TreeMap;
 
 @CommandLine.Command(name = "ls",
         aliases = "list",
-        description = "List all connected clients with their respective identifieres",
-        mixinStandardHelpOptions = true)
+        description = "List all connected clients with their respective identifieres"
+)
 
 public class ListClientsCommand implements Runnable, CliCommand {
 
@@ -46,6 +48,9 @@ public class ListClientsCommand implements Runnable, CliCommand {
     ListClientsCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;
     }
+
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--time"}, defaultValue = "false", description = "Sort clients ordered by their creation time (default false)")
     private boolean sortByTime;
