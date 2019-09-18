@@ -152,7 +152,14 @@ public class ShellCommand implements Runnable {
             terminalWriter.println(shellCommandLine.getUsageMessage());
             terminalWriter.flush();
 
+            Logger.info("Using default values from properties file {}:", PropertiesUtils.PROPERTIES_FILE_PATH);
+            Logger.info("Host: {}, Port: {}, Mqtt-Version {}, Shell-Debug-Level: {}",
+                    PropertiesUtils.DEFAULT_HOST,
+                    PropertiesUtils.DEFAULT_PORT,
+                    PropertiesUtils.DEFAULT_MQTT_VERSION,
+                    PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
             Logger.info("Writing Logfile to {}", logfilePath);
+
 
             String line;
             while (!exitShell) {
