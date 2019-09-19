@@ -298,7 +298,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         final String p = bufferToString(publish.getMessage());
 
                         if (publish.isVerbose()) {
-                            Logger.trace("acknowledged PUBLISH : '{}' for PUBLISH to Topic: {}", publishResult, topic);
+                            Logger.trace("acknowledged PUBLISH: '{}' for PUBLISH to Topic: {}", publishResult, topic);
                         }
                         else if (publish.isDebug()) {
 
