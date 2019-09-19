@@ -31,6 +31,7 @@ import org.jline.utils.AttributedStyle;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import org.pmw.tinylog.labelers.TimestampLabeler;
 import org.pmw.tinylog.policies.SizePolicy;
 import org.pmw.tinylog.writers.ConsoleWriter;
@@ -96,7 +97,7 @@ public class ShellCommand implements Runnable {
         final File dirFile = new File(dir);
         dirFile.mkdirs();
 
-        final String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}";
+        final String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} {context:identifier}: {message}";
 
         final RollingFileWriter logfileWriter = new RollingFileWriter(dir + "hmq-cli.log", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
 
@@ -108,6 +109,8 @@ public class ShellCommand implements Runnable {
                         Level.INFO,
                         "{message}")
                 .activate();
+
+        LoggingContext.put("identifier", "SHELL");
 
         logfilePath = logfileWriter.getFilename();
 

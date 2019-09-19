@@ -53,7 +53,7 @@ public class ShellContextCommand implements Runnable, CliCommand {
             if (ShellCommand.isVerbose()) {
                 Logger.trace("Update context to {}@{}", client.getConfig().getClientIdentifier().get(), client.getConfig().getServerHost());
             }
-            LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get().toString());
+            LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get().toString());
             contextClient = client;
             ShellCommand.readFromContext();
         }
@@ -63,6 +63,7 @@ public class ShellContextCommand implements Runnable, CliCommand {
         if (ShellCommand.isVerbose()) {
             Logger.trace("Remove context");
         }
+        LoggingContext.put("identifier", "SHELL");
         contextClient = null;
         ShellCommand.readFromShell();
     }
