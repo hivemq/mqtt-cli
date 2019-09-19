@@ -16,15 +16,16 @@
  */
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.AbstractCommonFlags;
 import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
-import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
@@ -57,9 +58,9 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     @Nullable
     private Long sessionExpiryInterval;
 
-    @CommandLine.Option(names = {"-up", "--connectUserProperties"}, converter = UserPropertiesConverter.class, description = "The user properties of the connect message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
+    @CommandLine.Option(names = {"-up", "--connectUserProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property for the connect message")
     @Nullable
-    private Mqtt5UserProperties connectUserProperties;
+    private Mqtt5UserProperty[] connectUserProperties;
 
 
     public void run() {
@@ -139,10 +140,10 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
     @Nullable
     public Mqtt5UserProperties getConnectUserProperties() {
-        return connectUserProperties;
+        return MqttUtils.convertToMqtt5UserProperties(connectUserProperties);
     }
 
-    public void setConnectUserProperties(@Nullable final Mqtt5UserProperties connectUserProperties) {
+    public void setConnectUserProperties(@Nullable final Mqtt5UserProperty... connectUserProperties) {
         this.connectUserProperties = connectUserProperties;
     }
 }

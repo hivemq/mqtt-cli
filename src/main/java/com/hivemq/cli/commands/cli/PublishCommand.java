@@ -20,11 +20,12 @@ import com.hivemq.cli.HiveMQCLIMain;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
-import com.hivemq.cli.ioc.HiveMQCLI;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,9 +96,10 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @Nullable
     private ByteBuffer correlationData;
 
-    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'", order = 1)
+
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the publish message", order = 1)
     @Nullable
-    private Mqtt5UserProperties userProperties;
+    private Mqtt5UserProperty[] userProperties;
 
     @Override
     public void run() {
@@ -164,7 +166,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
                 ", contentType=" + contentType +
                 ", responseTopic=" + responseTopic +
                 ", correlationData=" + correlationData +
-                ", userProperties=" + userProperties +
+                ", userProperties=" + getUserProperties() +
                 ", Connect:: {" + connectOptions() + "}" +
                 '}';
     }
@@ -263,10 +265,10 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @Nullable
     @Override
     public Mqtt5UserProperties getUserProperties() {
-        return userProperties;
+        return MqttUtils.convertToMqtt5UserProperties(userProperties);
     }
 
-    public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
+    public void setUserProperties(@Nullable final Mqtt5UserProperty... userProperties) {
         this.userProperties = userProperties;
     }
 
