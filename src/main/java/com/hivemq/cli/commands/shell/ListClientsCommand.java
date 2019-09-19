@@ -110,7 +110,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
                     "%-" + longestHost + "s " +
                     "%5d " +
                     "%8s " +
-                    "%6s\n");
+                    "%s\n");
 
             for (final String key : sortedKeys) {
 
@@ -139,7 +139,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
                         client.getConfig().getServerHost(),
                         client.getConfig().getServerPort(),
                         client.getConfig().getMqttVersion(),
-                        client.getConfig().getSslConfig().map(ssl -> ssl.getProtocols().get().get(0).toString()).orElse("NO_SSL"));
+                        client.getConfig().getSslConfig().map(ssl -> ssl.getProtocols().get().toString()).orElse("NO_SSL"));
 
                 if (listSubscriptions) {
                     System.out.printf(" -subscribed topics: %s\n", clientDataMap.get(key).getSubscribedTopics());
