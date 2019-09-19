@@ -33,6 +33,7 @@ public class ContextCommandModule {
                                                    final @NotNull ContextPublishCommand contextPublishCommand,
                                                    final @NotNull ContextSubscribeCommand contextSubscribeCommand,
                                                    final @NotNull ContextUnsubscribeCommand contextUnsubscribeCommand,
+                                                   final @NotNull ShellConnectCommand shellConnectCommand,
                                                    final @NotNull ContextDisconnectCommand contextDisconnectCommand,
                                                    final @NotNull ContextSwitchCommand contextSwitchCommand,
                                                    final @NotNull ContextExitCommand contextExitCommand,
@@ -46,6 +47,7 @@ public class ContextCommandModule {
                 .addSubcommand(contextPublishCommand)
                 .addSubcommand(contextSubscribeCommand)
                 .addSubcommand(contextUnsubscribeCommand)
+                .addSubcommand(shellConnectCommand)
                 .addSubcommand(contextDisconnectCommand)
                 .addSubcommand(contextSwitchCommand)
                 .addSubcommand(listClientsCommand)
