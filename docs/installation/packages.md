@@ -20,13 +20,17 @@ $ brew tap hivemq/hivemq-cli
 $ brew install hivemq-cli
 ```
 
+***
+
 ## Windows Zip
 
 Download the Windows Zipfile from `url` and extract it in your preferred location.
-To execute MqttCLI simply open the Windows Command Prompt with ` ⊞ Win` + `R` and execute `cmd`.
+To execute MqttCLI simply open the Windows Command Prompt with `⊞ Win` + `R` and execute `cmd`.
 Navigate into the extracted MqttCLI folder and execute `MqttCLI.exe command`.
 
 To quick start the shell simply double-click the `MqttCLI Shell.exe`.
+
+***
 
 ## Debian Package
 
@@ -39,6 +43,8 @@ wget  http:url/mqttcli.deb
 sudo dpkg -i mqttcli.deb
 ``` 
 
+***
+
 ## RPM Package
 
 For Red Hat, Fedora, Mandriva, OpenSuse, CentOS distributions you can use the rpm package provided at `url`.
@@ -47,3 +53,4 @@ The preferred way is to install the package via the `yum` package manager. To in
 ``` 
 yum install -y url.deb
 ```
+
