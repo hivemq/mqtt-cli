@@ -55,7 +55,7 @@ import java.util.Map;
 abstract class AbstractMqttClientExecutor {
 
     private static final ClientCache<String, MqttClient> clientCache = new ClientCache<>();
-    private static final Map<String, LocalDateTime> clientCreationTimes = new HashMap<>();
+    private static final Map<String, ClientData> clientDataMap = new HashMap<>();
 
 
     abstract void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull Connect connect);
@@ -238,7 +238,8 @@ abstract class AbstractMqttClientExecutor {
         mqtt5Connect(client, connectBuilder.build(), connect);
 
         clientCache.put(connect.getKey(), client.toAsync());
-        clientCreationTimes.put(connect.getKey(), LocalDateTime.now());
+        final ClientData clientData = new ClientData(LocalDateTime.now());
+        clientDataMap.put(connect.getKey(), clientData);
 
         return client.toAsync();
     }
@@ -265,7 +266,8 @@ abstract class AbstractMqttClientExecutor {
         mqtt3Connect(client, connectBuilder.build(), connect);
 
         clientCache.put(connect.getKey(), client.toAsync());
-        clientCreationTimes.put(connect.getKey(), LocalDateTime.now());
+        final ClientData clientData = new ClientData(LocalDateTime.now());
+        clientDataMap.put(connect.getKey(), clientData);
 
         return client.toAsync();
     }
@@ -415,8 +417,8 @@ abstract class AbstractMqttClientExecutor {
         return clientCache;
     }
 
-    public Map<String, LocalDateTime> getClientCreationTimes() {
-        return clientCreationTimes;
+    public Map<String, ClientData> getClientDataMap() {
+        return clientDataMap;
     }
 
     private MqttClient getMqttClientFromCacheOrConnect(final @NotNull Connect connect) {
