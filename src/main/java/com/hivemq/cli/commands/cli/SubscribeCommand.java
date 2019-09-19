@@ -30,6 +30,7 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -84,6 +85,8 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     @Override
     public void run() {
+
+        LoggingContext.put("identifier", "SUBSCRIBE");
 
 
         if (isVerbose()) {
@@ -156,8 +159,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @Override
     public String toString() {
         return "Subscribe:: {" +
-                "key=" + getKey() +
-                ", topics=" + Arrays.toString(topics) +
+                "topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", userProperties=" + userProperties +
                 ", toFile=" + receivedMessagesFile +

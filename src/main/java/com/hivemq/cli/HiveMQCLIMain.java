@@ -98,7 +98,7 @@ public class HiveMQCLIMain {
 
         Configurator.defaultConfig()
                 .writer(new ConsoleWriter())
-                .formatPattern("Client {context:identifier}: {message}")
+                .formatPattern("{context:identifier}: {message}")
                 .level(Level.INFO)
                 .activate();
         commandLine.setUsageHelpWidth(CLI_WIDTH);

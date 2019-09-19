@@ -29,6 +29,7 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -100,6 +101,8 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     @Override
     public void run() {
+
+        LoggingContext.put("identifier", "PUBLISH");
 
         if (isVerbose()) {
             Logger.trace("Command: {} ", this);
