@@ -75,7 +75,7 @@ repositories {
 ext {
     moduleName = 'com.hivemq.cli'
     readableName = 'mqtt-cli'
-    appName = 'MQTTT CLI'
+    appName = 'MQTT CLI'
     githubOrg = 'hivemq'
     githubRepo = 'hivemq-cli'
     githubUrl = 'https://github.com/' + githubOrg + '/' + githubRepo
