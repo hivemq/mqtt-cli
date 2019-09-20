@@ -37,6 +37,10 @@ import java.util.Arrays;
 
 public class ContextUnsubscribeCommand extends ShellContextCommand implements Runnable, Unsubscribe {
 
+    //needed for pico cli - reflection code generation
+    public ContextUnsubscribeCommand(){
+        this(null);
+    }
 
     @Inject
     public ContextUnsubscribeCommand(@NotNull MqttClientExecutor mqttClientExecutor) {

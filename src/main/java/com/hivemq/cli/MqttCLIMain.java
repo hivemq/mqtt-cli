@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 
-public class HiveMQCLIMain {
+public class MqttCLIMain {
 
 
     public final static CommandLine.Help.ColorScheme COLOR_SCHEME = new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)
@@ -88,7 +88,6 @@ public class HiveMQCLIMain {
             PropertiesUtils.setDefaultProperties(properties);
         }
     }
-
 
 
     private static CommandLine setupCommandLine() {
@@ -150,5 +149,3 @@ public class HiveMQCLIMain {
         }
     }
 }
-
-

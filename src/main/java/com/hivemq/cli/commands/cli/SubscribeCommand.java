@@ -16,7 +16,7 @@
  */
 package com.hivemq.cli.commands.cli;
 
-import com.hivemq.cli.HiveMQCLIMain;
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
@@ -39,7 +39,7 @@ import java.io.File;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "sub",
-        versionProvider = HiveMQCLIMain.CLIVersionProvider.class,
+        versionProvider = MqttCLIMain.CLIVersionProvider.class,
         aliases = "subscribe",
         description = "Subscribe an mqtt client to a list of topics",
         abbreviateSynopsis = false)
@@ -49,6 +49,11 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     private final MqttClientExecutor mqttClientExecutor;
 
     public static final int IDLE_TIME = 5000;
+
+    //needed for pico cli - reflection code generation
+    public SubscribeCommand() {
+        this(null);
+    }
 
     @Inject
     public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {

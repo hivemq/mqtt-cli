@@ -39,6 +39,10 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
     private final MqttClientExecutor mqttClientExecutor;
 
+    public ListClientsCommand() {
+        this(null);
+    }
+
     @Inject
     ListClientsCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;

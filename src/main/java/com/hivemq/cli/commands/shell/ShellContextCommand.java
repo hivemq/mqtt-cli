@@ -16,7 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.HiveMQCLIMain;
+
 import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -42,6 +42,11 @@ public class ShellContextCommand implements Runnable, CliCommand {
 
     public static @Nullable MqttClient contextClient;
     MqttClientExecutor mqttClientExecutor;
+
+    //needed for pico cli - reflection code generation
+    public ShellContextCommand() {
+        this(null);
+    }
 
     @Inject
     public ShellContextCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {

@@ -16,27 +16,29 @@
  */
 package com.hivemq.cli.commands;
 
-import com.hivemq.cli.HiveMQCLIMain;
-import com.hivemq.cli.ioc.HiveMQCLI;
+import com.hivemq.cli.MqttCLIMain;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-@CommandLine.Command(name = "hivemq-cli",
-        description = "HiveMQ MQTT Command Line Interpreter.",
+@CommandLine.Command(name = "mqtt",
+        description = "MQTT Command Line Interpreter.",
         synopsisHeading = "%n@|bold Usage:|@  ",
         synopsisSubcommandLabel = "{ pub | sub | shell }",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",
         commandListHeading = "%n@|bold Commands:|@%n",
         mixinStandardHelpOptions = true,
-        versionProvider = HiveMQCLIMain.CLIVersionProvider.class)
+        versionProvider = MqttCLIMain.CLIVersionProvider.class)
 
-public class HiveMQCLICommand {
+public class MqttCLICommand {
+
+    public static final @NotNull String VERSION_STRING = "1.0";
+
 
     @Inject
-    HiveMQCLICommand() {
+    MqttCLICommand() {
     }
 
 }

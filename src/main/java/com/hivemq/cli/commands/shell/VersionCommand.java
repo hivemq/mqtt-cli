@@ -16,7 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.HiveMQCLIMain;
+import com.hivemq.cli.MqttCLIMain;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 @CommandLine.Command(name = "version",
         description = "Prints version information",
-        versionProvider = HiveMQCLIMain.CLIVersionProvider.class)
+        versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class VersionCommand implements Runnable {
 
     @Inject

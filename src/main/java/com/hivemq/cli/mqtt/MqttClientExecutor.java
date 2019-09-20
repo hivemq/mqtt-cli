@@ -403,7 +403,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
                         if (throwable != null) {
                             if (unsubscribe.isDebug()) {
-                                Logger.debug("UNSUBSCRIBE failed: {}", throwable.getStackTrace());
+                                Logger.debug("UNSUBSCRIBE failed: {}", throwable);
                             }
 
                             Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());
@@ -446,7 +446,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
                         if (throwable != null) {
                             if (unsubscribe.isDebug()) {
-                                Logger.debug("UNSUBSCRIBE failed: {}", throwable.getStackTrace());
+                                Logger.debug("UNSUBSCRIBE failed: {}", throwable);
                             }
 
                             Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());

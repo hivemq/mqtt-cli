@@ -37,6 +37,11 @@ import javax.inject.Inject;
 
 public class ContextDisconnectCommand extends ShellContextCommand implements Runnable, Disconnect {
 
+    //needed for pico cli - reflection code generation
+    public ContextDisconnectCommand() {
+        this(null);
+    }
+
     @Inject
     public ContextDisconnectCommand(final @NotNull MqttClientExecutor executor) {
         super(executor);

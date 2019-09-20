@@ -16,7 +16,7 @@
  */
 package com.hivemq.cli.commands.cli;
 
-import com.hivemq.cli.HiveMQCLIMain;
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
@@ -38,7 +38,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "pub",
-        versionProvider = HiveMQCLIMain.CLIVersionProvider.class,
+        versionProvider = MqttCLIMain.CLIVersionProvider.class,
         aliases = "publish",
         description = "Publish a message to a list of topics",
         abbreviateSynopsis = false)
@@ -47,9 +47,13 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     private final MqttClientExecutor mqttClientExecutor;
 
+    //needed for pico cli - reflection code generation
+    public PublishCommand() {
+        this(null);
+    }
+
     @Inject
     public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-
         this.mqttClientExecutor = mqttClientExecutor;
 
     }
@@ -111,7 +115,6 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         }
 
         setDefaultOptions();
-
         handleCommonOptions();
 
         logUnusedOptions();
