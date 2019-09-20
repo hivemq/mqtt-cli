@@ -145,8 +145,7 @@ dependencies {
 
     implementation group: 'info.picocli', name: 'picocli', version: picocliVersion
     implementation group: 'info.picocli', name: 'picocli-shell-jline3', version: picoclishell3Version
-
-    implementation 'info.picocli:picocli-codegen:4.0.4'
+    implementation group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
 
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
     implementation group: 'org.tinylog', name: 'tinylog', version: tinylogVersion
