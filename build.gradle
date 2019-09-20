@@ -17,7 +17,7 @@ plugins {
     id 'org.gradle.crypto.checksum' version '1.1.0'
     id "nebula.ospackage" version "7.1.0"
     id 'edu.sc.seis.launch4j' version '2.4.6'
-    id 'com.palantir.graal' version '0.2.0-3-g7f884ba'
+    id 'com.palantir.graal' version '0.6.0'
     id 'de.thetaphi.forbiddenapis' version '2.6' apply false
 }
 
