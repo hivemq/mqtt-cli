@@ -14,7 +14,7 @@ Switches the currently active context client.
 ## Synopsis
 
 ```
-hivemq-cli> switch  {   [<contextName>]
+mqtt> switch  {   [<contextName>]
                         -i <identifier>
                         [-h <host>]
 }
@@ -45,9 +45,9 @@ hivemq-cli> switch  {   [<contextName>]
 > Connect two clients and switch the active context to the first connected client
 
 ```
-hivemq-cli> con -i client1
+mqtt> con -i client1
 client1@localhost> exit
-hivemq-cli> con -i client2 -h broker.hivemq.com
+mqtt> con -i client2 -h broker.hivemq.com
 client2@broker.hivemq.com> switch client1
 client1@localhost> switch client2@broker.hivemq.com
 client2@broker.hivemq.com>

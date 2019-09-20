@@ -17,14 +17,14 @@ To list all of the connected clients use the [List](list) method.
 
 |Command                             |Explanation |
 | -----------------------------------|:-----------|
-| ``hivemq-cli> con ``                      | Creates and connect a new MQTT client with the default settings
-| ``hivemq-cli> con -V 3 -h myHost``        | Creates and connects an MQTT 3.1.1 client at myHost with the default port
-| ``hivemq-cli> con -i hmq-client -p 1884`` | Creates and connects an MQTT client at localhost with port 1884 which is identified by ``hmq-client``.
+| ``mqtt> con ``                      | Creates and connect a new MQTT client with the default settings
+| ``mqtt> con -V 3 -h myHost``        | Creates and connects an MQTT 3.1.1 client at myHost with the default port
+| ``mqtt> con -i hmq-client -p 1884`` | Creates and connects an MQTT client at localhost with port 1884 which is identified by ``hmq-client``.
 
 *** 
 ## Synopsis
 ```
-hivemq-cli> con {   [-h <host>]
+mqtt> con {   [-h <host>]
                     [-p <port>]
                     [-V <version>]
                     [-i <identifier>]
@@ -137,7 +137,7 @@ hivemq-cli> con {   [-h <host>]
 > Connect a client to myHost on port 1884
 
 ```
-hivemq-cli> con -h myHost -p 1884
+mqtt> con -h myHost -p 1884
 ```
 
 ***
@@ -145,9 +145,9 @@ hivemq-cli> con -h myHost -p 1884
 > Connect a client to the default host on default port using authentication
 
 ```
-hivemq-cli> con -u username -P password
+mqtt> con -u username -P password
 # Or omit the password to get it prompted
-hivemq-cli> con -u username -P
+mqtt> con -u username -P
 Enter value for --password (The password for the client UTF-8 String.):
 ```
 
@@ -156,7 +156,7 @@ Enter value for --password (The password for the client UTF-8 String.):
 > Connect a client with default settings and use it to publish
 
 ```
-hivemq-cli> con -i myClient
+mqtt> con -i myClient
 myClient@localhost> pub -t test -m "Hello World"
 ```
 
@@ -165,7 +165,7 @@ myClient@localhost> pub -t test -m "Hello World"
 > Connect a client with a will message
 
 ```
-hivemq-cli> con -wt willtopic -wq 2 -wm "Client disconnected ungracefully"
+mqtt> con -wt willtopic -wq 2 -wm "Client disconnected ungracefully"
 ```
 
 ***
@@ -173,7 +173,7 @@ hivemq-cli> con -wt willtopic -wq 2 -wm "Client disconnected ungracefully"
 > Connect a client with SSL using client side and server side authentication with a password encrypted private key
 
 ```
-hivemq-cli> con --cafile pathToServerCertificate.pem --tls-version TLSv.1.3
+mqtt> con --cafile pathToServerCertificate.pem --tls-version TLSv.1.3
          --cert pathToClientCertificate.pem --key pathToClientKey.pem
 Enter private key password:
 ```
@@ -183,9 +183,9 @@ Enter private key password:
 > Connect a client which is identified by myClient and disconnect it afterwards using default settings
 
 ```
-hivemq-cli> con -i myClient
+mqtt> con -i myClient
 myClient@localhost> dis
-hivemq-cli>
+mqtt>
 ```
 
 ***
@@ -193,9 +193,9 @@ hivemq-cli>
 > Connect a client which is identified by myClient on specific settings and disconnect it afterwards
 
 ```
-hivemq-cli> con -i myClient -h broker.hivemq.com -V 3
+mqtt> con -i myClient -h broker.hivemq.com -V 3
 myClient@localhost> exit  # client is still connected
-hivemq-cli> dis -i myClient -h broker.hivemq.com -V 3
+mqtt> dis -i myClient -h broker.hivemq.com -V 3
 ```
 
 > **NOTE**: Besides the **identifier** also **hostname** has to be given to uniquely identify the client.

@@ -52,6 +52,6 @@ clientID> pub   {   -t <topic> [-t <topic>]...
 > Publish with a client identified with ``myClient`` to the default settings:
 
 ```
-hivemq-cli> con -i myClient
+mqtt> con -i myClient
 myClient@localhost> pub -t test -m msg
 ```

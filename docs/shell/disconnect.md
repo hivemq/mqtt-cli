@@ -14,7 +14,7 @@ Disconnects a previously connected client.
 ## Synopsis (without client context)
 
 ```
-hivemq-cli> dis {   -i <identifier>
+mqtt> dis {   -i <identifier>
                     [-h <hostname>]
                     [-e <sessionExpiryInterval>]
                     [-r <reasonString>]
@@ -53,9 +53,9 @@ clientID@host>  dis {   [-e <sessionExpiryInterval>]
 > Connect a client which is identified by myClient and disconnect it afterwards using default settings
 
 ```
-hivemq-cli> con -i myClient
+mqtt> con -i myClient
 myClient@localhost> dis
-hivemq-cli>
+mqtt>
 ```
 
 ***
@@ -63,9 +63,9 @@ hivemq-cli>
 > Connect a client which is identified by myClient on specific settings and disconnect it afterwards
 
 ```
-hivemq-cli> con -i myClient -h broker.hivemq.com
+mqtt> con -i myClient -h broker.hivemq.com
 myClient@localhost> exit  # client is still connected
-hivemq-cli> dis -i myClient -h broker.hivemq.com
+mqtt> dis -i myClient -h broker.hivemq.com
 ```
 
 > **NOTE**: Besides the **identifier** also the **hostname** has to be given to uniquely identify the client.

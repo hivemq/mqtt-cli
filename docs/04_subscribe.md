@@ -16,21 +16,21 @@ If the Subscribe command is not called in Shell-Mode, it will block the console 
  
 |Command                                         |Explanation                                                              |
 |------------------------------------------------|-------------------------------------------------------------------------|
-| ``hivemq-cli sub -t topic`` | Subscribe to a topic with default settings and block the console.
-| ``hivemq-cli sub -t test1 -t test2``| Subscribe to the topics 'test1' and 'test2' with default settings and block the console.
-| ``hivemq-cli sub -t test -h localhost -p 1884``| Subscribe to topic 'test' at a broker with the address 'localhost:1884'.
+| ``mqtt sub -t topic`` | Subscribe to a topic with default settings and block the console.
+| ``mqtt sub -t test1 -t test2``| Subscribe to the topics 'test1' and 'test2' with default settings and block the console.
+| ``mqtt sub -t test -h localhost -p 1884``| Subscribe to topic 'test' at a broker with the address 'localhost:1884'.
 
 <!---
 See also 
 ```
-hivemq-cli sub --help
+mqtt sub --help
 ```
 --> 
 
 ## Synopsis
 
 ```
-hivemq-cli sub {    -t <topic> [-t <topic>]...
+mqtt sub {    -t <topic> [-t <topic>]...
                     [-q <qos>]...
                     [-b64]
                     [-oc]
@@ -163,7 +163,7 @@ hivemq-cli sub {    -t <topic> [-t <topic>]...
 > **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
 
 ```
-$ hivemq-cli sub -t topic1 -t topic2 -q 2  
+$ mqtt sub -t topic1 -t topic2 -q 2  
 ```
 
 ***
@@ -171,7 +171,7 @@ $ hivemq-cli sub -t topic1 -t topic2 -q 2
 > Subscribe to the given topics with a specific QoS for each topic. ``('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic3' QoS 2)``
 
 ```
-$ hivemq-cli sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
+$ mqtt sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 ```
 
 ***
@@ -181,7 +181,7 @@ $ hivemq-cli sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 > **NOTE**: If the file is not created yet it will be created by the CLI. If it is present the received publish messages will be appended to the file.
 
 ```
-$ hivemq-cli sub -t topic -of publishes.log
+$ mqtt sub -t topic -of publishes.log
 ```
 
 ***
@@ -190,7 +190,7 @@ $ hivemq-cli sub -t topic -of publishes.log
 
 > **NOTE**: If the file is not created yet it will be created by the CLI. If it is present the received publish messages will be appended to the file.
 ```
-$ hivemq-cli sub -t topic -of /usr/local/var/publishes.log
+$ mqtt sub -t topic -of /usr/local/var/publishes.log
 ```
 
 ***
@@ -198,5 +198,5 @@ $ hivemq-cli sub -t topic -of /usr/local/var/publishes.log
 > Subscribe to a topic and output all the received messages in base64 encoding
 
 ```
-$ hivemq-cli sub -t topic -b64
+$ mqtt sub -t topic -b64
 ```
