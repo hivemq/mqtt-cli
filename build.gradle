@@ -26,13 +26,24 @@ apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 // Project settings
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
-compileJava.options.encoding = 'UTF-8'
-compileTestJava.options.encoding = 'UTF-8'
 javadoc.options.encoding = 'UTF-8'
+
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+
+    def jv = System.properties['java.version']
+    if ( jv.startsWith('6') || jv.startsWith('7')  ) {
+            throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
+    }
+}
+
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
 
 group = 'com.hivemq'
 version = '1.0.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
@@ -107,8 +118,8 @@ ext {
 
     // Dependency versions
 
-    picoclishell3Version = '4.0.3'
-    picocliVersion = '4.0.3'
+    picoclishell3Version = '4.0.4'
+    picocliVersion = '4.0.4'
     jline3Version = '3.11.0'
     jline3JansiVersion = '3.12.1'
     daggerVersion = '2.21'
@@ -131,7 +142,11 @@ dependencies {
     implementation group: 'info.picocli', name: 'picocli-shell-jline3', version: picoclishell3Version
     implementation group: 'org.jline', name: 'jline', version: jline3Version
     implementation group: 'org.jline', name: 'jline-terminal-jansi', version: jline3JansiVersion
-    
+
+    implementation 'info.picocli:picocli:4.0.4'
+    implementation 'info.picocli:picocli-codegen:4.0.4'
+
+
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
     implementation group: 'org.tinylog', name: 'tinylog', version: tinylogVersion
     implementation group: 'org.jetbrains', name: 'annotations', version: jetbrainsAnnotationsVersion
@@ -145,6 +160,7 @@ dependencies {
     implementation group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
     implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
     compileOnly 'com.oracle.substratevm:svm:19.2.0'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
     
     def junitVintageVersion = '5.2.0'
@@ -275,13 +291,6 @@ test {
     
 }
 
-
-compileJava {
-    def jv = System.properties['java.version']
-    if ( jv.startsWith('6') || jv.startsWith('7')  ) {
-    throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
-}
-}
 
 graal {
     graalVersion '19.2.0'
