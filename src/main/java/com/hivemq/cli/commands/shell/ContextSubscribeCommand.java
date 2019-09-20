@@ -47,6 +47,11 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     public static final int IDLE_TIME = 1000;
 
+    //needed for pico cli - reflection code generation
+    public ContextSubscribeCommand() {
+        this(null);
+    }
+
     @Inject
     public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         super(mqttClientExecutor);

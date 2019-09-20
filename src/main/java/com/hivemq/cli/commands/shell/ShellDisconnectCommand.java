@@ -39,6 +39,11 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
 
     private final MqttClientExecutor mqttClientExecutor;
 
+    //needed for pico cli - reflection code generation
+    public ShellDisconnectCommand() {
+        this(null);
+    }
+
     @Inject
     ShellDisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
 

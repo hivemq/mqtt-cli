@@ -17,7 +17,7 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.HiveMQCLIMain;
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.ioc.DaggerContextCommandLine;
 import com.hivemq.cli.utils.PropertiesUtils;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +44,7 @@ import java.io.PrintWriter;
 
 
 @CommandLine.Command(name = "shell", aliases = "sh",
-        description = "Starts HiveMQ-CLI in shell mode, to enable interactive mode with further sub commands.",
+        description = "Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.",
         footer = {"", "@|bold Press Ctl-C to exit.|@"},
         synopsisHeading = "%n@|bold Usage|@:  ",
         descriptionHeading = "%n",
@@ -55,7 +55,7 @@ import java.io.PrintWriter;
 
 public class ShellCommand implements Runnable {
 
-    private static final String DEFAULT_PROMPT = "hivemq-cli> ";
+    private static final String DEFAULT_PROMPT = "mqtt> ";
     private static String prompt = DEFAULT_PROMPT;
 
     public static boolean DEBUG;
@@ -119,13 +119,14 @@ public class ShellCommand implements Runnable {
         shellCommandLine = new CommandLine(spec);
         contextCommandLine = DaggerContextCommandLine.create().contextCommandLine();
 
-        shellCommandLine.setColorScheme(HiveMQCLIMain.COLOR_SCHEME);
-        contextCommandLine.setColorScheme(HiveMQCLIMain.COLOR_SCHEME);
-        contextCommandLine.setUsageHelpWidth(HiveMQCLIMain.CLI_WIDTH);
+        shellCommandLine.setColorScheme(MqttCLIMain.COLOR_SCHEME);
+        contextCommandLine.setColorScheme(MqttCLIMain.COLOR_SCHEME);
+        contextCommandLine.setUsageHelpWidth(MqttCLIMain.CLI_WIDTH);
 
         try {
             final Terminal terminal = TerminalBuilder.builder()
-                    .system(true)
+                    .name("MQTT Terminal")
+                    .dumb(true)
                     .build();
 
             shellReader = (LineReaderImpl) LineReaderBuilder.builder()
@@ -213,7 +214,7 @@ public class ShellCommand implements Runnable {
 
 
     static void usage(Object command) {
-        currentCommandLine.usage(command, System.out, HiveMQCLIMain.COLOR_SCHEME);
+        currentCommandLine.usage(command, System.out, MqttCLIMain.COLOR_SCHEME);
     }
 
     static String getUsageMessage() {

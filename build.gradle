@@ -17,7 +17,7 @@ plugins {
     id 'org.gradle.crypto.checksum' version '1.1.0'
     id "nebula.ospackage" version "7.1.0"
     id 'edu.sc.seis.launch4j' version '2.4.6'
-    id 'com.palantir.graal' version '0.4.0'
+    id 'com.palantir.graal' version '0.6.0'
     id 'de.thetaphi.forbiddenapis' version '2.6' apply false
 }
 
@@ -25,14 +25,28 @@ apply plugin: 'de.thetaphi.forbiddenapis'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
+apply plugin: 'com.palantir.graal'
+
 // Project settings
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-
-compileJava.options.encoding = 'UTF-8'
-compileTestJava.options.encoding = 'UTF-8'
+// Project settings
 javadoc.options.encoding = 'UTF-8'
+
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+
+    def jv = System.properties['java.version']
+    if ( jv.startsWith('6') || jv.startsWith('7')  ) {
+        throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
+    }
+}
+
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
 
 group = 'com.hivemq'
 version = '1.0.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
@@ -41,7 +55,7 @@ description = 'HiveMQ CLI is a tool that provides a feature rich command line in
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
 
 application {
-    mainClassName = 'com.hivemq.cli.HiveMQCLIMain'
+    mainClassName = 'com.hivemq.cli.MqttCLIMain'
 }
 
 idea {
@@ -60,8 +74,8 @@ repositories {
 
 ext {
     moduleName = 'com.hivemq.cli'
-    readableName = 'hivemq-cli'
-    appName = 'HiveMQ CLI'
+    readableName = 'mqtt-cli'
+    appName = 'MQTT CLI'
     githubOrg = 'hivemq'
     githubRepo = 'hivemq-cli'
     githubUrl = 'https://github.com/' + githubOrg + '/' + githubRepo
@@ -95,8 +109,8 @@ ext {
     buildWinDir = "${buildPkgDir}/windows"
 
     // Icons
-    hmqIco = "${iconsDir}/hmq.ico"
-    hmqLogo = "${iconsDir}/hivemq-cli-logo.png"
+    hmqIco = "${iconsDir}/05-mqtt-cli-icon.ico"
+    hmqLogo = "${iconsDir}/05-mqtt-cli-icon.png"
 
     // Vendor details
 
@@ -107,9 +121,9 @@ ext {
 
     // Dependency versions
 
-    picoclishell3Version = '4.0.3'
-    picocliVersion = '4.0.3'
-    jline3Version = '3.11.0'
+    picoclishell3Version = '4.0.4'
+    picocliVersion = '4.0.4'
+    jline3Version = '3.12.1'
     jline3JansiVersion = '3.12.1'
     daggerVersion = '2.21'
     guavaVersion ='27.0.1-jre'
@@ -118,7 +132,6 @@ ext {
     jcToolsVersion = '2.1.2'
     jetbrainsAnnotationsVersion = '17.0.0'
     bouncycastleVersion='1.62'
-    jansiVersion = '1.8'
     nettyVersion = '4.1.37.Final'
 }
 
@@ -127,11 +140,13 @@ dependencies {
     compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion 
     annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion 
 
+    compile group: 'org.jline', name: 'jline', version: jline3Version
+    compile group: 'org.jline', name: 'jline-terminal-jansi', version: jline3JansiVersion
+
     implementation group: 'info.picocli', name: 'picocli', version: picocliVersion
     implementation group: 'info.picocli', name: 'picocli-shell-jline3', version: picoclishell3Version
-    implementation group: 'org.jline', name: 'jline', version: jline3Version
-    implementation group: 'org.jline', name: 'jline-terminal-jansi', version: jline3JansiVersion
-    
+    implementation group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
+
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
     implementation group: 'org.tinylog', name: 'tinylog', version: tinylogVersion
     implementation group: 'org.jetbrains', name: 'annotations', version: jetbrainsAnnotationsVersion
@@ -144,7 +159,9 @@ dependencies {
     implementation group: 'io.netty', name: 'netty-handler', version: nettyVersion
     implementation group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
     implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
+
     compileOnly 'com.oracle.substratevm:svm:19.2.0'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
     
     def junitVintageVersion = '5.2.0'
@@ -241,7 +258,7 @@ jar {
                 'Main-Class': application.mainClassName,
                 // 'Class-Path': configurations.compile.collect { 'lib/' + it.getName() }.join(' '),
                 'Built-Date': new Date().format("yyyy-MM-dd HH:mm:ss"),
-                // 'SplashScreen-Image': '01-hivemq-cli.svg',
+                // 'SplashScreen-Image': '01-mqtt-cli.svg',
                 // 'Sealed': 'true'
         )
     }
@@ -276,22 +293,18 @@ test {
 }
 
 
-compileJava {
-    def jv = System.properties['java.version']
-    if ( jv.startsWith('6') || jv.startsWith('7')  ) {
-    throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
-}
-}
-
 graal {
     graalVersion '19.2.0'
     outputName "${rootProject.name}"
     mainClass application.mainClassName
     option '-H:+PrintClassInitialization'
+    option '-H:ReflectionConfigurationFiles=tools/reflection.json'
+    option '-H:-UseServiceLoaderFeature'
+    option '-H:IncludeResources="org/jline/utils/*.*'
+    option '-H:IncludeResources="org/jline/terminal/*.*'
     option '--allow-incomplete-classpath'
     option '--report-unsupported-elements-at-runtime'
     option '--initialize-at-build-time'
-    //option '--initialize-at-build-time=org.jctools'
     option '--initialize-at-run-time=' +
             'io.netty.channel.unix.Errors,' +
             'io.netty.channel.unix.IovArray,' +
@@ -309,10 +322,6 @@ graal {
             'io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder,' +
             'com.hivemq.client.internal.mqtt.codec.encoder.MqttPingReqEncoder,' +
             'com.hivemq.client.internal.mqtt.codec.encoder.mqtt3.Mqtt3DisconnectEncoder'
-//    option '--initialize-at-run-time=' +
-//            'io.netty.handler.ssl.util.ThreadLocalInsecureRandom,' +
-//            'com.sun.jndi.dns.DnsClient,' +
-//            'io.netty.handler.ssl.util.BouncyCastleSelfSignedCertGenerator,' +
 }
 
 // Homebrew
@@ -324,11 +333,11 @@ task buildPackageBrew(type: Zip) {
     destinationDirectory = file(project.buildBrewDir)
 
     from shadowJar.archiveFile
-    from "$brewDir/hivemq-cli"
+    from "$brewDir/mqtt-cli"
 
     into('brew') {
         from shadowJar.archiveFile
-        from "$brewDir/hivemq-cli"
+        from "$brewDir/mqtt-cli"
     }
 
     from(projectDir) {
@@ -341,13 +350,13 @@ task buildPackageBrew(type: Zip) {
 task buildBrewFormula(type: Copy) {
     dependsOn buildPackageBrew
 
-    from "$brewDir/hivemq-cli.rb"
+    from "$brewDir/mqtt-cli.rb"
     into "$buildBrewDir"
 
     doLast {
-        ant.replace(file: "$buildBrewDir/hivemq-cli.rb", token: "@@description@@", value: project.description)
-        ant.replace(file: "$buildBrewDir/hivemq-cli.rb", token: "@@filename@@", value: buildPackageBrew.archiveFileName.get())
-        ant.replace(file: "$buildBrewDir/hivemq-cli.rb", token: "@@shasum@@", value: checkSum(buildPackageBrew.archiveFile.get().getAsFile()))
+        ant.replace(file: "$buildBrewDir/mqtt-cli.rb", token: "@@description@@", value: project.description)
+        ant.replace(file: "$buildBrewDir/mqtt-cli.rb", token: "@@filename@@", value: buildPackageBrew.archiveFileName.get())
+        ant.replace(file: "$buildBrewDir/mqtt-cli.rb", token: "@@shasum@@", value: checkSum(buildPackageBrew.archiveFile.get().getAsFile()))
     }
 
 }
@@ -360,7 +369,7 @@ ospackage {
 
     url project.website
 
-    summary 'HiveMQ MQTT client interface for interacting with a MQTT broker'
+    summary 'MQTT Command Line Interface for interacting with a MQTT broker'
     packageDescription project.description
     license 'apache2'
     packager ''
@@ -386,7 +395,7 @@ ospackage {
         fileType LICENSE
     }
     from(debDir) {
-        include 'hivemq-cli'
+        include 'mqtt-cli'
         fileMode 0755
         filter {
             it.replaceAll("@@jarPath@@", "/opt/${packageName}/${shadowJar.archiveFileName.get()}")
@@ -394,7 +403,7 @@ ospackage {
     }
 
 
-    link('/usr/bin/hivemq-cli', "/opt/$packageName/hivemq-cli", 0755)
+    link('/usr/bin/mqtt-cli', "/opt/$packageName/mqtt-cli", 0755)
 
 }
 

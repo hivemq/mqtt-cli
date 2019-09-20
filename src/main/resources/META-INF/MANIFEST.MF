@@ -1,6 +1,6 @@
 Manifest-Version: 1.0.0
-Implementation-Title: HiveMQ MQTT Command line interface
+Implementation-Title: MQTT Command line interface
 Implementation-Vendor: HiveMQ GmbH
 Implementation-Version: 1.0.0
-Main-Class: com.hivemq.cli.HiveMQCLIMain
+Main-Class: com.hivemq.cli.MqttCLIMain
 

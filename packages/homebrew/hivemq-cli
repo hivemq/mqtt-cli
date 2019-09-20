@@ -1,3 +1,0 @@
-#!/bin/bash
-# Runs HiveMQ-ClI
-exec java -jar ##PREFIX##/hivemq-cli.jar "$@"

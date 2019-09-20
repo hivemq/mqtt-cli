@@ -114,7 +114,7 @@ class PropertiesUtilsTest {
         assertEquals(MqttVersion.MQTT_3_1_1, PropertiesUtils.DEFAULT_MQTT_VERSION);
         assertEquals("HiveMQClient", PropertiesUtils.DEFAULT_CLIENT_PREFIX);
         assertEquals(PropertiesUtils.DEBUG_LEVEL.DEBUG, PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
-        assertEquals("/etc/.hivemq-cli/logs", PropertiesUtils.DEFAULT_LOGFILE_PATH);
+        assertEquals("/etc/.mqtt-cli/logs", PropertiesUtils.DEFAULT_LOGFILE_PATH);
         assertEquals("file.txt", PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
 
         assertEquals(properties, PropertiesUtils.DEFAULT_PROPERTIES);
@@ -129,7 +129,7 @@ class PropertiesUtilsTest {
         assertEquals("broker.hivemq.com", PropertiesUtils.DEFAULT_HOST);
         assertEquals(1883, PropertiesUtils.DEFAULT_PORT);
         assertEquals(MqttVersion.MQTT_3_1_1, PropertiesUtils.DEFAULT_MQTT_VERSION);
-        assertEquals("hmqClient", PropertiesUtils.DEFAULT_CLIENT_PREFIX);
+        assertEquals("mqttClient", PropertiesUtils.DEFAULT_CLIENT_PREFIX);
         assertEquals(PropertiesUtils.DEBUG_LEVEL.DEBUG, PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
         assertEquals(DefaultProperties.LOGFILE_PATH, PropertiesUtils.DEFAULT_LOGFILE_PATH);
         assertEquals(DefaultProperties.SUBSCRIBE_OUTPUT_FILE, PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);

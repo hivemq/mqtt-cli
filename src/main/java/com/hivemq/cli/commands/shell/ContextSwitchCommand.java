@@ -30,6 +30,16 @@ import javax.inject.Inject;
         description = "Switch the current context")
 public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
 
+    //needed for pico cli - reflection code generation
+    public ContextSwitchCommand() {
+        this(null);
+    }
+
+    @Inject
+    public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+        super(mqttClientExecutor);
+    }
+
     @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
     @Nullable
     private String contextName;
@@ -41,12 +51,6 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")
     @Nullable
     private String host;
-
-
-    @Inject
-    public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
-    }
 
 
     @Override

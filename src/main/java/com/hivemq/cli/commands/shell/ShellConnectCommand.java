@@ -43,6 +43,11 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     @Nullable
     public MqttClient client;
 
+    //needed for pico cli - reflection code generation
+    public ShellConnectCommand() {
+        this(null);
+    }
+
     @Inject
     public ShellConnectCommand(@NotNull final MqttClientExecutor mqttClientExecutor) {
 
