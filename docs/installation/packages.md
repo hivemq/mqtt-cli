@@ -14,10 +14,10 @@ nav_order: 1
 ## Homebrew
 For **Mac OS X** and **Linux** systems use **[Homebrew](https://brew.sh/)** to install MQTT CLI via the **[MQTT CLI Tap](https://github.com/hivemq/homebrew-mqtt)**.
 ```
-$ brew tap hivemq/mqtt
+$ brew tap hivemq/mqtt-cli
 ```
 ```
-$ brew install mqtt
+$ brew install mqtt-cli
 ```
 
 ***
@@ -25,22 +25,22 @@ $ brew install mqtt
 ## Windows Zip
 
 Download the Windows Zipfile from `url` and extract it in your preferred location.
-To execute MqttCLI simply open the Windows Command Prompt with `⊞ Win` + `R` and execute `cmd`.
-Navigate into the extracted MqttCLI folder and execute `MqttCLI.exe command`.
+To execute MQTT CLI simply open the Windows Command Prompt with `⊞ Win` + `R` and execute `cmd`.
+Navigate into the extracted MQTT CLI folder and execute `mqtt-cli.exe command`.
 
-To quick start the shell simply double-click the `MqttCLI Shell.exe`.
+To quick start the shell simply double-click the `mqtt-cli-shell.exe`.
 
 ***
 
 ## Debian Package
 
-If you are using a *nix operating system which operates with debian packages you can download the MqttCLI debian package from `url` via `wget` or `curl` 
+If you are using a *nix operating system which operates with debian packages you can download the MQTT CLI debian package from `url` via `wget` or `curl` 
 and install the package with `sudo dpkg -i`  or `sudo apt install`:
 
 
 ``` 
-wget  http:url/mqttcli.deb
-sudo dpkg -i mqttcli.deb
+wget  http:url/mqtt-cli.deb
+sudo dpkg -i mqtt-cli.deb
 ``` 
 
 ***
