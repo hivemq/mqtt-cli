@@ -40,6 +40,11 @@ import java.util.Arrays;
 
 public class ContextPublishCommand extends ShellContextCommand implements Runnable, Publish {
 
+    //needed for pico cli - reflection code generation
+    public ContextPublishCommand() {
+        this(null);
+    }
+
     @Inject
     public ContextPublishCommand(final @NotNull MqttClientExecutor executor) {
         super(executor);

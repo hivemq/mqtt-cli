@@ -46,6 +46,11 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     public static final int IDLE_TIME = 5000;
 
+    //needed for pico cli - reflection code generation
+    public SubscribeCommand() {
+        this(null);
+    }
+
     @Inject
     public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
 

@@ -42,9 +42,13 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     private final MqttClientExecutor mqttClientExecutor;
 
+    //needed for pico cli - reflection code generation
+    public PublishCommand() {
+        this(null);
+    }
+
     @Inject
     public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-
         this.mqttClientExecutor = mqttClientExecutor;
 
     }
@@ -97,7 +101,6 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         }
 
         setDefaultOptions();
-
         handleCommonOptions();
 
         logUnusedOptions();

@@ -6,9 +6,9 @@ class HivemqCli < Formula
   depends_on :java => "1.8+"
 
   def install
-    inreplace "brew/hivemq-cli", "##PREFIX##", "#{prefix}"
-    prefix.install "hivemq-cli.jar"
-    bin.install "brew/hivemq-cli"
+    inreplace "brew/mqtt-cli", "##PREFIX##", "#{prefix}"
+    prefix.install "mqtt-cli.jar"
+    bin.install "brew/mqtt-cli"
   end
 
   test do

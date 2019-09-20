@@ -1,9 +1,9 @@
-name: hivemq-cli
+name: mqtt-cli
 
 summary: MQTT Client Command Line Interface
 
 description: |
-  HiveMQ CLI is a tool that provides a feature rich command line interface for connecting,
+  MQTT CLI is a tool that provides a feature rich command line interface for connecting,
   publishing, subscribing, unsubscribing and disconnecting
   various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1
 version: '1.0'
@@ -13,7 +13,7 @@ grade: stable
 confinement: strict
 
 parts:
-  hivemq-cli:
+  mqtt-cli:
     plugin: gradle
     source: .
     stage-packages:
@@ -24,8 +24,8 @@ parts:
     source: snap/local
 
 apps:
-  hivemq-cli:
-    command: hivemq-cli.sh
+  mqtt-cli:
+    command: mqtt-cli.sh
 
     adapter: full
     environment:

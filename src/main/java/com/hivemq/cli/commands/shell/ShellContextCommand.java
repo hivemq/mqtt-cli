@@ -42,6 +42,11 @@ public class ShellContextCommand implements Runnable, CliCommand {
     public static @Nullable MqttClient contextClient;
     MqttClientExecutor mqttClientExecutor;
 
+    //needed for pico cli - reflection code generation
+    public ShellContextCommand() {
+        this(null);
+    }
+
     @Inject
     public ShellContextCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;

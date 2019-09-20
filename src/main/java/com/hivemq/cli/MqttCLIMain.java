@@ -25,11 +25,9 @@ import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
-import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
-import java.io.Console;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +35,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import org.fusesource.jansi.AnsiConsole;
 
-public class HiveMQCLIMain {
+public class MqttCLIMain {
 
 
     public final static CommandLine.Help.ColorScheme COLOR_SCHEME = new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)
@@ -50,8 +47,6 @@ public class HiveMQCLIMain {
             .build();
 
     public static final int CLI_WIDTH = 160;
-
-
 
     public static void main(final String[] args) {
 
@@ -92,7 +87,6 @@ public class HiveMQCLIMain {
             PropertiesUtils.setDefaultProperties(properties);
         }
     }
-
 
 
     private static CommandLine setupCommandLine() {
