@@ -24,7 +24,7 @@ clientID> pub   {   -t <topic> [-t <topic>]...
                     [-cd <correlationData>]
                     [-pf <payloadFormatIndicator>]
                     [-rt <responseTopic>]
-                    [-up <userProperties>]
+                    [-up <userProperty>]...
 }
 ```
 
@@ -43,7 +43,7 @@ clientID> pub   {   -t <topic> [-t <topic>]...
 | ``-cd`` | ``--correlationData`` | The correlation data of the publish message. |
 | ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
 | ``-rt`` | ``--responseTopic`` | The topic name for the response message of the publish message. |
-| ``-up`` | ``--userProperties``  | The user property of the publish message. Usage: `Key=Value`, `sKey1=Value1|Key2=Value2` |
+| ``-up`` | ``--userProperty``  | A user property of the publish message. |
 
 ***
 

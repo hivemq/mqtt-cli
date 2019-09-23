@@ -23,7 +23,7 @@ clientID@host> sub  {   -t <topics> [-t <topics>]...
                         [-b64]
                         [-oc]
                         [-of <receivedMessagesFile>]
-                        [-up <userProperties>]
+                        [-up <userProperty>]...
 }
 ```
 
@@ -39,7 +39,7 @@ clientID@host> sub  {   -t <topics> [-t <topics>]...
 | ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` 
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
-| ``-up``  | ``--userProperties`` | User properties of the subscribe message can be defined like ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs. |
+| ``-up``  | ``--userProperty`` | A user property of the subscribe message. |
 
 
 ## Examples

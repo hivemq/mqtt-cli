@@ -34,7 +34,7 @@ hivemq-cli> con {   [-h <host>]
                     [-pw [<password>]]
                     [-se <sessionExpiryInterval>]
                     [-k <keepAlive>]
-                    [-up <connectUserProperties>]
+                    [-up <userProperty>]...
                     [--cert <clientCertificate> --key <clientPrivateKey>]
                     [--cafile FILE]
                     [--capath DIR]...
@@ -50,7 +50,7 @@ hivemq-cli> con {   [-h <host>]
                     [-Wr]
                     [-Wrt <willResponseTopic>]
                     [-Wt <willTopic>]
-                    [-Wup <willUserProperties>]
+                    [-Wup <willUserProperty>]...
                     [--rcvMax <receiveMaximum>]
                     [--sendMax <sendMaximum>]
                     [--maxPacketSize <maximumPacketSize>]
@@ -78,7 +78,7 @@ hivemq-cli> con {   [-h <host>]
 | ``-v``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
 | ``-c``   | ``--[no-]cleanStart`` | Enable clean start if set. | ``True``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (No Expiry)
-| ``-up``  | ``--userProperties`` | User properties of the connect message can be defined like <br>``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs.
+| ``-up``  | ``--userProperty`` | A user property of the connect message.
 
 ***
 
@@ -112,7 +112,7 @@ hivemq-cli> con {   [-h <host>]
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
 | ``-Wpf``  | ``--willPayloadFormatIndicator`` |Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 | ``-Wrt``  | ``--willResponseTopic`` | Topic Name for a response message.   |
-| ``-Wup``   | ``--willUserProperties``  | User properties of the will message can be defined like <br> ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs. |
+| ``-Wup``   | ``--willUserProperty``  | A user property of the will message. |
 
 *** 
 

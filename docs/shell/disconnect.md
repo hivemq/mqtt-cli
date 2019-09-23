@@ -18,7 +18,7 @@ hivemq-cli> dis {   -i <identifier>
                     [-h <hostname>]
                     [-e <sessionExpiryInterval>]
                     [-r <reasonString>]
-                    [-up <userProperties>]
+                    [-up <userProperty>]...
 }
 ```
 
@@ -29,7 +29,7 @@ Disconnects the currently active client context.
 ```
 clientID@host>  dis {   [-e <sessionExpiryInterval>]
                         [-r <reasonString>]
-                        [-up <userProperties>]
+                        [-up <userProperty>]...
 }
 ```
 
@@ -44,7 +44,7 @@ clientID@host>  dis {   [-e <sessionExpiryInterval>]
 | ``-h``| ``--host`` | The host the client is connected to. | ``localhost``
 | ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
 | ``-r``  | ``--reason``| Reason string for the disconnect |
-| ``-up`` | ``--userProperties``|  User properties of the disconnect message can be defined like ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs.|
+| ``-up`` | ``--userProperty``|  A user property of the disconnect message. |
 
 ***
 

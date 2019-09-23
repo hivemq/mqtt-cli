@@ -41,7 +41,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
                     [-ct <contentType>]
                     [-pf <payloadFormatIndicator>]
                     [-pr <responseTopic>]
-                    [-up <userProperties>]
+                    [-up <userProperty>]...
                     [-h <host>]
                     [-p <port>]
                     [-V <version>]
@@ -50,7 +50,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
                     [-c]               
                     [-k <keepAlive>]
                     [-se <sessionExpiryInterval>]
-                    [-Cup <connectUserProperties>]
+                    [-Cup <connectUserProperty>]...
                     [-s]
                     [-u <user>]
                     [-pw [<password>]]
@@ -69,7 +69,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
                     [-Wct <willContentType>]
                     [-Wpf <willPayloadFormatIndicator>]
                     [-Wrt <willResponseTopic>]
-                    [-Wup <willUserProperties>]
+                    [-Wup <willUserProperty>]...
                     [--rcvMax <receiveMaximum>]
                     [--sendMax <sendMaximum>]
                     [--maxPacketSize <maximumPacketSize>]
@@ -96,7 +96,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 | ``-cd`` | ``--correlationData`` | The correlation data of the publish message. |
 | ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
 | ``-rt`` | ``--responseTopic`` | The topic name for the response message of the publish message. |
-| ``-up`` | ``--userProperties``  | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs |
+| ``-up`` | ``--userProperty``  | A user property of the publish message |
 | ``-d``    |   ``--debug``     | Print debug level messages to the console. | ``False``
 | ``-v``    |   ``--verbose``   | Print trace level messages to the console. | ``False``
 
@@ -113,7 +113,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier is given. | ``hmqClient``
 | ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
-| ``-Cup``  | ``--connectUserProperties`` | User properties of the connect message can be defined like <br> ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs. |
+| ``-Cup``  | ``--connectUserProperty`` | A user property of the connect message |
 
 ***
 
@@ -147,7 +147,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
 | ``-Wpf``  | ``--willPayloadFormatIndicator`` | Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 | ``-Wrt``  | ``--willResponseTopic`` | Topic Name for a response message.   |
-| ``-Wup``   | ``--willUserProperties``  | User properties of the will message can be defined like <br> ``key=value`` for single pair or ``key1=value1|key2=value2`` for multiple pairs. |
+| ``-Wup``   | ``--willUserProperties``  | A user property of the will message |
 
 *** 
 
