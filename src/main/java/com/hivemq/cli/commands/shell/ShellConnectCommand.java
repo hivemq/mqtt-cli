@@ -29,6 +29,7 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -91,10 +92,14 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
             client = mqttClientExecutor.connect(this);
         }
         catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
+            LoggingContext.put("identifier", "CONNECT");
+            if (isVerbose()) {
+                Logger.trace(ex.getStackTrace());
             }
-            Logger.error(ex.getMessage());
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(ex.getCause().getMessage());
         }
     }
 

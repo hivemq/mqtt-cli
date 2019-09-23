@@ -28,6 +28,7 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -106,11 +107,16 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
 
         try {
             mqttClientExecutor.publish(contextClient, this);
-        } catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
+        }
+        catch (final Exception ex) {
+            LoggingContext.put("identifier", "PUBLISH");
+            if (isVerbose()) {
+                Logger.trace(ex.getStackTrace());
             }
-            Logger.error(ex.getMessage());
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(ex.getCause().getMessage());
         }
     }
 

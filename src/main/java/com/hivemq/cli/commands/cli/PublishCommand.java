@@ -24,6 +24,7 @@ import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
@@ -123,10 +124,19 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
             mqttClientExecutor.publish(this);
         }
         catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
+            if (ex instanceof ConnectionFailedException) {
+                LoggingContext.put("identifier", "CONNECT");
             }
-            Logger.error(ex.getMessage());
+            else {
+                LoggingContext.put("identifier", "PUBLISH");
+            }
+            if (isVerbose()) {
+                Logger.trace(ex.getStackTrace());
+            }
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(ex.getCause().getMessage());
         }
 
     }

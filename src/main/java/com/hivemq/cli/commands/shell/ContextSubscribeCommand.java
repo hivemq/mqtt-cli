@@ -31,6 +31,7 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -106,11 +107,16 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(contextClient, this);
-        } catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.error(ex);
+        }
+        catch (final Exception ex) {
+            LoggingContext.put("identifier", "SUBSCRIBE");
+            if (isVerbose()) {
+                Logger.trace(ex.getStackTrace());
             }
-            Logger.error(ex.getMessage());
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(ex.getCause().getMessage());
         }
 
         if (stay) {

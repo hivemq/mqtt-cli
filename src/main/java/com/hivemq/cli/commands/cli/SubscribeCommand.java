@@ -26,6 +26,7 @@ import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
@@ -108,11 +109,21 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(this);
-        } catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.error(ex);
+        }
+        catch (final Exception ex) {
+            if (ex instanceof ConnectionFailedException) {
+                LoggingContext.put("identifier", "CONNECT");
             }
-            Logger.error(ex.getMessage());
+            else {
+                LoggingContext.put("identifier", "PUBLISH");
+            }
+            if (isVerbose()) {
+                Logger.trace(ex.getStackTrace());
+            }
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(ex.getCause().getMessage());
         }
 
         if (receivedMessagesFile == null && !printToSTDOUT) {
