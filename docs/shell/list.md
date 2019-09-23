@@ -14,8 +14,7 @@ Lists all the connected clients.
 ## Synopsis
 
 ```
-mqtt> ls  {   [-at]
-}
+mqtt> ls    [-ahlrstU]
 ```
 
 ***
@@ -24,8 +23,12 @@ mqtt> ls  {   [-at]
 
 |Option |Long Version | Explanation | Default
 |---------------|-------------|------------------------------|
-| ``-a``    | ``--all`` | Show detailed information about the clients. | ``False``
-| ``-t``   | ``--time``| Sort the clients by their creation time. | ``False``
+| ``-a``    |  | Include disconnected clients. | ``False``
+| ``-l``   | ``--long``| Use a long listing format with detailed information about the clients. | ``False``
+| ``-r`` | ``--reverse`` | Reverse order while sorting | ``False`` 
+| ``-s`` | ``--subscriptions``  | List subscribed topics of the clients. | ``False``
+| ``-t`` | ``--time``  | Sort cliens by their creation time. | ``False``
+| ``-U`` |   |  Do not sort.  |  ``False``
 
 ***
 
@@ -38,9 +41,8 @@ mqtt> con -i client1
 client1@localhost> exit
 mqtt> con -i client2
 client2@localhost> ls
-Client-ID            Server-Address
-client1              localhost:1883
-client2              localhost:1883
+client1@localhost
+client2@localhost
 ```
 
 ***
@@ -49,7 +51,18 @@ client2              localhost:1883
 
 ```
 mqtt> con -i client
-client@localhost> ls -a
-Created-At                     Client-ID            Host                 Port       Server-Address            MQTT version    SSL
-2019-08-21T10:47:35.745179     client               localhost            1883       localhost:1883            MQTT_5_0        false
+client@localhost> ls -l
+total 1
+CONNECTED    11:00:29 client1 localhost  1883 MQTT_5_0 NO_SSL
+```
+
+***
+
+> List subscriptions of all connected clients
+
+``` 
+client1@localhost> sub -t topic -t topic2 -t topic3
+client1@localhost> ls -s
+client1@localhost
+ -subscribed topics: [topic2, topic3, topic]
 ```
