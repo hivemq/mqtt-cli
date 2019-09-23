@@ -72,11 +72,11 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @NotNull
     private String[] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default for all: 0)", order = 1)
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 0)", order = 1)
     @NotNull
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property for the subscribe message", order = 1)
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the subscribe message", order = 1)
     @Nullable Mqtt5UserProperty[] userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written", order = 1)

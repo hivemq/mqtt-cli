@@ -70,7 +70,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @NotNull
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property for the subscribe message")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the subscribe message")
     @Nullable Mqtt5UserProperty[] userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")

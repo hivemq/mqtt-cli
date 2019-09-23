@@ -58,7 +58,7 @@ public class ShellContextCommand implements Runnable, CliCommand {
             if (ShellCommand.isVerbose()) {
                 Logger.trace("Update context to {}@{}", client.getConfig().getClientIdentifier().get(), client.getConfig().getServerHost());
             }
-            LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get().toString());
+            LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get());
             contextClient = client;
             ShellCommand.readFromContext();
         }

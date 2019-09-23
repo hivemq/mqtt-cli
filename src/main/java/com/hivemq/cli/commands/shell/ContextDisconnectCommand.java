@@ -58,7 +58,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     @Nullable
     private String reasonString;
 
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of a disconnect message")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the disconnect message")
     @Nullable
     private Mqtt5UserProperty[] userProperties;
 

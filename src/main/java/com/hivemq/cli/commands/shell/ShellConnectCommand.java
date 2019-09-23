@@ -63,7 +63,7 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     @Nullable
     private Long sessionExpiryInterval;
 
-    @CommandLine.Option(names = {"-up", "--connectUserProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property for the connect message")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the connect message")
     @Nullable
     private Mqtt5UserProperty[] connectUserProperties;
 
