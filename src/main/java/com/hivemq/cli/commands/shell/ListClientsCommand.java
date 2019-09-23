@@ -30,6 +30,7 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "ls",
         aliases = "list",
@@ -97,28 +98,37 @@ public class ListClientsCommand implements Runnable, CliCommand {
             }
 
 
-            final int longestID = clientKeys.stream()
-                    .map(s -> cache.get(s).getConfig().getClientIdentifier().get().toString().length())
+            final Set<MqttClient> clients = clientKeys.stream()
+                    .map(s -> cache.get(s))
+                    .collect(Collectors.toSet());
+
+            final int longestID = clients.stream()
+                    .map(c -> c.getConfig().getClientIdentifier().get().toString().length())
                     .max(Integer::compareTo)
                     .get();
 
-            final int longestHost = clientKeys.stream()
-                    .map(s -> cache.get(s).getConfig().getServerHost().toString().length())
+            final int longestHost = clients.stream()
+                    .map(c -> c.getConfig().getServerHost().length())
                     .max(Integer::compareTo)
                     .get();
 
-            final int longestState = clientKeys.stream()
-                    .map(s -> cache.get(s).getConfig().getState().toString().length())
+            final int longestState = clients.stream()
+                    .map(c -> c.getConfig().getState().toString().length())
                     .max(Integer::compareTo)
                     .get();
 
-            final String format = new String("%-" + longestHost + "s " +
+            final int longestVersion = clients.stream()
+                    .map(c -> c.getConfig().getMqttVersion().toString().length())
+                    .max(Integer::compareTo)
+                    .get();
+
+            final String format = new String("%-" + longestState + "s " +
                     "%02d:%02d:%02d " +
                     "%-" + longestID + "s " +
                     "%-" + longestHost + "s " +
                     "%5d " +
-                    "%8s " +
-                    "%s\n");
+                    "%-" + longestVersion + "s " +
+                    "%-s\n");
 
             for (final String key : sortedKeys) {
 
@@ -138,7 +148,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
                         client.getConfig().getClientIdentifier().get().toString(),
                         client.getConfig().getServerHost(),
                         client.getConfig().getServerPort(),
-                        client.getConfig().getMqttVersion(),
+                        client.getConfig().getMqttVersion().name(),
                         client.getConfig().getSslConfig().map(ssl -> ssl.getProtocols().get().toString()).orElse("NO_SSL"));
 
                 if (listSubscriptions) {
@@ -175,29 +185,22 @@ public class ListClientsCommand implements Runnable, CliCommand {
     public String[] getSortedClientKeys() {
         final Set<String> keys = mqttClientExecutor.getClientCache().keySet();
         final Map<String, ClientData> clientDataMap = mqttClientExecutor.getClientDataMap();
-        String[] keysArr = keys.toArray(new String[0]);
+        final String[] keysArr = keys.toArray(new String[0]);
 
         if (doNotSort) {
-            // do nothing
+            return keysArr;
         }
-        else if (sortByTime) {
-            Arrays.sort(keysArr, new Comparator<String>() {
-                @Override
-                public int compare(final String s1, final String s2) {
-                    return clientDataMap.get(s1).getCreationTime().compareTo(clientDataMap.get(s2).getCreationTime());
-                }
-            });
+        Comparator<String> comparator;
+        if (sortByTime) {
+            comparator = Comparator.comparing(s -> clientDataMap.get(s).getCreationTime());
         }
         else {
-            Arrays.sort(keys.toArray(new String[0]));
+            comparator = Comparator.naturalOrder();
         }
         if (reverse) {
-            final String[] reversedKeyArr = new String[keysArr.length];
-            for (int i = keysArr.length - 1, j = 0; i >= 0; i--, j++) {
-                reversedKeyArr[j] = keysArr[i];
-            }
-            keysArr = reversedKeyArr;
+            comparator = comparator.reversed();
         }
+        Arrays.sort(keysArr, comparator);
         return keysArr;
     }
 
