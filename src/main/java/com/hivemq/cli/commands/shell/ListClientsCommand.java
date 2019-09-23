@@ -22,6 +22,7 @@ import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientConfig;
+import com.hivemq.client.mqtt.MqttClientState;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
@@ -122,18 +123,10 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
                 final LocalDateTime dateTime = clientDataMap.get(key).getCreationTime();
 
-                String connectionState = null;
-                if (client.getState().isConnected()) {
-                    connectionState = "CONNECTED";
-                }
-                else if (client.getState().isConnectedOrReconnect()) {
-                    connectionState = "RECONNECTING";
-                }
-                else {
-                    if (!includeDisconnectedClients) {
+                final String connectionState = client.getState().toString();
+
+                if (!includeDisconnectedClients && client.getState() == MqttClientState.DISCONNECTED) {
                         continue;
-                    }
-                    connectionState = "DISCONNECTED";
                 }
 
                 System.out.printf(format,
