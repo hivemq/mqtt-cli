@@ -14,7 +14,7 @@ Lists all the connected clients.
 ## Synopsis
 
 ```
-hivemq-cli> ls  {   [-at]
+mqtt> ls  {   [-at]
 }
 ```
 
@@ -34,9 +34,9 @@ hivemq-cli> ls  {   [-at]
 > Connect two clients and list them by default settings
 
 ```
-hivemq-cli> con -i client1
+mqtt> con -i client1
 client1@localhost> exit
-hivemq-cli> con -i client2
+mqtt> con -i client2
 client2@localhost> ls
 Client-ID            Server-Address
 client1              localhost:1883
@@ -48,7 +48,7 @@ client2              localhost:1883
 > Connect a client and show detailed information about it
 
 ```
-hivemq-cli> con -i client
+mqtt> con -i client
 client@localhost> ls -a
 Created-At                     Client-ID            Host                 Port       Server-Address            MQTT version    SSL
 2019-08-21T10:47:35.745179     client               localhost            1883       localhost:1883            MQTT_5_0        false

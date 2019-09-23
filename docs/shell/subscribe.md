@@ -48,7 +48,7 @@ clientID@host> sub  {   -t <topics> [-t <topics>]...
 See [Logging](/docs/06_logging)):
 
 ```
-hivemq-cli> con -i myClient
+mqtt> con -i myClient
 myClient@localhost> sub -t test
 ```
 

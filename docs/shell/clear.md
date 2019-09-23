@@ -14,12 +14,12 @@ Clears the terminal screen.
 ## Synopsis
 
 ```
-hivemq-cli> clear   {
+mqtt> clear   {
 }
 ```
 
 ## Example
 
 ```
-hivemq-cli> clear
+mqtt> clear
 ```

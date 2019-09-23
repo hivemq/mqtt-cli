@@ -10,7 +10,7 @@ has_children: true
 # Shell-Mode
 ***
 
-Open HiveMQ-CLI in an interactive shell session.
+Open MQTT CLI in an interactive shell session.
 The shell uses **[JLine](https://github.com/jline/jline3)** for handling console input.
 Therefore **tab-completion**, **command-history**, **password-masking** and other familiar shell features are available.
 
@@ -19,18 +19,18 @@ Therefore methods like Connect and Disconnect switch the current context of the 
 
 Start interactive shell with:
 ```
-$ hivemq-cli shell
+$ mqtt shell
 ```
 
 ## Example
 
 ```
-hivemq-cli shell                # starts the shell
+mqtt shell                # starts the shell
 
-hivemq-cli> con -i myClient     # connect client with identifier 'myClient'
+mqtt> con -i myClient     # connect client with identifier 'myClient'
 myClient> pub -t test -m msg    # publish the message 'msg' with the new context client
 myClient> dis                   # disconnect and remove context
-hivemq-cli> ...
+mqtt> ...
 ```
 
 ***

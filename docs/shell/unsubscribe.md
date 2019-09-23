@@ -38,8 +38,8 @@ clientID@Host>  unsub   {   -t <topic> [-t <topic>]...
 Then unsubscribe from one of the two topics:
 
 ```
-hivemq-cli> con -i myClient
+mqtt> con -i myClient
 myClient@localhost> sub -t topic1 -t topic2
 myClient@localhost> unsub -t topic1
-hivemq-cli>
+mqtt>
 ```

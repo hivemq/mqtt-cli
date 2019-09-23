@@ -14,14 +14,14 @@ Publishes a message to one or more topics.
 
 |Command                                                |Explanation                                                              |
 |-------------------------------------------------------|-------------------------------------------------------------------------|
-| ``hivemq-cli pub -t test -m "Hello" `` | Publish the message ``Hello`` with topic 'topic' using the default settings
-| ``hivemq-cli pub -t test1 -t test2 -m "Hello Tests"`` | Publish the message ``Hello Tests`` with topics 'test1' and 'test2'
-| ``hivemq-cli pub -t test -m "Hello" -h localhost -p 1884``| Publish the message ``Hello`` with topic 'topic' to a broker at localhost:1884|
+| ``mqtt pub -t test -m "Hello" `` | Publish the message ``Hello`` with topic 'topic' using the default settings
+| ``mqtt pub -t test1 -t test2 -m "Hello Tests"`` | Publish the message ``Hello Tests`` with topics 'test1' and 'test2'
+| ``mqtt pub -t test -m "Hello" -h localhost -p 1884``| Publish the message ``Hello`` with topic 'topic' to a broker at localhost:1884|
 
 <!---
 See also 
 ```
-hivemq-cli pub --help
+mqtt pub --help
 ```
 -->
 
@@ -30,7 +30,7 @@ hivemq-cli pub --help
 ## Synopsis
 
 ``` 
-hivemq-cli pub {    -t <topic> [-t <topic>]...
+mqtt pub {    -t <topic> [-t <topic>]...
                     -m <message>
                     [-q <qos>]...
                     [-r]
@@ -173,7 +173,7 @@ hivemq-cli pub {    -t <topic> [-t <topic>]...
 > **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
 
 ```
-$ hivemq-cli pub -t topic1 -t topic2 -q 2
+$ mqtt pub -t topic1 -t topic2 -q 2
 ```
 
 ***
@@ -181,5 +181,5 @@ $ hivemq-cli pub -t topic1 -t topic2 -q 2
 > Publish a message with a specific QoS for each topic. ``('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic3' QoS 2)``
 
 ```
-$ hivemq-cli pub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
+$ mqtt pub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 ```

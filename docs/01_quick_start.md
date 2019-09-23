@@ -10,24 +10,24 @@ search_exclude: true
 ***
 ## Usage
 
-To install HiveMQ-CLI on your system please follow the [Installation instructions](02_installation).
+To install MQTT CLI on your system please follow the [Installation instructions](02_installation).
 
 The easiest way to start the CLI is by typing:
-``` $ hivemq-cli ```
-See also ``$ hivemq-cli --help``.
+``` $ mqtt ```
+See also ``$ mqtt --help``.
 
-With this you get an output on how to use HiveMQ CLI:
+With this you get an output on how to use MQTT CLI:
 ```
-Usage:  hivemq-cli [-hV] { pub | sub | shell }
+Usage:  mqtt [-hV] { pub | sub | shell }
 
-HiveMQ MQTT Command Line Interpreter.
+MQTT Command Line Interpreter.
 
 Options:
   -h, --help      Show this help message and exit.
   -V, --version   Print version information and exit.
 
 Commands:
-  shell, sh       Starts HiveMQ-CLI in shell mode, to enable interactive mode with further sub commands.
+  sh, shell       Starts MQTT CLI in shell mode, to enable interactive mode with further sub commands.
   sub, subscribe  Subscribe an mqtt client to a list of topics
   pub, publish    Publish a message to a list of topics
 
@@ -35,7 +35,7 @@ Commands:
 
 ## Synopsis 
 ```
-$ hivemq-cli [flags] [METHOD] [OPTION [OPTION]]
+$ mqtt [flags] [METHOD] [OPTION [OPTION]]
 ```
 
 ## Supported commands at start
@@ -52,7 +52,7 @@ You can use ``sudo sh -c "echo 127.0.0.1 localhost $(hostname) >> /etc/hosts"`` 
 ## Basic Publish
 
 ```
-$ hivemq-cli pub -t topic -m "Hello World"
+$ mqtt pub -t topic -m "Hello World"
 ```
 This command:
 * connects an mqtt client to a broker located on default host (localhost) and default port (1883), 
@@ -68,7 +68,7 @@ This command:
 > **NOTE**: Subscribe will block the console to output published messages
 
 ```
-$ hivemq-cli sub -t topic
+$ mqtt sub -t topic
 >
 ```
 This command:
@@ -83,8 +83,8 @@ This command:
 ## Starting the interactive Shell
 
 ```
-$ hivemq-cli shell
-hivemq-cli>
+$ mqtt shell
+mqtt>
 ```
 
 The shell mode enables you to execute more complex MQTT behaviour - see [Shell](05_shell.md) 
