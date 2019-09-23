@@ -97,19 +97,22 @@ public class ListClientsCommand implements Runnable, CliCommand {
             }
 
 
-            final String longestIDKey = clientKeys.stream()
-                    .max((s1, s2) -> Integer.compare(cache.get(s1).getConfig().getClientIdentifier().get().toString().length(),
-                            cache.get(s2).getConfig().getClientIdentifier().get().toString().length()))
+            final int longestID = clientKeys.stream()
+                    .map(s -> cache.get(s).getConfig().getClientIdentifier().get().toString().length())
+                    .max(Integer::compareTo)
                     .get();
 
-            final int longestID = cache.get(longestIDKey).getConfig().getClientIdentifier().get().toString().length();
-
-            final String longestHostKey = clientKeys.stream()
-                    .max((s1, s2) -> Integer.compare(cache.get(s1).getConfig().getServerHost().length(), cache.get(s2).getConfig().getServerHost().length()))
+            final int longestHost = clientKeys.stream()
+                    .map(s -> cache.get(s).getConfig().getServerHost().toString().length())
+                    .max(Integer::compareTo)
                     .get();
-            final int longestHost = cache.get(longestHostKey).getConfig().getServerHost().length();
 
-            final String format = new String("%-12s " +
+            final int longestState = clientKeys.stream()
+                    .map(s -> cache.get(s).getConfig().getState().toString().length())
+                    .max(Integer::compareTo)
+                    .get();
+
+            final String format = new String("%-" + longestHost + "s " +
                     "%02d:%02d:%02d " +
                     "%-" + longestID + "s " +
                     "%-" + longestHost + "s " +
