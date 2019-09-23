@@ -16,42 +16,27 @@
  */
 package com.hivemq.cli.commands.shell;
 
-
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.MqttCLIMain;
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-@CommandLine.Command(name = "exit",
-        description = "Exit the current context")
-public class ContextExitCommand extends ShellContextCommand implements Runnable {
+@CommandLine.Command(name = "version",
+        description = "Prints version information",
+        versionProvider = MqttCLIMain.CLIVersionProvider.class)
+public class VersionCommand implements Runnable {
 
-    //needed for pico cli - reflection code generation
-    public ContextExitCommand() {
-        this(null);
-    }
     @Inject
-    public ContextExitCommand(@NotNull MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
+    VersionCommand() {
     }
 
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
+    @SuppressWarnings("NullableProblems")
+    @CommandLine.Spec
+    private @NotNull CommandLine.Model.CommandSpec spec;
 
     @Override
     public void run() {
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
-
-        removeContext();
+        spec.commandLine().printVersionHelp(System.out);
     }
-
-    @Override
-    public String toString() {
-        return "ContextExit::";
-    }
-
 }

@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands;
 
+import com.hivemq.cli.MqttCLIMain;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -29,7 +30,7 @@ import javax.inject.Inject;
         optionListHeading = "%n@|bold Options:|@%n",
         commandListHeading = "%n@|bold Commands:|@%n",
         mixinStandardHelpOptions = true,
-        version = MqttCLICommand.VERSION_STRING)
+        versionProvider = MqttCLIMain.CLIVersionProvider.class)
 
 public class MqttCLICommand {
 

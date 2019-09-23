@@ -7,6 +7,20 @@
     "allPublicMethods" : true
   },
   {
+    "name" : "[Lcom.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.hivemq.cli.MqttCLIMain$CLIVersionProvider",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  },
+  {
     "name" : "com.hivemq.cli.commands.AbstractCommand",
     "allDeclaredConstructors" : true,
     "allPublicConstructors" : true,
@@ -134,7 +148,9 @@
       { "name" : "responseTopic" },
       { "name" : "retain" },
       { "name" : "topics" },
-      { "name" : "userProperties" }
+      { "name" : "usageHelpRequested" },
+      { "name" : "userProperties" },
+      { "name" : "versionInfoRequested" }
     ]
   },
   {
@@ -149,7 +165,9 @@
       { "name" : "qos" },
       { "name" : "receivedMessagesFile" },
       { "name" : "topics" },
-      { "name" : "userProperties" }
+      { "name" : "usageHelpRequested" },
+      { "name" : "userProperties" },
+      { "name" : "versionInfoRequested" }
     ]
   },
   {
@@ -157,7 +175,10 @@
     "allDeclaredConstructors" : true,
     "allPublicConstructors" : true,
     "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "allPublicMethods" : true,
+    "fields" : [
+      { "name" : "usageHelpRequested" }
+    ]
   },
   {
     "name" : "com.hivemq.cli.commands.shell.ContextDisconnectCommand",
@@ -168,6 +189,7 @@
     "fields" : [
       { "name" : "reasonString" },
       { "name" : "sessionExpiryInterval" },
+      { "name" : "usageHelpRequested" },
       { "name" : "userProperties" }
     ]
   },
@@ -176,7 +198,10 @@
     "allDeclaredConstructors" : true,
     "allPublicConstructors" : true,
     "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "allPublicMethods" : true,
+    "fields" : [
+      { "name" : "usageHelpRequested" }
+    ]
   },
   {
     "name" : "com.hivemq.cli.commands.shell.ContextPublishCommand",
@@ -194,6 +219,7 @@
       { "name" : "responseTopic" },
       { "name" : "retain" },
       { "name" : "topics" },
+      { "name" : "usageHelpRequested" },
       { "name" : "userProperties" }
     ]
   },
@@ -210,6 +236,7 @@
       { "name" : "receivedMessagesFile" },
       { "name" : "stay" },
       { "name" : "topics" },
+      { "name" : "usageHelpRequested" },
       { "name" : "userProperties" }
     ]
   },
@@ -222,7 +249,8 @@
     "fields" : [
       { "name" : "contextName" },
       { "name" : "host" },
-      { "name" : "identifier" }
+      { "name" : "identifier" },
+      { "name" : "usageHelpRequested" }
     ]
   },
   {
@@ -233,6 +261,7 @@
     "allPublicMethods" : true,
     "fields" : [
       { "name" : "topics" },
+      { "name" : "usageHelpRequested" },
       { "name" : "userProperties" }
     ]
   },
@@ -243,11 +272,13 @@
     "allDeclaredMethods" : true,
     "allPublicMethods" : true,
     "fields" : [
-      { "name" : "outputDetailedClientInformation" },
-      { "name" : "sortByTime" }
-    ],
-    "methods" : [
-      { "name" : "setOptionsTrue", "parameterTypes" : ["boolean"] }
+      { "name" : "doNotSort" },
+      { "name" : "includeDisconnectedClients" },
+      { "name" : "listSubscriptions" },
+      { "name" : "longOutput" },
+      { "name" : "reverse" },
+      { "name" : "sortByTime" },
+      { "name" : "usageHelpRequested" }
     ]
   },
   {
@@ -257,7 +288,9 @@
     "allDeclaredMethods" : true,
     "allPublicMethods" : true,
     "fields" : [
-      { "name" : "spec" }
+      { "name" : "spec" },
+      { "name" : "usageHelpRequested" },
+      { "name" : "versionInfoRequested" }
     ]
   },
   {
@@ -268,7 +301,8 @@
     "allPublicMethods" : true,
     "fields" : [
       { "name" : "connectUserProperties" },
-      { "name" : "sessionExpiryInterval" }
+      { "name" : "sessionExpiryInterval" },
+      { "name" : "usageHelpRequested" }
     ]
   },
   {
@@ -289,6 +323,7 @@
       { "name" : "identifier" },
       { "name" : "reasonString" },
       { "name" : "sessionExpiryInterval" },
+      { "name" : "usageHelpRequested" },
       { "name" : "userProperties" }
     ]
   },
@@ -297,7 +332,20 @@
     "allDeclaredConstructors" : true,
     "allPublicConstructors" : true,
     "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "allPublicMethods" : true,
+    "fields" : [
+      { "name" : "usageHelpRequested" }
+    ]
+  },
+  {
+    "name" : "com.hivemq.cli.commands.shell.VersionCommand",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true,
+    "fields" : [
+      { "name" : "spec" }
+    ]
   },
   {
     "name" : "com.hivemq.cli.converters.ByteBufferConverter",
@@ -322,6 +370,13 @@
   },
   {
     "name" : "com.hivemq.cli.converters.FileToPrivateKeyConverter",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.hivemq.cli.converters.Mqtt5UserPropertyConverter",
     "allDeclaredConstructors" : true,
     "allPublicConstructors" : true,
     "allDeclaredMethods" : true,
@@ -363,13 +418,6 @@
     "allPublicMethods" : true
   },
   {
-    "name" : "com.hivemq.cli.converters.UserPropertiesConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
-  },
-  {
     "name" : "com.hivemq.client.mqtt.MqttVersion",
     "allDeclaredConstructors" : true,
     "allPublicConstructors" : true,
@@ -384,7 +432,7 @@
     "allPublicMethods" : true
   },
   {
-    "name" : "com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties",
+    "name" : "com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty",
     "allDeclaredConstructors" : true,
     "allPublicConstructors" : true,
     "allDeclaredMethods" : true,
@@ -463,5 +511,12 @@
       { "name" : "helpRequested" },
       { "name" : "versionRequested" }
     ]
+  },
+  {
+    "name" : "picocli.CommandLine$HelpCommand",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
   }
 ]

@@ -31,6 +31,7 @@ import org.jline.utils.AttributedStyle;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import org.pmw.tinylog.labelers.TimestampLabeler;
 import org.pmw.tinylog.policies.SizePolicy;
 import org.pmw.tinylog.writers.ConsoleWriter;
@@ -44,14 +45,14 @@ import java.io.PrintWriter;
 
 
 @CommandLine.Command(name = "shell", aliases = "sh",
+        versionProvider = MqttCLIMain.CLIVersionProvider.class,
         description = "Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.",
         footer = {"", "@|bold Press Ctl-C to exit.|@"},
         synopsisHeading = "%n@|bold Usage|@:  ",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options|@:%n",
         commandListHeading = "%n@|bold Commands|@:%n",
-        separator = " ",
-        mixinStandardHelpOptions = true)
+        separator = " ")
 
 public class ShellCommand implements Runnable {
 
@@ -80,6 +81,11 @@ public class ShellCommand implements Runnable {
     ShellCommand() {
     }
 
+    @CommandLine.Option(names = {"--version", "-V"}, versionHelp = true, description = "display version info")
+    boolean versionInfoRequested;
+
+    @CommandLine.Option(names = {"--help", "-h"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @Override
     public void run() {
@@ -91,7 +97,7 @@ public class ShellCommand implements Runnable {
         final File dirFile = new File(dir);
         dirFile.mkdirs();
 
-        final String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} Client {context:identifier}: {message}";
+        final String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} {context:identifier}: {message}";
 
         final RollingFileWriter logfileWriter = new RollingFileWriter(dir + "hmq-cli.log", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
 
@@ -103,6 +109,8 @@ public class ShellCommand implements Runnable {
                         Level.INFO,
                         "{message}")
                 .activate();
+
+        LoggingContext.put("identifier", "SHELL");
 
         logfilePath = logfileWriter.getFilename();
 
@@ -126,7 +134,7 @@ public class ShellCommand implements Runnable {
         try {
             final Terminal terminal = TerminalBuilder.builder()
                     .name("MQTT Terminal")
-                    .dumb(true)
+                    .system(true)
                     .build();
 
             shellReader = (LineReaderImpl) LineReaderBuilder.builder()
@@ -148,6 +156,12 @@ public class ShellCommand implements Runnable {
             terminalWriter.println(shellCommandLine.getUsageMessage());
             terminalWriter.flush();
 
+            Logger.info("Using default values from properties file {}:", PropertiesUtils.PROPERTIES_FILE_PATH);
+            Logger.info("Host: {}, Port: {}, Mqtt-Version {}, Shell-Debug-Level: {}",
+                    PropertiesUtils.DEFAULT_HOST,
+                    PropertiesUtils.DEFAULT_PORT,
+                    PropertiesUtils.DEFAULT_MQTT_VERSION,
+                    PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
             Logger.info("Writing Logfile to {}", logfilePath);
 
             String line;
@@ -156,7 +170,9 @@ public class ShellCommand implements Runnable {
                     line = currentReader.readLine(prompt, null, (MaskingCallback) null, null);
                     final ParsedLine pl = currentReader.getParser().parse(line, prompt.length());
                     final String[] arguments = pl.words().toArray(new String[0]);
-                    currentCommandLine.execute(arguments);
+                    if (arguments.length != 0) {
+                        currentCommandLine.execute(arguments);
+                    }
                 } catch (final UserInterruptException e) {
                     if (VERBOSE) {
                         Logger.trace("User interrupted shell: {}", e);

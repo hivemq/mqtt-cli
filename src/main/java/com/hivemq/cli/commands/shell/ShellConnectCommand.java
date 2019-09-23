@@ -18,15 +18,18 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.AbstractCommonFlags;
 import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
-import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -54,13 +57,16 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
         this.mqttClientExecutor = mqttClientExecutor;
     }
 
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client'")
     @Nullable
     private Long sessionExpiryInterval;
 
-    @CommandLine.Option(names = {"-up", "--connectUserProperties"}, converter = UserPropertiesConverter.class, description = "The user properties of the connect message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the connect message")
     @Nullable
-    private Mqtt5UserProperties connectUserProperties;
+    private Mqtt5UserProperty[] connectUserProperties;
 
 
     public void run() {
@@ -86,10 +92,14 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
             client = mqttClientExecutor.connect(this);
         }
         catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
+            LoggingContext.put("identifier", "CONNECT");
+            if (isVerbose()) {
+                Logger.trace(ex.getStackTrace());
             }
-            Logger.error(ex.getMessage());
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(ex.getCause().getMessage());
         }
     }
 
@@ -140,10 +150,10 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
     @Nullable
     public Mqtt5UserProperties getConnectUserProperties() {
-        return connectUserProperties;
+        return MqttUtils.convertToMqtt5UserProperties(connectUserProperties);
     }
 
-    public void setConnectUserProperties(@Nullable final Mqtt5UserProperties connectUserProperties) {
+    public void setConnectUserProperties(@Nullable final Mqtt5UserProperty... connectUserProperties) {
         this.connectUserProperties = connectUserProperties;
     }
 }

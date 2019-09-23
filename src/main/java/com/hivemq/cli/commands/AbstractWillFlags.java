@@ -17,9 +17,11 @@
 package com.hivemq.cli.commands;
 
 import com.hivemq.cli.converters.*;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import org.jetbrains.annotations.Nullable;
@@ -71,9 +73,9 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
     @Nullable
     private ByteBuffer willCorrelationData;
 
-    @CommandLine.Option(names = {"-Wup", "--willUserProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the will message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')", order = 3)
+    @CommandLine.Option(names = {"-Wup", "--willUserProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the will message", order = 3)
     @Nullable
-    private Mqtt5UserProperties willUserProperties;
+    private Mqtt5UserProperty[] willUserProperties;
 
 
     String getWillOptions() {
@@ -219,10 +221,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
     @Nullable
     @Override
     public Mqtt5UserProperties getWillUserProperties() {
-        return willUserProperties;
+        return MqttUtils.convertToMqtt5UserProperties(willUserProperties);
     }
 
-    public void setWillUserProperties(@Nullable final Mqtt5UserProperties willUserProperties) {
+    public void setWillUserProperties(@Nullable final Mqtt5UserProperty... willUserProperties) {
         this.willUserProperties = willUserProperties;
     }
 }

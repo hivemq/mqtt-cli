@@ -16,17 +16,22 @@
  */
 package com.hivemq.cli.commands.cli;
 
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -34,6 +39,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "pub",
+        versionProvider = MqttCLIMain.CLIVersionProvider.class,
         aliases = "publish",
         description = "Publish a message to a list of topics",
         abbreviateSynopsis = false)
@@ -52,6 +58,12 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         this.mqttClientExecutor = mqttClientExecutor;
 
     }
+
+    @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
+    boolean versionInfoRequested;
+
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to", order = 1)
     @NotNull
@@ -89,12 +101,15 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @Nullable
     private ByteBuffer correlationData;
 
-    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'", order = 1)
+
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the publish message", order = 1)
     @Nullable
-    private Mqtt5UserProperties userProperties;
+    private Mqtt5UserProperty[] userProperties;
 
     @Override
     public void run() {
+
+        LoggingContext.put("identifier", "PUBLISH");
 
         if (isVerbose()) {
             Logger.trace("Command: {} ", this);
@@ -109,10 +124,19 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
             mqttClientExecutor.publish(this);
         }
         catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
+            if (ex instanceof ConnectionFailedException) {
+                LoggingContext.put("identifier", "CONNECT");
             }
-            Logger.error(ex.getMessage());
+            else {
+                LoggingContext.put("identifier", "PUBLISH");
+            }
+            if (isVerbose()) {
+                Logger.trace(ex.getStackTrace());
+            }
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(ex.getCause().getMessage());
         }
 
     }
@@ -155,7 +179,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
                 ", contentType=" + contentType +
                 ", responseTopic=" + responseTopic +
                 ", correlationData=" + correlationData +
-                ", userProperties=" + userProperties +
+                ", userProperties=" + getUserProperties() +
                 ", Connect:: {" + connectOptions() + "}" +
                 '}';
     }
@@ -254,10 +278,10 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @Nullable
     @Override
     public Mqtt5UserProperties getUserProperties() {
-        return userProperties;
+        return MqttUtils.convertToMqtt5UserProperties(userProperties);
     }
 
-    public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
+    public void setUserProperties(@Nullable final Mqtt5UserProperty... userProperties) {
         this.userProperties = userProperties;
     }
 

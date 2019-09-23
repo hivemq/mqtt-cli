@@ -40,6 +40,9 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
         super(mqttClientExecutor);
     }
 
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
     @Nullable
     private String contextName;

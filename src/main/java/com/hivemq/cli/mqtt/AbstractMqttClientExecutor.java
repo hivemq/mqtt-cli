@@ -55,7 +55,7 @@ import java.util.Map;
 abstract class AbstractMqttClientExecutor {
 
     private static final ClientCache<String, MqttClient> clientCache = new ClientCache<>();
-    private static final Map<String, LocalDateTime> clientCreationTimes = new HashMap<>();
+    private static final Map<String, ClientData> clientDataMap = new HashMap<>();
 
 
     abstract void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull Connect connect);
@@ -88,7 +88,7 @@ abstract class AbstractMqttClientExecutor {
     }
 
     public void subscribe(final @NotNull MqttClient client, final @NotNull Subscribe subscribe) {
-        LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get());
+        LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get());
 
         for (int i = 0; i < subscribe.getTopics().length; i++) {
             final String topic = subscribe.getTopics()[i];
@@ -113,7 +113,7 @@ abstract class AbstractMqttClientExecutor {
     }
 
     public void publish(final @NotNull MqttClient client, final @NotNull Publish publish) {
-        LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get());
+        LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get());
 
         for (int i = 0; i < publish.getTopics().length; i++) {
             final String topic = publish.getTopics()[i];
@@ -133,7 +133,7 @@ abstract class AbstractMqttClientExecutor {
 
     public void disconnect(final @NotNull Disconnect disconnect) {
 
-        LoggingContext.put("identifier", disconnect.getIdentifier());
+        LoggingContext.put("identifier", "CLIENT " + disconnect.getIdentifier());
 
         clientCache.setVerbose(disconnect.isVerbose());
 
@@ -157,7 +157,7 @@ abstract class AbstractMqttClientExecutor {
 
     public void unsubscribe(final @NotNull MqttClient client, final @NotNull Unsubscribe unsubscribe) {
 
-        LoggingContext.put("identifier", unsubscribe.getIdentifier());
+        LoggingContext.put("identifier", "CLIENT " + unsubscribe.getIdentifier());
 
         switch (client.getConfig().getMqttVersion()) {
             case MQTT_5_0:
@@ -173,7 +173,7 @@ abstract class AbstractMqttClientExecutor {
 
     public boolean isConnected(final @NotNull Subscribe subscriber) {
 
-        LoggingContext.put("identifier", subscriber.getIdentifier());
+        LoggingContext.put("identifier", "CLIENT " + subscriber.getIdentifier());
 
         clientCache.setVerbose(subscriber.isVerbose());
 
@@ -192,7 +192,7 @@ abstract class AbstractMqttClientExecutor {
     public @NotNull MqttClient connect(final @NotNull Connect connect) {
 
 
-        LoggingContext.put("identifier", connect.getIdentifier());
+        LoggingContext.put("identifier", "CLIENT " + connect.getIdentifier());
 
         clientCache.setVerbose(connect.isVerbose());
 
@@ -238,7 +238,8 @@ abstract class AbstractMqttClientExecutor {
         mqtt5Connect(client, connectBuilder.build(), connect);
 
         clientCache.put(connect.getKey(), client.toAsync());
-        clientCreationTimes.put(connect.getKey(), LocalDateTime.now());
+        final ClientData clientData = new ClientData(LocalDateTime.now());
+        clientDataMap.put(connect.getKey(), clientData);
 
         return client.toAsync();
     }
@@ -265,7 +266,8 @@ abstract class AbstractMqttClientExecutor {
         mqtt3Connect(client, connectBuilder.build(), connect);
 
         clientCache.put(connect.getKey(), client.toAsync());
-        clientCreationTimes.put(connect.getKey(), LocalDateTime.now());
+        final ClientData clientData = new ClientData(LocalDateTime.now());
+        clientDataMap.put(connect.getKey(), clientData);
 
         return client.toAsync();
     }
@@ -415,8 +417,8 @@ abstract class AbstractMqttClientExecutor {
         return clientCache;
     }
 
-    public Map<String, LocalDateTime> getClientCreationTimes() {
-        return clientCreationTimes;
+    public Map<String, ClientData> getClientDataMap() {
+        return clientDataMap;
     }
 
     private MqttClient getMqttClientFromCacheOrConnect(final @NotNull Connect connect) {

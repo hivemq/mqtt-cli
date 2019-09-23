@@ -1,4 +1,4 @@
-# HiveMQ Command Line Interface
+# MQTT Command Line Interface
 
 <img src="01-mqtt-cli.svg" width="500"> 
 
@@ -14,11 +14,11 @@ A detailed documentation can be found [here](https://hivemq.github.io/hivemq-cli
 
 - **All MQTT 3.1.1 and MQTT 5.0 features** are supported
 - **interactive**, direct and verbose Mode for all MQTT Commands
-- Shell behavior with Syntax Highlighting, Command history
+- Shell behavior with Syntax Highlighting, Command completion and history
 - configurable Default settings
 - Ability to connect simultaneously various MQTT Clients to different Broker
 - Various distributions available
-- Graal support
+- Graal support coming soon
 
 ### Prerequisites
 At least Java 8 is required to run MqttCLI.

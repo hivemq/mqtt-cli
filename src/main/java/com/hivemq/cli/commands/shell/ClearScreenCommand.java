@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+
 import com.hivemq.cli.commands.CliCommand;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
@@ -31,7 +32,6 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(
         name = "cls",
         aliases = "clear",
-        mixinStandardHelpOptions = true,
         description = "Clears the screen")
 
 public class ClearScreenCommand implements CliCommand, Callable<Void> {
@@ -40,6 +40,8 @@ public class ClearScreenCommand implements CliCommand, Callable<Void> {
     ClearScreenCommand() {
     }
 
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     public Void call() throws IOException {
 

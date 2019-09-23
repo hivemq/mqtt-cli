@@ -41,8 +41,8 @@ public class CommandLineModule {
                                                    final @NotNull PublishCommand publishCommand) {
 
         return new CommandLine(main)
-                .addSubcommand(shellSubCommand)
+                .addSubcommand(publishCommand)
                 .addSubcommand(subscribeCommand)
-                .addSubcommand(publishCommand);
+                .addSubcommand(shellSubCommand);
     }
 }

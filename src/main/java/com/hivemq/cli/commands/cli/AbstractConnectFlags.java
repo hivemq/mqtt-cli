@@ -18,10 +18,12 @@ package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.commands.AbstractCommonFlags;
 import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
-import com.hivemq.cli.converters.UserPropertiesConverter;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
@@ -32,9 +34,9 @@ public class AbstractConnectFlags extends AbstractCommonFlags implements Connect
     @Nullable
     private Long sessionExpiryInterval;
 
-    @CommandLine.Option(names = {"-Cup", "--connectUserProperties"}, converter = UserPropertiesConverter.class, description = "The user properties of the connect message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'", order = 2)
+    @CommandLine.Option(names = {"-Cup", "--connectUserProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the connect message'", order = 2)
     @Nullable
-    private Mqtt5UserProperties connectUserProperties;
+    private Mqtt5UserProperty[] connectUserProperties;
 
 
     String connectOptions() {
@@ -70,10 +72,10 @@ public class AbstractConnectFlags extends AbstractCommonFlags implements Connect
 
     @Nullable
     public Mqtt5UserProperties getConnectUserProperties() {
-        return connectUserProperties;
+        return MqttUtils.convertToMqtt5UserProperties(connectUserProperties);
     }
 
-    public void setConnectUserProperties(@Nullable final Mqtt5UserProperties connectUserProperties) {
+    public void setConnectUserProperties(@Nullable final Mqtt5UserProperty... connectUserProperties) {
         this.connectUserProperties = connectUserProperties;
     }
 

@@ -18,8 +18,8 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.Unsubscribe;
+import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
-import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.cli.utils.PropertiesUtils;
@@ -27,9 +27,11 @@ import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -57,16 +59,20 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         super(mqttClientExecutor);
     }
 
+
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
     @NotNull
     private String[] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topics (default for all: 0)")
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 0)")
     @NotNull
     private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the subscribe message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
-    @Nullable Mqtt5UserProperties userProperties;
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the subscribe message")
+    @Nullable Mqtt5UserProperty[] userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
     @Nullable
@@ -101,11 +107,16 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(contextClient, this);
-        } catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.error(ex);
+        }
+        catch (final Exception ex) {
+            LoggingContext.put("identifier", "SUBSCRIBE");
+            if (isVerbose()) {
+                Logger.trace(ex.getStackTrace());
             }
-            Logger.error(ex.getMessage());
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(ex.getCause().getMessage());
         }
 
         if (stay) {
@@ -247,10 +258,10 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @Override
     @Nullable
     public Mqtt5UserProperties getUserProperties() {
-        return userProperties;
+        return MqttUtils.convertToMqtt5UserProperties(userProperties);
     }
 
-    public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
+    public void setUserProperties(@Nullable final Mqtt5UserProperty... userProperties) {
         this.userProperties = userProperties;
     }
 }

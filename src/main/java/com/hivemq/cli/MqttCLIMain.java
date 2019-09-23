@@ -48,6 +48,7 @@ public class MqttCLIMain {
 
     public static final int CLI_WIDTH = 160;
 
+
     public static void main(final String[] args) {
 
         Security.setProperty("crypto.policy", "unlimited");
@@ -96,7 +97,7 @@ public class MqttCLIMain {
 
         Configurator.defaultConfig()
                 .writer(new ConsoleWriter())
-                .formatPattern("Client {context:identifier}: {message}")
+                .formatPattern("{context:identifier}: {message}")
                 .level(Level.INFO)
                 .activate();
         commandLine.setUsageHelpWidth(CLI_WIDTH);
@@ -133,4 +134,18 @@ public class MqttCLIMain {
         }
     }
 
+    public static class CLIVersionProvider implements CommandLine.IVersionProvider {
+
+        @Override
+        public String[] getVersion() throws Exception {
+            String version = getClass().getPackage().getImplementationVersion();
+            if (version == null) {
+                version = "DEVELOPMENT";
+            }
+            return new String[]{version,
+                    "Picocli " + CommandLine.VERSION,
+                    "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
+                    "OS: ${os.name} ${os.version} ${os.arch}"};
+        }
+    }
 }

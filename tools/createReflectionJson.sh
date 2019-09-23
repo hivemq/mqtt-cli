@@ -12,6 +12,7 @@ com.hivemq.cli.commands.shell.ListClientsCommand \
 com.hivemq.cli.commands.shell.ShellCommand \
 com.hivemq.cli.commands.shell.ShellConnectCommand \
 com.hivemq.cli.commands.shell.ShellContextCommand \
+com.hivemq.cli.commands.shell.VersionCommand \
 com.hivemq.cli.commands.shell.ShellDisconnectCommand \
 com.hivemq.cli.commands.shell.ShellExitCommand \
 com.hivemq.cli.commands.cli.PublishCommand \
@@ -19,4 +20,4 @@ com.hivemq.cli.commands.cli.SubscribeCommand \
 com.hivemq.cli.commands.MqttCLICommand \
 > reflection.json
 
-## the methods from the absract classes in the PublishCommand and SubscribeCommand must be removed!
+## the methods from the abstract classes in the PublishCommand and SubscribeCommand must be removed!
