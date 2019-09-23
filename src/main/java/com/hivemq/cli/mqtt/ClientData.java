@@ -17,6 +17,7 @@
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.client.mqtt.datatypes.MqttTopic;
+import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
@@ -26,18 +27,18 @@ import java.util.Set;
 public class ClientData {
 
     private LocalDateTime creationTime;
-    private Set<MqttTopic> subscribedTopics;
+    private Set<MqttTopicFilter> subscribedTopics;
 
     public ClientData(final @NotNull LocalDateTime creationTime) {
         this.creationTime = creationTime;
         subscribedTopics = new HashSet<>();
     }
 
-    public void addSubscription(final @NotNull MqttTopic topic) {
+    public void addSubscription(final @NotNull MqttTopicFilter topic) {
         subscribedTopics.add(topic);
     }
 
-    public boolean removeSubscription(final @NotNull MqttTopic topic) {
+    public boolean removeSubscription(final @NotNull MqttTopicFilter topic) {
         return subscribedTopics.remove(topic);
     }
 
@@ -49,11 +50,11 @@ public class ClientData {
         this.creationTime = creationTime;
     }
 
-    public Set<MqttTopic> getSubscribedTopics() {
+    public Set<MqttTopicFilter> getSubscribedTopics() {
         return subscribedTopics;
     }
 
-    public void setSubscribedTopics(final Set<MqttTopic> subscribedTopics) {
+    public void setSubscribedTopics(final Set<MqttTopicFilter> subscribedTopics) {
         this.subscribedTopics = subscribedTopics;
     }
 }

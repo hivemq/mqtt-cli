@@ -22,7 +22,7 @@ import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.client.internal.mqtt.message.publish.MqttPublishResult;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.datatypes.MqttTopic;
+import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -58,6 +58,7 @@ import javax.inject.Singleton;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
 import org.bouncycastle.util.encoders.Base64;
@@ -173,7 +174,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         Logger.error("SUBSCRIBE to {} failed with {}", topic, throwable.getMessage());
                     } else {
 
-                        getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopic.of(topic));
+                        getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopicFilter.of(topic));
 
                         if (subscribe.isVerbose()) {
                             Logger.trace("received SUBACK: {}", subAck);
@@ -246,7 +247,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         Logger.error("SUBSCRIBE to {} failed with {}", topic, throwable.getMessage());
                     } else {
 
-                        getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopic.of(topic));
+                        getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopicFilter.of(topic));
 
                         if (subscribe.isVerbose()) {
                             Logger.trace("received SUBACK: {}", subAck);
@@ -409,7 +410,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());
                         } else {
 
-                            getClientDataMap().get(unsubscribe.getKey()).removeSubscription(MqttTopic.of(topic));
+                            getClientDataMap().get(unsubscribe.getKey()).removeSubscription(MqttTopicFilter.of(topic));
 
                             if (unsubscribe.isVerbose()) {
                                 Logger.trace("received UNSUBACK: {}", unsubAck);
@@ -452,7 +453,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());
                         } else {
 
-                            getClientDataMap().get(unsubscribe.getKey()).removeSubscription(MqttTopic.of(topic));
+                            getClientDataMap().get(unsubscribe.getKey()).removeSubscription(MqttTopicFilter.of(topic));
 
                             if (unsubscribe.isVerbose()) {
                                 Logger.trace("received UNSUBACK");
@@ -495,7 +496,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         client.toAsync()
                 .disconnect(disconnectMessage);
 
-        getClientDataMap().get(disconnect.getKey()).setSubscribedTopics(null);
+        getClientDataMap().get(disconnect.getKey()).setSubscribedTopics(Collections.emptySet());
     }
 
 
@@ -522,7 +523,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         client.toAsync()
                 .disconnect();
 
-        getClientDataMap().get(disconnect.getKey()).setSubscribedTopics(null);
+        getClientDataMap().get(disconnect.getKey()).setSubscribedTopics(Collections.emptySet());
 
     }
 
