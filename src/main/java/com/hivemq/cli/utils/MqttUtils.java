@@ -19,6 +19,7 @@ package com.hivemq.cli.utils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -48,5 +49,13 @@ public class MqttUtils {
         else {
             return Mqtt5UserProperties.of(userProperties);
         }
+    }
+
+    public static @NotNull Throwable getRootCause(final @NotNull Throwable t) {
+        Throwable currentThrowable = t;
+        while (currentThrowable.getCause() != null) {
+            currentThrowable = currentThrowable.getCause();
+        }
+        return currentThrowable;
     }
 }

@@ -24,6 +24,7 @@ import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.cli.utils.PropertiesUtils;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
@@ -48,6 +49,8 @@ import java.util.Arrays;
 public class SubscribeCommand extends AbstractConnectFlags implements MqttAction, Subscribe {
 
     private final MqttClientExecutor mqttClientExecutor;
+
+    private MqttClientSslConfig sslConfig;
 
     public static final int IDLE_TIME = 5000;
 
@@ -102,7 +105,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
         setDefaultOptions();
 
-        handleCommonOptions();
+        sslConfig = buildSslConfig();
 
         logUnusedOptions();
 
@@ -244,4 +247,14 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         this.userProperties = userProperties;
     }
 
+
+    @Nullable
+    @Override
+    public MqttClientSslConfig getSslConfig() {
+        return sslConfig;
+    }
+
+    public void setSslConfig(final MqttClientSslConfig sslConfig) {
+        this.sslConfig = sslConfig;
+    }
 }

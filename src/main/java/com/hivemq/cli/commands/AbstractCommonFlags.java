@@ -41,11 +41,6 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
 
     private static final String DEFAULT_TLS_VERSION = "TLSv1.2";
 
-    @Nullable
-    private MqttClientSslConfig sslConfig;
-
-    private final List<X509Certificate> certificates = new ArrayList<>();
-
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for authentication", order = 2)
     @Nullable
     private String user;
@@ -65,14 +60,12 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     private boolean useSsl;
 
     @CommandLine.Option(names = {"--cafile"}, paramLabel = "FILE", converter = FileToCertificateConverter.class, description = "Path to a file containing trusted CA certificates to enable encrypted certificate based communication", order = 2)
-    private void addCAFile(X509Certificate certificate) {
-        certificates.add(certificate);
-    }
+    @Nullable
+    private Collection<X509Certificate> certificates;
 
     @CommandLine.Option(names = {"--capath"}, paramLabel = "DIR", converter = DirectoryToCertificateCollectionConverter.class, description = {"Path to a directory containing certificate files to import to enable encrypted certificate based communication"}, order = 2)
-    private void addCACollection(Collection<X509Certificate> certs) {
-        certificates.addAll(certs);
-    }
+    @Nullable
+    private Collection<X509Certificate> certificatesFromDir;
 
     @CommandLine.Option(names = {"--ciphers"}, split = ":", description = "The client supported cipher suites list in IANA format separated with ':'", order = 2)
     @Nullable
@@ -97,32 +90,44 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     }
 
 
-    public void handleCommonOptions() {
+    public @Nullable MqttClientSslConfig buildSslConfig() {
 
         if (useBuiltSslConfig()) {
             try {
-                buildSslConfig();
+                return doBuildSslConfig();
             }
             catch (Exception e) {
                 if (isDebug()) {
                     Logger.debug("Failed to build ssl config: {}", e);
                 }
                 Logger.error("Failed to build ssl config: {}", e.getMessage());
-                return;
             }
         }
+
+        return null;
     }
 
 
     private boolean useBuiltSslConfig() {
-        return !certificates.isEmpty() ||
+        return certificates != null ||
+                certificatesFromDir != null ||
                 cipherSuites != null ||
                 supportedTLSVersions != null ||
                 clientSideAuthentication != null ||
                 useSsl;
     }
 
-    private void buildSslConfig() throws Exception {
+    private @NotNull MqttClientSslConfig doBuildSslConfig() throws Exception {
+
+        if (certificatesFromDir != null) {
+            if (certificates == null) {
+                certificates = certificatesFromDir;
+            }
+            else {
+                certificates.addAll(certificatesFromDir);
+            }
+        }
+
 
         // build trustManagerFactory for server side authentication and to enable tls
         TrustManagerFactory trustManagerFactory = null;
@@ -143,7 +148,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             supportedTLSVersions.add(DEFAULT_TLS_VERSION);
         }
 
-        sslConfig = MqttClientSslConfig.builder()
+        return MqttClientSslConfig.builder()
                 .trustManagerFactory(trustManagerFactory)
                 .keyManagerFactory(keyManagerFactory)
                 .cipherSuites(cipherSuites)
@@ -208,11 +213,10 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 ", user='" + user + '\'' +
                 ", keepAlive=" + keepAlive +
                 ", cleanStart=" + cleanStart +
-                ", useSsl=" + useSsl +
-                ", sslConfig=" + sslConfig +
+                ", useDefaultSsl=" + useSsl +
+                ", sslConfig=" + (getSslConfig() != null) +
                 ", " + getWillOptions();
     }
-
 
     // GETTER AND SETTER
 
@@ -256,13 +260,5 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         this.cleanStart = cleanStart;
     }
 
-    @Nullable
-    public MqttClientSslConfig getSslConfig() {
-        return sslConfig;
-    }
-
-    public void setSslConfig(final @Nullable MqttClientSslConfig sslConfig) {
-        this.sslConfig = sslConfig;
-    }
 
 }

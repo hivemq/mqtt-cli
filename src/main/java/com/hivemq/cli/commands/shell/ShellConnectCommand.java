@@ -23,6 +23,7 @@ import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
@@ -44,7 +45,7 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     private final MqttClientExecutor mqttClientExecutor;
 
     @Nullable
-    public MqttClient client;
+    private MqttClientSslConfig sslConfig;
 
     //needed for pico cli - reflection code generation
     public ShellConnectCommand() {
@@ -70,37 +71,40 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
 
     public void run() {
-        client = null;
 
         setDefaultOptions();
 
-        handleCommonOptions();
+        sslConfig = buildSslConfig();
 
         logUnusedOptions();
 
-        connect();
+        final MqttClient client = connect();
+
+        sslConfig = null;
 
         ShellContextCommand.updateContext(client);
     }
 
-    private void connect() {
+    private @Nullable MqttClient connect() {
         if (isVerbose()) {
             Logger.trace("Command: {} ", this);
         }
 
         try {
-            client = mqttClientExecutor.connect(this);
+            MqttClient client = mqttClientExecutor.connect(this);
+            return client;
         }
         catch (final Exception ex) {
             LoggingContext.put("identifier", "CONNECT");
             if (isVerbose()) {
-                Logger.trace(ex.getStackTrace());
+                Logger.trace(ex);
             }
             else if (isDebug()) {
                 Logger.debug(ex.getMessage());
             }
-            Logger.error(ex.getCause().getMessage());
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
+        return null;
     }
 
     @Override
@@ -123,6 +127,7 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
                 ", userProperties=" + connectUserProperties +
                 ", " + connectRestrictionOptions();
     }
+
 
     @Override
     public String toString() {
@@ -155,5 +160,15 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
     public void setConnectUserProperties(@Nullable final Mqtt5UserProperty... connectUserProperties) {
         this.connectUserProperties = connectUserProperties;
+    }
+
+    @Nullable
+    @Override
+    public MqttClientSslConfig getSslConfig() {
+        return sslConfig;
+    }
+
+    public void setSslConfig(final MqttClientSslConfig sslConfig) {
+        this.sslConfig = sslConfig;
     }
 }
