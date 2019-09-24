@@ -13,7 +13,7 @@ jobs:
   include:
     - stage: release
       install: true
-      script: "./gradlew releaseOnGithub"
+      script: "./gradlew githubRelease"
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
