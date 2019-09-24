@@ -16,7 +16,7 @@ which uses the HiveMQ MQTT Client API.
 
 HiveMQ CLI is an Open Source project backed by [HiveMQ](https://www.hivemq.com/).
 
-[View it on GitHub](https://github.com/hivemq/hivemq-cli){: .btn .btn-yellow }
+[View it on GitHub](https://github.com/hivemq/mqtt-cli){: .btn .btn-yellow }
 
 
 # Features

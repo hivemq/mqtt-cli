@@ -11,9 +11,9 @@ color_scheme: dark
 
 aux_links:
   "News":
-    - "https://hivemq.github.io/hivemq-cli/news"
+    - "https://hivemq.github.io/mqtt-cli/news"
   "GitHub":
-    - "https://github.com/hivemq/hivemq-cli"
+    - "https://github.com/hivemq/mqtt-cli"
 
 plugins:
   - jekyll-remote-theme
