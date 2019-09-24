@@ -1,4 +1,4 @@
-# HiveMQ Command Line Interface Documentation
+# MQTT Command Line Interface Documentation
 
 The documentation uses [Jekyll](https://jekyllrb.com/) as a static site generator.
 
