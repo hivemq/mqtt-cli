@@ -19,6 +19,7 @@ plugins {
     id 'edu.sc.seis.launch4j' version '2.4.6'
     id 'com.palantir.graal' version '0.6.0'
     id 'de.thetaphi.forbiddenapis' version '2.6' apply false
+    id "com.github.breadmoirai.github-release" version "2.2.9"
 }
 
 apply plugin: 'de.thetaphi.forbiddenapis'
@@ -50,7 +51,7 @@ compileTestJava {
 
 group = 'com.hivemq'
 version = '1.0.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
-description = 'HiveMQ CLI is a tool that provides a feature rich command line interface for connecting, ' +
+description = 'MQTT CLI is a tool that provides a feature rich command line interface for connecting, ' +
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
 
@@ -77,7 +78,7 @@ ext {
     readableName = 'mqtt-cli'
     appName = 'MQTT CLI'
     githubOrg = 'hivemq'
-    githubRepo = 'hivemq-cli'
+    githubRepo = 'mqtt-cli'
     githubUrl = 'https://github.com/' + githubOrg + '/' + githubRepo
     scmConnection = 'scm:git:git://github.com/' + githubOrg + '/' + githubRepo + '.git'
     scmDeveloperConnection = 'scm:git:ssh://git@github.com/' + githubOrg + '/' + githubRepo + '.git'
@@ -329,15 +330,15 @@ graal {
 task buildPackageBrew(type: Zip) {
     dependsOn shadowJar
 
-    archiveFileName = project.readableName + '-' + project.version + '-distribution.zip'
+    archiveFileName = project.readableName + '-' + project.version + '-brew.zip'
     destinationDirectory = file(project.buildBrewDir)
 
     from shadowJar.archiveFile
-    from "$brewDir/mqtt-cli"
+    from "$brewDir/mqtt"
 
     into('brew') {
         from shadowJar.archiveFile
-        from "$brewDir/mqtt-cli"
+        from "$brewDir/mqtt"
     }
 
     from(projectDir) {
@@ -355,6 +356,7 @@ task buildBrewFormula(type: Copy) {
 
     doLast {
         ant.replace(file: "$buildBrewDir/mqtt-cli.rb", token: "@@description@@", value: project.description)
+        ant.replace(file: "$buildBrewDir/mqtt-cli.rb", token: "@@version@@", value: project.version)
         ant.replace(file: "$buildBrewDir/mqtt-cli.rb", token: "@@filename@@", value: buildPackageBrew.archiveFileName.get())
         ant.replace(file: "$buildBrewDir/mqtt-cli.rb", token: "@@shasum@@", value: checkSum(buildPackageBrew.archiveFile.get().getAsFile()))
     }
@@ -395,7 +397,7 @@ ospackage {
         fileType LICENSE
     }
     from(debDir) {
-        include 'mqtt-cli'
+        include 'mqtt'
         fileMode 0755
         filter {
             it.replaceAll("@@jarPath@@", "/opt/${packageName}/${shadowJar.archiveFileName.get()}")
@@ -403,7 +405,7 @@ ospackage {
     }
 
 
-    link('/usr/bin/mqtt-cli', "/opt/$packageName/mqtt-cli", 0755)
+    link('/usr/bin/mqtt', "/opt/$packageName/mqtt", 0755)
 
 }
 
@@ -419,11 +421,13 @@ buildRpm {
 task buildDebianPackage(type: Copy) {
     from buildDeb
     into project.buildDebDir
+    include "*.deb"
 }
 
 task buildRpmPackage(type: Copy) {
     from buildRpm
     into project.buildRpmDir
+    include "*.rpm"
 }
 
 // Windows
@@ -446,7 +450,7 @@ launch4j {
 task buildWindowsZip(type: Zip) {
     dependsOn createExe
 
-    archiveFileName = "${project.readableName}-${project.version}-distribution.zip"
+    archiveFileName = "${project.readableName}-${project.version}-win.zip"
     destinationDirectory = file(project.buildWinDir)
 
     from ("${project.winDir}") {
@@ -464,6 +468,23 @@ task buildWindowsZip(type: Zip) {
 task buildPackageAll {
     dependsOn buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip
 }
+
+githubRelease {
+    token "" + System.getenv("GITHUB_API_TOKEN")
+    owner = project.githubOrg
+    targetCommitish "develop"
+    body ""
+    draft false
+    prerelease false
+    releaseAssets file("${project.buildRpmDir}/${project.readableName}-${project.version}.noarch.rpm"),
+            file("${project.buildDebDir}/${project.readableName}_${project.version}_all.deb"),
+            file("${project.buildBrewDir}/${project.readableName}-${project.version}-brew.zip"),
+            buildWindowsZip
+    overwrite true
+}
+
+
+tasks.githubRelease.dependsOn tasks.buildPackageAll
 
 // Helpers
 import java.security.DigestInputStream
