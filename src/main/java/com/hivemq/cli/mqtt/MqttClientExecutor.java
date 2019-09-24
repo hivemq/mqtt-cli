@@ -19,6 +19,7 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.utils.FileUtils;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.internal.mqtt.message.publish.MqttPublishResult;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -171,7 +172,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         if (subscribe.isDebug()) {
                             Logger.debug("SUBSCRIBE failed: {} ", topic, throwable.getStackTrace());
                         }
-                        Logger.error("SUBSCRIBE to {} failed with {}", topic, throwable.getMessage());
+                        Logger.error("SUBSCRIBE to {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
                     } else {
 
                         getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopicFilter.of(topic));
@@ -244,7 +245,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Logger.debug("SUBSCRIBE failed: {} ", topic, throwable.getStackTrace());
                         }
 
-                        Logger.error("SUBSCRIBE to {} failed with {}", topic, throwable.getMessage());
+                        Logger.error("SUBSCRIBE to {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
                     } else {
 
                         getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopicFilter.of(topic));
@@ -298,7 +299,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Logger.debug("PUBLISH failed: {} ", topic, throwable.getStackTrace());
                         }
 
-                        Logger.error("PUBLISH to {} failed with {}", topic, throwable.getMessage());
+                        Logger.error("PUBLISH to {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
 
                     } else {
 
@@ -358,7 +359,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Logger.debug("PUBLISH failed: {} ", topic, throwable.getStackTrace());
                         }
 
-                        Logger.error("PUBLISH to {} failed with {}", topic, throwable.getMessage());
+                        Logger.error("PUBLISH to {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
 
                     } else {
 
@@ -407,7 +408,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                                 Logger.debug("UNSUBSCRIBE failed: {}", throwable);
                             }
 
-                            Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());
+                            Logger.error("UNSUBSCRIBE to {} failed with ()", topic, MqttUtils.getRootCause(throwable).getMessage());
                         } else {
 
                             getClientDataMap().get(unsubscribe.getKey()).removeSubscription(MqttTopicFilter.of(topic));
@@ -450,7 +451,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                                 Logger.debug("UNSUBSCRIBE failed: {}", throwable);
                             }
 
-                            Logger.error("UNSUBSCRIBE to {} failed with ()", topic, throwable.getMessage());
+                            Logger.error("UNSUBSCRIBE to {} failed with ()", topic, MqttUtils.getRootCause(throwable).getMessage());
                         } else {
 
                             getClientDataMap().get(unsubscribe.getKey()).removeSubscription(MqttTopicFilter.of(topic));

@@ -126,7 +126,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             else if (isDebug()) {
                 Logger.debug(ex.getMessage());
             }
-            Logger.error(ex.getCause().getMessage());
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
 
         if (receivedMessagesFile == null && !printToSTDOUT) {
@@ -134,11 +134,12 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         }
         try {
             stay();
-        } catch (final InterruptedException e) {
+        }
+        catch (final InterruptedException ex) {
             if (isDebug()) {
-                Logger.debug(e);
+                Logger.debug(ex);
             }
-            Logger.error(e.getMessage());
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
 
 

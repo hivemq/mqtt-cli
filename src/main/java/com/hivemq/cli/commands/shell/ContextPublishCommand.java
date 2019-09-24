@@ -116,7 +116,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
             else if (isDebug()) {
                 Logger.debug(ex.getMessage());
             }
-            Logger.error(ex.getCause().getMessage());
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
     }
 

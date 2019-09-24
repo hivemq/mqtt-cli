@@ -17,6 +17,7 @@
 package com.hivemq.cli.commands;
 
 import com.hivemq.cli.converters.*;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -100,7 +101,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 if (isDebug()) {
                     Logger.debug("Failed to build ssl config: {}", e);
                 }
-                Logger.error("Failed to build ssl config: {}", e.getMessage());
+                Logger.error("Failed to build ssl config: {}", MqttUtils.getRootCause(e).getMessage());
             }
         }
 
