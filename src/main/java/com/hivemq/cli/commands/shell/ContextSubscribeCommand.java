@@ -81,7 +81,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
 
-    @CommandLine.Option(names = {"-s", "--stay"}, defaultValue = "false", description = "The subscribe will block the console and wait for publish messages to print (default: false)")
+    @CommandLine.Option(names = {"-s", "--stay"}, hidden = true, defaultValue = "false", description = "The subscribe will block the console and wait for publish messages to print (default: false)")
     private boolean stay;
 
     @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)")
@@ -111,22 +111,26 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         catch (final Exception ex) {
             LoggingContext.put("identifier", "SUBSCRIBE");
             if (isVerbose()) {
-                Logger.trace(ex.getStackTrace());
+                Logger.trace(ex);
             }
             else if (isDebug()) {
                 Logger.debug(ex.getMessage());
             }
-            Logger.error(ex.getCause().getMessage());
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
 
         if (stay) {
             try {
                 stay();
-            } catch (final InterruptedException e) {
-                if (isDebug()) {
-                    Logger.debug(e);
+            }
+            catch (final InterruptedException ex) {
+                if (isVerbose()) {
+                    Logger.trace(ex);
                 }
-                Logger.error(e.getMessage());
+                else if (isDebug()) {
+                    Logger.debug(ex.getMessage());
+                }
+                Logger.error(MqttUtils.getRootCause(ex).getMessage());
             }
         }
     }

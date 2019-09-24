@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
-public class AbstractConnectFlags extends AbstractCommonFlags implements Connect {
+public abstract class AbstractConnectFlags extends AbstractCommonFlags implements Connect {
 
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client", order = 2)
     @Nullable

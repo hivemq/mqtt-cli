@@ -122,13 +122,18 @@ public class ListClientsCommand implements Runnable, CliCommand {
                     .max(Integer::compareTo)
                     .get();
 
+            final int longestSSLVersion = clients.stream()
+                    .map(c -> c.getConfig().getSslConfig().toString().length())
+                    .max(Integer::compareTo)
+                    .orElse("NO_SSL".length());
+
             final String format = new String("%-" + longestState + "s " +
                     "%02d:%02d:%02d " +
                     "%-" + longestID + "s " +
                     "%-" + longestHost + "s " +
                     "%5d " +
                     "%-" + longestVersion + "s " +
-                    "%-s\n");
+                    "%-" + longestSSLVersion + "s\n");
 
             for (final String key : sortedKeys) {
 

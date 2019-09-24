@@ -18,6 +18,7 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,9 +71,12 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
             }
             catch (final IllegalArgumentException ex) {
                 if (isVerbose()) {
-                    Logger.error(ex);
+                    Logger.trace(ex);
                 }
-                Logger.error(ex.getMessage());
+                else if (isDebug()) {
+                    Logger.debug(ex.getMessage());
+                }
+                Logger.error(MqttUtils.getRootCause(ex).getMessage());
                 return;
             }
         }
@@ -86,8 +90,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
         if (client != null) {
             updateContext(client);
         } else {
-            if (isDebug()) {
-                Logger.debug("Client with key: {} not in Cache", getKey());
+            if (isVerbose()) {
+                Logger.trace("Client with key: {} not in Cache", getKey());
             }
             Logger.error("Context {}@{} not found", identifier, host);
         }

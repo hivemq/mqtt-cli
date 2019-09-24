@@ -22,6 +22,7 @@ import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
@@ -47,6 +48,8 @@ import java.util.Arrays;
 public class PublishCommand extends AbstractConnectFlags implements MqttAction, Publish {
 
     private final MqttClientExecutor mqttClientExecutor;
+
+    private MqttClientSslConfig sslConfig;
 
     //needed for pico cli - reflection code generation
     public PublishCommand() {
@@ -116,7 +119,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         }
 
         setDefaultOptions();
-        handleCommonOptions();
+        sslConfig = buildSslConfig();
 
         logUnusedOptions();
 
@@ -131,12 +134,12 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
                 LoggingContext.put("identifier", "PUBLISH");
             }
             if (isVerbose()) {
-                Logger.trace(ex.getStackTrace());
+                Logger.trace(ex);
             }
             else if (isDebug()) {
                 Logger.debug(ex.getMessage());
             }
-            Logger.error(ex.getCause().getMessage());
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
 
     }
@@ -285,5 +288,13 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         this.userProperties = userProperties;
     }
 
+    @Nullable
+    @Override
+    public MqttClientSslConfig getSslConfig() {
+        return sslConfig;
+    }
 
+    public void setSslConfig(final MqttClientSslConfig sslConfig) {
+        this.sslConfig = sslConfig;
+    }
 }

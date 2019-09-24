@@ -111,12 +111,12 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
         catch (final Exception ex) {
             LoggingContext.put("identifier", "PUBLISH");
             if (isVerbose()) {
-                Logger.trace(ex.getStackTrace());
+                Logger.trace(ex);
             }
             else if (isDebug()) {
                 Logger.debug(ex.getMessage());
             }
-            Logger.error(ex.getCause().getMessage());
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
     }
 

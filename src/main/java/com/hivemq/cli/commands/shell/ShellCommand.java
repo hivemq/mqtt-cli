@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.ioc.DaggerContextCommandLine;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.cli.utils.PropertiesUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
@@ -182,20 +183,29 @@ public class ShellCommand implements Runnable {
                     if (VERBOSE) {
                         Logger.trace(e);
                     }
-                    Logger.error(e.getMessage());
+                    else if (DEBUG) {
+                        Logger.debug(e.getMessage());
+                    }
+                    Logger.error(MqttUtils.getRootCause(e).getMessage());
                     return;
                 } catch (final Exception all) {
-                    if (VERBOSE) {
-                        Logger.error(all);
+                    if (DEBUG) {
+                        Logger.trace(all);
                     }
-                    Logger.error(all.getMessage());
+                    else if (VERBOSE) {
+                        Logger.debug(all.getMessage());
+                    }
+                    Logger.error(MqttUtils.getRootCause(all).getMessage());
                 }
             }
         } catch (final Throwable t) {
             if (VERBOSE) {
                 Logger.trace(t);
             }
-            Logger.error(t.getMessage());
+            else if (DEBUG) {
+                Logger.debug(t.getMessage());
+            }
+            Logger.error(MqttUtils.getRootCause(t).getMessage());
 
         }
     }
