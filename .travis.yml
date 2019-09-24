@@ -1,7 +1,5 @@
 dist: trusty
-
 language: java
-
 jdk:
   - oraclejdk8
   - oraclejdk9
@@ -9,25 +7,20 @@ jdk:
 stages:
   - test
   - name: release
-    if: branch = master && type != pull_request
-
-script: ./gradlew check javadoc
+    if: type != pull_request && branch = master
 
 jobs:
   include:
     - stage: release
       install: true
-      script: ./gradlew bintrayUpload -x test
-
-addons:
-  apt:
-    packages:
-      - perl
+      script: "./gradlew releaseOnGithub"
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+    - "$HOME/.gradle/caches/"
+    - "$HOME/.gradle/wrapper/"
+
