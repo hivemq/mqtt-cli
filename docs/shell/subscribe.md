@@ -35,7 +35,6 @@ clientID@host> sub  {   -t <topics> [-t <topics>]...
 |----------|-------------|------------------------------|----------|
 | ``-t``   | ``--topic``| The MQTT topic the client will subscribe to. |
 | ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified. You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
-| ``-s``   | ``--stay``| The subscribe will block the console and wait for publish messages to print. <br><br> Press Enter to interrupt the blocking session and unsubscribe.  | ``false`` |
 | ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` 
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
@@ -50,15 +49,4 @@ See [Logging](/docs/06_logging)):
 ```
 mqtt> con -i myClient
 myClient@localhost> sub -t test
-```
-
-***
-
-> Subscribe to test topic on default settings, block console and write received publishes to console:
-
-```
-myClient@localhost> pub -t test -m Hello -r
-myClient@localhost> sub -t test -s
-Hello
-...
 ```
