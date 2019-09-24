@@ -121,7 +121,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
                 LoggingContext.put("identifier", "PUBLISH");
             }
             if (isVerbose()) {
-                Logger.trace(ex.getStackTrace());
+                Logger.trace(ex);
             }
             else if (isDebug()) {
                 Logger.debug(ex.getMessage());
@@ -136,8 +136,11 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             stay();
         }
         catch (final InterruptedException ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
+            if (isVerbose()) {
+                Logger.trace(ex);
+            }
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
             }
             Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }

@@ -78,7 +78,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
         catch (final Exception ex) {
             LoggingContext.put("identifier", "DISCONNECT");
             if (isVerbose()) {
-                Logger.trace(ex.getStackTrace());
+                Logger.trace(ex);
             }
             else if (isDebug()) {
                 Logger.debug(ex.getMessage());

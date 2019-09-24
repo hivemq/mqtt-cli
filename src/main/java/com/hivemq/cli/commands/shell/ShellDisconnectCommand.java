@@ -99,7 +99,7 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
         catch (final Exception ex) {
             LoggingContext.put("identifier", "PUBLISH");
             if (isVerbose()) {
-                Logger.trace(ex.getStackTrace());
+                Logger.trace(ex);
             }
             else if (isDebug()) {
                 Logger.debug(ex.getMessage());

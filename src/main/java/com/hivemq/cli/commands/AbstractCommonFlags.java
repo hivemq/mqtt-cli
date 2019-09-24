@@ -91,10 +91,13 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 return doBuildSslConfig();
             }
             catch (Exception e) {
-                if (isDebug()) {
-                    Logger.debug("Failed to build ssl config: {}", e);
+                if (isVerbose()) {
+                    Logger.trace(e);
                 }
-                Logger.error("Failed to build ssl config: {}", MqttUtils.getRootCause(e).getMessage());
+                else if (isDebug()) {
+                    Logger.debug(e.getMessage());
+                }
+                Logger.error(MqttUtils.getRootCause(e).getMessage());
             }
         }
 

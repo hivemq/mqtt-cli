@@ -183,11 +183,17 @@ public class ShellCommand implements Runnable {
                     if (VERBOSE) {
                         Logger.trace(e);
                     }
+                    else if (DEBUG) {
+                        Logger.debug(e.getMessage());
+                    }
                     Logger.error(MqttUtils.getRootCause(e).getMessage());
                     return;
                 } catch (final Exception all) {
-                    if (VERBOSE) {
-                        Logger.error(all);
+                    if (DEBUG) {
+                        Logger.trace(all);
+                    }
+                    else if (VERBOSE) {
+                        Logger.debug(all.getMessage());
                     }
                     Logger.error(MqttUtils.getRootCause(all).getMessage());
                 }
@@ -195,6 +201,9 @@ public class ShellCommand implements Runnable {
         } catch (final Throwable t) {
             if (VERBOSE) {
                 Logger.trace(t);
+            }
+            else if (DEBUG) {
+                Logger.debug(t.getMessage());
             }
             Logger.error(t.getMessage());
 

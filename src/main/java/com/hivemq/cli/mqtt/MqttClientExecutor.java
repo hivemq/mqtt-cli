@@ -169,10 +169,14 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((subAck, throwable) -> {
 
                     if (throwable != null) {
-                        if (subscribe.isDebug()) {
-                            Logger.debug("SUBSCRIBE failed: {} ", topic, throwable.getStackTrace());
+                        if (subscribe.isVerbose()) {
+                            Logger.trace("SUBSCRIBE to TOPIC {} failed: {}", topic, throwable);
                         }
-                        Logger.error("SUBSCRIBE to {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
+                        else if (subscribe.isDebug()) {
+                            Logger.debug("SUBSCRIBE to TOPIC {} failed: {} ", topic, throwable.getMessage());
+                        }
+
+                        Logger.error("SUBSCRIBE to TOPIC {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
                     } else {
 
                         getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopicFilter.of(topic));
@@ -241,11 +245,14 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
 
-                        if (subscribe.isDebug()) {
-                            Logger.debug("SUBSCRIBE failed: {} ", topic, throwable.getStackTrace());
+                        if (subscribe.isVerbose()) {
+                            Logger.trace("SUBSCRIBE to TOPIC {} failed: {}", topic, throwable);
+                        }
+                        else if (subscribe.isDebug()) {
+                            Logger.debug("SUBSCRIBE to TOPIC {} failed: {} ", topic, throwable.getMessage());
                         }
 
-                        Logger.error("SUBSCRIBE to {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
+                        Logger.error("SUBSCRIBE to TOPIC {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
                     } else {
 
                         getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopicFilter.of(topic));
@@ -295,11 +302,13 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((publishResult, throwable) -> {
                     if (throwable != null) {
 
-                        if (publish.isDebug()) {
-                            Logger.debug("PUBLISH failed: {} ", topic, throwable.getStackTrace());
+                        if (publish.isVerbose()) {
+                            Logger.debug("PUBLISH to TOPIC {} failed: {}", topic, throwable);
                         }
-
-                        Logger.error("PUBLISH to {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
+                        else if (publish.isDebug()) {
+                            Logger.debug("PUBLISH to TOPIC {} failed: {} ", topic, throwable.getMessage());
+                        }
+                        Logger.error("PUBLISH to TOPIC {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
 
                     } else {
 
@@ -355,11 +364,13 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((publishResult, throwable) -> {
                     if (throwable != null) {
 
-                        if (publish.isDebug()) {
-                            Logger.debug("PUBLISH failed: {} ", topic, throwable.getStackTrace());
+                        if (publish.isVerbose()) {
+                            Logger.debug("PUBLISH to TOPIC {} failed: {}", topic, throwable);
                         }
-
-                        Logger.error("PUBLISH to {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
+                        else if (publish.isDebug()) {
+                            Logger.debug("PUBLISH to TOPIC {} failed: {} ", topic, throwable.getMessage());
+                        }
+                        Logger.error("PUBLISH to TOPIC {} failed with {}", topic, MqttUtils.getRootCause(throwable).getMessage());
 
                     } else {
 
@@ -404,10 +415,14 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     .whenComplete((Mqtt5UnsubAck unsubAck, Throwable throwable) -> {
 
                         if (throwable != null) {
-                            if (unsubscribe.isDebug()) {
-                                Logger.debug("UNSUBSCRIBE failed: {}", throwable);
-                            }
 
+
+                            if (unsubscribe.isVerbose()) {
+                                Logger.trace("UNSUBSCRIBE of TOPIC {} failed: {}", topic, throwable);
+                            }
+                            else if (unsubscribe.isDebug()) {
+                                Logger.debug("UNSUBSCRIBE of TOPIC {} failed: {}", topic, throwable.getMessage());
+                            }
                             Logger.error("UNSUBSCRIBE to {} failed with ()", topic, MqttUtils.getRootCause(throwable).getMessage());
                         } else {
 
@@ -447,11 +462,14 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     .whenComplete((Void unsubAck, Throwable throwable) -> {
 
                         if (throwable != null) {
-                            if (unsubscribe.isDebug()) {
-                                Logger.debug("UNSUBSCRIBE failed: {}", throwable);
+                            if (unsubscribe.isVerbose()) {
+                                Logger.trace("UNSUBSCRIBE of TOPIC {} failed: {}", topic, throwable);
                             }
-
+                            else if (unsubscribe.isDebug()) {
+                                Logger.debug("UNSUBSCRIBE of TOPIC {} failed: {}", topic, throwable.getMessage());
+                            }
                             Logger.error("UNSUBSCRIBE to {} failed with ()", topic, MqttUtils.getRootCause(throwable).getMessage());
+
                         } else {
 
                             getClientDataMap().get(unsubscribe.getKey()).removeSubscription(MqttTopicFilter.of(topic));

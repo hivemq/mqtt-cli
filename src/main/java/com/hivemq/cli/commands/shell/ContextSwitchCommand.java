@@ -73,6 +73,9 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
                 if (isVerbose()) {
                     Logger.trace(ex);
                 }
+                else if (isDebug()) {
+                    Logger.debug(ex.getMessage());
+                }
                 Logger.error(MqttUtils.getRootCause(ex).getMessage());
                 return;
             }
@@ -87,8 +90,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
         if (client != null) {
             updateContext(client);
         } else {
-            if (isDebug()) {
-                Logger.debug("Client with key: {} not in Cache", getKey());
+            if (isVerbose()) {
+                Logger.trace("Client with key: {} not in Cache", getKey());
             }
             Logger.error("Context {}@{} not found", identifier, host);
         }
