@@ -303,7 +303,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     if (throwable != null) {
 
                         if (publish.isVerbose()) {
-                            Logger.debug("PUBLISH to TOPIC {} failed: {}", topic, throwable);
+                            Logger.trace("PUBLISH to TOPIC {} failed: {}", topic, throwable);
                         }
                         else if (publish.isDebug()) {
                             Logger.debug("PUBLISH to TOPIC {} failed: {} ", topic, throwable.getMessage());
@@ -365,7 +365,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     if (throwable != null) {
 
                         if (publish.isVerbose()) {
-                            Logger.debug("PUBLISH to TOPIC {} failed: {}", topic, throwable);
+                            Logger.trace("PUBLISH to TOPIC {} failed: {}", topic, throwable);
                         }
                         else if (publish.isDebug()) {
                             Logger.debug("PUBLISH to TOPIC {} failed: {} ", topic, throwable.getMessage());

@@ -205,7 +205,7 @@ public class ShellCommand implements Runnable {
             else if (DEBUG) {
                 Logger.debug(t.getMessage());
             }
-            Logger.error(t.getMessage());
+            Logger.error(MqttUtils.getRootCause(t).getMessage());
 
         }
     }
