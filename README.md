@@ -8,7 +8,7 @@ MQTT 5.0 and 3.1.1 compatible and feature-rich MQTT Command Line Interface
 
 ## Documentation
 
-A detailed documentation can be found [here](https://hivemq.github.io/hivemq-cli)
+A detailed documentation can be found [here](https://hivemq.github.io/mqtt-cli)
 
 ## Features
 
@@ -33,7 +33,7 @@ See also ``mqtt --help``.
 Packages 
  for **Linux, Mac OS and Windows**
 can be found here: 
-[Installation/Packages](https://hivemq.github.io/hivemq-cli/docs/installation/packages.html)!
+[Installation/Packages](https://hivemq.github.io/mqtt-cli/docs/installation/packages.html)!
 
 ### Building from source
 To do a clean build, issue the following command:
@@ -134,7 +134,7 @@ The following Commands are available **with** an active context:
   
 
 
-Pls. refer to the detailed documentation [MQTT CLI Documentation](https://hivemq.github.io/hivemq-cli)
+Pls. refer to the detailed documentation [MQTT CLI Documentation](https://hivemq.github.io/mqtt-cli)
 for more examples and complete command descriptions.
 
 
