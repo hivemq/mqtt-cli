@@ -76,19 +76,12 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @Nullable
     private Collection<String> supportedTLSVersions;
 
+    @CommandLine.Option(names = {"--cert"}, converter = FileToCertificateConverter.class, description = "The client certificate to use for client side authentication", order = 2)
+    @Nullable X509Certificate clientCertificate;
 
-    @CommandLine.ArgGroup(exclusive = false)
-    @Nullable
-    private ClientSideAuthentication clientSideAuthentication;
+    @CommandLine.Option(names = {"--key"}, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication", order = 2)
+    @Nullable PrivateKey clientPrivateKey;
 
-    private static class ClientSideAuthentication {
-
-        @CommandLine.Option(names = {"--cert"}, required = true, converter = FileToCertificateConverter.class, description = "The client certificate to use for client side authentication", order = 2)
-        @Nullable X509Certificate clientCertificate;
-
-        @CommandLine.Option(names = {"--key"}, required = true, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication", order = 2)
-        @Nullable PrivateKey clientPrivateKey;
-    }
 
 
     public @Nullable MqttClientSslConfig buildSslConfig() {
@@ -114,7 +107,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 certificatesFromDir != null ||
                 cipherSuites != null ||
                 supportedTLSVersions != null ||
-                clientSideAuthentication != null ||
+                clientPrivateKey != null ||
+                clientCertificate != null ||
                 useSsl;
     }
 
@@ -139,8 +133,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
 
         // build keyManagerFactory if clientSideAuthentication is used
         KeyManagerFactory keyManagerFactory = null;
-        if (clientSideAuthentication != null) {
-            keyManagerFactory = buildKeyManagerFactory(clientSideAuthentication.clientCertificate, clientSideAuthentication.clientPrivateKey);
+        if (clientCertificate != null && clientPrivateKey != null) {
+            keyManagerFactory = buildKeyManagerFactory(clientCertificate, clientPrivateKey);
         }
 
         // default to tlsv.2
