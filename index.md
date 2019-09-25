@@ -26,6 +26,5 @@ HiveMQ CLI is an Open Source project backed by [HiveMQ](https://www.hivemq.com/)
 - Shell behavior with Syntax Highlighting, Command history
 - Ability to connect simultaneously various MQTT Clients to different Broker
 - Various distributions available
-- Graal support
 
 {% include news.md %}
