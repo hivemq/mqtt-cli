@@ -17,5 +17,5 @@ assignees: ''
 ### Reproducer code
 
 ## Details
-- Affected HiveMQ CLI version(s): 
+- Affected MQTT CLI version(s): 
 - Used JVM version:
