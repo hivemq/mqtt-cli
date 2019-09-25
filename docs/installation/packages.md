@@ -11,7 +11,7 @@ nav_order: 1
 > **NOTE**: At least Java 8 is required to run MQTT CLI.
 
 ## Homebrew
-For **Mac OS X** and **Linux** systems use **[Homebrew](https://brew.sh/)** to install MQTT CLI via the **[MQTT CLI Tap](https://github.com/hivemq/homebrew-mqtt)**.
+For **Mac OS X** and **Linux** systems use **[Homebrew](https://brew.sh/)** to install MQTT CLI via the **[MQTT CLI Tap](https://github.com/hivemq/homebrew-mqtt-cli)**.
 ```
 $ brew tap hivemq/mqtt-cli
 ```
