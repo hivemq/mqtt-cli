@@ -7,7 +7,6 @@ nav_order: 1
 
 {:.main-header-color-yellow}
 # Installation using a package manager
-***
 
 > **NOTE**: At least Java 8 is required to run MQTT CLI.
 
@@ -21,6 +20,9 @@ $ brew install mqtt-cli
 ```
 
 ***
+
+> **NOTE**: If no JVM is installed the second command will throw an error like `Java 1.8+ is required to install this formula`. 
+>If this is the case you need to install a JVM with a version higher than 1.8. Use `brew cask install adoptopenjdk` to install the latest release of the adoptopenjdk.    
 
 ## Windows Zip
 
