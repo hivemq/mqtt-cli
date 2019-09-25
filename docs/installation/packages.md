@@ -19,10 +19,10 @@ $ brew tap hivemq/mqtt-cli
 $ brew install mqtt-cli
 ```
 
-***
-
 > **NOTE**: If no JVM is installed the second command will throw an error like `Java 1.8+ is required to install this formula`. 
->If this is the case you need to install a JVM with a version higher than 1.8. Use `brew cask install adoptopenjdk` to install the latest release of the adoptopenjdk.    
+>If this is the case you need to install a JVM with a version higher than 1.8. Use `brew cask install adoptopenjdk` to install the latest release of adoptopenjdk.    
+
+***
 
 ## Windows Zip
 
