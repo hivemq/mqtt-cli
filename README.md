@@ -2,7 +2,7 @@
 
 <img src="01-mqtt-cli.svg" width="500"> 
 
-[![Build Status](https://travis-ci.org/hivemq/01-mqtt-cli.svg?branch=develop)](https://travis-ci.org/hivemq/mqtt-cli) 
+[![Build Status](https://travis-ci.org/hivemq/01-mqtt-cli.svg?branch=develop)](https://travis-ci.com/hivemq/mqtt-cli) 
 
 MQTT 5.0 and 3.1.1 compatible and feature-rich MQTT Command Line Interface
 
