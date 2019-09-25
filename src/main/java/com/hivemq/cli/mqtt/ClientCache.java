@@ -108,7 +108,7 @@ public class ClientCache<K, V> {
         }
     }
 
-    private Set<Entry<K, V>> entrySet() {
+    public Set<Entry<K, V>> entrySet() {
         return new HashSet<>(CACHE.values());
     }
 

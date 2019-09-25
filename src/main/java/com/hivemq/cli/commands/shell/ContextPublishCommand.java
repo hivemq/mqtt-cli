@@ -19,13 +19,16 @@ package com.hivemq.cli.commands.shell;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -40,24 +43,36 @@ import java.util.Arrays;
 
 public class ContextPublishCommand extends ShellContextCommand implements Runnable, Publish {
 
+    //needed for pico cli - reflection code generation
+    public ContextPublishCommand() {
+        this(null);
+    }
+
     @Inject
     public ContextPublishCommand(final @NotNull MqttClientExecutor executor) {
         super(executor);
     }
 
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
+    @NotNull
     private String[] topics;
 
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default for all: 0)")
+    @NotNull
     private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message to publish")
+    @NotNull
     private ByteBuffer message;
 
-    @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false", description = "The message will be retained (default: false)")
-    private boolean retain;
+    @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, defaultValue = "false", description = "The message will be retained (default: false)")
+    @Nullable
+    private Boolean retain;
 
-    @CommandLine.Option(names = {"-pe", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default: no message expiry)")
+    @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default: no message expiry)")
     @Nullable
     private Long messageExpiryInterval;
 
@@ -65,26 +80,26 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     @Nullable
     private Mqtt5PayloadFormatIndicator payloadFormatIndicator;
 
-    @CommandLine.Option(names = {"-pc", "--contentType"}, description = "A description of publish message's content")
+    @CommandLine.Option(names = {"-ct", "--contentType"}, description = "A description of publish message's content")
     @Nullable
     private String contentType;
 
-    @CommandLine.Option(names = {"-pr", "--responseTopic"}, description = "The topic name for the publish message`s response message")
+    @CommandLine.Option(names = {"-rt", "--responseTopic"}, description = "The topic name for the publish message`s response message")
     @Nullable
     private String responseTopic;
 
-    @CommandLine.Option(names = {"-pd", "--correlationData"}, converter = ByteBufferConverter.class, description = "The correlation data of the publish message")
+    @CommandLine.Option(names = {"-cd", "--correlationData"}, converter = ByteBufferConverter.class, description = "The correlation data of the publish message")
     @Nullable
     private ByteBuffer correlationData;
 
-    @CommandLine.Option(names = {"-pu", "--publishUserProperties"}, converter = UserPropertiesConverter.class, description = "The user property of the publish message (usage: 'Key=Value', 'Key1=Value1|Key2=Value2)'")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the publish message")
     @Nullable
-    private Mqtt5UserProperties publishUserProperties;
+    private Mqtt5UserProperty[] userProperties;
 
 
     @Override
     public void run() {
-        logUnusedPublishOptions();
+        logUnusedOptions();
 
         if (isVerbose()) {
             Logger.trace("Command {} ", this);
@@ -92,15 +107,20 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
 
         try {
             mqttClientExecutor.publish(contextClient, this);
-        } catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
+        }
+        catch (final Exception ex) {
+            LoggingContext.put("identifier", "PUBLISH");
+            if (isVerbose()) {
+                Logger.trace(ex);
             }
-            Logger.error(ex.getMessage());
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
     }
 
-    private void logUnusedPublishOptions() {
+    private void logUnusedOptions() {
         if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
             if (messageExpiryInterval != null) {
                 Logger.warn("Publish message expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
@@ -117,7 +137,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
             if (correlationData != null) {
                 Logger.warn("Publish correlation data was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
-            if (publishUserProperties != null) {
+            if (userProperties != null) {
                 Logger.warn("Publish user properties were set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
         }
@@ -135,10 +155,12 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
                 ", contentType=" + contentType +
                 ", responseTopic=" + responseTopic +
                 ", correlationData=" + correlationData +
-                ", userProperties=" + publishUserProperties +
+                ", userProperties=" + userProperties +
                 '}';
     }
 
+    @NotNull
+    @Override
     public String[] getTopics() {
         return topics;
     }
@@ -147,6 +169,8 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
         this.topics = topics;
     }
 
+    @NotNull
+    @Override
     public MqttQos[] getQos() {
         return qos;
     }
@@ -155,6 +179,8 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
         this.qos = qos;
     }
 
+    @NotNull
+    @Override
     public ByteBuffer getMessage() {
         return message;
     }
@@ -163,14 +189,18 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
         this.message = message;
     }
 
-    public boolean isRetain() {
+    @Nullable
+    @Override
+    public Boolean getRetain() {
         return retain;
     }
 
-    public void setRetain(final boolean retain) {
+    public void setRetain(final @Nullable Boolean retain) {
         this.retain = retain;
     }
 
+    @Nullable
+    @Override
     public Long getMessageExpiryInterval() {
         return messageExpiryInterval;
     }
@@ -180,6 +210,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public Mqtt5PayloadFormatIndicator getPayloadFormatIndicator() {
         return payloadFormatIndicator;
     }
@@ -189,6 +220,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public String getContentType() {
         return contentType;
     }
@@ -198,6 +230,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public String getResponseTopic() {
         return responseTopic;
     }
@@ -207,6 +240,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
+    @Override
     public ByteBuffer getCorrelationData() {
         return correlationData;
     }
@@ -216,11 +250,12 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     }
 
     @Nullable
-    public Mqtt5UserProperties getPublishUserProperties() {
-        return publishUserProperties;
+    @Override
+    public Mqtt5UserProperties getUserProperties() {
+        return MqttUtils.convertToMqtt5UserProperties(userProperties);
     }
 
-    public void setPublishUserProperties(@Nullable final Mqtt5UserProperties publishUserProperties) {
-        this.publishUserProperties = publishUserProperties;
+    public void setUserProperties(@Nullable final Mqtt5UserProperty... userProperties) {
+        this.userProperties = userProperties;
     }
 }

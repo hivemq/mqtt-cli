@@ -18,8 +18,10 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -29,44 +31,58 @@ import javax.inject.Inject;
         description = "Switch the current context")
 public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
 
-    @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
-    private String contextName;
-
-    @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
-    private String identifier;
-
-    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")
-    private String host;
-
+    //needed for pico cli - reflection code generation
+    public ContextSwitchCommand() {
+        this(null);
+    }
 
     @Inject
     public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         super(mqttClientExecutor);
     }
 
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
+    @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
+    @Nullable
+    private String contextName;
+
+    @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
+    @Nullable
+    private String identifier;
+
+    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")
+    @Nullable
+    private String host;
+
 
     @Override
     public void run() {
 
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
+        if (contextName == null && identifier == null) {
+            ShellCommand.usage(this);
+            return;
         }
 
         if (contextName != null) {
             try {
                 extractKeyFromContextName(contextName);
-            } catch (IllegalArgumentException ex) {
+            }
+            catch (final IllegalArgumentException ex) {
                 if (isVerbose()) {
-                    Logger.error(ex);
+                    Logger.trace(ex);
                 }
-                Logger.error(ex.getMessage());
+                else if (isDebug()) {
+                    Logger.debug(ex.getMessage());
+                }
+                Logger.error(MqttUtils.getRootCause(ex).getMessage());
                 return;
             }
         }
 
-        if (identifier == null) {
-            ShellCommand.usage(this);
-            return;
+        if (isVerbose()) {
+            Logger.trace("Command: {} ", this);
         }
 
         final MqttClient client = mqttClientExecutor.getMqttClientFromCache(this);
@@ -74,8 +90,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
         if (client != null) {
             updateContext(client);
         } else {
-            if (isDebug()) {
-                Logger.debug("Client with key: {} not in Cache", getKey());
+            if (isVerbose()) {
+                Logger.trace("Client with key: {} not in Cache", getKey());
             }
             Logger.error("Context {}@{} not found", identifier, host);
         }
@@ -110,6 +126,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
                 '}';
     }
 
+    @NotNull
     public String getHost() {
         return host;
     }
@@ -119,6 +136,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     }
 
     @Override
+    @NotNull
     public String getIdentifier() {
         return identifier;
     }

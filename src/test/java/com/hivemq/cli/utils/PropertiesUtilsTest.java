@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 HiveMQ and the HiveMQ Community
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package com.hivemq.cli.utils;
 
 import com.hivemq.cli.DefaultProperties;
@@ -98,7 +114,7 @@ class PropertiesUtilsTest {
         assertEquals(MqttVersion.MQTT_3_1_1, PropertiesUtils.DEFAULT_MQTT_VERSION);
         assertEquals("HiveMQClient", PropertiesUtils.DEFAULT_CLIENT_PREFIX);
         assertEquals(PropertiesUtils.DEBUG_LEVEL.DEBUG, PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
-        assertEquals("/etc/.hivemq-cli/logs", PropertiesUtils.DEFAULT_LOGFILE_PATH);
+        assertEquals("/etc/.mqtt-cli/logs", PropertiesUtils.DEFAULT_LOGFILE_PATH);
         assertEquals("file.txt", PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
 
         assertEquals(properties, PropertiesUtils.DEFAULT_PROPERTIES);
@@ -113,7 +129,7 @@ class PropertiesUtilsTest {
         assertEquals("broker.hivemq.com", PropertiesUtils.DEFAULT_HOST);
         assertEquals(1883, PropertiesUtils.DEFAULT_PORT);
         assertEquals(MqttVersion.MQTT_3_1_1, PropertiesUtils.DEFAULT_MQTT_VERSION);
-        assertEquals("hmqClient", PropertiesUtils.DEFAULT_CLIENT_PREFIX);
+        assertEquals("mqttClient", PropertiesUtils.DEFAULT_CLIENT_PREFIX);
         assertEquals(PropertiesUtils.DEBUG_LEVEL.DEBUG, PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
         assertEquals(DefaultProperties.LOGFILE_PATH, PropertiesUtils.DEFAULT_LOGFILE_PATH);
         assertEquals(DefaultProperties.SUBSCRIBE_OUTPUT_FILE, PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);

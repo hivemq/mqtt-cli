@@ -16,16 +16,18 @@
  */
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.commands.Disconnect;
+import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
-import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -36,10 +38,18 @@ import javax.inject.Inject;
 
 public class ContextDisconnectCommand extends ShellContextCommand implements Runnable, Disconnect {
 
+    //needed for pico cli - reflection code generation
+    public ContextDisconnectCommand() {
+        this(null);
+    }
+
     @Inject
     public ContextDisconnectCommand(final @NotNull MqttClientExecutor executor) {
         super(executor);
     }
+
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The session expiry of the disconnect (default: 0)")
     @Nullable
@@ -49,9 +59,9 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     @Nullable
     private String reasonString;
 
-    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the disconnect message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the disconnect message")
     @Nullable
-    private Mqtt5UserProperties userProperties;
+    private Mqtt5UserProperty[] userProperties;
 
     @Override
     public void run() {
@@ -64,11 +74,16 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
 
         try {
             mqttClientExecutor.disconnect(this);
-        } catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
+        }
+        catch (final Exception ex) {
+            LoggingContext.put("identifier", "DISCONNECT");
+            if (isVerbose()) {
+                Logger.trace(ex);
             }
-            Logger.error(ex.getMessage());
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
 
         removeContext();
@@ -99,6 +114,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     }
 
     @Nullable
+    @Override
     public Long getSessionExpiryInterval() {
         return sessionExpiryInterval;
     }
@@ -108,6 +124,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     }
 
     @Nullable
+    @Override
     public String getReasonString() {
         return reasonString;
     }
@@ -116,11 +133,13 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
         this.reasonString = reasonString;
     }
 
+    @Nullable
+    @Override
     public Mqtt5UserProperties getUserProperties() {
-        return userProperties;
+        return MqttUtils.convertToMqtt5UserProperties(userProperties);
     }
 
-    public void setUserProperties(@Nullable final Mqtt5UserProperties userProperties) {
+    public void setUserProperties(@Nullable final Mqtt5UserProperty... userProperties) {
         this.userProperties = userProperties;
     }
 }

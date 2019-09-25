@@ -31,6 +31,9 @@ public class ShellExitCommand implements Runnable, CliCommand {
     public ShellExitCommand() {
     }
 
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @Override
     public void run() {
         if (isVerbose()) {

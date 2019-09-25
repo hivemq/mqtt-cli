@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+
 import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -42,18 +43,22 @@ public class ShellContextCommand implements Runnable, CliCommand {
     public static @Nullable MqttClient contextClient;
     MqttClientExecutor mqttClientExecutor;
 
+    //needed for pico cli - reflection code generation
+    public ShellContextCommand() {
+        this(null);
+    }
+
     @Inject
     public ShellContextCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;
     }
-
 
     static void updateContext(final @Nullable MqttClient client) {
         if (client != null && client.getConfig().getState().isConnectedOrReconnect()) {
             if (ShellCommand.isVerbose()) {
                 Logger.trace("Update context to {}@{}", client.getConfig().getClientIdentifier().get(), client.getConfig().getServerHost());
             }
-            LoggingContext.put("identifier", client.getConfig().getClientIdentifier().get().toString());
+            LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get());
             contextClient = client;
             ShellCommand.readFromContext();
         }
@@ -63,6 +68,7 @@ public class ShellContextCommand implements Runnable, CliCommand {
         if (ShellCommand.isVerbose()) {
             Logger.trace("Remove context");
         }
+        LoggingContext.put("identifier", "SHELL");
         contextClient = null;
         ShellCommand.readFromShell();
     }

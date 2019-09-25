@@ -35,14 +35,14 @@ public class CommandLineModule {
 
     @Singleton
     @Provides
-    static @NotNull CommandLine provideCommandLine(final @NotNull HiveMQCLICommand main,
+    static @NotNull CommandLine provideCommandLine(final @NotNull MqttCLICommand main,
                                                    final @NotNull @Named("shell-sub-command") CommandLine shellSubCommand,
                                                    final @NotNull SubscribeCommand subscribeCommand,
                                                    final @NotNull PublishCommand publishCommand) {
 
         return new CommandLine(main)
-                .addSubcommand(shellSubCommand)
+                .addSubcommand(publishCommand)
                 .addSubcommand(subscribeCommand)
-                .addSubcommand(publishCommand);
+                .addSubcommand(shellSubCommand);
     }
 }

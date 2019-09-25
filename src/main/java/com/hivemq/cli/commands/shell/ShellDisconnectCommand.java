@@ -17,18 +17,18 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.commands.Disconnect;
-import com.hivemq.cli.commands.cli.MqttCommand;
+import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
-import com.hivemq.cli.converters.UserPropertiesConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.client.mqtt.MqttVersion;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -41,12 +41,20 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
 
     private final MqttClientExecutor mqttClientExecutor;
 
+    //needed for pico cli - reflection code generation
+    public ShellDisconnectCommand() {
+        this(null);
+    }
+
     @Inject
     ShellDisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
 
         this.mqttClientExecutor = mqttClientExecutor;
 
     }
+
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-i", "--identifier"}, required = true, description = "The client identifier UTF-8 String (default randomly generated string)")
     @NotNull
@@ -64,9 +72,9 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     @Nullable
     private String reasonString;
 
-    @CommandLine.Option(names = {"-up", "--userProperties"}, converter = UserPropertiesConverter.class, description = "The user Properties of the disconnect message (Usage: 'Key=Value', 'Key1=Value1|Key2=Value2')")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the disconnect message")
     @Nullable
-    private Mqtt5UserProperties userProperties;
+    private Mqtt5UserProperty[] userProperties;
 
     @Override
     public boolean isVerbose() {
@@ -87,16 +95,19 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
 
         try {
             mqttClientExecutor.disconnect(this);
-        } catch (final Exception ex) {
-            if (isDebug()) {
-                Logger.debug(ex);
+        }
+        catch (final Exception ex) {
+            LoggingContext.put("identifier", "PUBLISH");
+            if (isVerbose()) {
+                Logger.trace(ex);
             }
-            Logger.error(ex.getMessage());
-
+            else if (isDebug()) {
+                Logger.debug(ex.getMessage());
+            }
+            Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
 
     }
-
 
     @Override
     public String getIdentifier() {
@@ -135,7 +146,7 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
 
     @Override
     public @Nullable Mqtt5UserProperties getUserProperties() {
-        return userProperties;
+        return MqttUtils.convertToMqtt5UserProperties(userProperties);
     }
 
     public void setSessionExpiryInterval(final @Nullable Long sessionExpiryInterval) {
@@ -155,7 +166,7 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
         this.host = host;
     }
 
-    public void setUserProperties(final @Nullable Mqtt5UserProperties userProperties) {
+    public void setUserProperties(final @Nullable Mqtt5UserProperty... userProperties) {
         this.userProperties = userProperties;
 
 

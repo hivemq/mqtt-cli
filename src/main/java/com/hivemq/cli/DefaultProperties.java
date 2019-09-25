@@ -35,17 +35,17 @@ public final class DefaultProperties {
 
     public static final PropertiesUtils.DEBUG_LEVEL SHELL_DEBUG_LEVEL = PropertiesUtils.DEBUG_LEVEL.VERBOSE;
 
-    public static final String CLIENT_PREFIX = "hmqClient";
+    public static final String CLIENT_PREFIX = "mqttClient";
 
     public static final String LOGFILE_PATH = getLogfilePath();
 
     public static final String SUBSCRIBE_OUTPUT_FILE = null;
 
     public static String getPropertiesPath() {
-        return System.getProperty("user.home") + File.separator + ".hivemq-cli" + File.separator + "config.properties";
+        return System.getProperty("user.home") + File.separator + ".mqtt-cli" + File.separator + "config.properties";
     }
 
     public static String getLogfilePath() {
-        return System.getProperty("user.home") + File.separator + ".hivemq-cli" + File.separator + "logs" + File.separator;
+        return System.getProperty("user.home") + File.separator + ".mqtt-cli" + File.separator + "logs" + File.separator;
     }
 }
