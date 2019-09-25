@@ -30,7 +30,7 @@ Download the [Windows Zipfile](https://github.com/hivemq/mqtt-cli/releases/downl
 To execute MQTT CLI simply open the Windows Command Prompt with `⊞ Win` + `R` and execute `cmd`.
 Navigate into the extracted MQTT CLI folder and execute `mqtt-cli.exe command`.
 
-To quick start the shell simply double-click the `mqtt-cli-shell.exe`.
+To quick start the shell simply double-click the `mqtt-cli-shell.cmd` file.
 
 ***
 
