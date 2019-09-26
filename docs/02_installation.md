@@ -12,7 +12,7 @@ has_children: true
 ## Building from source
 
 The MQTT CLI project uses **[Gradle](https://gradle.org/)** to build. A gradle wrapper configuration is included, so after cloning the 
-[repository](https://github.com/hivemq/mqtt) from GitHub, simply change into the directory containing the project and execute 
+[repository](https://github.com/hivemq/mqtt-cli) from GitHub, simply change into the directory containing the project and execute 
 
 ```
 ./gradlew build
