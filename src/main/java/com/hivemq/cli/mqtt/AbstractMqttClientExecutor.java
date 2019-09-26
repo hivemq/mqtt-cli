@@ -92,7 +92,9 @@ abstract class AbstractMqttClientExecutor {
 
         for (int i = 0; i < subscribe.getTopics().length; i++) {
             final String topic = subscribe.getTopics()[i];
-            final MqttQos qos = subscribe.getQos()[i];
+
+            int qosI = i < subscribe.getQos().length ? i: subscribe.getQos().length-1;
+            final MqttQos qos = subscribe.getQos()[qosI];
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
@@ -117,7 +119,8 @@ abstract class AbstractMqttClientExecutor {
 
         for (int i = 0; i < publish.getTopics().length; i++) {
             final String topic = publish.getTopics()[i];
-            final MqttQos qos = publish.getQos()[i];
+            int qosI = i < publish.getQos().length ? i: publish.getQos().length-1;
+            final MqttQos qos = publish.getQos()[qosI];
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
