@@ -124,14 +124,15 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         logUnusedOptions();
 
         try {
+            qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.publish(this);
         }
         catch (final Exception ex) {
             if (ex instanceof ConnectionFailedException) {
-                LoggingContext.put("identifier", "CONNECT");
+                LoggingContext.put("identifier", "CONNECT ERROR:");
             }
             else {
-                LoggingContext.put("identifier", "PUBLISH");
+                LoggingContext.put("identifier", "SUBSCRIBE ERROR:");
             }
             if (isVerbose()) {
                 Logger.trace(ex);

@@ -76,7 +76,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @NotNull
     private String[] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 0)", order = 1)
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 2)", order = 1)
     @NotNull
     private MqttQos[] qos;
 
@@ -115,10 +115,10 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         }
         catch (final Exception ex) {
             if (ex instanceof ConnectionFailedException) {
-                LoggingContext.put("identifier", "CONNECT");
+                LoggingContext.put("identifier", "CONNECT ERROR:");
             }
             else {
-                LoggingContext.put("identifier", "PUBLISH");
+                LoggingContext.put("identifier", "PUBLISH ERROR:");
             }
             if (isVerbose()) {
                 Logger.trace(ex);
