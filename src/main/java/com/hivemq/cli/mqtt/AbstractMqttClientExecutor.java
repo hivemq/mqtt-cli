@@ -19,10 +19,14 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
+import com.hivemq.cli.commands.shell.ShellCommand;
+import com.hivemq.cli.commands.shell.ShellContextCommand;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -44,8 +48,10 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jline.terminal.Terminal;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.LoggingContext;
+import org.w3c.dom.ls.LSOutput;
 
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
@@ -372,6 +378,7 @@ abstract class AbstractMqttClientExecutor {
     private @NotNull MqttClientBuilder createBuilder(final @NotNull Connect connect) {
 
         return MqttClient.builder()
+                .addDisconnectedListener(new ContextClientDisconnectListener())
                 .serverHost(connect.getHost())
                 .serverPort(connect.getPort())
                 .sslConfig(connect.getSslConfig())
