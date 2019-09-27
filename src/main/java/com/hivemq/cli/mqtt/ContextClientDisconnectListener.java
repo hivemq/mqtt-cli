@@ -21,6 +21,7 @@ import com.hivemq.cli.commands.shell.ShellContextCommand;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedContext;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
+import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 
@@ -29,20 +30,23 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
     @Override
     public void onDisconnected(final @NotNull MqttClientDisconnectedContext context) {
 
-        final Throwable cause = context.getCause();
+        if (context.getSource() == MqttDisconnectSource.SERVER) {
+            final Throwable cause = context.getCause();
 
-        if (ShellCommand.VERBOSE) {
-            Logger.trace(cause);
-        }
-        else if (ShellCommand.DEBUG) {
-            Logger.debug(cause.getMessage());
+            if (ShellCommand.VERBOSE) {
+                Logger.trace(cause);
+            }
+            else if (ShellCommand.DEBUG) {
+                Logger.debug(cause.getMessage());
+            }
+
+            if (context.getClientConfig().equals(ShellContextCommand.contextClient.getConfig())) {
+                Logger.error(MqttUtils.getRootCause(cause).getMessage());
+                ShellContextCommand.removeContext();
+                ShellCommand.TERMINAL_WRITER.printf("Press ENTER to resume: ");
+                ShellCommand.TERMINAL_WRITER.flush();
+            }
         }
 
-        if (context.getClientConfig().equals(ShellContextCommand.contextClient.getConfig())) {
-            Logger.error(MqttUtils.getRootCause(cause).getMessage());
-            ShellContextCommand.removeContext();
-            ShellCommand.TERMINAL_WRITER.printf("Press ENTER to resume: ");
-            ShellCommand.TERMINAL_WRITER.flush();
-        }
     }
 }
