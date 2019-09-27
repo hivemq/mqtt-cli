@@ -20,6 +20,7 @@ plugins {
     id 'com.palantir.graal' version '0.6.0'
     id 'de.thetaphi.forbiddenapis' version '2.6' apply false
     id "com.github.breadmoirai.github-release" version "2.2.9"
+    id 'org.ajoberstar.git-publish' version '2.1.1'
 }
 
 apply plugin: 'de.thetaphi.forbiddenapis'
@@ -481,6 +482,21 @@ githubRelease {
             file("${project.buildBrewDir}/${project.readableName}-${project.version}-brew.zip"),
             buildWindowsZip
     overwrite true
+}
+
+gitPublish {
+    repoUri = "https://github.com/hivemq/homebrew-mqtt-cli.git"
+
+    branch = 'master'
+
+    contents {
+        from(project.buildBrewDir) {
+            include 'mqtt-cli.rb'
+        }
+    }
+
+    // message used when committing changes
+    commitMessage = "Release version v${project.version}"
 }
 
 
