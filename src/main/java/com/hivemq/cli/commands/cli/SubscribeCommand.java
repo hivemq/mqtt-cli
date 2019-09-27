@@ -87,7 +87,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @Nullable
     private File receivedMessagesFile;
 
-    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)", order = 1)
+    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, hidden = true, defaultValue = "true", description = "The received messages will be written to the console (default: true)", order = 1)
     private boolean printToSTDOUT;
 
     @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)", order = 1)
@@ -129,9 +129,6 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
 
-        if (receivedMessagesFile == null && !printToSTDOUT) {
-            printToSTDOUT = true;
-        }
         try {
             stay();
         }

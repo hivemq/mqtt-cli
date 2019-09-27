@@ -144,19 +144,24 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.debug("sending SUBSCRIBE: (Topic: {}, QoS: {})", topic, qos);
         }
 
+        final boolean printToSTDOUT = subscribe.isPrintToSTDOUT();
+
         client.subscribe(subscribeMessage, publish -> {
 
-                    byte[] payload = publish.getPayloadAsBytes();
-                    final String payloadMessage = applyBase64EncodingIfSet(subscribe.isBase64(), payload);
+            byte[] payload = publish.getPayloadAsBytes();
+            final String payloadMessage = applyBase64EncodingIfSet(subscribe.isBase64(), payload);
 
-                    if (finalFileWriter != null) {
-                        finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
-                        finalFileWriter.flush();
-                    }
+            if (!getClientDataMap().get(subscribe.getKey()).getSubscribedTopics().contains(topic)) {
 
-                    if (subscribe.isPrintToSTDOUT()) {
-                        System.out.println(payloadMessage);
-                    }
+                if (finalFileWriter != null) {
+                    finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
+                    finalFileWriter.flush();
+                }
+
+                if (printToSTDOUT) {
+                    System.out.println(payloadMessage);
+                }
+            }
 
             if (subscribe.isVerbose()) {
                 Logger.trace("received PUBLISH: {}", publish);
@@ -220,19 +225,24 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.debug("sending SUBSCRIBE: (Topic: {}, QoS: {})", topic, qos);
         }
 
+        final boolean printToSTDOUT = subscribe.isPrintToSTDOUT();
+
         client.subscribe(subscribeMessage, publish -> {
 
                     byte[] payload = publish.getPayloadAsBytes();
                     final String payloadMessage = applyBase64EncodingIfSet(subscribe.isBase64(), payload);
 
-                    if (finalFileWriter != null) {
-                        finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
-                        finalFileWriter.flush();
-                    }
+            if (!getClientDataMap().get(subscribe.getKey()).getSubscribedTopics().contains(topic)) {
 
-                    if (subscribe.isPrintToSTDOUT()) {
-                        System.out.println(payloadMessage);
-                    }
+                if (finalFileWriter != null) {
+                    finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
+                    finalFileWriter.flush();
+                }
+
+                if (printToSTDOUT) {
+                    System.out.println(payloadMessage);
+                }
+            }
 
             if (subscribe.isVerbose()) {
                 Logger.trace("received PUBLISH: {}", publish);
