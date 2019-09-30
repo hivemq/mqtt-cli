@@ -11,7 +11,7 @@ nav_exclude: true
 # What is MQTT CLI?
 
 MQTT CLI is a full MQTT 5.0 and MQTT 3.1.1 compatible command line interface for MQTT clients 
-which uses the HiveMQ MQTT Client API.
+which uses the [HiveMQ MQTT Client API](https://github.com/hivemq/hivemq-mqtt-client).
 
 
 HiveMQ CLI is an Open Source project backed by [HiveMQ](https://www.hivemq.com/).
@@ -22,7 +22,7 @@ HiveMQ CLI is an Open Source project backed by [HiveMQ](https://www.hivemq.com/)
 # Features
 
 - **All MQTT 3.1.1 and MQTT 5.0 features** are supported
-- **interactive**, direct and verbose Mode for all MQTT Commands
+- **Interactive**, direct and verbose Mode for all MQTT Commands
 - Shell behavior with Syntax Highlighting, Command history
 - Ability to connect simultaneously various MQTT Clients to different Broker
 - Various distributions available
