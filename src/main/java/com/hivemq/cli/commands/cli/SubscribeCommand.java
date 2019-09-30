@@ -118,7 +118,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
                 LoggingContext.put("identifier", "CONNECT ERROR:");
             }
             else {
-                LoggingContext.put("identifier", "PUBLISH ERROR:");
+                LoggingContext.put("identifier", "SUBSCRIBE ERROR:");
             }
             if (isVerbose()) {
                 Logger.trace(ex);

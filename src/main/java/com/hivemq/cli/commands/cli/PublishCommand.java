@@ -132,7 +132,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
                 LoggingContext.put("identifier", "CONNECT ERROR:");
             }
             else {
-                LoggingContext.put("identifier", "SUBSCRIBE ERROR:");
+                LoggingContext.put("identifier", "PUBLISH ERROR:");
             }
             if (isVerbose()) {
                 Logger.trace(ex);
