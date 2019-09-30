@@ -44,9 +44,6 @@ $ mqtt [flags] [METHOD] [OPTION [OPTION]]
 * [Subscribe](mqtt_commands/subscribe.md)
 * [Shell](05_shell.md) 
 
-> **NOTE**: As latency-issues may slow down the CLI under **Mac OS X** please verify that you have the entry ``127.0.0.1 localhost your-pc-name`` specified under ``/etc/hosts``.
-You can use ``sudo sh -c "echo 127.0.0.1 localhost $(hostname) >> /etc/hosts"`` to append this configuration to your hosts file.
-
 ***
 
 ## Basic Publish
@@ -65,8 +62,6 @@ This command:
 
 ## Basic Subscribe
 
-> **NOTE**: Subscribe will block the console to output published messages
-
 ```
 $ mqtt sub -t topic
 >
@@ -84,6 +79,7 @@ This command:
 
 ```
 $ mqtt shell
+...
 mqtt>
 ```
 

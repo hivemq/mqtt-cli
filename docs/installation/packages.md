@@ -19,8 +19,12 @@ $ brew tap hivemq/mqtt-cli
 $ brew install mqtt-cli
 ```
 
+
 > **NOTE**: If no JVM is installed the second command will throw an error like `Java 1.8+ is required to install this formula`. 
 >If this is the case you need to install a JVM with a version higher than 1.8. Use `brew cask install adoptopenjdk` to install the latest release of adoptopenjdk.    
+
+> **NOTE**: As latency-issues may slow down the CLI under **Mac OS X** please verify that you have the entry ``127.0.0.1 localhost your-pc-name`` specified under ``/etc/hosts``.
+You can use ``sudo sh -c "echo 127.0.0.1 localhost $(hostname) >> /etc/hosts"`` to append this configuration to your hosts file.
 
 ***
 
