@@ -475,13 +475,13 @@ githubRelease {
     owner = project.githubOrg
     targetCommitish "develop"
     body ""
-    draft false
+    draft true
     prerelease false
     releaseAssets file("${project.buildRpmDir}/${project.readableName}-${project.version}.noarch.rpm"),
             file("${project.buildDebDir}/${project.readableName}_${project.version}_all.deb"),
             file("${project.buildBrewDir}/${project.readableName}-${project.version}-brew.zip"),
             buildWindowsZip
-    overwrite true
+    overwrite false
 }
 
 gitPublish {
