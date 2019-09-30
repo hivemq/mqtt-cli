@@ -27,9 +27,9 @@ Options:
   -V, --version   Print version information and exit.
 
 Commands:
-  sh, shell       Starts MQTT CLI in shell mode, to enable interactive mode with further sub commands.
-  sub, subscribe  Subscribe an mqtt client to a list of topics
   pub, publish    Publish a message to a list of topics
+  sub, subscribe  Subscribe an mqtt client to a list of topics
+  shell, sh       Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.
 
 ```
 
