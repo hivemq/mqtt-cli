@@ -64,6 +64,8 @@ public class ShellCommand implements Runnable {
     public static boolean VERBOSE;
     private String logfilePath;
 
+    public static PrintWriter TERMINAL_WRITER;
+
     private static LineReaderImpl currentReader;
     private static LineReaderImpl shellReader;
     private static LineReaderImpl contextReader;
@@ -153,9 +155,9 @@ public class ShellCommand implements Runnable {
             readFromShell();
 
 
-            final PrintWriter terminalWriter = terminal.writer();
-            terminalWriter.println(shellCommandLine.getUsageMessage());
-            terminalWriter.flush();
+            TERMINAL_WRITER = terminal.writer();
+            TERMINAL_WRITER.println(shellCommandLine.getUsageMessage());
+            TERMINAL_WRITER.flush();
 
             Logger.info("Using default values from properties file {}:", PropertiesUtils.PROPERTIES_FILE_PATH);
             Logger.info("Host: {}, Port: {}, Mqtt-Version {}, Shell-Debug-Level: {}",
@@ -230,6 +232,7 @@ public class ShellCommand implements Runnable {
     }
 
     static void readFromShell() {
+
         currentReader = shellReader;
         currentCommandLine = shellCommandLine;
         prompt = new AttributedStringBuilder()

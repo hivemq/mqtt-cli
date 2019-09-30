@@ -76,7 +76,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @NotNull
     private String[] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 0)", order = 1)
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 2)", order = 1)
     @NotNull
     private MqttQos[] qos;
 
@@ -87,7 +87,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @Nullable
     private File receivedMessagesFile;
 
-    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)", order = 1)
+    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, hidden = true, defaultValue = "true", description = "The received messages will be written to the console (default: true)", order = 1)
     private boolean printToSTDOUT;
 
     @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)", order = 1)
@@ -115,10 +115,10 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         }
         catch (final Exception ex) {
             if (ex instanceof ConnectionFailedException) {
-                LoggingContext.put("identifier", "CONNECT");
+                LoggingContext.put("identifier", "CONNECT ERROR:");
             }
             else {
-                LoggingContext.put("identifier", "PUBLISH");
+                LoggingContext.put("identifier", "SUBSCRIBE ERROR:");
             }
             if (isVerbose()) {
                 Logger.trace(ex);
@@ -129,9 +129,6 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
 
-        if (receivedMessagesFile == null && !printToSTDOUT) {
-            printToSTDOUT = true;
-        }
         try {
             stay();
         }
