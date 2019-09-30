@@ -106,6 +106,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
         }
 
         try {
+            qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.publish(contextClient, this);
         }
         catch (final Exception ex) {

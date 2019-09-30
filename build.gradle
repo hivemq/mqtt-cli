@@ -20,6 +20,7 @@ plugins {
     id 'com.palantir.graal' version '0.6.0'
     id 'de.thetaphi.forbiddenapis' version '2.6' apply false
     id "com.github.breadmoirai.github-release" version "2.2.9"
+    id 'org.ajoberstar.git-publish' version '2.1.1'
 }
 
 apply plugin: 'de.thetaphi.forbiddenapis'
@@ -50,7 +51,7 @@ compileTestJava {
 }
 
 group = 'com.hivemq'
-version = '1.0.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
+version = '1.0.1' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 description = 'MQTT CLI is a tool that provides a feature rich command line interface for connecting, ' +
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
@@ -474,13 +475,28 @@ githubRelease {
     owner = project.githubOrg
     targetCommitish "develop"
     body ""
-    draft false
+    draft true
     prerelease false
     releaseAssets file("${project.buildRpmDir}/${project.readableName}-${project.version}.noarch.rpm"),
             file("${project.buildDebDir}/${project.readableName}_${project.version}_all.deb"),
             file("${project.buildBrewDir}/${project.readableName}-${project.version}-brew.zip"),
             buildWindowsZip
-    overwrite true
+    overwrite false
+}
+
+gitPublish {
+    repoUri = "https://github.com/hivemq/homebrew-mqtt-cli.git"
+
+    branch = 'master'
+
+    contents {
+        from(project.buildBrewDir) {
+            include 'mqtt-cli.rb'
+        }
+    }
+
+    // message used when committing changes
+    commitMessage = "Release version v${project.version}"
 }
 
 

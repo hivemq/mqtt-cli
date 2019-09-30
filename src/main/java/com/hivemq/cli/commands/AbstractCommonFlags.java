@@ -129,7 +129,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
 
         // build trustManagerFactory for server side authentication and to enable tls
         TrustManagerFactory trustManagerFactory = null;
-        if (!certificates.isEmpty()) {
+        if (certificates != null && !certificates.isEmpty()) {
             trustManagerFactory = buildTrustManagerFactory(certificates);
         }
 
