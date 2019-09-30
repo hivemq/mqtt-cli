@@ -11,8 +11,8 @@ has_children: true
 
 ## Building from source
 
-The MQTT CLI project uses **[Gradle](https://gradle.org/)** to build. A gradle wrapper configuration is included, so after cloning the 
-[repository](https://github.com/hivemq/mqtt-cli) from GitHub, simply change into the directory containing the project and execute 
+The MQTT CLI project uses [Gradle](https://gradle.org/) to build. A gradle wrapper configuration is included, so that after cloning the 
+[repository](https://github.com/hivemq/mqtt-cli) from GitHub, you can simply change into the directory containing the project and execute 
 
 ```
 ./gradlew build
@@ -22,6 +22,6 @@ The MQTT CLI project uses **[Gradle](https://gradle.org/)** to build. A gradle w
 
 At least Java 8 is required to run MQTT CLI.
 
-The CLI is implemented with the [11.0.4 Java release](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html) which is the preferred version to run this project.
+The CLI is implemented with the [11.0.4 Java release](https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot) which is the preferred version to run this project.
 
 

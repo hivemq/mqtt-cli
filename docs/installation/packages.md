@@ -7,8 +7,7 @@ nav_order: 1
 
 {:.main-header-color-yellow}
 # Installation using a package manager
-
-> **NOTE**: At least Java 8 is required to run MQTT CLI.
+*** 
 
 ## Homebrew
 For **Mac OS X** and **Linux** systems use **[Homebrew](https://brew.sh/)** to install MQTT CLI via the **[MQTT CLI Tap](https://github.com/hivemq/homebrew-mqtt-cli)**.
@@ -30,7 +29,7 @@ You can use ``sudo sh -c "echo 127.0.0.1 localhost $(hostname) >> /etc/hosts"`` 
 
 ## Windows Zip
 
-Download the [Windows Zipfile](https://github.com/hivemq/mqtt-cli/releases/download/v1.0.0/mqtt-cli-1.0.0-win.zip) and extract it in your preferred location.
+Download the [Windows Zipfile](https://github.com/hivemq/mqtt-cli/releases/download/v1.0.1/mqtt-cli-1.0.1-win.zip) and extract it in your preferred location.
 To execute MQTT CLI simply open the Windows Command Prompt with `⊞ Win` + `R` and execute `cmd`.
 Navigate into the extracted MQTT CLI folder and execute `mqtt-cli.exe command`.
 
@@ -45,8 +44,8 @@ and install the package with `sudo dpkg -i`  or `sudo apt install`:
 
 
 ``` 
-wget https://github.com/hivemq/mqtt-cli/releases/download/v1.0.0/mqtt-cli_1.0.0_all.deb
-sudo apt install ./mqtt-cli_1.0.0_all.deb
+wget https://github.com/hivemq/mqtt-cli/releases/download/v1.0.1/mqtt-cli_1.0.1_all.deb
+sudo apt install ./mqtt-cli_1.0.1_all.deb
 ``` 
 
 ***
@@ -57,6 +56,6 @@ For Red Hat, Fedora, Mandriva, OpenSuse, CentOS distributions you can use the rp
 The preferred way is to install the package via the `yum` package manager. To install the package simply execute:
 
 ``` 
-sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v1.0.0/mqtt-cli-1.0.0.noarch.rpm
+sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v1.0.1/mqtt-cli-1.0.1.noarch.rpm
 ```
 
