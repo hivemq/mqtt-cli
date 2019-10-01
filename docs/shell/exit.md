@@ -9,12 +9,13 @@ nav_order: 9
 # Exit
 ***
 
-Exits the currently active client context.
+Exits the currently active client context or the shell if used without a context.
 
 ## Synopsis
 
 ```
-clientID@host> exit
+mqtt> exit
+client@host> exit
 ```
 ***
 
@@ -29,5 +30,12 @@ mqtt>
 ```
 
 > **NOTE**: The client is still connected in the shell
- 
+
+***
+
+> Exit the Shell
+```
+mqtt> exit
+$> 
+```
 

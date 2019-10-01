@@ -14,10 +14,10 @@ Switches the currently active context client.
 ## Synopsis
 
 ```
-mqtt> switch  {   [<contextName>]
-                        -i <identifier>
-                        [-h <host>]
-}
+mqtt> switch    [<contextName>]
+                [-i <identifier>] 
+                [-h <host>]            
+                [--help] 
 ```
 
 ***

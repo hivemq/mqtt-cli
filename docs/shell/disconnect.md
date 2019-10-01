@@ -14,12 +14,11 @@ Disconnects a previously connected client.
 ## Synopsis (without client context)
 
 ```
-mqtt> dis {   -i <identifier>
-                    [-h <hostname>]
-                    [-e <sessionExpiryInterval>]
-                    [-r <reasonString>]
-                    [-up <userProperty>]...
-}
+mqtt> dis   -i <identifier> 
+            [-h <host>]  
+            [-e <sessionExpiryInterval>] 
+            [-r <reasonString>] 
+            [-up <userProperties>]...
 ```
 
 ## Synopsis (with client context)
@@ -27,10 +26,9 @@ mqtt> dis {   -i <identifier>
 Disconnects the currently active client context.
 
 ```
-clientID@host>  dis {   [-e <sessionExpiryInterval>]
-                        [-r <reasonString>]
-                        [-up <userProperty>]...
-}
+client@host>  dis   [-e <sessionExpiryInterval>]
+                    [-r <reasonString>]
+                    [-up <userProperty>]...
 ```
 
 ***

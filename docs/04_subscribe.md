@@ -97,7 +97,7 @@ mqtt sub    -t <topics> [-t <topics>]...
 | ``-p``  | ``--port``| The MQTT port. | ``1883``
 | ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
-| ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier given. | ``hmqClient``
+| ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier given. | ``mqttClient``
 | ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)

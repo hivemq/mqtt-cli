@@ -17,14 +17,14 @@ To enable this behavior you can use the **-s** option.
 ## Synopsis
 
 ```
-clientID@host> sub  {   -t <topics> [-t <topics>]...
-                        [-q <qos>]...
-                        [-s]
-                        [-b64]
-                        [-oc]
-                        [-of <receivedMessagesFile>]
-                        [-up <userProperty>]...
-}
+client@host> sub    -t <topics> [-t <topics>]... 
+                    [-q <qos>]... 
+                    [-oc] 
+                    [-of <receivedMessagesFile>]
+                    [-b64]   
+                    [-up <userProperties>]... 
+                    [-s]   
+                    [-h]                                           
 ```
 
 ***
@@ -39,6 +39,7 @@ clientID@host> sub  {   -t <topics> [-t <topics>]...
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
 | ``-up``  | ``--userProperty`` | A user property of the subscribe message. |
+| ``-s``    |   |   The subscribe emulates the same behavior as the subscribe command in non-shell mode. <br> **Note**: the subscriptions will be unsubscribed afterwards. <br> To cancel the command simply press *Enter*. |  
 
 
 ## Examples

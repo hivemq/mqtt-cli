@@ -14,8 +14,7 @@ Clears the terminal screen.
 ## Synopsis
 
 ```
-mqtt> clear   {
-}
+mqtt>  cls | clear
 ```
 
 ## Example

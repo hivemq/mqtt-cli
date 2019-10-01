@@ -19,47 +19,48 @@ To list all of the connected clients use the [List](list) method.
 | -----------------------------------|:-----------|
 | ``mqtt> con ``                      | Creates and connect a new MQTT client with the default settings
 | ``mqtt> con -V 3 -h myHost``        | Creates and connects an MQTT 3.1.1 client at myHost with the default port
-| ``mqtt> con -i hmq-client -p 1884`` | Creates and connects an MQTT client at localhost with port 1884 which is identified by ``hmq-client``.
+| ``mqtt> con -i mqtt-client -p 1884`` | Creates and connects an MQTT client at localhost with port 1884 which is identified by ``mqtt-client``.
 
 *** 
 ## Synopsis
 ```
-mqtt> con {   [-h <host>]
-                    [-p <port>]
-                    [-V <version>]
-                    [-i <identifier>]
-                    [-ip <identifierPrefix>]
-                    [-cdsv]
-                    [-u <user>]
-                    [-pw [<password>]]
-                    [-se <sessionExpiryInterval>]
-                    [-k <keepAlive>]
-                    [-up <userProperty>]...
-                    [--cert <clientCertificate> --key <clientPrivateKey>]
-                    [--cafile FILE]
-                    [--capath DIR]...
-                    [--ciphers <cipherSuites>[:<cipherSuites>...]]...
-                    [--tls-version <supportedTLSVersions>]...
-                    [-Wcd <willCorrelationData>]
-                    [-Wct <willContentType>]
-                    [-Wd <willDelayInterval>]
-                    [-We <willMessageExpiryInterval>]
-                    [-Wm <willMessage>]
-                    [-Wpf <willPayloadFormatIndicator>]
-                    [-Wq <willQos>]
-                    [-Wr]
-                    [-Wrt <willResponseTopic>]
-                    [-Wt <willTopic>]
-                    [-Wup <willUserProperty>]...
-                    [--rcvMax <receiveMaximum>]
-                    [--sendMax <sendMaximum>]
-                    [--maxPacketSize <maximumPacketSize>]
-                    [--sendMaxPacketSize <sendMaximumPacketSize>]
-                    [--sendTopicAliasMax <sendTopicAliasMaximum>]
-                    [--topicAliasMax <topicAliasMaximum>]
-                    [--[no-]reqProblemInfo]
-                    [--[no-]reqResponseInfo]
-}
+mqtt> con   [-h <host>] 
+            [-p <port>]
+            [-V <version>] 
+            [-i <identifier>] 
+            [-ip <identifierPrefix>]             
+            [-cdsv]
+            [-k <keepAlive>] 
+            [-se <sessionExpiryInterval>] 
+            [-up <connectUserProperties>]...
+            [-u <user>] 
+            [-pw [<password>]]           
+            [--cert <clientCertificate>] 
+            [--key <clientPrivateKey>] 
+            [--cafile FILE]... 
+            [--capath DIR]...
+            [--ciphers <cipherSuites>[:<cipherSuites>...]]... 
+            [--tls-version <supportedTLSVersions>]... 
+            [-Wd <willDelayInterval>]
+            [-We <willMessageExpiryInterval>] 
+            [-Wm <willMessage>] 
+            [-Wq <willQos>] 
+            [-Wr] 
+            [-Wt <willTopic>]                                                        
+            [-Wcd <willCorrelationData>] 
+            [-Wct <willContentType>] 
+            [-Wpf <willPayloadFormatIndicator>]
+            [-Wrt <willResponseTopic>] 
+            [-Wup <willUserProperties>]...
+            [--rcvMax <receiveMaximum>]
+            [--sendMax <sendMaximum>] 
+            [--maxPacketSize <maximumPacketSize>] 
+            [--sendMaxPacketSize <sendMaximumPacketSize>]
+            [--topicAliasMax <topicAliasMaximum>] 
+            [--sendTopicAliasMax <sendTopicAliasMaximum>] 
+            [--[no-]reqProblemInfo] 
+            [--[no-]reqResponseInfo]                                                              
+            [--help] 
 ```
 
 ***
@@ -71,12 +72,13 @@ mqtt> con {   [-h <host>]
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-h``   | ``--host``| The MQTT host. | ``localhost``
 | ``-p``  | ``--port``| The MQTT port. | ``1883``
-| ``-V``   | ``--version``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
+| ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly defined UTF-8 String will be generated.
-| ``-ip``  | ``--identifierPrefix``| The prefix identifier which will prepend the randomly generated client name if no identifier is given. | ``hmqClient``
+| ``-ip``  | ``--identifierPrefix``| The prefix identifier which will prepend the randomly generated client name if no identifier is given. | ``mqttClient``
 | ``-d``    |   ``--debug``     | Print info level debug messages to the console. | ``False``
 | ``-v``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
 | ``-c``   | ``--[no-]cleanStart`` | Enable clean start if set. | ``True``
+| ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (No Expiry)
 | ``-up``  | ``--userProperty`` | A user property of the connect message.
 
@@ -145,7 +147,7 @@ mqtt> con -h myHost -p 1884
 > Connect a client to the default host on default port using authentication
 
 ```
-mqtt> con -u username -P password
+mqtt> con -u username -pw password
 # Or omit the password to get it prompted
 mqtt> con -u username -P
 Enter value for --password (The password for the client UTF-8 String.):
@@ -195,7 +197,7 @@ mqtt>
 ```
 mqtt> con -i myClient -h broker.hivemq.com -V 3
 myClient@localhost> exit  # client is still connected
-mqtt> dis -i myClient -h broker.hivemq.com -V 3
+mqtt> dis -i myClient -h broker.hivemq.com
 ```
 
 > **NOTE**: Besides the **identifier** also **hostname** has to be given to uniquely identify the client.

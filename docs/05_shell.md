@@ -17,7 +17,7 @@ Therefore **tab-completion**, **command-history**, **password-masking** and othe
 The Shell-Mode is based around a client context driven use case.
 Therefore methods like Connect and Disconnect switch the current context of the shell and commands like Publish and Subscribe always relate to the currently active client context.
 
-Start interactive shell with:
+Start the interactive shell with:
 ```
 $ mqtt shell
 ```
@@ -25,11 +25,11 @@ $ mqtt shell
 ## Example
 
 ```
-mqtt shell                # starts the shell
+$ mqtt shell                # starts the shell
 
-mqtt> con -i myClient     # connect client with identifier 'myClient'
-myClient> pub -t test -m msg    # publish the message 'msg' with the new context client
-myClient> dis                   # disconnect and remove context
+mqtt> con -i myClient                # connect client with identifier 'myClient'
+myClient@host> pub -t test -m msg    # publish the message 'msg' with the new context client
+myClient@host> dis                   # disconnect and remove context
 mqtt> ...
 ```
 
