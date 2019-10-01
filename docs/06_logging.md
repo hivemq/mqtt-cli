@@ -25,7 +25,7 @@ mqtt>
 
 
 ## Usage Example
-> If you require debug logging for direct access add the -d or -v flag to your command.
+> If you require debug logging for direct access add the `-d` and `-v` options are available for the basic publish and subscribe command
 
 
 ```
