@@ -18,7 +18,7 @@ $ mqtt shell
 ....
 Press Ctl-C to exit.
 
-Writing Logfile to /~/.hivemq.cli/logs/hmq-mqtt-log.<Day>.txt
+Writing Logfile to /~/.mqtt-cli/logs/hmq-cli.<Year-Month-Day>.log
 mqtt>
 ```
 
