@@ -30,55 +30,53 @@ mqtt pub --help
 ## Synopsis
 
 ``` 
-mqtt pub {    -t <topic> [-t <topic>]...
-                    -m <message>
-                    [-q <qos>]...
-                    [-r]
-                    [-d]
-                    [-v]
-                    [-e <messageExpiryInterval>]
-                    [-cd <correlationData>]
-                    [-ct <contentType>]
-                    [-pf <payloadFormatIndicator>]
-                    [-pr <responseTopic>]
-                    [-up <userProperty>]...
-                    [-h <host>]
-                    [-p <port>]
-                    [-V <version>]
-                    [-i <identifier>]
-                    [-ip <identifierPrefix>]
-                    [-c]               
-                    [-k <keepAlive>]
-                    [-se <sessionExpiryInterval>]
-                    [-Cup <connectUserProperty>]...
-                    [-s]
-                    [-u <user>]
-                    [-pw [<password>]]
-                    [--cert <clientCertificate> --key <clientPrivateKey>]
-                    [--cafile FILE]
-                    [--capath DIR]...
-                    [--ciphers <cipherSuites>[:<cipherSuites>...]]...
-                    [--tls-version <supportedTLSVersions>]...
-                    [-Wd <willDelayInterval>]
-                    [-We <willMessageExpiryInterval>]
-                    [-Wm <willMessage>]
-                    [-Wq <willQos>]
-                    [-Wr]
-                    [-Wt <willTopic>]
-                    [-Wcd <willCorrelationData>]
-                    [-Wct <willContentType>]
-                    [-Wpf <willPayloadFormatIndicator>]
-                    [-Wrt <willResponseTopic>]
-                    [-Wup <willUserProperty>]...
-                    [--rcvMax <receiveMaximum>]
-                    [--sendMax <sendMaximum>]
-                    [--maxPacketSize <maximumPacketSize>]
-                    [--sendMaxPacketSize <sendMaximumPacketSize>]
-                    [--sendTopicAliasMax <sendTopicAliasMaximum>]
-                    [--topicAliasMax <topicAliasMaximum>]
-                    [--[no-]reqProblemInfo]
-                    [--[no-]reqResponseInfo]            
-}
+mqtt pub    -t <topics> [-t <topics>]... 
+            -m <message> 
+            [-cdrsv] 
+            [-q <qos>]...
+            [-e <messageExpiryInterval>]          
+            [-ct <contentType>] 
+            [-cd <correlationData>] 
+            [-pf <payloadFormatIndicator>] 
+            [-rt <responseTopic>] 
+            [-up <userProperties>]...                   
+            [-h <host>]    
+            [-p <port>] 
+            [-V <version>]
+            [-i <identifier>] 
+            [-ip <identifierPrefix>] 
+            [-k <keepAlive>] 
+            [-se <sessionExpiryInterval>]
+            [-Cup <connectUserProperties>]... 
+            [-u <user>] 
+            [-pw [<password>]] 
+            [--cert <clientCertificate>] 
+            [--key <clientPrivateKey>] 
+            [--cafile FILE]... 
+            [--capath DIR]... 
+            [--ciphers <cipherSuites>[: <cipherSuites>...]]...
+            [--tls-version <supportedTLSVersions>]...
+            [-Wd <willDelayInterval>]                                                                          
+            [-We <willMessageExpiryInterval>]                 
+            [-Wm <willMessage>] 
+            [-Wq <willQos>] 
+            [-Wr]
+            [-Wt <willTopic>] 
+            [-Wcd <willCorrelationData>]
+            [-Wct <willContentType>]                        
+            [-Wpf <willPayloadFormatIndicator>]
+            [-Wrt <willResponseTopic>]
+            [-Wup <willUserProperties>]...  
+            [--rcvMax <receiveMaximum>] 
+            [--sendMax <sendMaximum>] 
+            [--maxPacketSize <maximumPacketSize>]                                             
+            [--sendMaxPacketSize <sendMaximumPacketSize>]
+            [--topicAliasMax <topicAliasMaximum>]       
+            [--sendTopicAliasMax <sendTopicAliasMaximum>] 
+            [--[no-]reqProblemInfo] 
+            [--[no-]reqResponseInfo]  
+            [--help] 
+            [--version]         
 ```
 
 ***
@@ -87,11 +85,11 @@ mqtt pub {    -t <topic> [-t <topic>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-t``   | ``--topic``| The MQTT topic with which the message will be published. |
+| ``-t``   | ``--topic``| The MQTT topic to which the message will be published. |
 | ``-m``| ``--message`` | The message which will be published on the topic. |
 | ``-r``| ``--[no-]retain`` | Whether the message will be retained. | ``False``
 | ``-q`` | ``--qos`` | Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
-| ``-e`` | ``--publishExpiryInterval`` | The lifetime of the publish message in seconds. |
+| ``-e`` | ``--messageExpiryInterval`` | The lifetime of the publish message in seconds. |
 | ``-ct`` | ``--contentType`` | A description of the content of the publish message. |
 | ``-cd`` | ``--correlationData`` | The correlation data of the publish message. |
 | ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
@@ -108,12 +106,13 @@ mqtt pub {    -t <topic> [-t <topic>]...
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-h``   | ``--host``| The MQTT host. | ``localhost``
 | ``-p``  | ``--port``| The MQTT port. | ``1883``
-| ``-V``   | ``--version``| The MQTT version can be set to 3 or 5. | ``5``
+| ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``5``
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
-| ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier is given. | ``hmqClient``
+| ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier is given. | ``mqttClient``
 | ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
+| ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60`` 
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
-| ``-Cup``  | ``--connectUserProperty`` | A user property of the connect message |
+| ``-Cup``  | ``--connectUserProperty`` | A user property of the connect message. |
 
 ***
 
@@ -147,7 +146,7 @@ mqtt pub {    -t <topic> [-t <topic>]...
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
 | ``-Wpf``  | ``--willPayloadFormatIndicator`` | Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
 | ``-Wrt``  | ``--willResponseTopic`` | Topic Name for a response message.   |
-| ``-Wup``   | ``--willUserProperties``  | A user property of the will message |
+| ``-Wup``   | ``--willUserProperties``  | A user property of the will message. |
 
 *** 
 

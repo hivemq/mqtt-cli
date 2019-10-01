@@ -30,51 +30,49 @@ mqtt sub --help
 ## Synopsis
 
 ```
-mqtt sub {    -t <topic> [-t <topic>]...
-                    [-q <qos>]...
-                    [-b64]
-                    [-oc]
-                    [-of <receivedMessagesFile>]
-                    [-d]
-                    [-v]
-                    [-up <userProperty>]...
-                    [-h <host>]
-                    [-p <port>]
-                    [-V <version>]
-                    [-i <identifier>]
-                    [-ip <identifierPrefix>]
-                    [-c]               
-                    [-k <keepAlive>]
-                    [-se <sessionExpiryInterval>]
-                    [-Cup <connectUserProperty>]...
-                    [-s]
-                    [-u <user>]
-                    [-pw [<password>]]
-                    [--cert <clientCertificate> --key <clientPrivateKey>]
-                    [--cafile FILE]
-                    [--capath DIR]...
-                    [--ciphers <cipherSuites>[:<cipherSuites>...]]...
-                    [--tls-version <supportedTLSVersions>]...
-                    [-Wd <willDelayInterval>]
-                    [-We <willMessageExpiryInterval>]
-                    [-Wm <willMessage>]
-                    [-Wq <willQos>]
-                    [-Wr]
-                    [-Wt <willTopic>]
-                    [-Wcd <willCorrelationData>]
-                    [-Wct <willContentType>]
-                    [-Wpf <willPayloadFormatIndicator>]
-                    [-Wrt <willResponseTopic>]
-                    [-Wup <willUserProperty>]...
-                    [--rcvMax <receiveMaximum>]
-                    [--sendMax <sendMaximum>]
-                    [--maxPacketSize <maximumPacketSize>]
-                    [--sendMaxPacketSize <sendMaximumPacketSize>]
-                    [--sendTopicAliasMax <sendTopicAliasMaximum>]
-                    [--topicAliasMax <topicAliasMaximum>]
-                    [--[no-]reqProblemInfo]
-                    [--[no-]reqResponseInfo]
-}
+mqtt sub    -t <topics> [-t <topics>]... 
+            [-q <qos>]... 
+            [-of <receivedMessagesFile>] 
+            [-b64] 
+            [-up <userProperties>]... 
+            [-cdsv]
+            [-h <host>] 
+            [-p <port>]                                         
+            [-V <version>] 
+            [-i <identifier>] 
+            [-ip <identifierPrefix>]
+            [-k <keepAlive>]  
+            [-se <sessionExpiryInterval>]      
+            [-Cup <connectUserProperties>]... 
+            [-u <user>] 
+            [-pw [<password>]] 
+            [--cert <clientCertificate>] 
+            [--key <clientPrivateKey>]             
+            [--cafile FILE]... 
+            [--capath DIR]... 
+            [--ciphers <cipherSuites>[:<cipherSuites>...]]... 
+            [--tls-version <supportedTLSVersions>]... 
+            [-Wd <willDelayInterval>] 
+            [-We <willMessageExpiryInterval>] 
+            [-Wm <willMessage>] 
+            [-Wq <willQos>]   
+            [-Wr] 
+            [-Wt <willTopic>] 
+            [-Wcd <willCorrelationData>]
+            [-Wct <willContentType>] 
+            [-Wpf <willPayloadFormatIndicator>]
+            [-Wrt <willResponseTopic>] 
+            [-Wup <willUserProperties>]...
+            [--rcvMax <receiveMaximum>] 
+            [--sendMax <sendMaximum>]
+            [--maxPacketSize <maximumPacketSize>] 
+            [--sendMaxPacketSize <sendMaximumPacketSize>] 
+            [--topicAliasMax <topicAliasMaximum>] 
+            [--sendTopicAliasMax <sendTopicAliasMaximum>]                                                                                  
+            [--[no-]reqProblemInfo] 
+            [--[no-]reqResponseInfo] 
+            [--help] 
+            [--version]
 ```
 ***
 
@@ -86,7 +84,6 @@ mqtt sub {    -t <topic> [-t <topic>]...
 | ``-t``   | ``--topic``| The MQTT topic the client will subscribe to. |
 | ``-q`` | ``--qos`` |  Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
-| ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` 
 | ``-b64``| ``--base64``| Whether the received publish messages will be base64 encoded. | ``False``
 | ``-up``  | ``--userProperty`` | A user property of the subscribe message. |
 
@@ -98,10 +95,11 @@ mqtt sub {    -t <topic> [-t <topic>]...
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-h``   | ``--host``| The MQTT host. | ``localhost``
 | ``-p``  | ``--port``| The MQTT port. | ``1883``
-| ``-V``   | ``--version``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
+| ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier given. | ``hmqClient``
 | ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
+| ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-Cup``  | ``--connectUserProperty`` | A user property of the subscribe message. |
 
