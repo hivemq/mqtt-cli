@@ -58,4 +58,11 @@ public class MqttUtils {
         }
         return currentThrowable;
     }
+
+    public static @NotNull String buildKey(final @NotNull String identifier, final @NotNull String host) {
+            return "client {" +
+                    "identifier='" + identifier + '\'' +
+                    ", host='" + host + '\'' +
+                    '}';
+        }
 }

@@ -19,14 +19,10 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
-import com.hivemq.cli.commands.shell.ShellCommand;
-import com.hivemq.cli.commands.shell.ShellContextCommand;
-import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -48,20 +44,16 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jline.terminal.Terminal;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.LoggingContext;
-import org.w3c.dom.ls.LSOutput;
 
 import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 abstract class AbstractMqttClientExecutor {
 
-    private static final ClientCache<String, MqttClient> clientCache = new ClientCache<>();
-    private static final Map<String, ClientData> clientDataMap = new HashMap<>();
+    private static final Map<String, ClientData> clientKeyToClientData = new HashMap<>();
 
 
     abstract void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull Connect connect);
@@ -87,7 +79,7 @@ abstract class AbstractMqttClientExecutor {
 
     public void subscribe(final @NotNull SubscribeCommand subscribeCommand) {
 
-        final MqttClient client = getMqttClientFromCacheOrConnect(subscribeCommand);
+        final MqttClient client = getOrConnectClient(subscribeCommand);
 
         subscribe(client, subscribeCommand);
 
@@ -115,7 +107,8 @@ abstract class AbstractMqttClientExecutor {
 
     public void publish(final @NotNull PublishCommand publishCommand) {
 
-        final MqttClient client = getMqttClientFromCacheOrConnect(publishCommand);
+        final MqttClient client = getOrConnectClient(publishCommand);
+
         publish(client, publishCommand);
 
     }
@@ -144,11 +137,9 @@ abstract class AbstractMqttClientExecutor {
 
         LoggingContext.put("identifier", "CLIENT " + disconnect.getIdentifier());
 
-        clientCache.setVerbose(disconnect.isVerbose());
 
-        if (clientCache.hasKey(disconnect.getKey())) {
-            final MqttClient client = clientCache.get(disconnect.getKey());
-            clientCache.remove(disconnect.getKey());
+        if (clientKeyToClientData.containsKey(disconnect.getKey())) {
+            final MqttClient client = clientKeyToClientData.get(disconnect.getKey()).getClient();
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
@@ -158,6 +149,8 @@ abstract class AbstractMqttClientExecutor {
                     mqtt3Disconnect((Mqtt3Client) client, disconnect);
                     break;
             }
+
+            clientKeyToClientData.remove(disconnect.getKey());
         } else if (disconnect.isDebug()) {
             Logger.debug("client to disconnect is not connected: {} ", disconnect.getKey());
         }
@@ -180,16 +173,14 @@ abstract class AbstractMqttClientExecutor {
     }
 
 
-    public boolean isConnected(final @NotNull Subscribe subscriber) {
+    public boolean isConnected(final @NotNull Context context) {
 
-        LoggingContext.put("identifier", "CLIENT " + subscriber.getIdentifier());
+        LoggingContext.put("identifier", "CLIENT " + context.getIdentifier());
 
-        clientCache.setVerbose(subscriber.isVerbose());
-
-        if (clientCache.hasKey(subscriber.getKey())) {
-            final MqttClient client = clientCache.get(subscriber.getKey());
+        if (clientKeyToClientData.containsKey(context.getKey())) {
+            final MqttClient client = clientKeyToClientData.get(context.getKey()).getClient();
             final MqttClientState state = client.getState();
-            if (subscriber.isVerbose()) {
+            if (context.isVerbose()) {
                 Logger.trace("in State: {}", state);
             }
             return state.isConnected();
@@ -200,10 +191,24 @@ abstract class AbstractMqttClientExecutor {
 
     public @NotNull MqttClient connect(final @NotNull Connect connect) {
 
-
         LoggingContext.put("identifier", "CLIENT " + connect.getIdentifier());
 
-        clientCache.setVerbose(connect.isVerbose());
+        if (isConnected(connect)) {
+            final MqttClient client = clientKeyToClientData.get(connect.getKey()).getClient();
+            switch (connect.getVersion()) {
+                case MQTT_5_0:
+                    ((Mqtt5Client) client).toBlocking().disconnect();
+                    break;
+                case MQTT_3_1_1:
+                    ((Mqtt3Client) client).toBlocking().disconnect();
+            }
+            if (connect.isVerbose()) {
+                Logger.trace("DISCONNECTED");
+            }
+            else if (connect.isDebug()) {
+                Logger.debug("DISCONNECTED");
+            }
+        }
 
         switch (connect.getVersion()) {
             case MQTT_5_0:
@@ -246,9 +251,9 @@ abstract class AbstractMqttClientExecutor {
 
         mqtt5Connect(client, connectBuilder.build(), connect);
 
-        clientCache.put(connect.getKey(), client.toAsync());
-        final ClientData clientData = new ClientData(LocalDateTime.now());
-        clientDataMap.put(connect.getKey(), clientData);
+        final ClientData clientData = new ClientData(client);
+
+        clientKeyToClientData.put(connect.getKey(), clientData);
 
         return client.toAsync();
     }
@@ -274,9 +279,9 @@ abstract class AbstractMqttClientExecutor {
 
         mqtt3Connect(client, connectBuilder.build(), connect);
 
-        clientCache.put(connect.getKey(), client.toAsync());
-        final ClientData clientData = new ClientData(LocalDateTime.now());
-        clientDataMap.put(connect.getKey(), clientData);
+        final ClientData clientData = new ClientData(client);
+
+        clientKeyToClientData.put(connect.getKey(), clientData);
 
         return client.toAsync();
     }
@@ -423,36 +428,41 @@ abstract class AbstractMqttClientExecutor {
         return null;
     }
 
-    public static ClientCache<String, MqttClient> getClientCache() {
-        return clientCache;
+    public static Map<String, ClientData> getClientDataMap() {
+        return clientKeyToClientData;
     }
 
-    public Map<String, ClientData> getClientDataMap() {
-        return clientDataMap;
-    }
-
-    private MqttClient getMqttClientFromCacheOrConnect(final @NotNull Connect connect) {
-        clientCache.setVerbose(connect.isVerbose());
+    private MqttClient getOrConnectClient(final @NotNull Connect connect) {
 
         MqttClient mqttClient = null;
 
-        if (clientCache.hasKey(connect.getKey())) {
-            mqttClient = clientCache.get(connect.getKey());
+        if (clientKeyToClientData.containsKey(connect.getKey())) {
+            mqttClient = clientKeyToClientData.get(connect.getKey()).getClient();
+            if (connect.isVerbose()) {
+                Logger.trace("Using client with key {}", connect.getKey());
+            }
         }
 
         if (mqttClient == null || (!mqttClient.getConfig().getState().isConnectedOrReconnect())) {
+            if (connect.isVerbose()) {
+                if (mqttClient == null) {
+                    Logger.trace("Client {} not present", connect.getKey());
+                }
+                else if (!mqttClient.getState().isConnectedOrReconnect()) {
+                    Logger.trace("Client {} is not connected");
+                }
+            }
             mqttClient = connect(connect);
         }
         return mqttClient;
     }
 
-    public @Nullable MqttClient getMqttClientFromCache(final @NotNull Context context) {
-        clientCache.setVerbose(context.isVerbose());
+    public @Nullable MqttClient getMqttClient(final @NotNull Context context) {
 
         MqttClient client = null;
 
-        if (clientCache.hasKey(context.getKey())) {
-            client = clientCache.get(context.getKey());
+        if (clientKeyToClientData.containsKey(context.getKey())) {
+            client = clientKeyToClientData.get(context.getKey()).getClient();
         }
 
         return client;

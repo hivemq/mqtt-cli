@@ -16,22 +16,41 @@
  */
 package com.hivemq.cli.mqtt;
 
+import com.hivemq.client.internal.mqtt.message.connect.MqttConnect;
+import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.datatypes.MqttTopic;
 import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ClientData {
+public class  ClientData {
 
+    private MqttClient mqttClient;
     private LocalDateTime creationTime;
     private Set<MqttTopicFilter> subscribedTopics;
+    private MqttConnect mqttConnect;
 
-    public ClientData(final @NotNull LocalDateTime creationTime) {
+
+    public ClientData(final @NotNull MqttClient mqttClient) {
+        this.mqttClient = mqttClient;
+        this.creationTime = LocalDateTime.now();
+        subscribedTopics = new HashSet<>();
+    }
+
+    public ClientData(final @NotNull MqttClient mqttClient, final @NotNull LocalDateTime creationTime) {
+        this.mqttClient = mqttClient;
         this.creationTime = creationTime;
         subscribedTopics = new HashSet<>();
+    }
+
+    public ClientData(final @NotNull MqttClient mqttClient, final @NotNull LocalDateTime creationTime, final @NotNull Set<MqttTopicFilter> subscribedTopics) {
+        this.mqttClient = mqttClient;
+        this.creationTime = creationTime;
+        this.subscribedTopics = subscribedTopics;
     }
 
     public void addSubscription(final @NotNull MqttTopicFilter topic) {
@@ -56,5 +75,21 @@ public class ClientData {
 
     public void setSubscribedTopics(final Set<MqttTopicFilter> subscribedTopics) {
         this.subscribedTopics = subscribedTopics;
+    }
+
+    public @NotNull MqttClient getClient() {
+        return mqttClient;
+    }
+
+    public void setClient(final @NotNull MqttClient mqttClient) {
+        this.mqttClient = mqttClient;
+    }
+
+    public @Nullable MqttConnect getMqttConnect() {
+        return mqttConnect;
+    }
+
+    public void setMqttConnect(final @NotNull MqttConnect mqttConnect) {
+        this.mqttConnect = mqttConnect;
     }
 }

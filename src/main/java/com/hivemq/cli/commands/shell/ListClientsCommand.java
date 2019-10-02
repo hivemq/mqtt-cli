@@ -17,11 +17,9 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.CliCommand;
-import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.MqttClientState;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
@@ -82,9 +80,8 @@ public class ListClientsCommand implements Runnable, CliCommand {
         }
 
 
-        final ClientCache<String, MqttClient> cache = mqttClientExecutor.getClientCache();
-        final Map<String, ClientData> clientDataMap = mqttClientExecutor.getClientDataMap();
-        Set<String> clientKeys = cache.keySet();
+        final Map<String, ClientData> clientKeysToClientData = MqttClientExecutor.getClientDataMap();
+        Set<String> clientKeys = clientKeysToClientData.keySet();
 
 
         final String[] sortedKeys = getSortedClientKeys();
@@ -99,7 +96,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
 
             final Set<MqttClient> clients = clientKeys.stream()
-                    .map(s -> cache.get(s))
+                    .map(s -> clientKeysToClientData.get(s).getClient())
                     .collect(Collectors.toSet());
 
             final int longestID = clients.stream()
@@ -137,9 +134,9 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
             for (final String key : sortedKeys) {
 
-                final MqttClient client = cache.get(key);
+                final MqttClient client = clientKeysToClientData.get(key).getClient();
 
-                final LocalDateTime dateTime = clientDataMap.get(key).getCreationTime();
+                final LocalDateTime dateTime = clientKeysToClientData.get(key).getCreationTime();
 
                 final String connectionState = client.getState().toString();
 
@@ -157,19 +154,19 @@ public class ListClientsCommand implements Runnable, CliCommand {
                         client.getConfig().getSslConfig().map(ssl -> ssl.getProtocols().get().toString()).orElse("NO_SSL"));
 
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientDataMap.get(key).getSubscribedTopics());
+                    System.out.printf(" -subscribed topics: %s\n", clientKeysToClientData.get(key).getSubscribedTopics());
                 }
             }
 
 
         } else {
             for (final String key : sortedKeys) {
-                if (!includeDisconnectedClients && !cache.get(key).getState().isConnectedOrReconnect()) {
+                if (!includeDisconnectedClients && !clientKeysToClientData.get(key).getClient().getState().isConnectedOrReconnect()) {
                     continue;
                 }
                 System.out.println(keyToPretty.get(key));
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientDataMap.get(key).getSubscribedTopics());
+                    System.out.printf(" -subscribed topics: %s\n", clientKeysToClientData.get(key).getSubscribedTopics());
                 }
             }
         }
@@ -178,18 +175,19 @@ public class ListClientsCommand implements Runnable, CliCommand {
     }
 
     private Map<String, String> mapKeyToPrettyOuput(final @NotNull String[] sortedKeys) {
-        final ClientCache<String, MqttClient> cache = mqttClientExecutor.getClientCache();
+        final Map<String, ClientData> clientKeyToClientData = MqttClientExecutor.getClientDataMap();
         final Map<String, String> keyToPretty = new HashMap<>();
+
         for (int i = 0; i < sortedKeys.length; i++) {
-            MqttClient client = cache.get(sortedKeys[i]);
+            MqttClient client = clientKeyToClientData.get(sortedKeys[i]).getClient();
             keyToPretty.put(sortedKeys[i], client.getConfig().getClientIdentifier().get() + "@" + client.getConfig().getServerHost());
         }
         return keyToPretty;
     }
 
     public String[] getSortedClientKeys() {
-        final Set<String> keys = mqttClientExecutor.getClientCache().keySet();
-        final Map<String, ClientData> clientDataMap = mqttClientExecutor.getClientDataMap();
+        final Set<String> keys = MqttClientExecutor.getClientDataMap().keySet();
+        final Map<String, ClientData> clientDataMap = MqttClientExecutor.getClientDataMap();
         final String[] keysArr = keys.toArray(new String[0]);
 
         if (doNotSort) {
