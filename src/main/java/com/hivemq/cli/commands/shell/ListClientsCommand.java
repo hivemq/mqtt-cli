@@ -95,8 +95,8 @@ public class ListClientsCommand implements Runnable, CliCommand {
             }
 
 
-            final Set<MqttClient> clients = clientKeys.stream()
-                    .map(s -> clientKeysToClientData.get(s).getClient())
+            final Set<MqttClient> clients =clientKeysToClientData.values().stream()
+                    .map(ClientData::getClient)
                     .collect(Collectors.toSet());
 
             final int longestID = clients.stream()
@@ -134,9 +134,11 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
             for (final String key : sortedKeys) {
 
-                final MqttClient client = clientKeysToClientData.get(key).getClient();
+                final ClientData clientData = clientKeysToClientData.get(key);
 
-                final LocalDateTime dateTime = clientKeysToClientData.get(key).getCreationTime();
+                final MqttClient client = clientData.getClient();
+
+                final LocalDateTime dateTime = clientData.getCreationTime();
 
                 final String connectionState = client.getState().toString();
 
@@ -154,19 +156,21 @@ public class ListClientsCommand implements Runnable, CliCommand {
                         client.getConfig().getSslConfig().map(ssl -> ssl.getProtocols().get().toString()).orElse("NO_SSL"));
 
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientKeysToClientData.get(key).getSubscribedTopics());
+                    System.out.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
 
 
         } else {
+
             for (final String key : sortedKeys) {
-                if (!includeDisconnectedClients && !clientKeysToClientData.get(key).getClient().getState().isConnectedOrReconnect()) {
+                final ClientData clientData = clientKeysToClientData.get(key);
+                if (!includeDisconnectedClients && !clientData.getClient().getState().isConnectedOrReconnect()) {
                     continue;
                 }
                 System.out.println(keyToPretty.get(key));
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientKeysToClientData.get(key).getSubscribedTopics());
+                    System.out.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
         }
@@ -179,7 +183,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
         final Map<String, String> keyToPretty = new HashMap<>();
 
         for (int i = 0; i < sortedKeys.length; i++) {
-            MqttClient client = clientKeyToClientData.get(sortedKeys[i]).getClient();
+            final MqttClient client = clientKeyToClientData.get(sortedKeys[i]).getClient();
             keyToPretty.put(sortedKeys[i], client.getConfig().getClientIdentifier().get() + "@" + client.getConfig().getServerHost());
         }
         return keyToPretty;
