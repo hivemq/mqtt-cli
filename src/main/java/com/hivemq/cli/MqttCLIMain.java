@@ -107,14 +107,13 @@ public class MqttCLIMain {
         @Override
         public void run() {
 
-            Map<String, ClientData> clientKeyToClientData = MqttClientExecutor.getClientDataMap();
-
-            final Set<String> keys = clientKeyToClientData.keySet();
+            final Map<String, ClientData> clientKeyToClientData = MqttClientExecutor.getClientDataMap();
 
             final List<CompletableFuture<Void>> disconnectFutures = new ArrayList<CompletableFuture<Void>>();
 
-            for (final String key : keys) {
-                final MqttClient client = clientKeyToClientData.get(key).getClient();
+            for (Map.Entry<String, ClientData> entry: clientKeyToClientData.entrySet()) {
+
+                final MqttClient client = entry.getValue().getClient();
                 if (client.getConfig().getState().isConnectedOrReconnect()) {
                     switch (client.getConfig().getMqttVersion()) {
                         case MQTT_5_0:
