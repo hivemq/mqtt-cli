@@ -150,7 +150,6 @@ abstract class AbstractMqttClientExecutor {
                     break;
             }
 
-            clientKeyToClientData.remove(disconnect.getKey());
         } else if (disconnect.isDebug()) {
             Logger.debug("client to disconnect is not connected: {} ", disconnect.getKey());
         }
