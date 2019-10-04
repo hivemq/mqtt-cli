@@ -115,17 +115,6 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos) {
 
-        PrintWriter fileWriter = null;
-        if (subscribe.getReceivedMessagesFile() != null) {
-            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
-        }
-        final PrintWriter finalFileWriter = fileWriter;
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (finalFileWriter != null) {
-                finalFileWriter.close();
-            }
-        }));
-
         final Mqtt5SubscribeBuilder.Start.Complete builder = Mqtt5Subscribe.builder()
                 .topicFilter(topic)
                 .qos(qos);
@@ -144,28 +133,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.debug("sending SUBSCRIBE: (Topic: {}, QoS: {})", topic, qos);
         }
 
-        client.subscribe(subscribeMessage, publish -> {
-
-                    byte[] payload = publish.getPayloadAsBytes();
-                    final String payloadMessage = applyBase64EncodingIfSet(subscribe.isBase64(), payload);
-
-                    if (finalFileWriter != null) {
-                        finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
-                        finalFileWriter.flush();
-                    }
-
-                    if (subscribe.isPrintToSTDOUT()) {
-                        System.out.println(payloadMessage);
-                    }
-
-            if (subscribe.isVerbose()) {
-                Logger.trace("received PUBLISH: {}", publish);
-            }
-            else if (subscribe.isDebug()) {
-                Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", publish.getTopic(), payloadMessage);
-            }
-
-                })
+        client.subscribe(subscribeMessage, new SubscribeMqtt5PublishCallback(subscribe))
                 .whenComplete((subAck, throwable) -> {
 
                     if (throwable != null) {
@@ -195,17 +163,6 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     void mqtt3Subscribe(final @NotNull Mqtt3AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos) {
 
-        PrintWriter fileWriter = null;
-        if (subscribe.getReceivedMessagesFile() != null) {
-            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
-        }
-        final PrintWriter finalFileWriter = fileWriter;
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (finalFileWriter != null) {
-                finalFileWriter.close();
-            }
-        }));
-
         final Mqtt3SubscribeBuilder.Start.Complete builder = Mqtt3Subscribe.builder()
                 .topicFilter(topic)
                 .qos(qos);
@@ -220,28 +177,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.debug("sending SUBSCRIBE: (Topic: {}, QoS: {})", topic, qos);
         }
 
-        client.subscribe(subscribeMessage, publish -> {
-
-                    byte[] payload = publish.getPayloadAsBytes();
-                    final String payloadMessage = applyBase64EncodingIfSet(subscribe.isBase64(), payload);
-
-                    if (finalFileWriter != null) {
-                        finalFileWriter.println(publish.getTopic() + ": " + payloadMessage);
-                        finalFileWriter.flush();
-                    }
-
-                    if (subscribe.isPrintToSTDOUT()) {
-                        System.out.println(payloadMessage);
-                    }
-
-            if (subscribe.isVerbose()) {
-                Logger.trace("received PUBLISH: {}", publish);
-            }
-            else if (subscribe.isDebug()) {
-                Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", publish.getTopic(), payloadMessage);
-            }
-
-                })
+        client.subscribe(subscribeMessage, new SubscribeMqtt3PublishCallback(subscribe))
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
 
