@@ -79,7 +79,7 @@ abstract class AbstractMqttClientExecutor {
 
     public void subscribe(final @NotNull SubscribeCommand subscribeCommand) {
 
-        final MqttClient client = getOrConnectClient(subscribeCommand);
+        final MqttClient client = connect(subscribeCommand);
 
         subscribe(client, subscribeCommand);
 
@@ -107,7 +107,7 @@ abstract class AbstractMqttClientExecutor {
 
     public void publish(final @NotNull PublishCommand publishCommand) {
 
-        final MqttClient client = getOrConnectClient(publishCommand);
+        final MqttClient client = connect(publishCommand);;
 
         publish(client, publishCommand);
 
@@ -429,31 +429,6 @@ abstract class AbstractMqttClientExecutor {
 
     public static Map<String, ClientData> getClientDataMap() {
         return clientKeyToClientData;
-    }
-
-    private MqttClient getOrConnectClient(final @NotNull Connect connect) {
-
-        MqttClient mqttClient = null;
-
-        if (clientKeyToClientData.containsKey(connect.getKey())) {
-            mqttClient = clientKeyToClientData.get(connect.getKey()).getClient();
-            if (connect.isVerbose()) {
-                Logger.trace("Using client with key {}", connect.getKey());
-            }
-        }
-
-        if (mqttClient == null || (!mqttClient.getConfig().getState().isConnectedOrReconnect())) {
-            if (connect.isVerbose()) {
-                if (mqttClient == null) {
-                    Logger.trace("Client {} not present", connect.getKey());
-                }
-                else if (!mqttClient.getState().isConnectedOrReconnect()) {
-                    Logger.trace("Client {} is not connected");
-                }
-            }
-            mqttClient = connect(connect);
-        }
-        return mqttClient;
     }
 
     public @Nullable MqttClient getMqttClient(final @NotNull Context context) {
