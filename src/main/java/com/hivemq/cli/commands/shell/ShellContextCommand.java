@@ -53,7 +53,7 @@ public class ShellContextCommand implements Runnable, CliCommand {
         this.mqttClientExecutor = mqttClientExecutor;
     }
 
-    static void updateContext(final @Nullable MqttClient client) {
+    public static void updateContext(final @Nullable MqttClient client) {
         if (client != null && client.getConfig().getState().isConnectedOrReconnect()) {
             if (ShellCommand.isVerbose()) {
                 Logger.trace("Update context to {}@{}", client.getConfig().getClientIdentifier().get(), client.getConfig().getServerHost());
@@ -64,7 +64,7 @@ public class ShellContextCommand implements Runnable, CliCommand {
         }
     }
 
-    static void removeContext() {
+    public static void removeContext() {
         if (ShellCommand.isVerbose()) {
             Logger.trace("Remove context");
         }

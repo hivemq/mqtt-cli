@@ -19,12 +19,12 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
-import com.hivemq.cli.utils.SubscribeMqttPublishCallbackUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -46,8 +46,10 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jline.terminal.Terminal;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.LoggingContext;
+import org.w3c.dom.ls.LSOutput;
 
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
@@ -95,7 +97,9 @@ abstract class AbstractMqttClientExecutor {
 
         for (int i = 0; i < subscribe.getTopics().length; i++) {
             final String topic = subscribe.getTopics()[i];
-            final MqttQos qos = subscribe.getQos()[i];
+
+            int qosI = i < subscribe.getQos().length ? i: subscribe.getQos().length-1;
+            final MqttQos qos = subscribe.getQos()[qosI];
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
@@ -120,7 +124,8 @@ abstract class AbstractMqttClientExecutor {
 
         for (int i = 0; i < publish.getTopics().length; i++) {
             final String topic = publish.getTopics()[i];
-            final MqttQos qos = publish.getQos()[i];
+            int qosI = i < publish.getQos().length ? i: publish.getQos().length-1;
+            final MqttQos qos = publish.getQos()[qosI];
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
@@ -376,6 +381,7 @@ abstract class AbstractMqttClientExecutor {
     private @NotNull MqttClientBuilder createBuilder(final @NotNull Connect connect) {
 
         return MqttClient.builder()
+                .addDisconnectedListener(new ContextClientDisconnectListener())
                 .serverHost(connect.getHost())
                 .serverPort(connect.getPort())
                 .sslConfig(connect.getSslConfig())

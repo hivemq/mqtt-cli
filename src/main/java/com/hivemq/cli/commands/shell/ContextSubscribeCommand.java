@@ -67,7 +67,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @NotNull
     private String[] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 0)")
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 2)")
     @NotNull
     private MqttQos[] qos;
 
@@ -81,7 +81,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
 
-    @CommandLine.Option(names = {"-s", "--stay"}, hidden = true, defaultValue = "false", description = "The subscribe will block the console and wait for publish messages to print (default: false)")
+    @CommandLine.Option(names = {"-s", "--stay"}, defaultValue = "false", description = "The subscribe will block the console and wait for publish messages to print (default: false)")
     private boolean stay;
 
     @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)")

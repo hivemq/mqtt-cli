@@ -15,7 +15,7 @@ A detailed documentation can be found [here](https://hivemq.github.io/mqtt-cli)
 - **All MQTT 3.1.1 and MQTT 5.0 features** are supported
 - **interactive**, direct and verbose Mode for all MQTT Commands
 - Shell behavior with Syntax Highlighting, Command completion and history
-- configurable Default settings
+- configurable default settings
 - Ability to connect simultaneously various MQTT Clients to different Broker
 - Various distributions available
 - Graal support coming soon
@@ -102,7 +102,7 @@ Therefore methods like Connect and Disconnect switch the current context of the 
 ```
 mqtt shell                # starts the shell
 
-mqtt> con -i myClient            # connect client with identifier
+mqtt> con -i myClient           # connect client with identifier
 myClient> pub -t test -m msg    # publish with new context client
 myClient> dis                   # disconnect and remove context
 mqtt> ...
