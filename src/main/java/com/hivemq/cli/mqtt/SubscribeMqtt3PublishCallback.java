@@ -59,10 +59,10 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
         }
 
         if (subscribe.isVerbose()) {
-            Logger.trace("received PUBLISH: {}", mqtt3Publish);
+            Logger.trace("received PUBLISH: {} with Message: '{}'", mqtt3Publish, new String(mqtt3Publish.getPayloadAsBytes()));
         }
         else if (subscribe.isDebug()) {
-            Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt3Publish.getTopic(), payloadMessage);
+            Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes()));
         }
 
     }

@@ -468,10 +468,10 @@ abstract class AbstractMqttClientExecutor {
         else {
             return mqtt5Publish -> {
                 if (connect.isVerbose()) {
-                    Logger.trace("received PUBLISH: {}", mqtt5Publish);
+                    Logger.trace("received PUBLISH: {} with Message: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes()));
                 }
                 else if (connect.isDebug()) {
-                    Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt5Publish.getTopic(), mqtt5Publish.getPayload());
+                    Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')",mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes()));
                 }
             };
         }
@@ -484,10 +484,10 @@ abstract class AbstractMqttClientExecutor {
         else {
             return mqtt3Publish -> {
                 if (connect.isVerbose()) {
-                    Logger.trace("received PUBLISH: {}", mqtt3Publish);
+                    Logger.trace("received PUBLISH: {}", new String(mqtt3Publish.getPayloadAsBytes()));
                 }
                 else if (connect.isDebug()) {
-                    Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt3Publish.getTopic(), mqtt3Publish.getPayload());
+                    Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes()));
                 }
             };
         }

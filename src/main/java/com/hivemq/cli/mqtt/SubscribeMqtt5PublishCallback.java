@@ -57,10 +57,10 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
         }
 
         if (subscribe.isVerbose()) {
-            Logger.trace("received PUBLISH: {}", mqtt5Publish);
+            Logger.trace("received PUBLISH: {} with Message: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes()));
         }
         else if (subscribe.isDebug()) {
-            Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt5Publish.getTopic(), payloadMessage);
+            Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes()));
         }
 
     }

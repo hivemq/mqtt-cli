@@ -257,13 +257,13 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
                             TypeSwitch.when(publishResult)
                                     .is(MqttPublishResult.MqttQos1Result.class, qos1Result -> {
-                                        Logger.debug("received PUBACK: '{}' for PUBLISH to Topic:  {}", trimMessage(p), topic);
+                                        Logger.debug("received PUBACK: '{}' for PUBLISH to Topic: {}", trimMessage(p), topic);
                                     })
                                     .is(MqttPublishResult.MqttQos2Result.class, qos2Result -> {
-                                        Logger.debug("received PUBREC: '{}' for PUBLISH to Topic:  {}", trimMessage(p), topic);
+                                        Logger.debug("received PUBREC: '{}' for PUBLISH to Topic: {}", trimMessage(p), topic);
                                     })
                                     .is(MqttPublishResult.class, qos0Result -> {
-                                        Logger.debug("acknowledged PUBLISH: '{}' for PUBLISH to Topic:  {}", trimMessage(p), topic);
+                                        Logger.debug("acknowledged PUBLISH: '{}' for PUBLISH to Topic: {}", trimMessage(p), topic);
                                     });
                         }
 
@@ -316,7 +316,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Logger.trace("acknowledged PUBLISH: '{}' for PUBLISH to Topic: {}", publishResult, topic);
                         }
                         else if (publish.isDebug()) {
-                            Logger.debug("acknowledged PUBLISH: '{}' for PUBLISH to Topic:  {}", trimMessage(p), topic);
+                            Logger.debug("acknowledged PUBLISH: '{}' for PUBLISH to Topic: {}", trimMessage(p), topic);
                         }
 
                     }
