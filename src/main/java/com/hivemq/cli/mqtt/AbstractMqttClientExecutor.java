@@ -174,14 +174,9 @@ abstract class AbstractMqttClientExecutor {
 
     public boolean isConnected(final @NotNull Context context) {
 
-        LoggingContext.put("identifier", "CLIENT " + context.getIdentifier());
-
         if (clientKeyToClientData.containsKey(context.getKey())) {
             final MqttClient client = clientKeyToClientData.get(context.getKey()).getClient();
             final MqttClientState state = client.getState();
-            if (context.isVerbose()) {
-                Logger.trace("in State: {}", state);
-            }
             return state.isConnected();
         }
         return false;
@@ -193,19 +188,10 @@ abstract class AbstractMqttClientExecutor {
         LoggingContext.put("identifier", "CLIENT " + connect.getIdentifier());
 
         if (isConnected(connect)) {
-            final MqttClient client = clientKeyToClientData.get(connect.getKey()).getClient();
-            switch (connect.getVersion()) {
-                case MQTT_5_0:
-                    ((Mqtt5Client) client).toBlocking().disconnect();
-                    break;
-                case MQTT_3_1_1:
-                    ((Mqtt3Client) client).toBlocking().disconnect();
-            }
             if (connect.isVerbose()) {
-                Logger.trace("DISCONNECTED");
-            }
-            else if (connect.isDebug()) {
-                Logger.debug("DISCONNECTED");
+                Logger.trace("Client with key {} is already connected", connect.getKey());
+            } else if (connect.isDebug()) {
+                Logger.debug("Client '{}' is already connected", connect.getIdentifier());
             }
         }
 
