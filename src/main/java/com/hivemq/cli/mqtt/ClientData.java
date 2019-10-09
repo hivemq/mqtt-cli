@@ -29,7 +29,7 @@ import java.util.Set;
 
 public class ClientData {
 
-    private MqttClient mqttClient;
+    @NotNull private MqttClient mqttClient;
     private LocalDateTime creationTime;
     private Set<MqttTopicFilter> subscribedTopics;
     private MqttConnect mqttConnect;
