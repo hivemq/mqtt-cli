@@ -53,7 +53,7 @@ import java.util.Map;
 
 abstract class AbstractMqttClientExecutor {
 
-    private static final Map<String, ClientData> clientKeyToClientData = new HashMap<>();
+    @NotNull private static final Map<String, ClientData> clientKeyToClientData = new HashMap<>();
 
 
     abstract void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull Connect connect);
@@ -413,7 +413,7 @@ abstract class AbstractMqttClientExecutor {
         return null;
     }
 
-    public static Map<String, ClientData> getClientDataMap() {
+    public @NotNull static Map<String, ClientData> getClientDataMap() {
         return clientKeyToClientData;
     }
 
