@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-public class  ClientData {
+public class ClientData {
 
     private MqttClient mqttClient;
     private LocalDateTime creationTime;

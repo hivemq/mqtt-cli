@@ -74,15 +74,11 @@ public class ListClientsCommand implements Runnable, CliCommand {
     @Override
     public void run() {
 
-
         if (isVerbose()) {
             Logger.trace("Command: {}", this);
         }
 
-
         final Map<String, ClientData> clientKeysToClientData = MqttClientExecutor.getClientDataMap();
-        Set<String> clientKeys = clientKeysToClientData.keySet();
-
 
         final String[] sortedKeys = getSortedClientKeys();
         final Map<String, String> keyToPretty = mapKeyToPrettyOuput(sortedKeys);

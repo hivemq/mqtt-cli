@@ -111,7 +111,7 @@ public class MqttCLIMain {
 
             final List<CompletableFuture<Void>> disconnectFutures = new ArrayList<CompletableFuture<Void>>();
 
-            for (Map.Entry<String, ClientData> entry: clientKeyToClientData.entrySet()) {
+            for (final Map.Entry<String, ClientData> entry: clientKeyToClientData.entrySet()) {
 
                 final MqttClient client = entry.getValue().getClient();
                 if (client.getConfig().getState().isConnectedOrReconnect()) {
