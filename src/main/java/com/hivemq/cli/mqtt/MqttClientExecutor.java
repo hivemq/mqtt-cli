@@ -19,7 +19,6 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.client.internal.mqtt.message.publish.MqttPublishResult;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
@@ -254,14 +253,14 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         else if (publish.isDebug()) {
 
                             TypeSwitch.when(publishResult)
-                                    .is(MqttPublishResult.MqttQos1Result.class, qos1Result -> {
+                                    .is(Mqtt5PublishResult.Mqtt5Qos1Result.class, qos1Result -> {
                                         Logger.debug("received PUBACK: '{}' for PUBLISH to TOPIC: '{}'", qos1Result.getPubAck(), topic);
                                     })
-                                    .is(MqttPublishResult.MqttQos2Result.class, qos2Result -> {
+                                    .is(Mqtt5PublishResult.Mqtt5Qos2Result.class, qos2Result -> {
                                         Logger.debug("received PUBREC: '{}' for PUBLISH to TOPIC: '{}'", qos2Result.getPubRec(), topic);
                                     })
-                                    .is(MqttPublishResult.MqttQos2IntermediateResult.class, qos2IntermediateResult -> {
-                                        Logger.debug("received PUBREC: '{}' for PUBLISH to TOPIC: '{}'", qos2IntermediateResult.getPubRec(), topic);
+                                    .is(Mqtt5PublishResult.Mqtt5Qos2CompleteResult.class, qos2CompleteResult -> {
+                                        Logger.debug("received PUBCOMP: '{}' for PUBLISH to TOPIC: '{}'", qos2CompleteResult.getPubComp(), topic);
                                     });
                         }
 
