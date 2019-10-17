@@ -39,8 +39,8 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
     public void accept(final @NotNull Mqtt5Publish mqtt5Publish) {
 
         PrintWriter fileWriter = null;
-        if (subscribe.getReceivedMessagesFile() != null) {
-            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
+        if (subscribe.getPublishFile() != null) {
+            fileWriter = FileUtils.createFileAppender(subscribe.getPublishFile());
         }
 
 

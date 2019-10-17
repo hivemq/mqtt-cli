@@ -20,8 +20,6 @@ import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.cli.utils.SubscribeMqttPublishCallbackUtils;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
-import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
-import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 
@@ -41,8 +39,8 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
     public void accept(final @NotNull Mqtt3Publish mqtt3Publish) {
 
         PrintWriter fileWriter = null;
-        if (subscribe.getReceivedMessagesFile() != null) {
-            fileWriter = FileUtils.createFileAppender(subscribe.getReceivedMessagesFile());
+        if (subscribe.getPublishFile() != null) {
+            fileWriter = FileUtils.createFileAppender(subscribe.getPublishFile());
         }
 
 

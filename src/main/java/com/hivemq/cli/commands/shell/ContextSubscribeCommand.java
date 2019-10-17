@@ -76,7 +76,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
     @Nullable
-    private File receivedMessagesFile;
+    private File publishFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
@@ -191,7 +191,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", userProperties=" + userProperties +
-                ", toFile=" + receivedMessagesFile +
+                ", toFile=" + publishFile +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
                 '}';
@@ -199,11 +199,11 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     public void setDefaultOptions() {
 
-        if (receivedMessagesFile == null && PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
+        if (publishFile == null && PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
             if (isVerbose()) {
                 Logger.trace("Setting value of 'toFile' to {}", PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
             }
-            receivedMessagesFile = new File(PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+            publishFile = new File(PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
         }
 
     }
@@ -235,12 +235,12 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     }
 
     @Nullable
-    public File getReceivedMessagesFile() {
-        return receivedMessagesFile;
+    public File getPublishFile() {
+        return publishFile;
     }
 
-    public void setReceivedMessagesFile(@Nullable final File receivedMessagesFile) {
-        this.receivedMessagesFile = receivedMessagesFile;
+    public void setPublishFile(@Nullable final File publishFile) {
+        this.publishFile = publishFile;
     }
 
     public boolean isPrintToSTDOUT() {

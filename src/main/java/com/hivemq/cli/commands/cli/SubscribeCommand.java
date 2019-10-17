@@ -85,7 +85,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written", order = 1)
     @Nullable
-    private File receivedMessagesFile;
+    private File publishFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, hidden = true, defaultValue = "true", description = "The received messages will be written to the console (default: true)", order = 1)
     private boolean printToSTDOUT;
@@ -168,11 +168,11 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     public void setDefaultOptions() {
         super.setDefaultOptions();
 
-        if (receivedMessagesFile == null && PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
+        if (publishFile == null && PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
             if (isVerbose()) {
                 Logger.trace("Setting value of 'toFile' to {}", PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
             }
-            receivedMessagesFile = new File(PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+            publishFile = new File(PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
         }
 
     }
@@ -183,7 +183,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
                 "topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", userProperties=" + userProperties +
-                ", toFile=" + receivedMessagesFile +
+                ", toFile=" + publishFile +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
                 ", Connect:: {" + commonOptions() + "}" +
@@ -213,12 +213,12 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     @Nullable
     @Override
-    public File getReceivedMessagesFile() {
-        return receivedMessagesFile;
+    public File getPublishFile() {
+        return publishFile;
     }
 
-    public void setReceivedMessagesFile(@Nullable final File receivedMessagesFile) {
-        this.receivedMessagesFile = receivedMessagesFile;
+    public void setPublishFile(@Nullable final File publishFile) {
+        this.publishFile = publishFile;
     }
 
     public boolean isPrintToSTDOUT() {
