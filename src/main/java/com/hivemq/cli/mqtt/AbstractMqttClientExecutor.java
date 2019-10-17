@@ -461,7 +461,7 @@ abstract class AbstractMqttClientExecutor {
         return client;
     }
 
-    private Consumer<Mqtt5Publish> buildRemainingMqtt5PublishesCallback(final @NotNull Connect connect) {
+    @NotNull private Consumer<Mqtt5Publish> buildRemainingMqtt5PublishesCallback(final @NotNull Connect connect) {
         if (connect instanceof Subscribe) {
             return new SubscribeMqtt5PublishCallback((Subscribe) connect);
         }
@@ -477,7 +477,7 @@ abstract class AbstractMqttClientExecutor {
         }
     }
 
-    private Consumer<Mqtt3Publish> buildRemainingMqtt3PublishesCallback(final @NotNull Connect connect) {
+    @NotNull private Consumer<Mqtt3Publish> buildRemainingMqtt3PublishesCallback(final @NotNull Connect connect) {
         if (connect instanceof Subscribe) {
             return new SubscribeMqtt3PublishCallback((Subscribe) connect);
         }
