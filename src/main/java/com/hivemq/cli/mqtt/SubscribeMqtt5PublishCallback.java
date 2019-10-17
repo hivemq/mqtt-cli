@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
@@ -57,10 +58,10 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
         }
 
         if (subscribe.isVerbose()) {
-            Logger.trace("received PUBLISH: {} with Message: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes()));
+            Logger.trace("received PUBLISH: {}, MESSAGE: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
         else if (subscribe.isDebug()) {
-            Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes()));
+            Logger.debug("received PUBLISH: (Topic: '{}', MESSAGE: '{}')", mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
 
     }

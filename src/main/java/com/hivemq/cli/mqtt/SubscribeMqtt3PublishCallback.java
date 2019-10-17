@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
@@ -59,10 +60,10 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
         }
 
         if (subscribe.isVerbose()) {
-            Logger.trace("received PUBLISH: {} with Message: '{}'", mqtt3Publish, new String(mqtt3Publish.getPayloadAsBytes()));
+            Logger.trace("received PUBLISH: {}, MESSAGE: '{}'", mqtt3Publish, new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
         else if (subscribe.isDebug()) {
-            Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes()));
+            Logger.debug("received PUBLISH: (Topic: '{}', MESSAGE: '{}')", mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
 
     }

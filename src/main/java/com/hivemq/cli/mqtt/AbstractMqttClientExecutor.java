@@ -52,6 +52,7 @@ import org.pmw.tinylog.LoggingContext;
 import org.w3c.dom.ls.LSOutput;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -468,10 +469,10 @@ abstract class AbstractMqttClientExecutor {
         else {
             return mqtt5Publish -> {
                 if (connect.isVerbose()) {
-                    Logger.trace("received PUBLISH: {} with Message: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes()));
+                    Logger.trace("received PUBLISH: {}, MESSAGE: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
                 }
                 else if (connect.isDebug()) {
-                    Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')",mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes()));
+                    Logger.debug("received PUBLISH: (Topic: '{}', MESSAGE: '{}')", mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
                 }
             };
         }
@@ -484,10 +485,10 @@ abstract class AbstractMqttClientExecutor {
         else {
             return mqtt3Publish -> {
                 if (connect.isVerbose()) {
-                    Logger.trace("received PUBLISH: {}", new String(mqtt3Publish.getPayloadAsBytes()));
+                    Logger.trace("received PUBLISH: {}, MESSAGE: '{}'", mqtt3Publish, new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
                 }
                 else if (connect.isDebug()) {
-                    Logger.debug("received PUBLISH: (Topic: {}, Message: '{}')", mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes()));
+                    Logger.debug("received PUBLISH: (Topic: '{}', MESSAGE: '{}')", mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
                 }
             };
         }
