@@ -18,8 +18,8 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.utils.FileUtils;
-import com.hivemq.cli.utils.SubscribeMqttPublishCallbackUtils;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
+import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
 
@@ -45,7 +45,11 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
 
 
         byte[] payload = mqtt3Publish.getPayloadAsBytes();
-        final String payloadMessage = SubscribeMqttPublishCallbackUtils.applyBase64EncodingIfSet(subscribe.isBase64(), payload);
+        String payloadMessage = new String(payload);
+
+        if (subscribe.isBase64()) {
+            payloadMessage = Base64.toBase64String(payload);
+        }
 
         if (fileWriter != null) {
             fileWriter.println(mqtt3Publish.getTopic() + ": " + payloadMessage);
