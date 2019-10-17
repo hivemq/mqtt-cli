@@ -30,14 +30,14 @@ import java.util.function.Consumer;
 
 public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
 
-    private final Subscribe subscribe;
+    @NotNull private final Subscribe subscribe;
 
     public SubscribeMqtt3PublishCallback(final @NotNull Subscribe subscribe) {
         this.subscribe = subscribe;
     }
 
     @Override
-    public void accept(Mqtt3Publish mqtt3Publish) {
+    public void accept(final @NotNull Mqtt3Publish mqtt3Publish) {
 
         PrintWriter fileWriter = null;
         if (subscribe.getReceivedMessagesFile() != null) {

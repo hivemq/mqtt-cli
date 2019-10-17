@@ -28,14 +28,14 @@ import java.util.function.Consumer;
 
 public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
 
-    private final Subscribe subscribe;
+    @NotNull private final Subscribe subscribe;
 
-    public SubscribeMqtt5PublishCallback(final @NotNull Subscribe subscribe) {
+    SubscribeMqtt5PublishCallback(final @NotNull Subscribe subscribe) {
         this.subscribe = subscribe;
     }
 
     @Override
-    public void accept(Mqtt5Publish mqtt5Publish) {
+    public void accept(final @NotNull Mqtt5Publish mqtt5Publish) {
 
         PrintWriter fileWriter = null;
         if (subscribe.getReceivedMessagesFile() != null) {
