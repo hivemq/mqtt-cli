@@ -19,12 +19,10 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
-import com.hivemq.cli.commands.shell.ShellCommand;
-import com.hivemq.cli.commands.shell.ShellContextCommand;
-import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
+import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
@@ -54,9 +52,11 @@ import org.pmw.tinylog.LoggingContext;
 import org.w3c.dom.ls.LSOutput;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 abstract class AbstractMqttClientExecutor {
 
@@ -244,6 +244,8 @@ abstract class AbstractMqttClientExecutor {
 
         connectBuilder.simpleAuth(buildMqtt5Authentication(connect));
 
+        client.toAsync().publishes(MqttGlobalPublishFilter.REMAINING, buildRemainingMqtt5PublishesCallback(connect));
+
         mqtt5Connect(client, connectBuilder.build(), connect);
 
         clientCache.put(connect.getKey(), client.toAsync());
@@ -271,6 +273,8 @@ abstract class AbstractMqttClientExecutor {
         }
 
         connectBuilder.simpleAuth(buildMqtt3Authentication(connect));
+
+        client.toAsync().publishes(MqttGlobalPublishFilter.REMAINING, buildRemainingMqtt3PublishesCallback(connect));
 
         mqtt3Connect(client, connectBuilder.build(), connect);
 
@@ -456,5 +460,37 @@ abstract class AbstractMqttClientExecutor {
         }
 
         return client;
+    }
+
+    @NotNull private Consumer<Mqtt5Publish> buildRemainingMqtt5PublishesCallback(final @NotNull Connect connect) {
+        if (connect instanceof Subscribe) {
+            return new SubscribeMqtt5PublishCallback((Subscribe) connect);
+        }
+        else {
+            return mqtt5Publish -> {
+                if (connect.isVerbose()) {
+                    Logger.trace("received PUBLISH: {}, MESSAGE: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
+                }
+                else if (connect.isDebug()) {
+                    Logger.debug("received PUBLISH: (Topic: '{}', MESSAGE: '{}')", mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
+                }
+            };
+        }
+    }
+
+    @NotNull private Consumer<Mqtt3Publish> buildRemainingMqtt3PublishesCallback(final @NotNull Connect connect) {
+        if (connect instanceof Subscribe) {
+            return new SubscribeMqtt3PublishCallback((Subscribe) connect);
+        }
+        else {
+            return mqtt3Publish -> {
+                if (connect.isVerbose()) {
+                    Logger.trace("received PUBLISH: {}, MESSAGE: '{}'", mqtt3Publish, new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
+                }
+                else if (connect.isDebug()) {
+                    Logger.debug("received PUBLISH: (Topic: '{}', MESSAGE: '{}')", mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
+                }
+            };
+        }
     }
 }
