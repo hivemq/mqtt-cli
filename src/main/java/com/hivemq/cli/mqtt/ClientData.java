@@ -38,13 +38,13 @@ public class ClientData {
     public ClientData(final @NotNull MqttClient mqttClient) {
         this.mqttClient = mqttClient;
         this.creationTime = LocalDateTime.now();
-        subscribedTopics = new HashSet<>();
+        this.subscribedTopics = new HashSet<>();
     }
 
     public ClientData(final @NotNull MqttClient mqttClient, final @NotNull LocalDateTime creationTime) {
         this.mqttClient = mqttClient;
         this.creationTime = creationTime;
-        subscribedTopics = new HashSet<>();
+        this.subscribedTopics = new HashSet<>();
     }
 
     public ClientData(final @NotNull MqttClient mqttClient, final @NotNull LocalDateTime creationTime, final @NotNull Set<MqttTopicFilter> subscribedTopics) {
@@ -78,7 +78,7 @@ public class ClientData {
     }
 
     public @NotNull MqttClient getClient() {
-        return mqttClient;
+        return this.mqttClient;
     }
 
     public void setClient(final @NotNull MqttClient mqttClient) {
@@ -86,7 +86,7 @@ public class ClientData {
     }
 
     public @Nullable MqttConnect getMqttConnect() {
-        return mqttConnect;
+        return this.mqttConnect;
     }
 
     public void setMqttConnect(final @NotNull MqttConnect mqttConnect) {
