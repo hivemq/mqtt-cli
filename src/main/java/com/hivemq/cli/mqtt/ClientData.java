@@ -16,12 +16,9 @@
  */
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.client.internal.mqtt.message.connect.MqttConnect;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.datatypes.MqttTopic;
 import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
