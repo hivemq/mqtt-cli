@@ -54,7 +54,7 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
                 ShellCommand.TERMINAL_WRITER.flush();
             }
         }
-        else {
+        else if (contextEqualsShellContext(context)){
             ShellContextCommand.removeContext();
         }
 
