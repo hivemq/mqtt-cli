@@ -26,9 +26,9 @@ import java.util.Set;
 
 public class ClientData {
 
-    @NotNull private MqttClient mqttClient;
-    @NotNull private LocalDateTime creationTime;
-    @NotNull private Set<MqttTopicFilter> subscribedTopics;
+    @NotNull private final MqttClient mqttClient;
+    @NotNull private final LocalDateTime creationTime;
+    @NotNull private final Set<MqttTopicFilter> subscribedTopics;
 
 
     public ClientData(final @NotNull MqttClient mqttClient) {
@@ -61,24 +61,13 @@ public class ClientData {
         return creationTime;
     }
 
-    public void setCreationTime(final @NotNull LocalDateTime creationTime) {
-        this.creationTime = creationTime;
-    }
-
     @NotNull public Set<MqttTopicFilter> getSubscribedTopics() {
         return subscribedTopics;
-    }
-
-    public void setSubscribedTopics(final @NotNull Set<MqttTopicFilter> subscribedTopics) {
-        this.subscribedTopics = subscribedTopics;
     }
 
     @NotNull public MqttClient getClient() {
         return this.mqttClient;
     }
 
-    public void setClient(final @NotNull MqttClient mqttClient) {
-        this.mqttClient = mqttClient;
-    }
 
 }
