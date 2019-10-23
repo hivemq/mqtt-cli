@@ -23,16 +23,12 @@ import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3ConnectBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3PublishBuilder;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.auth.Mqtt5SimpleAuth;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
@@ -56,17 +52,17 @@ abstract class AbstractMqttClientExecutor {
     @NotNull private static final Map<String, ClientData> clientKeyToClientData = new HashMap<>();
 
 
-    abstract void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull Connect connect);
+    abstract void mqtt5Connect(final @NotNull Mqtt5Client client, final @NotNull Mqtt5Connect connectMessage, final @NotNull Connect connect);
 
-    abstract void mqtt3Connect(final @NotNull Mqtt3BlockingClient client, final @NotNull Mqtt3Connect connectMessage, final @NotNull Connect connect);
+    abstract void mqtt3Connect(final @NotNull Mqtt3Client client, final @NotNull Mqtt3Connect connectMessage, final @NotNull Connect connect);
 
-    abstract void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt5Subscribe(final @NotNull Mqtt5Client client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    abstract void mqtt3Subscribe(final @NotNull Mqtt3AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt3Subscribe(final @NotNull Mqtt3Client client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    abstract void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt5Publish(final @NotNull Mqtt5Client client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    abstract void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt3Publish(final @NotNull Mqtt3Client client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
 
     abstract void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull Unsubscribe unsubscribe);
 
@@ -96,10 +92,10 @@ abstract class AbstractMqttClientExecutor {
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    mqtt5Subscribe((Mqtt5AsyncClient) client, subscribe, topic, qos);
+                    mqtt5Subscribe((Mqtt5Client) client, subscribe, topic, qos);
                     break;
                 case MQTT_3_1_1:
-                    mqtt3Subscribe((Mqtt3AsyncClient) client, subscribe, topic, qos);
+                    mqtt3Subscribe((Mqtt3Client) client, subscribe, topic, qos);
                     break;
             }
         }
@@ -123,10 +119,10 @@ abstract class AbstractMqttClientExecutor {
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    mqtt5Publish((Mqtt5AsyncClient) client, publish, topic, qos);
+                    mqtt5Publish((Mqtt5Client) client, publish, topic, qos);
                     break;
                 case MQTT_3_1_1:
-                    mqtt3Publish((Mqtt3AsyncClient) client, publish, topic, qos);
+                    mqtt3Publish((Mqtt3Client) client, publish, topic, qos);
                     break;
             }
 
@@ -207,10 +203,10 @@ abstract class AbstractMqttClientExecutor {
         throw new IllegalStateException("The MQTT Version specified is not supported. Version was " + connect.getVersion());
     }
 
-    private @NotNull Mqtt5AsyncClient connectMqtt5Client(final @NotNull Connect connect) {
+    private @NotNull Mqtt5Client connectMqtt5Client(final @NotNull Connect connect) {
 
         final MqttClientBuilder clientBuilder = createBuilder(connect);
-        final Mqtt5BlockingClient client = clientBuilder.useMqttVersion5().build().toBlocking();
+        final Mqtt5Client client = clientBuilder.useMqttVersion5().build();
         final @Nullable Mqtt5Publish willPublish = createMqtt5WillPublish(connect);
         final @NotNull Mqtt5ConnectRestrictions connectRestrictions = createMqtt5ConnectRestrictions(connect);
 
@@ -242,12 +238,12 @@ abstract class AbstractMqttClientExecutor {
 
         clientKeyToClientData.put(connect.getKey(), clientData);
 
-        return client.toAsync();
+        return client;
     }
 
-    private @NotNull Mqtt3AsyncClient connectMqtt3Client(final @NotNull Connect connect) {
+    private @NotNull Mqtt3Client connectMqtt3Client(final @NotNull Connect connect) {
         final MqttClientBuilder clientBuilder = createBuilder(connect);
-        final Mqtt3BlockingClient client = clientBuilder.useMqttVersion3().build().toBlocking();
+        final Mqtt3Client client = clientBuilder.useMqttVersion3().build();
 
         final @Nullable Mqtt3Publish willPublish = createMqtt3WillPublish(connect);
 
@@ -270,7 +266,7 @@ abstract class AbstractMqttClientExecutor {
 
         clientKeyToClientData.put(connect.getKey(), clientData);
 
-        return client.toAsync();
+        return client;
     }
 
     private @Nullable Mqtt5Publish createMqtt5WillPublish(final @NotNull Will will) {

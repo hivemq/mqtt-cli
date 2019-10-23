@@ -56,32 +56,32 @@ public class TestableMqttClientExecutor extends AbstractMqttClientExecutor {
 
 
     @Override
-    void mqtt5Connect(@NotNull Mqtt5BlockingClient client, @NotNull Mqtt5Connect connectMessage, @NotNull Connect connect) {
+    void mqtt5Connect(@NotNull Mqtt5Client client, @NotNull Mqtt5Connect connectMessage, @NotNull Connect connect) {
 
     }
 
     @Override
-    void mqtt3Connect(@NotNull Mqtt3BlockingClient client, @NotNull Mqtt3Connect connectMessage, @NotNull Connect connect) {
+    void mqtt3Connect(@NotNull Mqtt3Client client, @NotNull Mqtt3Connect connectMessage, @NotNull Connect connect) {
 
     }
 
     @Override
-    void mqtt5Subscribe(@NotNull Mqtt5AsyncClient client, @NotNull Subscribe subscribe, @NotNull String topic, @NotNull MqttQos qos) {
+    void mqtt5Subscribe(@NotNull Mqtt5Client client, @NotNull Subscribe subscribe, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
     @Override
-    void mqtt3Subscribe(@NotNull Mqtt3AsyncClient client, @NotNull Subscribe subscribe, @NotNull String topic, @NotNull MqttQos qos) {
+    void mqtt3Subscribe(@NotNull Mqtt3Client client, @NotNull Subscribe subscribe, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
     @Override
-    void mqtt5Publish(@NotNull Mqtt5AsyncClient client, @NotNull Publish publish, @NotNull String topic, @NotNull MqttQos qos) {
+    void mqtt5Publish(@NotNull Mqtt5Client client, @NotNull Publish publish, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
     @Override
-    void mqtt3Publish(@NotNull Mqtt3AsyncClient client, @NotNull Publish publish, @NotNull String topic, @NotNull MqttQos qos) {
+    void mqtt3Publish(@NotNull Mqtt3Client client, @NotNull Publish publish, @NotNull String topic, @NotNull MqttQos qos) {
 
     }
 
