@@ -525,7 +525,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         client.toAsync()
                 .disconnect(disconnectMessage);
 
-        getClientDataMap().get(disconnect.getKey()).setSubscribedTopics(Collections.emptySet());
+        getClientDataMap().get(disconnect.getKey()).removeAllSubscriptions();
     }
 
 
@@ -552,7 +552,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         client.toAsync()
                 .disconnect();
 
-        getClientDataMap().get(disconnect.getKey()).setSubscribedTopics(Collections.emptySet());
+        getClientDataMap().get(disconnect.getKey()).removeAllSubscriptions();
 
     }
 
