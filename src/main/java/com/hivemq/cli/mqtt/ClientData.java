@@ -61,7 +61,7 @@ public class ClientData {
         return creationTime;
     }
 
-    public void setCreationTime(final LocalDateTime creationTime) {
+    public void setCreationTime(final @NotNull LocalDateTime creationTime) {
         this.creationTime = creationTime;
     }
 
@@ -69,7 +69,7 @@ public class ClientData {
         return subscribedTopics;
     }
 
-    public void setSubscribedTopics(final Set<MqttTopicFilter> subscribedTopics) {
+    public void setSubscribedTopics(final @NotNull Set<MqttTopicFilter> subscribedTopics) {
         this.subscribedTopics = subscribedTopics;
     }
 
