@@ -46,12 +46,17 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
                 Logger.debug(cause.getMessage());
             }
 
+            // If the currently active shell client gets disconnected from the server prompt the user to enter
             if (context.getClientConfig().equals(ShellContextCommand.contextClient.getConfig())) {
                 Logger.error(MqttUtils.getRootCause(cause).getMessage());
                 ShellContextCommand.removeContext();
                 ShellCommand.TERMINAL_WRITER.printf("Press ENTER to resume: ");
                 ShellCommand.TERMINAL_WRITER.flush();
             }
+        }
+        // Else if the currently active shell client gets disconnected in general remove the context
+        else if (context.getClientConfig().equals(ShellContextCommand.contextClient.getConfig())) {
+            ShellContextCommand.removeContext();
         }
 
         MqttClientExecutor.getClientDataMap().remove(getKeyFromConfig(context.getClientConfig()));
