@@ -57,6 +57,10 @@ public class ClientData {
         return subscribedTopics.remove(topic);
     }
 
+    public void removeAllSubscriptions() {
+        subscribedTopics.clear();
+    }
+
     @NotNull public LocalDateTime getCreationTime() {
         return creationTime;
     }
