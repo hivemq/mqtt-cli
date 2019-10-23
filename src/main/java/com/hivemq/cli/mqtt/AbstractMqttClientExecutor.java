@@ -189,10 +189,12 @@ abstract class AbstractMqttClientExecutor {
 
         if (isConnected(connect)) {
             if (connect.isVerbose()) {
-                Logger.trace("Client with key {} is already connected", connect.getKey());
+                Logger.trace("Client is already connected ({})", connect.getKey());
             } else if (connect.isDebug()) {
-                Logger.debug("Client '{}' is already connected", connect.getIdentifier());
+                Logger.debug("Client is already connected");
             }
+            Logger.info("Using already connected client with key: {}", connect.getKey());
+            return clientKeyToClientData.get(connect.getKey()).getClient();
         }
 
         switch (connect.getVersion()) {
