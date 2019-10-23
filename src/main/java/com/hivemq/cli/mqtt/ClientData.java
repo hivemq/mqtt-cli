@@ -32,7 +32,6 @@ public class ClientData {
     @NotNull private MqttClient mqttClient;
     private LocalDateTime creationTime;
     private Set<MqttTopicFilter> subscribedTopics;
-    private MqttConnect mqttConnect;
 
 
     public ClientData(final @NotNull MqttClient mqttClient) {
@@ -85,11 +84,4 @@ public class ClientData {
         this.mqttClient = mqttClient;
     }
 
-    public @Nullable MqttConnect getMqttConnect() {
-        return this.mqttConnect;
-    }
-
-    public void setMqttConnect(final @NotNull MqttConnect mqttConnect) {
-        this.mqttConnect = mqttConnect;
-    }
 }
