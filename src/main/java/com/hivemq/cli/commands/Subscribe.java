@@ -29,7 +29,7 @@ public interface Subscribe extends Context {
 
     @NotNull MqttQos[] getQos();
 
-    @Nullable File getReceivedMessagesFile();
+    @Nullable File getPublishFile();
 
     boolean isPrintToSTDOUT();
 

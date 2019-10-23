@@ -36,7 +36,7 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
 
         LoggingContext.put("identifier", "CLIENT " + context.getClientConfig().getClientIdentifier().orElse(null));
 
-        if (context.getSource() == MqttDisconnectSource.SERVER) {
+        if (context.getSource() != MqttDisconnectSource.USER) {
             final Throwable cause = context.getCause();
 
             if (ShellCommand.VERBOSE) {
@@ -47,15 +47,14 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
             }
 
             // If the currently active shell client gets disconnected from the server prompt the user to enter
-            if (context.getClientConfig().equals(ShellContextCommand.contextClient.getConfig())) {
+            if (contextEqualsShellContext(context)) {
                 Logger.error(MqttUtils.getRootCause(cause).getMessage());
                 ShellContextCommand.removeContext();
                 ShellCommand.TERMINAL_WRITER.printf("Press ENTER to resume: ");
                 ShellCommand.TERMINAL_WRITER.flush();
             }
         }
-        // Else if the currently active shell client gets disconnected in general remove the context
-        else if (context.getClientConfig().equals(ShellContextCommand.contextClient.getConfig())) {
+        else {
             ShellContextCommand.removeContext();
         }
 
@@ -66,5 +65,13 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
 
     private String getKeyFromConfig(final @NotNull MqttClientConfig clientConfig) {
             return MqttUtils.buildKey(clientConfig.getClientIdentifier().get().toString(), clientConfig.getServerHost());
+    }
+
+    private boolean contextEqualsShellContext(final @NotNull MqttClientDisconnectedContext context) {
+        final MqttClientConfig clientConfig = context.getClientConfig();
+        final MqttClientConfig shellClientConfig = ShellContextCommand.contextClient.getConfig();
+
+        return clientConfig.getClientIdentifier().equals(shellClientConfig.getClientIdentifier()) &&
+                clientConfig.getServerHost().equals(shellClientConfig.getServerHost());
     }
 }
