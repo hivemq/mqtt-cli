@@ -66,8 +66,6 @@ public class ListClientsCommand implements Runnable, CliCommand {
     @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false", description = "list subscribed topics of clients")
     private boolean listSubscriptions;
 
-    @CommandLine.Option(names = {"-a"}, defaultValue = "false", description = "list disconnected client")
-    private boolean includeDisconnectedClients;
 
 
 
@@ -80,19 +78,18 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
         final Map<String, ClientData> clientKeysToClientData = MqttClientExecutor.getClientDataMap();
 
-        final String[] sortedKeys = getSortedClientKeys();
-        final Map<String, String> keyToPretty = mapKeyToPrettyOuput(sortedKeys);
+        final List<ClientData> sortedClientData = getSortedClientData();
 
         if (longOutput) {
-            System.out.println("total " + sortedKeys.length);
+            System.out.println("total " + sortedClientData.size());
 
-            if (sortedKeys.length == 0) {
+            if (sortedClientData.size() == 0) {
                 return;
             }
 
 
-            final Set<MqttClient> clients =clientKeysToClientData.values().stream()
-                    .map(ClientData::getClient)
+            final Set<MqttClient> clients = sortedClientData.stream()
+                    .map(clientData -> clientData.getClient())
                     .collect(Collectors.toSet());
 
             final int longestID = clients.stream()
@@ -128,19 +125,13 @@ public class ListClientsCommand implements Runnable, CliCommand {
                     "%-" + longestVersion + "s " +
                     "%-" + longestSSLVersion + "s\n");
 
-            for (final String key : sortedKeys) {
-
-                final ClientData clientData = clientKeysToClientData.get(key);
+            for (final ClientData clientData : sortedClientData) {
 
                 final MqttClient client = clientData.getClient();
 
                 final LocalDateTime dateTime = clientData.getCreationTime();
 
                 final String connectionState = client.getState().toString();
-
-                if (!includeDisconnectedClients && client.getState() == MqttClientState.DISCONNECTED) {
-                        continue;
-                }
 
                 System.out.printf(format,
                         connectionState,
@@ -159,12 +150,8 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
         } else {
 
-            for (final String key : sortedKeys) {
-                final ClientData clientData = clientKeysToClientData.get(key);
-                if (!includeDisconnectedClients && !clientData.getClient().getState().isConnectedOrReconnect()) {
-                    continue;
-                }
-                System.out.println(keyToPretty.get(key));
+            for (final ClientData clientData : sortedClientData) {
+                System.out.println(clientData.getClient().getConfig().getClientIdentifier().get() + "@" + clientData.getClient().getConfig().getServerHost());
                 if (listSubscriptions) {
                     System.out.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
@@ -174,37 +161,32 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
     }
 
-    private Map<String, String> mapKeyToPrettyOuput(final @NotNull String[] sortedKeys) {
-        final Map<String, ClientData> clientKeyToClientData = MqttClientExecutor.getClientDataMap();
-        final Map<String, String> keyToPretty = new HashMap<>();
 
-        for (int i = 0; i < sortedKeys.length; i++) {
-            final MqttClient client = clientKeyToClientData.get(sortedKeys[i]).getClient();
-            keyToPretty.put(sortedKeys[i], client.getConfig().getClientIdentifier().get() + "@" + client.getConfig().getServerHost());
-        }
-        return keyToPretty;
-    }
-
-    public String[] getSortedClientKeys() {
-        final Set<String> keys = MqttClientExecutor.getClientDataMap().keySet();
-        final Map<String, ClientData> clientDataMap = MqttClientExecutor.getClientDataMap();
-        final String[] keysArr = keys.toArray(new String[0]);
+    public List<ClientData> getSortedClientData() {
+        List<ClientData> sortedClientData =  new ArrayList<>(MqttClientExecutor.getClientDataMap().values());
 
         if (doNotSort) {
-            return keysArr;
+            return sortedClientData;
         }
-        Comparator<String> comparator;
+
+        Comparator<ClientData> comparator;
         if (sortByTime) {
-            comparator = Comparator.comparing(s -> clientDataMap.get(s).getCreationTime());
+            comparator = Comparator.comparing(ClientData::getCreationTime);
         }
         else {
-            comparator = Comparator.naturalOrder();
+            comparator = Comparator.comparing(clientData -> clientData
+                    .getClient()
+                    .getConfig()
+                    .getClientIdentifier()
+                    .map(Object::toString)
+                    .orElse(""));
         }
         if (reverse) {
             comparator = comparator.reversed();
         }
-        Arrays.sort(keysArr, comparator);
-        return keysArr;
+
+        sortedClientData.sort(comparator);
+        return sortedClientData;
     }
 
 
