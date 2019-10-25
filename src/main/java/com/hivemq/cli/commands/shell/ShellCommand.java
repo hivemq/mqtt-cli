@@ -283,19 +283,14 @@ public class ShellCommand implements Runnable {
         return DEBUG;
     }
 
-    public static boolean inShell() {
-        return currentCommandLine != null;
-    }
-
-
-    @Override
-    public String toString() {
+@Override
+public String toString() {
         return "Shell:: {" +
-                "logfilePath=" + logfilePath +
-                ", debug=" + DEBUG +
-                ", verbose=" + VERBOSE +
-                "}";
-    }
+        "logfilePath=" + logfilePath +
+        ", debug=" + DEBUG +
+        ", verbose=" + VERBOSE +
+        "}";
+        }
 
 
-}
+        }
