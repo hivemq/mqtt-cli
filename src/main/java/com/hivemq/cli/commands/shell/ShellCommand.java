@@ -18,9 +18,7 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commandline.CommandErrorMessageHandler;
 import com.hivemq.cli.commandline.ShellErrorMessageHandler;
-import com.hivemq.cli.ioc.DaggerContextCommandLine;
 import com.hivemq.cli.commandline.CommandLineProvider;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.cli.utils.PropertiesUtils;
@@ -130,10 +128,8 @@ public class ShellCommand implements Runnable {
 
 
     private void interact() {
-        shellCommandLine = new CommandLine(spec);
-        contextCommandLine = CommandLineProvider.provideContextCommandLine();
-
-        shellCommandLine.setParameterExceptionHandler(new ShellErrorMessageHandler());
+        shellCommandLine = CommandLineProvider.provideShellCommandLine(spec);
+        contextCommandLine = CommandLineProvider.provideShellCommandLine();
 
         try {
             final Terminal terminal = TerminalBuilder.builder()

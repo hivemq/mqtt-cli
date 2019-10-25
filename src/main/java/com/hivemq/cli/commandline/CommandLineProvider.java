@@ -34,18 +34,36 @@ public class CommandLineProvider {
 
     @NotNull public static CommandLine provideCommandLine() {
         final CommandLine cmd = DaggerMqttCLI.create().commandLine();
-        cmd.setColorScheme(COLOR_SCHEME)
-                .setUsageHelpWidth(CLI_WIDTH)
-                .setParameterExceptionHandler(new CommandErrorMessageHandler());
-        return cmd;
+        return setCommandLineOptions(cmd);
     }
 
-    @NotNull public static CommandLine provideContextCommandLine() {
+    @NotNull public static CommandLine provideCommandLine(final @NotNull CommandLine.Model.CommandSpec spec) {
+        final CommandLine cmd = new CommandLine(spec);
+        return setCommandLineOptions(cmd);
+    }
+
+    @NotNull public static CommandLine provideShellCommandLine() {
         final CommandLine shellCmd = DaggerContextCommandLine.create().contextCommandLine();
-        shellCmd.setColorScheme(COLOR_SCHEME)
+        return setShellCommandLineOptions(shellCmd);
+    }
+
+    @NotNull public static CommandLine provideShellCommandLine(final @NotNull CommandLine.Model.CommandSpec spec) {
+        final CommandLine shellCmd = new CommandLine(spec);
+        return setShellCommandLineOptions(shellCmd);
+    }
+
+
+    @NotNull private static CommandLine setCommandLineOptions(final @NotNull CommandLine cmd) {
+        return cmd.setColorScheme(COLOR_SCHEME)
+                .setUsageHelpWidth(CLI_WIDTH)
+                .setParameterExceptionHandler(new CommandErrorMessageHandler());
+    }
+
+
+    @NotNull private static CommandLine setShellCommandLineOptions(final @NotNull CommandLine shellCmd) {
+        return shellCmd.setColorScheme(COLOR_SCHEME)
                 .setUsageHelpWidth(CLI_WIDTH)
                 .setParameterExceptionHandler(new ShellErrorMessageHandler());
-        return shellCmd;
     }
 
     @NotNull public static CommandLine.Help.ColorScheme getColorScheme() {
