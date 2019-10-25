@@ -17,7 +17,7 @@
 package com.hivemq.cli.commandline;
 
 import com.hivemq.cli.ioc.DaggerContextCommandLine;
-import com.hivemq.cli.ioc.DaggerMQTTCLI;
+import com.hivemq.cli.ioc.DaggerMqttCLI;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -33,7 +33,7 @@ public class CommandLineProvider {
     private static final int CLI_WIDTH = 160;
 
     @NotNull public static CommandLine provideCommandLine() {
-        final CommandLine cmd = DaggerMQTTCLI.create().commandLine();
+        final CommandLine cmd = DaggerMqttCLI.create().commandLine();
         cmd.setColorScheme(COLOR_SCHEME)
                 .setUsageHelpWidth(CLI_WIDTH)
                 .setParameterExceptionHandler(new CommandErrorMessageHandler());

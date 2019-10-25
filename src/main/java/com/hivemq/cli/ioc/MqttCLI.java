@@ -27,7 +27,7 @@ import javax.inject.Singleton;
         CommandLineModule.class,
         ShellSubCommandModule.class
 })
-public interface MQTTCLI {
+public interface MqttCLI {
 
     @NotNull CommandLine commandLine();
 
