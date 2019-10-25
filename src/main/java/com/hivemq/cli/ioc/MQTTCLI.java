@@ -27,7 +27,7 @@ import javax.inject.Singleton;
         CommandLineModule.class,
         ShellSubCommandModule.class
 })
-public interface HiveMQCLI {
+public interface MQTTCLI {
 
     @NotNull CommandLine commandLine();
 
