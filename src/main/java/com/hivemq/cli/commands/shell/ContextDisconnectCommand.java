@@ -86,8 +86,6 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
             Logger.error(MqttUtils.getRootCause(ex).getMessage());
         }
 
-        removeContext();
-
     }
 
     private void logUnusedDisconnectOptions() {

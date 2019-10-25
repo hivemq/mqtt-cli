@@ -24,17 +24,12 @@ import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3ConnectBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3PublishBuilder;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.auth.Mqtt5SimpleAuth;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
@@ -46,35 +41,31 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jline.terminal.Terminal;
 import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.LoggingContext;
-import org.w3c.dom.ls.LSOutput;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 abstract class AbstractMqttClientExecutor {
 
-    private static final ClientCache<String, MqttClient> clientCache = new ClientCache<>();
-    private static final Map<String, ClientData> clientDataMap = new HashMap<>();
+    @NotNull private static final Map<String, ClientData> clientKeyToClientData = new HashMap<>();
 
 
-    abstract void mqtt5Connect(final @NotNull Mqtt5BlockingClient client, final @NotNull Mqtt5Connect connectMessage, final @NotNull Connect connect);
+    abstract void mqtt5Connect(final @NotNull Mqtt5Client client, final @NotNull Mqtt5Connect connectMessage, final @NotNull Connect connect);
 
-    abstract void mqtt3Connect(final @NotNull Mqtt3BlockingClient client, final @NotNull Mqtt3Connect connectMessage, final @NotNull Connect connect);
+    abstract void mqtt3Connect(final @NotNull Mqtt3Client client, final @NotNull Mqtt3Connect connectMessage, final @NotNull Connect connect);
 
-    abstract void mqtt5Subscribe(final @NotNull Mqtt5AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt5Subscribe(final @NotNull Mqtt5Client client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    abstract void mqtt3Subscribe(final @NotNull Mqtt3AsyncClient client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt3Subscribe(final @NotNull Mqtt3Client client, final @NotNull Subscribe subscribe, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    abstract void mqtt5Publish(final @NotNull Mqtt5AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt5Publish(final @NotNull Mqtt5Client client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
 
-    abstract void mqtt3Publish(final @NotNull Mqtt3AsyncClient client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
+    abstract void mqtt3Publish(final @NotNull Mqtt3Client client, final @NotNull Publish publish, final @NotNull String topic, final @NotNull MqttQos qos);
 
     abstract void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull Unsubscribe unsubscribe);
 
@@ -87,7 +78,7 @@ abstract class AbstractMqttClientExecutor {
 
     public void subscribe(final @NotNull SubscribeCommand subscribeCommand) {
 
-        final MqttClient client = getMqttClientFromCacheOrConnect(subscribeCommand);
+        final MqttClient client = connect(subscribeCommand);
 
         subscribe(client, subscribeCommand);
 
@@ -104,10 +95,10 @@ abstract class AbstractMqttClientExecutor {
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    mqtt5Subscribe((Mqtt5AsyncClient) client, subscribe, topic, qos);
+                    mqtt5Subscribe((Mqtt5Client) client, subscribe, topic, qos);
                     break;
                 case MQTT_3_1_1:
-                    mqtt3Subscribe((Mqtt3AsyncClient) client, subscribe, topic, qos);
+                    mqtt3Subscribe((Mqtt3Client) client, subscribe, topic, qos);
                     break;
             }
         }
@@ -115,7 +106,8 @@ abstract class AbstractMqttClientExecutor {
 
     public void publish(final @NotNull PublishCommand publishCommand) {
 
-        final MqttClient client = getMqttClientFromCacheOrConnect(publishCommand);
+        final MqttClient client = connect(publishCommand);
+
         publish(client, publishCommand);
 
     }
@@ -130,10 +122,10 @@ abstract class AbstractMqttClientExecutor {
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    mqtt5Publish((Mqtt5AsyncClient) client, publish, topic, qos);
+                    mqtt5Publish((Mqtt5Client) client, publish, topic, qos);
                     break;
                 case MQTT_3_1_1:
-                    mqtt3Publish((Mqtt3AsyncClient) client, publish, topic, qos);
+                    mqtt3Publish((Mqtt3Client) client, publish, topic, qos);
                     break;
             }
 
@@ -144,11 +136,9 @@ abstract class AbstractMqttClientExecutor {
 
         LoggingContext.put("identifier", "CLIENT " + disconnect.getIdentifier());
 
-        clientCache.setVerbose(disconnect.isVerbose());
 
-        if (clientCache.hasKey(disconnect.getKey())) {
-            final MqttClient client = clientCache.get(disconnect.getKey());
-            clientCache.remove(disconnect.getKey());
+        if (clientKeyToClientData.containsKey(disconnect.getKey())) {
+            final MqttClient client = clientKeyToClientData.get(disconnect.getKey()).getClient();
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
@@ -158,6 +148,7 @@ abstract class AbstractMqttClientExecutor {
                     mqtt3Disconnect((Mqtt3Client) client, disconnect);
                     break;
             }
+
         } else if (disconnect.isDebug()) {
             Logger.debug("client to disconnect is not connected: {} ", disconnect.getKey());
         }
@@ -180,18 +171,11 @@ abstract class AbstractMqttClientExecutor {
     }
 
 
-    public boolean isConnected(final @NotNull Subscribe subscriber) {
+    public boolean isConnected(final @NotNull Context context) {
 
-        LoggingContext.put("identifier", "CLIENT " + subscriber.getIdentifier());
-
-        clientCache.setVerbose(subscriber.isVerbose());
-
-        if (clientCache.hasKey(subscriber.getKey())) {
-            final MqttClient client = clientCache.get(subscriber.getKey());
+        if (clientKeyToClientData.containsKey(context.getKey())) {
+            final MqttClient client = clientKeyToClientData.get(context.getKey()).getClient();
             final MqttClientState state = client.getState();
-            if (subscriber.isVerbose()) {
-                Logger.trace("in State: {}", state);
-            }
             return state.isConnected();
         }
         return false;
@@ -200,10 +184,17 @@ abstract class AbstractMqttClientExecutor {
 
     public @NotNull MqttClient connect(final @NotNull Connect connect) {
 
-
         LoggingContext.put("identifier", "CLIENT " + connect.getIdentifier());
 
-        clientCache.setVerbose(connect.isVerbose());
+        if (isConnected(connect)) {
+            if (connect.isVerbose()) {
+                Logger.trace("Client is already connected ({})", connect.getKey());
+            } else if (connect.isDebug()) {
+                Logger.debug("Client is already connected");
+            }
+            Logger.info("Using already connected client with key: {}", connect.getKey());
+            return clientKeyToClientData.get(connect.getKey()).getClient();
+        }
 
         switch (connect.getVersion()) {
             case MQTT_5_0:
@@ -215,10 +206,10 @@ abstract class AbstractMqttClientExecutor {
         throw new IllegalStateException("The MQTT Version specified is not supported. Version was " + connect.getVersion());
     }
 
-    private @NotNull Mqtt5AsyncClient connectMqtt5Client(final @NotNull Connect connect) {
+    private @NotNull Mqtt5Client connectMqtt5Client(final @NotNull Connect connect) {
 
         final MqttClientBuilder clientBuilder = createBuilder(connect);
-        final Mqtt5BlockingClient client = clientBuilder.useMqttVersion5().build().toBlocking();
+        final Mqtt5Client client = clientBuilder.useMqttVersion5().build();
         final @Nullable Mqtt5Publish willPublish = createMqtt5WillPublish(connect);
         final @NotNull Mqtt5ConnectRestrictions connectRestrictions = createMqtt5ConnectRestrictions(connect);
 
@@ -248,16 +239,16 @@ abstract class AbstractMqttClientExecutor {
 
         mqtt5Connect(client, connectBuilder.build(), connect);
 
-        clientCache.put(connect.getKey(), client.toAsync());
-        final ClientData clientData = new ClientData(LocalDateTime.now());
-        clientDataMap.put(connect.getKey(), clientData);
+        final ClientData clientData = new ClientData(client);
 
-        return client.toAsync();
+        clientKeyToClientData.put(connect.getKey(), clientData);
+
+        return client;
     }
 
-    private @NotNull Mqtt3AsyncClient connectMqtt3Client(final @NotNull Connect connect) {
+    private @NotNull Mqtt3Client connectMqtt3Client(final @NotNull Connect connect) {
         final MqttClientBuilder clientBuilder = createBuilder(connect);
-        final Mqtt3BlockingClient client = clientBuilder.useMqttVersion3().build().toBlocking();
+        final Mqtt3Client client = clientBuilder.useMqttVersion3().build();
 
         final @Nullable Mqtt3Publish willPublish = createMqtt3WillPublish(connect);
 
@@ -278,11 +269,11 @@ abstract class AbstractMqttClientExecutor {
 
         mqtt3Connect(client, connectBuilder.build(), connect);
 
-        clientCache.put(connect.getKey(), client.toAsync());
-        final ClientData clientData = new ClientData(LocalDateTime.now());
-        clientDataMap.put(connect.getKey(), clientData);
+        final ClientData clientData = new ClientData(client);
 
-        return client.toAsync();
+        clientKeyToClientData.put(connect.getKey(), clientData);
+
+        return client;
     }
 
     private @Nullable Mqtt5Publish createMqtt5WillPublish(final @NotNull Will will) {
@@ -427,36 +418,16 @@ abstract class AbstractMqttClientExecutor {
         return null;
     }
 
-    public static ClientCache<String, MqttClient> getClientCache() {
-        return clientCache;
+    public @NotNull static Map<String, ClientData> getClientDataMap() {
+        return clientKeyToClientData;
     }
 
-    public Map<String, ClientData> getClientDataMap() {
-        return clientDataMap;
-    }
-
-    private MqttClient getMqttClientFromCacheOrConnect(final @NotNull Connect connect) {
-        clientCache.setVerbose(connect.isVerbose());
-
-        MqttClient mqttClient = null;
-
-        if (clientCache.hasKey(connect.getKey())) {
-            mqttClient = clientCache.get(connect.getKey());
-        }
-
-        if (mqttClient == null || (!mqttClient.getConfig().getState().isConnectedOrReconnect())) {
-            mqttClient = connect(connect);
-        }
-        return mqttClient;
-    }
-
-    public @Nullable MqttClient getMqttClientFromCache(final @NotNull Context context) {
-        clientCache.setVerbose(context.isVerbose());
+    public @Nullable MqttClient getMqttClient(final @NotNull Context context) {
 
         MqttClient client = null;
 
-        if (clientCache.hasKey(context.getKey())) {
-            client = clientCache.get(context.getKey());
+        if (clientKeyToClientData.containsKey(context.getKey())) {
+            client = clientKeyToClientData.get(context.getKey()).getClient();
         }
 
         return client;

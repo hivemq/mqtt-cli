@@ -17,7 +17,7 @@
 package com.hivemq.cli;
 
 import com.hivemq.cli.ioc.DaggerHiveMQCLI;
-import com.hivemq.cli.mqtt.ClientCache;
+import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttClient;
@@ -29,10 +29,7 @@ import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
 import java.security.Security;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -109,14 +106,14 @@ public class MqttCLIMain {
 
         @Override
         public void run() {
-            final ClientCache<String, MqttClient> cache = MqttClientExecutor.getClientCache();
-            cache.setVerbose(false);
-            final Set<String> keys = cache.keySet();
+
+            final Map<String, ClientData> clientKeyToClientData = MqttClientExecutor.getClientDataMap();
 
             final List<CompletableFuture<Void>> disconnectFutures = new ArrayList<CompletableFuture<Void>>();
 
-            for (final String key : keys) {
-                final MqttClient client = cache.get(key);
+            for (final Map.Entry<String, ClientData> entry: clientKeyToClientData.entrySet()) {
+
+                final MqttClient client = entry.getValue().getClient();
                 if (client.getConfig().getState().isConnectedOrReconnect()) {
                     switch (client.getConfig().getMqttVersion()) {
                         case MQTT_5_0:
