@@ -18,7 +18,10 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.MqttCLIMain;
+import com.hivemq.cli.commandline.CommandErrorMessageHandler;
+import com.hivemq.cli.commandline.ShellErrorMessageHandler;
 import com.hivemq.cli.ioc.DaggerContextCommandLine;
+import com.hivemq.cli.commandline.CommandLineProvider;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.cli.utils.PropertiesUtils;
 import org.jetbrains.annotations.NotNull;
@@ -128,11 +131,9 @@ public class ShellCommand implements Runnable {
 
     private void interact() {
         shellCommandLine = new CommandLine(spec);
-        contextCommandLine = DaggerContextCommandLine.create().contextCommandLine();
+        contextCommandLine = CommandLineProvider.provideContextCommandLine();
 
-        shellCommandLine.setColorScheme(MqttCLIMain.COLOR_SCHEME);
-        contextCommandLine.setColorScheme(MqttCLIMain.COLOR_SCHEME);
-        contextCommandLine.setUsageHelpWidth(MqttCLIMain.CLI_WIDTH);
+        shellCommandLine.setParameterExceptionHandler(new ShellErrorMessageHandler());
 
         try {
             final Terminal terminal = TerminalBuilder.builder()
@@ -243,7 +244,7 @@ public class ShellCommand implements Runnable {
 
 
     static void usage(Object command) {
-        currentCommandLine.usage(command, System.out, MqttCLIMain.COLOR_SCHEME);
+        currentCommandLine.usage(command, System.out, CommandLineProvider.getColorScheme());
     }
 
     static String getUsageMessage() {
@@ -280,6 +281,10 @@ public class ShellCommand implements Runnable {
 
     static boolean isDebug() {
         return DEBUG;
+    }
+
+    public static boolean inShell() {
+        return currentCommandLine != null;
     }
 
 

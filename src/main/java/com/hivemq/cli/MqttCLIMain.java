@@ -16,9 +16,9 @@
  */
 package com.hivemq.cli;
 
-import com.hivemq.cli.ioc.DaggerHiveMQCLI;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.commandline.CommandLineProvider;
 import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -35,22 +35,17 @@ import java.util.concurrent.CompletableFuture;
 
 public class MqttCLIMain {
 
-
-    public final static CommandLine.Help.ColorScheme COLOR_SCHEME = new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)
-            .commands(CommandLine.Help.Ansi.Style.bold, CommandLine.Help.Ansi.Style.fg_yellow)
-            .options(CommandLine.Help.Ansi.Style.italic, CommandLine.Help.Ansi.Style.fg_yellow)
-            .parameters(CommandLine.Help.Ansi.Style.fg_yellow)
-            .optionParams(CommandLine.Help.Ansi.Style.italic)
-            .build();
-
-    public static final int CLI_WIDTH = 160;
-
-
     public static void main(final String[] args) {
 
         Security.setProperty("crypto.policy", "unlimited");
 
-        final CommandLine commandLine = setupCommandLine();
+        final CommandLine commandLine = CommandLineProvider.provideCommandLine();
+
+        Configurator.defaultConfig()
+                .writer(new ConsoleWriter())
+                .formatPattern("{context:identifier}: {message}")
+                .level(Level.INFO)
+                .activate();
 
         if (args.length == 0) {
             System.out.println(commandLine.getUsageMessage());
@@ -84,22 +79,6 @@ public class MqttCLIMain {
         else {
             PropertiesUtils.setDefaultProperties(properties);
         }
-    }
-
-
-    private static CommandLine setupCommandLine() {
-        final CommandLine commandLine = DaggerHiveMQCLI.create().commandLine();
-
-        commandLine.setColorScheme(COLOR_SCHEME);
-
-        Configurator.defaultConfig()
-                .writer(new ConsoleWriter())
-                .formatPattern("{context:identifier}: {message}")
-                .level(Level.INFO)
-                .activate();
-        commandLine.setUsageHelpWidth(CLI_WIDTH);
-
-        return commandLine;
     }
 
     private static class DisconnectAllClientsTask extends Thread {
