@@ -76,8 +76,6 @@ public class ListClientsCommand implements Runnable, CliCommand {
             Logger.trace("Command: {}", this);
         }
 
-        final Map<String, ClientData> clientKeysToClientData = MqttClientExecutor.getClientDataMap();
-
         final List<ClientData> sortedClientData = getSortedClientData();
 
         if (longOutput) {
