@@ -4,6 +4,8 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/hivemq/mqtt-cli)](https://github.com/hivemq/mqtt-cli/releases) 
 [![Build Status](https://travis-ci.com/hivemq/mqtt-cli.svg?branch=develop)](https://travis-ci.com/hivemq/mqtt-cli) 
+[![picocli](https://img.shields.io/github/downloads/hivemq/mqtt-cli/total)]()
+[![picocli](https://img.shields.io/github/license/hivemq/mqtt-cli)](https://github.com/hivemq/mqtt-cli/blob/develop/LICENSE)
 [![picocli](https://img.shields.io/badge/picocli-4.0.4-green.svg)](https://github.com/remkop/picocli)
 
 MQTT 5.0 and 3.1.1 compatible and feature-rich MQTT Command Line Interface
