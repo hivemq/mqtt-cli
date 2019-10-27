@@ -18,9 +18,7 @@ package com.hivemq.cli.commands;
 
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
-import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
@@ -36,7 +34,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlags implements Connect {
 
@@ -49,6 +46,16 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for authentication", order = 2)
     @Nullable
     private ByteBuffer password;
+
+    @CommandLine.Option(names = {"-pw:env"}, converter = EnvVarToByteBufferConverter.class, description = "The password for authentication read in from an environment variable", order = 2)
+    private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) {
+        password = passwordEnvironmentVariable;
+    }
+
+    @CommandLine.Option(names = {"-pw:file"}, converter = FileToByteBufferConverter.class, description = "The password for authentication read in from a file", order = 2)
+    private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) {
+        password = passwordFromFile;
+    }
 
     @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, description = "A keep alive of the client (in seconds) (default: 60)", order = 2)
     private @Nullable Integer keepAlive;
@@ -81,7 +88,6 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
 
     @CommandLine.Option(names = {"--key"}, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication", order = 2)
     @Nullable PrivateKey clientPrivateKey;
-
 
 
     public @Nullable MqttClientSslConfig buildSslConfig() {
