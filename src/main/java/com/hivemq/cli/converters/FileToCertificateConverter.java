@@ -27,21 +27,13 @@ import java.util.Arrays;
 
 public class FileToCertificateConverter implements CommandLine.ITypeConverter<X509Certificate> {
 
-
-    static final String FILE_NOT_FOUND = "The given certificate file was not found.";
     static final String NO_VALID_FILE_EXTENSION = "The given file does not conform to a valid Certificate File Extension as " + Arrays.toString(CertificateConverterUtils.FILE_EXTENSIONS);
-    static final String NOT_A_FILE = "The given path is not a valid file.";
 
     @Override
     public X509Certificate convert(final @NotNull String s) throws Exception {
 
-        final File keyFile = new File(s);
-
-        if (!keyFile.exists())
-            throw new FileNotFoundException(FILE_NOT_FOUND);
-
-        if (!keyFile.isFile())
-            throw new IllegalArgumentException(NOT_A_FILE);
+        FileConverter fileConverter = new FileConverter();
+        final File keyFile = fileConverter.convert(s);
 
         final boolean correctExtension = CertificateConverterUtils.endsWithValidExtension(keyFile.getName());
 
