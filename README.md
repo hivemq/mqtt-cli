@@ -1,6 +1,10 @@
-# MQTT Command Line Interface
+<p align="center">
+  <a href="https://terminalizer.com">
+    <img src="01-mqtt-cli.svg" width="500"/>
+  </a>
+</p>
 
-<img src="01-mqtt-cli.svg" width="500"> 
+# MQTT Command Line Interface
 
 [![GitHub Release](https://img.shields.io/github/v/release/hivemq/mqtt-cli)](https://github.com/hivemq/mqtt-cli/releases) 
 [![Build Status](https://travis-ci.com/hivemq/mqtt-cli.svg?branch=develop)](https://travis-ci.com/hivemq/mqtt-cli) 
