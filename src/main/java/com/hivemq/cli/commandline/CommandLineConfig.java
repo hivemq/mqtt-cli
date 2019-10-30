@@ -21,19 +21,24 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-public class CommandErrorMessageHandler extends CommonErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
+public class CommandLineConfig {
 
-   @Inject CommandErrorMessageHandler() {};
+    private final static CommandLine.Help.ColorScheme COLOR_SCHEME = new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)
+            .commands(CommandLine.Help.Ansi.Style.bold, CommandLine.Help.Ansi.Style.fg_yellow)
+            .options(CommandLine.Help.Ansi.Style.italic, CommandLine.Help.Ansi.Style.fg_yellow)
+            .parameters(CommandLine.Help.Ansi.Style.fg_yellow)
+            .optionParams(CommandLine.Help.Ansi.Style.italic)
+            .build();
 
-    @Override
-    public int handleParseException(final @NotNull CommandLine.ParameterException ex, final @NotNull  String[] args) throws Exception {
+    private static final int CLI_WIDTH = 160;
 
-        final int exitCode = super.handleParseException(ex, args);
+    @Inject public CommandLineConfig() {};
 
-        CommandLine.Model.CommandSpec spec = cmd.getCommandSpec();
+    @NotNull public CommandLine.Help.ColorScheme getColorScheme() {
+        return COLOR_SCHEME;
+    }
 
-        writer.printf("Try '%s --help' for more information.%n", spec.qualifiedName());
-
-        return exitCode;
+    public int getCliWidth() {
+        return CLI_WIDTH;
     }
 }

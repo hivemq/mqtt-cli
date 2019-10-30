@@ -16,9 +16,9 @@
  */
 package com.hivemq.cli;
 
+import com.hivemq.cli.ioc.DaggerMqttCLI;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.commandline.CommandLineProvider;
 import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -39,7 +39,7 @@ public class MqttCLIMain {
 
         Security.setProperty("crypto.policy", "unlimited");
 
-        final CommandLine commandLine = CommandLineProvider.provideCommandLine();
+        final CommandLine commandLine = DaggerMqttCLI.create().commandLine();
 
         Configurator.defaultConfig()
                 .writer(new ConsoleWriter())

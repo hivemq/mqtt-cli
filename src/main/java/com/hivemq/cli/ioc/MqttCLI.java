@@ -30,5 +30,4 @@ import javax.inject.Singleton;
 public interface MqttCLI {
 
     @NotNull CommandLine commandLine();
-
 }

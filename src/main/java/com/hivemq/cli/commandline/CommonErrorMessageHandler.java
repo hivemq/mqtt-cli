@@ -21,11 +21,11 @@ import picocli.CommandLine;
 
 import java.io.PrintWriter;
 
-class CommonErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
+abstract class CommonErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
 
     CommandLine cmd;
     PrintWriter writer;
-    CommandLine.ParameterException parameterException;
+    private CommandLine.ParameterException parameterException;
 
 
     @Override

@@ -19,8 +19,12 @@ package com.hivemq.cli.commandline;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
+import javax.inject.Inject;
+
 
 public class ShellErrorMessageHandler extends CommonErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
+
+    @Inject ShellErrorMessageHandler() {};
 
     @Override
     public int handleParseException(final @NotNull CommandLine.ParameterException ex, final @NotNull String[] args) throws Exception {

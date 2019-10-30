@@ -28,6 +28,5 @@ import javax.inject.Singleton;
 })
 public interface ContextCommandLine {
 
-    @NotNull CommandLine contextCommandLine();
-
+    @NotNull CommandLine commandLine();
 }
