@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://terminalizer.com">
+  <a href="https://hivemq.github.io/mqtt-cli/">
     <img src="01-mqtt-cli.svg" width="500"/>
   </a>
 </p>
