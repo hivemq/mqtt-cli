@@ -75,11 +75,13 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
 
         if (identifier == null) {
             final String rndID = MqttUtils.buildRandomClientID(PropertiesUtils.DEFAULT_CLIENT_ID_LENGTH);
-            identifier = identifierPrefix + '-' + rndID;
+            identifier = identifierPrefix + rndID;
             if (isVerbose()) {
                 Logger.trace("Created 'identifier': {}", identifier);
             }
         }
+
+
     }
 
     @Override
