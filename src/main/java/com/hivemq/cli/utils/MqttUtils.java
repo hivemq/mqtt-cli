@@ -22,6 +22,7 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 public class MqttUtils {
@@ -65,4 +66,19 @@ public class MqttUtils {
                     ", host='" + host + '\'' +
                     '}';
         }
+
+    // See http://docs.oasis-open.org/mqtt/mqtt/v5.0/cs02/mqtt-v5.0-cs02.html#_Toc514345331
+    public static @NotNull String buildRandomClientID(final int length) {
+        if (length < 0) {
+            throw new NegativeArraySizeException("Length of random client id has to be positive");
+        }
+        final String charSet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        final SecureRandom rnd = new SecureRandom();
+        final StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            final char rndChar = charSet.charAt(rnd.nextInt(charSet.length()));
+            sb.append(rndChar);
+        }
+        return sb.toString();
+    }
 }

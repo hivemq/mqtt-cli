@@ -18,6 +18,8 @@ package com.hivemq.cli.utils;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -70,6 +72,22 @@ class MqttUtilsTest {
         MqttQos[] qos = {MqttQos.AT_LEAST_ONCE, MqttQos.AT_MOST_ONCE, MqttQos.AT_LEAST_ONCE, MqttQos.AT_LEAST_ONCE};
 
         assertThrows(IllegalArgumentException.class, () -> MqttUtils.arrangeQosToMatchTopics(topics, qos));
+
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 8, 23, 54, 100})
+    void testBuildRandomClientID_Success(final int source) {
+
+        String clientID = MqttUtils.buildRandomClientID(source);
+
+        assertEquals(source, clientID.length());
+    }
+
+    @Test
+    void testBuildRandomClientID_Failure_Negative() {
+
+        assertThrows(NegativeArraySizeException.class, () -> MqttUtils.buildRandomClientID(-1));
 
     }
 
