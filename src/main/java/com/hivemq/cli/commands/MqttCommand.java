@@ -17,6 +17,7 @@
 package com.hivemq.cli.commands;
 
 import com.hivemq.cli.converters.MqttVersionConverter;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
@@ -69,19 +70,16 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
         }
 
         if (identifierPrefix == null) {
-            identifierPrefix = PropertiesUtils.DEFAULT_CLIENT_PREFIX;
+            identifierPrefix = PropertiesUtils.DEFAULT_CLIENT_ID_PREFIX;
         }
 
         if (identifier == null) {
-            identifier = createIdentifier();
+            final String rndID = MqttUtils.buildRandomClientID(PropertiesUtils.DEFAULT_CLIENT_ID_LENGTH);
+            identifier = identifierPrefix + '-' + rndID;
             if (isVerbose()) {
                 Logger.trace("Created 'identifier': {}", identifier);
             }
         }
-    }
-
-    public String createIdentifier() {
-        return identifierPrefix + "-" + this.getVersion() + "-" + UUID.randomUUID().toString();
     }
 
     @Override
