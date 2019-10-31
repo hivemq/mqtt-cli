@@ -16,6 +16,8 @@
  */
 package com.hivemq.cli.commands;
 
+import com.google.common.base.Joiner;
+import com.google.common.primitives.Chars;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.cli.utils.PropertiesUtils;
@@ -25,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
-import java.util.UUID;
+import java.util.List;
 
 @CommandLine.Command()
 public abstract class MqttCommand extends AbstractCommand implements Context {
@@ -81,7 +83,34 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
             }
         }
 
+        logIdentifierWarnings();
 
+
+    }
+
+    private void logIdentifierWarnings() {
+        List<MqttUtils.IdentifierWarning> warnings = MqttUtils.getIdentifierWarnings(identifier);
+
+        for (MqttUtils.IdentifierWarning warning: warnings) {
+            switch (warning) {
+                case TOO_LONG:
+                    Logger.warn("Identifier '{}' may be too long (identifier length '{}' exceeds 23)", identifier, identifier.length());
+                    break;
+                case TOO_SHORT:
+                    Logger.warn("Identifier '{}' may be too short (identifier length '{}' is less than 1)", identifier, identifier.length());
+                    break;
+                case CONTAINS_INVALID_CHAR:
+                    final char[] invalidChars = MqttUtils.getInvalidIdChars(identifier);
+                    Logger.warn("Identifier '{}' may contain invalid characters ({})",
+                            identifier,
+                            "'" +
+                                    Joiner.on("', '")
+                                            .join(Chars.asList(invalidChars)) +
+                                    "'"
+                    );
+                    break;
+            }
+        }
     }
 
     @Override
