@@ -16,6 +16,8 @@
  */
 package com.hivemq.cli.ioc;
 
+import com.hivemq.cli.commandline.CommandErrorMessageHandler;
+import com.hivemq.cli.commandline.CommandLineConfig;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
@@ -31,18 +33,24 @@ import javax.inject.Singleton;
  * @author Georg Held
  */
 @Module
-public class CommandLineModule {
+class CommandLineModule {
 
     @Singleton
     @Provides
     static @NotNull CommandLine provideCommandLine(final @NotNull MqttCLICommand main,
                                                    final @NotNull @Named("shell-sub-command") CommandLine shellSubCommand,
                                                    final @NotNull SubscribeCommand subscribeCommand,
-                                                   final @NotNull PublishCommand publishCommand) {
+                                                   final @NotNull PublishCommand publishCommand,
+                                                   final @NotNull CommandLineConfig config,
+                                                   final @NotNull CommandErrorMessageHandler handler) {
+
 
         return new CommandLine(main)
                 .addSubcommand(publishCommand)
                 .addSubcommand(subscribeCommand)
-                .addSubcommand(shellSubCommand);
+                .addSubcommand(shellSubCommand)
+                .setColorScheme(config.getColorScheme())
+                .setUsageHelpWidth(config.getCliWidth())
+                .setParameterExceptionHandler(handler);
     }
 }
