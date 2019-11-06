@@ -47,7 +47,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @Nullable
     private ByteBuffer password;
 
-    @CommandLine.Option(names = {"-pw:env"}, converter = EnvVarToByteBufferConverter.class, description = "The password for authentication read in from an environment variable", order = 2)
+    @CommandLine.Option(names = {"-pw:env"}, arity = "0..1",converter = EnvVarToByteBufferConverter.class, fallbackValue = "MQTT_CLI_PW", description = "The password for authentication read in from an environment variable", order = 2)
     private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) {
         password = passwordEnvironmentVariable;
     }
