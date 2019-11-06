@@ -29,18 +29,18 @@ public class ShellErrorMessageHandler extends CommonErrorMessageHandler implemen
 
     @Override
     public int handleParseException(final @NotNull CommandLine.ParameterException ex, final @NotNull String[] args) throws Exception {
-       int exitCode = super.handleParseException(ex, args);
+        int exitCode = super.handleParseException(ex, args);
 
         final PrintWriter writer = ex.getCommandLine().getErr();
 
-       if (ex instanceof CommandLine.UnmatchedArgumentException &&
-               ((CommandLine.UnmatchedArgumentException) ex).getUnmatched().get(0).equals(args[0])) {
-           writer.printf("Try 'help' to get a list of commands.%n");
-       }
-       else {
-           writer.printf("Try 'help %s' for more information.%n", args[0]);
+        if (ex instanceof CommandLine.UnmatchedArgumentException &&
+                ((CommandLine.UnmatchedArgumentException) ex).getUnmatched().get(0).equals(args[0])) {
+            writer.printf("Try 'help' to get a list of commands.%n");
+        }
+        else {
+            writer.printf("Try 'help %s' for more information.%n", args[0]);
         }
 
-       return exitCode;
+        return exitCode;
     }
 }
