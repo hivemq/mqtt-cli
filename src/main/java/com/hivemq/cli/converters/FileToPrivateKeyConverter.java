@@ -44,7 +44,8 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
 
     @Override
     public PrivateKey convert(final @NotNull String s) throws Exception {
-        final File keyFile = new File(s);
+        final FileConverter fileConverter = new FileConverter();
+        final File keyFile = fileConverter.convert(s);
         return getPrivateKeyFromFile(keyFile);
     }
 
