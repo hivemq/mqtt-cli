@@ -16,30 +16,35 @@
  */
 package com.hivemq.cli.ioc;
 
+import com.hivemq.cli.commandline.CommandLineConfig;
+import com.hivemq.cli.commandline.ShellErrorMessageHandler;
 import com.hivemq.cli.commands.shell.*;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Module
-public class ContextCommandModule {
+class ContextCommandModule {
 
     @Singleton
     @Provides
-    static @NotNull CommandLine provideCommandLine(final @NotNull ShellContextCommand main,
-                                                   final @NotNull ContextPublishCommand contextPublishCommand,
-                                                   final @NotNull ContextSubscribeCommand contextSubscribeCommand,
-                                                   final @NotNull ContextUnsubscribeCommand contextUnsubscribeCommand,
-                                                   final @NotNull ShellConnectCommand shellConnectCommand,
-                                                   final @NotNull ContextDisconnectCommand contextDisconnectCommand,
-                                                   final @NotNull ContextSwitchCommand contextSwitchCommand,
-                                                   final @NotNull ContextExitCommand contextExitCommand,
-                                                   final @NotNull ListClientsCommand listClientsCommand,
-                                                   final @NotNull ClearScreenCommand clearScreenCommand,
-                                                   final @NotNull VersionCommand versionCommand) {
+    static @NotNull CommandLine provideContextCommandLine(final @NotNull ShellContextCommand main,
+                                                          final @NotNull ContextPublishCommand contextPublishCommand,
+                                                          final @NotNull ContextSubscribeCommand contextSubscribeCommand,
+                                                          final @NotNull ContextUnsubscribeCommand contextUnsubscribeCommand,
+                                                          final @NotNull ShellConnectCommand shellConnectCommand,
+                                                          final @NotNull ContextDisconnectCommand contextDisconnectCommand,
+                                                          final @NotNull ContextSwitchCommand contextSwitchCommand,
+                                                          final @NotNull ContextExitCommand contextExitCommand,
+                                                          final @NotNull ListClientsCommand listClientsCommand,
+                                                          final @NotNull ClearScreenCommand clearScreenCommand,
+                                                          final @NotNull VersionCommand versionCommand,
+                                                          final @NotNull CommandLineConfig config,
+                                                          final @NotNull ShellErrorMessageHandler handler) {
 
         return new CommandLine(main)
                 .addSubcommand(CommandLine.HelpCommand.class)
@@ -52,6 +57,9 @@ public class ContextCommandModule {
                 .addSubcommand(contextSwitchCommand)
                 .addSubcommand(listClientsCommand)
                 .addSubcommand(clearScreenCommand)
-                .addSubcommand(contextExitCommand);
+                .addSubcommand(contextExitCommand)
+                .setColorScheme(config.getColorScheme())
+                .setUsageHelpWidth(config.getCliWidth())
+                .setParameterExceptionHandler(handler);
     }
 }
