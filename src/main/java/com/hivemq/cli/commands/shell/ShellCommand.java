@@ -128,7 +128,7 @@ public class ShellCommand implements Runnable {
 
 
     private void interact() {
-        shellCommandLine = DaggerMqttCLI.create().commandLine().getSubcommands().get("shell");
+        shellCommandLine = MqttCLIMain.MQTTCLI.commandLine().getSubcommands().get("shell");
         contextCommandLine = DaggerContextCommandLine.create().commandLine();
 
         try {
