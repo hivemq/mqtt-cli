@@ -25,12 +25,10 @@ import java.nio.file.Files;
 public class FileToByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
     @Override
     public ByteBuffer convert(String value) throws Exception {
-        final ByteBufferConverter byteBufferConverter = new ByteBufferConverter();
         final FileConverter fileConverter = new FileConverter();
 
         final File file = fileConverter.convert(value);
-        final String password = new String(Files.readAllBytes(file.toPath()));
 
-        return byteBufferConverter.convert(password);
+        return ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
     }
 }

@@ -27,6 +27,6 @@ public class ByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffe
 
     @Override
     public ByteBuffer convert(final @NotNull String s) throws Exception {
-        return ByteBuffer.wrap(s.getBytes(StandardCharsets.UTF_8));
+        return ByteBuffer.wrap(s.getBytes());
     }
 }
