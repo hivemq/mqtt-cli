@@ -20,7 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class CommandLineConfig {
 
     private final static CommandLine.Help.ColorScheme COLOR_SCHEME = new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)

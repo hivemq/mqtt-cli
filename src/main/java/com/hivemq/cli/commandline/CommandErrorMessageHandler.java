@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.io.PrintWriter;
 
 public class CommandErrorMessageHandler extends CommonErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
 
@@ -29,6 +30,9 @@ public class CommandErrorMessageHandler extends CommonErrorMessageHandler implem
     public int handleParseException(final @NotNull CommandLine.ParameterException ex, final @NotNull  String[] args) throws Exception {
 
         final int exitCode = super.handleParseException(ex, args);
+
+        final CommandLine cmd = ex.getCommandLine();
+        final PrintWriter writer = cmd.getErr();
 
         CommandLine.Model.CommandSpec spec = cmd.getCommandSpec();
 

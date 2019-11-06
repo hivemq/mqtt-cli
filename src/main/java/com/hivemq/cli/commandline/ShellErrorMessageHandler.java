@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.io.PrintWriter;
 
 
 public class ShellErrorMessageHandler extends CommonErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
@@ -29,6 +30,8 @@ public class ShellErrorMessageHandler extends CommonErrorMessageHandler implemen
     @Override
     public int handleParseException(final @NotNull CommandLine.ParameterException ex, final @NotNull String[] args) throws Exception {
        int exitCode = super.handleParseException(ex, args);
+
+        final PrintWriter writer = ex.getCommandLine().getErr();
 
        if (ex instanceof CommandLine.UnmatchedArgumentException &&
                ((CommandLine.UnmatchedArgumentException) ex).getUnmatched().get(0).equals(args[0])) {

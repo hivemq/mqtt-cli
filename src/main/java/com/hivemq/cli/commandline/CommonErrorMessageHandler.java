@@ -23,23 +23,17 @@ import java.io.PrintWriter;
 
 abstract class CommonErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
 
-    CommandLine cmd;
-    PrintWriter writer;
-    private CommandLine.ParameterException parameterException;
-
-
     @Override
     public int handleParseException(final @NotNull CommandLine.ParameterException ex, final @NotNull String[] args) throws Exception {
-        cmd = ex.getCommandLine();
-        writer = cmd.getErr();
-        this.parameterException = ex;
 
-       printErrorMessage();
+       printErrorMessage(ex);
 
-       return generateExitCode();
+       return generateExitCode(ex);
     }
 
-    private void printErrorMessage() {
+    private void printErrorMessage(final @NotNull CommandLine.ParameterException parameterException) {
+        final PrintWriter writer = parameterException.getCommandLine().getErr();
+
         if (parameterException.getCause() != null) {
             writer.println(parameterException.getMessage().
                     replace(parameterException.getCause().toString(),
@@ -50,7 +44,8 @@ abstract class CommonErrorMessageHandler implements CommandLine.IParameterExcept
         }
     }
 
-    private int generateExitCode() {
+    private int generateExitCode(final @NotNull  CommandLine.ParameterException parameterException) {
+        final CommandLine cmd = parameterException.getCommandLine();
         CommandLine.Model.CommandSpec spec = cmd.getCommandSpec();
         return cmd.getExitCodeExceptionMapper() != null
                 ? cmd.getExitCodeExceptionMapper().getExitCode(parameterException)
