@@ -279,14 +279,14 @@ public class ShellCommand implements Runnable {
         return DEBUG;
     }
 
-@Override
-public String toString() {
+    @Override
+    public String toString() {
         return "Shell:: {" +
-        "logfilePath=" + logfilePath +
-        ", debug=" + DEBUG +
-        ", verbose=" + VERBOSE +
-        "}";
-        }
+                "logfilePath=" + logfilePath +
+                ", debug=" + DEBUG +
+                ", verbose=" + VERBOSE +
+                "}";
+    }
 
 
-        }
+}
