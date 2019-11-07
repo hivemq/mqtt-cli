@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.ioc;
 
+import com.hivemq.cli.DefaultCLIProperties;
 import dagger.Component;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
@@ -30,4 +31,5 @@ import javax.inject.Singleton;
 public interface MqttCLI {
 
     @NotNull CommandLine commandLine();
+    @NotNull DefaultCLIProperties defaultCLIProperties();
 }

@@ -16,8 +16,9 @@
  */
 package com.hivemq.cli.commands;
 
+import com.hivemq.cli.DefaultCLIProperties;
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.MqttVersionConverter;
-import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,29 +48,30 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
     private String identifierPrefix;
 
     public void setDefaultOptions() {
+        final DefaultCLIProperties defaultCLIProperties = MqttCLIMain.MQTTCLI.defaultCLIProperties();
         if (version == null) {
             if (isVerbose()) {
-                Logger.trace("Setting value of 'version' to default value: {}", PropertiesUtils.DEFAULT_MQTT_VERSION);
+                Logger.trace("Setting value of 'version' to default value: {}", defaultCLIProperties.getMqttVersion());
             }
-            version = PropertiesUtils.DEFAULT_MQTT_VERSION;
+            version = defaultCLIProperties.getMqttVersion();
         }
 
         if (host == null) {
             if (isVerbose()) {
-                Logger.trace("Setting value of 'host' to default value: {}", PropertiesUtils.DEFAULT_HOST);
+                Logger.trace("Setting value of 'host' to default value: {}", defaultCLIProperties.getHost());
             }
-            host = PropertiesUtils.DEFAULT_HOST;
+            host = defaultCLIProperties.getHost();
         }
 
         if (port == null) {
             if (isVerbose()) {
-                Logger.trace("Setting value of 'port' to default value: {}", PropertiesUtils.DEFAULT_PORT);
+                Logger.trace("Setting value of 'port' to default value: {}", defaultCLIProperties.getPort());
             }
-            port = PropertiesUtils.DEFAULT_PORT;
+            port = defaultCLIProperties.getPort();
         }
 
         if (identifierPrefix == null) {
-            identifierPrefix = PropertiesUtils.DEFAULT_CLIENT_PREFIX;
+            identifierPrefix = defaultCLIProperties.getClientPrefix();
         }
 
         if (identifier == null) {

@@ -17,11 +17,10 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.ioc.DaggerContextCommandLine;
-import com.hivemq.cli.ioc.DaggerMqttCLI;
 import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.cli.utils.PropertiesUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
@@ -77,12 +76,15 @@ public class ShellCommand implements Runnable {
 
     private static boolean exitShell = false;
 
+    private final DefaultCLIProperties defaultCLIProperties;
+
     @SuppressWarnings("NullableProblems")
     @CommandLine.Spec
     private @NotNull CommandLine.Model.CommandSpec spec;
 
     @Inject
-    ShellCommand() {
+    ShellCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
+        this.defaultCLIProperties = defaultCLIProperties;
     }
 
     @CommandLine.Option(names = {"--version", "-V"}, versionHelp = true, description = "display version info")
@@ -94,9 +96,9 @@ public class ShellCommand implements Runnable {
     @Override
     public void run() {
 
-        final Level debugLevel = setDebugLevel(PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
+        final Level debugLevel = defaultCLIProperties.getShellDebugLevel();
 
-        final String dir = PropertiesUtils.DEFAULT_LOGFILE_PATH;
+        final String dir = defaultCLIProperties.getLogfilePath();
 
         final File dirFile = new File(dir);
         dirFile.mkdirs();
@@ -156,12 +158,12 @@ public class ShellCommand implements Runnable {
             TERMINAL_WRITER.println(shellCommandLine.getUsageMessage());
             TERMINAL_WRITER.flush();
 
-            Logger.info("Using default values from properties file {}:", PropertiesUtils.PROPERTIES_FILE_PATH);
+            Logger.info("Using default values from properties file {}:", defaultCLIProperties.getFile().getPath());
             Logger.info("Host: {}, Port: {}, Mqtt-Version {}, Shell-Debug-Level: {}",
-                    PropertiesUtils.DEFAULT_HOST,
-                    PropertiesUtils.DEFAULT_PORT,
-                    PropertiesUtils.DEFAULT_MQTT_VERSION,
-                    PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
+                    defaultCLIProperties.getHost(),
+                    defaultCLIProperties.getPort(),
+                    defaultCLIProperties.getMqttVersion(),
+                    defaultCLIProperties.getShellDebugLevel());
             Logger.info("Writing Logfile to {}", logfilePath);
 
             String line;
@@ -249,26 +251,6 @@ public class ShellCommand implements Runnable {
 
     static void clearScreen() {
         currentReader.clearScreen();
-    }
-
-    static Level setDebugLevel(final @NotNull PropertiesUtils.DEBUG_LEVEL debugLevel) {
-
-        switch (debugLevel) {
-            case VERBOSE:
-                VERBOSE = true;
-                DEBUG = true;
-                return Level.TRACE;
-            case DEBUG:
-                VERBOSE = false;
-                DEBUG = true;
-                return Level.DEBUG;
-            case INFO:
-                VERBOSE = false;
-                DEBUG = false;
-                return Level.INFO;
-        }
-
-        throw new IllegalArgumentException();
     }
 
     static boolean isVerbose() {

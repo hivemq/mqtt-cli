@@ -20,15 +20,16 @@ import com.hivemq.cli.ioc.DaggerMqttCLI;
 import com.hivemq.cli.ioc.MqttCLI;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
+import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
+import java.io.IOException;
 import java.security.Security;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -45,6 +46,16 @@ public class MqttCLIMain {
         MQTTCLI = DaggerMqttCLI.create();
 
         final CommandLine commandLine = MQTTCLI.commandLine();
+        final DefaultCLIProperties defaultCLIProperties = MQTTCLI.defaultCLIProperties();
+
+        try {
+            defaultCLIProperties.createFile();
+            defaultCLIProperties.readFromFile();
+        } catch (IOException e) {
+            Logger.error(e.getMessage());
+            System.exit(-1);
+        }
+
 
         Configurator.defaultConfig()
                 .writer(new ConsoleWriter())
@@ -57,13 +68,7 @@ public class MqttCLIMain {
             System.exit(0);
         }
 
-        try {
-            setupProperties();
-        }
-        catch (final Exception e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
-        }
+
 
         Runtime.getRuntime().addShutdownHook(new DisconnectAllClientsTask());
 
@@ -73,18 +78,6 @@ public class MqttCLIMain {
 
     }
 
-    private static void setupProperties() throws Exception {
-        Properties properties = null;
-
-        properties = PropertiesUtils.readDefaultProperties(PropertiesUtils.PROPERTIES_FILE_PATH);
-
-        if (properties == null) {
-            PropertiesUtils.createDefaultPropertiesFile(PropertiesUtils.DEFAULT_PROPERTIES, PropertiesUtils.PROPERTIES_FILE_PATH);
-        }
-        else {
-            PropertiesUtils.setDefaultProperties(properties);
-        }
-    }
 
     private static class DisconnectAllClientsTask extends Thread {
 
