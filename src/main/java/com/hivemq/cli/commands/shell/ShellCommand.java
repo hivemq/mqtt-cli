@@ -97,6 +97,20 @@ public class ShellCommand implements Runnable {
     public void run() {
 
         final Level debugLevel = defaultCLIProperties.getShellDebugLevel();
+        switch (debugLevel) {
+            case TRACE:
+                VERBOSE = true;
+                DEBUG = false;
+                break;
+            case DEBUG:
+                VERBOSE = false;
+                DEBUG = true;
+                break;
+            case INFO:
+                VERBOSE = false;
+                DEBUG = false;
+                break;
+        }
 
         final String dir = defaultCLIProperties.getLogfilePath();
 

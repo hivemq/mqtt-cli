@@ -17,6 +17,10 @@
 package com.hivemq.cli;
 
 
+import com.hivemq.cli.converters.EnvVarToByteBufferConverter;
+import com.hivemq.cli.converters.FileToByteBufferConverter;
+import com.hivemq.cli.converters.FileToCertificateConverter;
+import com.hivemq.cli.converters.FileToPrivateKeyConverter;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +29,9 @@ import org.pmw.tinylog.Level;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -44,6 +51,13 @@ public final class DefaultCLIProperties {
     private static final String CLIENT_PREFIX = "client.prefix";
     private static final String SUBSCRIBE_OUTPUT_FILE = "client.subscribe.output";
     private static final String LOGFILE_PATH = "logfile.path";
+    private static final String USERNAME = "auth.username";
+    private static final String PASSWORD = "auth.password";
+    private static final String PASSWORD_FILE = "auth.password.file";
+    private static final String PASSOWRD_ENV = "auth.password.env";
+    private static final String CLIENT_CERTIFICATE = "auth.client.cert";
+    private static final String CLIENT_PRIVATE_KEY = "auth.client.key";
+    private static final String SERVER_CERTIFICATE = "auth.server.cafile";
 
     private Map<String, String> propertyToValue = new HashMap<String, String>() {{
        put(MQTT_VERSION, "5");
@@ -55,13 +69,19 @@ public final class DefaultCLIProperties {
        put(LOGFILE_PATH, System.getProperty("user.home") + File.separator +
                         ".mqtt-cli" + File.separator +
                         "logs" + File.separator);
+       put(USERNAME, null);
+       put(PASSWORD, null);
+       put(PASSWORD_FILE, null);
+       put(PASSOWRD_ENV, null);
+       put(CLIENT_CERTIFICATE, null);
+       put(CLIENT_PRIVATE_KEY, null);
     }};
 
     private File storePropertiesFile = new File(FILE_PATH);
 
     @Inject public DefaultCLIProperties() {}
 
-    public void readFromFile() throws IOException {
+    void readFromFile() throws IOException {
         final Properties fileProperties = new Properties();
 
         try (final InputStream input = new FileInputStream(FILE_PATH)) {
@@ -72,7 +92,7 @@ public final class DefaultCLIProperties {
                 .forEach(name -> propertyToValue.put(name, fileProperties.getProperty(name)));
     }
 
-    public void createFile() throws IOException {
+    void createFile() throws IOException {
         if (!storePropertiesFile.exists()) {
             assert storePropertiesFile.getParentFile().mkdirs();
             assert storePropertiesFile.createNewFile();
@@ -126,7 +146,9 @@ public final class DefaultCLIProperties {
     public Level getShellDebugLevel() {
         final String shellDebugLevel = propertyToValue.get(DEBUG_LEVEL_SHELL);
         switch (shellDebugLevel.toLowerCase()) {
-            case "verbose": return  Level.TRACE;
+            case "trace":
+            case "verbose":
+                return Level.TRACE;
             case "debug": return Level.DEBUG;
             case "info": return Level.INFO;
         }
@@ -148,5 +170,58 @@ public final class DefaultCLIProperties {
         return propertyToValue.get(LOGFILE_PATH);
     }
 
+    @Nullable
+    public String getUsername() {
+        return propertyToValue.get(USERNAME);
+    }
+
+    @Nullable
+    public ByteBuffer getPassword() throws Exception {
+        final String passwordText = propertyToValue.get(PASSWORD);
+        final String passwordFile = propertyToValue.get(PASSWORD_FILE);
+        final String passwordFromEnv = propertyToValue.get(PASSOWRD_ENV);
+        ByteBuffer password = null;
+
+        if (passwordText != null) {
+            password = ByteBuffer.wrap(passwordText.getBytes());
+        }
+
+        if (passwordFile != null) {
+            password = new FileToByteBufferConverter().convert(passwordFile);
+        }
+
+        if (passwordFromEnv != null) {
+            password = new EnvVarToByteBufferConverter().convert(passwordFromEnv);
+        }
+
+        return password;
+    }
+
+    @Nullable
+    public X509Certificate getClientCertificate() throws Exception {
+        final String clientCertificate = propertyToValue.get(CLIENT_CERTIFICATE);
+        if (clientCertificate == null) {
+            return null;
+        }
+        return new FileToCertificateConverter().convert(clientCertificate);
+    }
+
+    @Nullable
+    public PrivateKey getClientPrivateKey() throws Exception {
+        final String clientPrivateKey = propertyToValue.get(CLIENT_PRIVATE_KEY);
+        if (clientPrivateKey == null) {
+            return null;
+        }
+        return new FileToPrivateKeyConverter().convert(clientPrivateKey);
+    }
+
+    @Nullable
+    public X509Certificate getServerCertificate() throws Exception {
+        final String serverCertificate = propertyToValue.get(SERVER_CERTIFICATE);
+        if (serverCertificate == null) {
+            return null;
+        }
+        return new FileToCertificateConverter().convert(serverCertificate);
+    }
 
 }
