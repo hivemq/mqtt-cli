@@ -43,6 +43,7 @@ public final class DefaultCLIProperties {
             System.getProperty("user.home") + File.separator +
             ".mqtt-cli" + File.separator +
             "config.properties";
+    private File storePropertiesFile = new File(FILE_PATH);
 
     private static final String MQTT_VERSION = "mqtt.version";
     private static final String HOST = "mqtt.host";
@@ -77,9 +78,7 @@ public final class DefaultCLIProperties {
        put(CLIENT_PRIVATE_KEY, null);
     }};
 
-    private File storePropertiesFile = new File(FILE_PATH);
-
-    @Inject public DefaultCLIProperties() {}
+    @Inject public DefaultCLIProperties() { }
 
     void readFromFile() throws IOException {
         final Properties fileProperties = new Properties();
@@ -94,7 +93,7 @@ public final class DefaultCLIProperties {
 
     void createFile() throws IOException {
         if (!storePropertiesFile.exists()) {
-            assert storePropertiesFile.getParentFile().mkdirs();
+            storePropertiesFile.getParentFile().mkdirs();
             assert storePropertiesFile.createNewFile();
             try (final OutputStream output = new FileOutputStream(storePropertiesFile)) {
                 final Properties properties = getProperties();
