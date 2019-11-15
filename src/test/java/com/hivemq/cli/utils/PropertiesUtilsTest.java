@@ -57,10 +57,11 @@ class PropertiesUtilsTest {
         assertEquals(DefaultProperties.HOST, defaultProperties.getProperty("mqtt.host"));
         assertEquals(String.valueOf(DefaultProperties.PORT), defaultProperties.getProperty("mqtt.port"));
         assertEquals(DefaultProperties.MQTT_VERSION_STRING, defaultProperties.getProperty("mqtt.version"));
-        assertEquals(DefaultProperties.CLIENT_PREFIX, defaultProperties.getProperty("client.prefix"));
+        assertEquals(DefaultProperties.CLIENT_ID_PREFIX, defaultProperties.getProperty("client.id.prefix"));
         assertEquals(DefaultProperties.SHELL_DEBUG_LEVEL.name(), defaultProperties.getProperty("debug.level.shell"));
         assertEquals(DefaultProperties.LOGFILE_PATH, defaultProperties.getProperty("debug.logfile.path"));
         assertEquals(DefaultProperties.SUBSCRIBE_OUTPUT_FILE, defaultProperties.getProperty("client.subscribe.output"));
+        assertEquals(String.valueOf(DefaultProperties.CLIENT_ID_LENGTH), defaultProperties.getProperty("client.id.length"));
     }
 
     @Test
@@ -84,7 +85,7 @@ class PropertiesUtilsTest {
         assertEquals("broker.hivemq.com", properties.getProperty("mqtt.host"));
         assertEquals(String.valueOf(DefaultProperties.PORT), properties.getProperty("mqtt.port"));
         assertEquals("3", properties.getProperty("mqtt.version"));
-        assertEquals(DefaultProperties.CLIENT_PREFIX, properties.getProperty("client.prefix"));
+        assertEquals(DefaultProperties.CLIENT_ID_PREFIX, properties.getProperty("client.id.prefix"));
         assertEquals(PropertiesUtils.DEBUG_LEVEL.DEBUG.name(), properties.getProperty("debug.level.shell"));
         assertEquals(DefaultProperties.LOGFILE_PATH, properties.getProperty("debug.logfile.path"));
         assertEquals(DefaultProperties.SUBSCRIBE_OUTPUT_FILE, properties.getProperty("client.subscribe.output"));
@@ -97,10 +98,11 @@ class PropertiesUtilsTest {
         assertEquals(DefaultProperties.HOST, properties.getProperty("mqtt.host"));
         assertEquals(String.valueOf(DefaultProperties.PORT), properties.getProperty("mqtt.port"));
         assertEquals(DefaultProperties.MQTT_VERSION_STRING, properties.getProperty("mqtt.version"));
-        assertEquals(DefaultProperties.CLIENT_PREFIX, properties.getProperty("client.prefix"));
+        assertEquals(DefaultProperties.CLIENT_ID_PREFIX, properties.getProperty("client.id.prefix"));
         assertEquals(DefaultProperties.SHELL_DEBUG_LEVEL.name(), properties.getProperty("debug.level.shell"));
         assertEquals(DefaultProperties.LOGFILE_PATH, properties.getProperty("debug.logfile.path"));
         assertEquals(DefaultProperties.SUBSCRIBE_OUTPUT_FILE, properties.getProperty("client.subscribe.output"));
+        assertEquals(String.valueOf(DefaultProperties.CLIENT_ID_LENGTH), properties.getProperty("client.id.length"));
     }
 
     @Test
@@ -112,10 +114,11 @@ class PropertiesUtilsTest {
         assertEquals("broker.hivemq.com", PropertiesUtils.DEFAULT_HOST);
         assertEquals(1883, PropertiesUtils.DEFAULT_PORT);
         assertEquals(MqttVersion.MQTT_3_1_1, PropertiesUtils.DEFAULT_MQTT_VERSION);
-        assertEquals("HiveMQClient", PropertiesUtils.DEFAULT_CLIENT_PREFIX);
+        assertEquals("HiveMQClient", PropertiesUtils.DEFAULT_CLIENT_ID_PREFIX);
         assertEquals(PropertiesUtils.DEBUG_LEVEL.DEBUG, PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
         assertEquals("/etc/.mqtt-cli/logs", PropertiesUtils.DEFAULT_LOGFILE_PATH);
         assertEquals("file.txt", PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+        assertEquals(8, PropertiesUtils.DEFAULT_CLIENT_ID_LENGTH);
 
         assertEquals(properties, PropertiesUtils.DEFAULT_PROPERTIES);
     }
@@ -129,10 +132,11 @@ class PropertiesUtilsTest {
         assertEquals("broker.hivemq.com", PropertiesUtils.DEFAULT_HOST);
         assertEquals(1883, PropertiesUtils.DEFAULT_PORT);
         assertEquals(MqttVersion.MQTT_3_1_1, PropertiesUtils.DEFAULT_MQTT_VERSION);
-        assertEquals("mqttClient", PropertiesUtils.DEFAULT_CLIENT_PREFIX);
+        assertEquals("mqttClient", PropertiesUtils.DEFAULT_CLIENT_ID_PREFIX);
         assertEquals(PropertiesUtils.DEBUG_LEVEL.DEBUG, PropertiesUtils.DEFAULT_SHELL_DEBUG_LEVEL);
         assertEquals(DefaultProperties.LOGFILE_PATH, PropertiesUtils.DEFAULT_LOGFILE_PATH);
         assertEquals(DefaultProperties.SUBSCRIBE_OUTPUT_FILE, PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+        assertEquals(8, PropertiesUtils.DEFAULT_CLIENT_ID_LENGTH);
 
         assertEquals(properties, PropertiesUtils.DEFAULT_PROPERTIES);
     }

@@ -45,11 +45,13 @@ public class PropertiesUtils {
 
     public static DEBUG_LEVEL DEFAULT_SHELL_DEBUG_LEVEL = DefaultProperties.SHELL_DEBUG_LEVEL;
 
-    public static String DEFAULT_CLIENT_PREFIX = DefaultProperties.CLIENT_PREFIX;
-
     public static String DEFAULT_LOGFILE_PATH = DefaultProperties.LOGFILE_PATH;
 
     public static String DEFAULT_SUBSCRIBE_OUTPUT_FILE = DefaultProperties.SUBSCRIBE_OUTPUT_FILE;
+
+    public static String DEFAULT_CLIENT_ID_PREFIX = DefaultProperties.CLIENT_ID_PREFIX;
+
+    public static int DEFAULT_CLIENT_ID_LENGTH = DefaultProperties.CLIENT_ID_LENGTH;
 
     public static Properties DEFAULT_PROPERTIES = getDefaultProperties();
 
@@ -64,7 +66,8 @@ public class PropertiesUtils {
         properties.setProperty("mqtt.port", String.valueOf(DEFAULT_PORT));
         properties.setProperty("debug.level.shell", DEFAULT_SHELL_DEBUG_LEVEL.name());
         properties.setProperty("debug.logfile.path", DEFAULT_LOGFILE_PATH);
-        properties.setProperty("client.prefix", DEFAULT_CLIENT_PREFIX);
+        properties.setProperty("client.id.prefix", DEFAULT_CLIENT_ID_PREFIX);
+        properties.setProperty("client.id.length", String.valueOf(DEFAULT_CLIENT_ID_LENGTH));
         if (DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
             properties.setProperty("client.subscribe.output", DEFAULT_SUBSCRIBE_OUTPUT_FILE);
         }
@@ -111,11 +114,12 @@ public class PropertiesUtils {
     public static void setDefaultProperties(final @NotNull Properties properties) throws Exception {
         DEFAULT_MQTT_VERSION = new MqttVersionConverter().convert(properties.getProperty("mqtt.version"));
         DEFAULT_HOST = properties.getProperty("mqtt.host");
-        DEFAULT_PORT = Integer.valueOf(properties.getProperty("mqtt.port"));
+        DEFAULT_PORT = Integer.parseInt(properties.getProperty("mqtt.port"));
         DEFAULT_SHELL_DEBUG_LEVEL = DEBUG_LEVEL.valueOf(properties.getProperty("debug.level.shell"));
         DEFAULT_LOGFILE_PATH = properties.getProperty("debug.logfile.path");
-        DEFAULT_CLIENT_PREFIX = properties.getProperty("client.prefix");
         DEFAULT_SUBSCRIBE_OUTPUT_FILE = properties.getProperty("client.subscribe.output");
+        DEFAULT_CLIENT_ID_PREFIX = properties.getProperty("client.id.prefix");
+        DEFAULT_CLIENT_ID_LENGTH = Integer.parseInt(properties.getProperty("client.id.length"));
 
         DEFAULT_PROPERTIES = properties;
     }
@@ -126,8 +130,9 @@ public class PropertiesUtils {
         DEFAULT_PORT = DefaultProperties.PORT;
         DEFAULT_SHELL_DEBUG_LEVEL = DefaultProperties.SHELL_DEBUG_LEVEL;
         DEFAULT_LOGFILE_PATH = DefaultProperties.LOGFILE_PATH;
-        DEFAULT_CLIENT_PREFIX = DefaultProperties.CLIENT_PREFIX;
         DEFAULT_SUBSCRIBE_OUTPUT_FILE = DefaultProperties.SUBSCRIBE_OUTPUT_FILE;
+        DEFAULT_CLIENT_ID_PREFIX = DefaultProperties.CLIENT_ID_PREFIX;
+        DEFAULT_CLIENT_ID_LENGTH = DefaultProperties.CLIENT_ID_LENGTH;
 
         DEFAULT_PROPERTIES = getDefaultProperties();
     }
