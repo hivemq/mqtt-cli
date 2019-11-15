@@ -26,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Level;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -49,7 +48,7 @@ public class DefaultCLIProperties {
     private static final String USERNAME = "auth.username";
     private static final String PASSWORD = "auth.password";
     private static final String PASSWORD_FILE = "auth.password.file";
-    private static final String PASSOWRD_ENV = "auth.password.env";
+    private static final String PASSWORD_ENV = "auth.password.env";
     private static final String CLIENT_CERTIFICATE = "auth.client.cert";
     private static final String CLIENT_PRIVATE_KEY = "auth.client.key";
     private static final String SERVER_CERTIFICATE = "auth.server.cafile";
@@ -67,7 +66,7 @@ public class DefaultCLIProperties {
        put(USERNAME, null);
        put(PASSWORD, null);
        put(PASSWORD_FILE, null);
-       put(PASSOWRD_ENV, null);
+       put(PASSWORD_ENV, null);
        put(CLIENT_CERTIFICATE, null);
        put(CLIENT_PRIVATE_KEY, null);
     }};
@@ -192,7 +191,7 @@ public class DefaultCLIProperties {
     public ByteBuffer getPassword() throws Exception {
         final String passwordText = propertyToValue.get(PASSWORD);
         final String passwordFile = propertyToValue.get(PASSWORD_FILE);
-        final String passwordFromEnv = propertyToValue.get(PASSOWRD_ENV);
+        final String passwordFromEnv = propertyToValue.get(PASSWORD_ENV);
         ByteBuffer password = null;
 
         if (passwordText != null) {
