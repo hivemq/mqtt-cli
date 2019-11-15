@@ -87,7 +87,7 @@ class MqttUtilsTest {
     @Test
     void testBuildRandomClientID_Failure_Negative() {
 
-        assertThrows(NegativeArraySizeException.class, () -> MqttUtils.buildRandomClientID(-1));
+        assertThrows(IllegalArgumentException.class, () -> MqttUtils.buildRandomClientID(-1));
 
     }
 
