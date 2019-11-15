@@ -29,7 +29,6 @@ import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
-import java.io.IOException;
 import java.security.Security;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -44,14 +43,12 @@ public class MqttCLIMain {
         Security.setProperty("crypto.policy", "unlimited");
 
         MQTTCLI = DaggerMqttCLI.create();
-
-        final CommandLine commandLine = MQTTCLI.commandLine();
+        final CommandLine commandLine = MQTTCLI.cli();
         final DefaultCLIProperties defaultCLIProperties = MQTTCLI.defaultCLIProperties();
 
         try {
-            defaultCLIProperties.createFile();
-            defaultCLIProperties.readFromFile();
-        } catch (IOException e) {
+            defaultCLIProperties.init();
+        } catch (Exception e) {
             Logger.error(e.getMessage());
             System.exit(-1);
         }

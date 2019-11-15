@@ -19,7 +19,6 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.ioc.DaggerContextCommandLine;
 import com.hivemq.cli.utils.MqttUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
@@ -43,7 +42,6 @@ import picocli.shell.jline3.PicocliJLineCompleter;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.PrintWriter;
-
 
 @CommandLine.Command(name = "shell", aliases = "sh",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -144,8 +142,8 @@ public class ShellCommand implements Runnable {
 
 
     private void interact() {
-        shellCommandLine = MqttCLIMain.MQTTCLI.commandLine().getSubcommands().get("shell");
-        contextCommandLine = DaggerContextCommandLine.create().commandLine();
+        shellCommandLine = MqttCLIMain.MQTTCLI.shell();
+        contextCommandLine = MqttCLIMain.MQTTCLI.shellContext();
 
         try {
             final Terminal terminal = TerminalBuilder.builder()

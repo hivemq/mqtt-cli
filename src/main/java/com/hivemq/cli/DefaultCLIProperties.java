@@ -37,13 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 
 @Singleton
-public final class DefaultCLIProperties {
-
-    private static final String FILE_PATH =
-            System.getProperty("user.home") + File.separator +
-            ".mqtt-cli" + File.separator +
-            "config.properties";
-    private File storePropertiesFile = new File(FILE_PATH);
+public class DefaultCLIProperties {
 
     private static final String MQTT_VERSION = "mqtt.version";
     private static final String HOST = "mqtt.host";
@@ -78,12 +72,32 @@ public final class DefaultCLIProperties {
        put(CLIENT_PRIVATE_KEY, null);
     }};
 
-    @Inject public DefaultCLIProperties() { }
 
-    void readFromFile() throws IOException {
+    private File storePropertiesFile;
+
+    public DefaultCLIProperties(final @NotNull String filePath) {
+        storePropertiesFile = new File(filePath);
+    }
+
+
+    void init() throws IOException, IllegalArgumentException {
+        if (!storePropertiesFile.exists()) {
+            createFile();
+        }
+        else if (!storePropertiesFile.isFile()) {
+            throw new IllegalArgumentException("The given file path does not lead to a valid properties file ('"
+                    + storePropertiesFile.getPath() +
+                    "')");
+        }
+        else {
+            readFromFile();
+        }
+    }
+
+    private void readFromFile() throws IOException {
         final Properties fileProperties = new Properties();
 
-        try (final InputStream input = new FileInputStream(FILE_PATH)) {
+        try (final InputStream input = new FileInputStream(storePropertiesFile)) {
             fileProperties.load(input);
         }
 
@@ -91,15 +105,15 @@ public final class DefaultCLIProperties {
                 .forEach(name -> propertyToValue.put(name, fileProperties.getProperty(name)));
     }
 
-    void createFile() throws IOException {
-        if (!storePropertiesFile.exists()) {
-            storePropertiesFile.getParentFile().mkdirs();
-            assert storePropertiesFile.createNewFile();
-            try (final OutputStream output = new FileOutputStream(storePropertiesFile)) {
-                final Properties properties = getProperties();
-                properties.store(output, null);
-            }
+    private void createFile() throws IOException {
+
+        storePropertiesFile.getParentFile().mkdirs();
+        assert storePropertiesFile.createNewFile();
+        try (final OutputStream output = new FileOutputStream(storePropertiesFile)) {
+            final Properties properties = getProperties();
+            properties.store(output, null);
         }
+
     }
 
     public Properties getProperties() {

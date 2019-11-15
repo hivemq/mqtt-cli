@@ -21,15 +21,24 @@ import dagger.Component;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
 @Component(modules = {
-        CommandLineModule.class,
-        ShellSubCommandModule.class
+        CLIModule.class,
+        ShellModule.class
 })
 public interface MqttCLI {
 
-    @NotNull CommandLine commandLine();
+    @Named("cli")
+    @NotNull CommandLine cli();
+
+    @Named("shell")
+    @NotNull CommandLine shell();
+
+    @Named("shell-context")
+    @NotNull CommandLine shellContext();
+
     @NotNull DefaultCLIProperties defaultCLIProperties();
 }
