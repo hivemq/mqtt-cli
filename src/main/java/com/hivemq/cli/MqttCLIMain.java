@@ -42,6 +42,12 @@ public class MqttCLIMain {
 
         Security.setProperty("crypto.policy", "unlimited");
 
+        Configurator.defaultConfig()
+                .writer(new ConsoleWriter())
+                .formatPattern("{context:identifier}: {message}")
+                .level(Level.INFO)
+                .activate();
+
         MQTTCLI = DaggerMqttCLI.create();
         final CommandLine commandLine = MQTTCLI.cli();
         final DefaultCLIProperties defaultCLIProperties = MQTTCLI.defaultCLIProperties();
@@ -53,19 +59,10 @@ public class MqttCLIMain {
             System.exit(-1);
         }
 
-
-        Configurator.defaultConfig()
-                .writer(new ConsoleWriter())
-                .formatPattern("{context:identifier}: {message}")
-                .level(Level.INFO)
-                .activate();
-
         if (args.length == 0) {
             System.out.println(commandLine.getUsageMessage());
             System.exit(0);
         }
-
-
 
         Runtime.getRuntime().addShutdownHook(new DisconnectAllClientsTask());
 

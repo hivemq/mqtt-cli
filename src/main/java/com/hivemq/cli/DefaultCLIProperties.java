@@ -25,15 +25,14 @@ import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Level;
+import org.pmw.tinylog.Logger;
 
 import javax.inject.Singleton;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 @Singleton
 public class DefaultCLIProperties {
@@ -103,6 +102,9 @@ public class DefaultCLIProperties {
         }
 
         fileProperties.stringPropertyNames()
+                .stream()
+                .filter(name -> propertyToValue.containsKey(name))
+                .distinct()
                 .forEach(name -> propertyToValue.put(name, fileProperties.getProperty(name)));
     }
 
