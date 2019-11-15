@@ -63,7 +63,7 @@ class FileToCertificateConverterTest {
     @Test
     void convert_FileNotFound() {
         Exception e = assertThrows(FileNotFoundException.class, () -> fileToCertificateConverter.convert("wrongPathXYZ.pem"));
-        assertEquals(FileToCertificateConverter.FILE_NOT_FOUND, e.getMessage());
+        assertEquals(FileConverter.FILE_NOT_FOUND, e.getMessage());
     }
 
     @Test

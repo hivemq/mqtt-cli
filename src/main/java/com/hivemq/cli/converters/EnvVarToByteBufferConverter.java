@@ -14,19 +14,25 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.ioc;
+package com.hivemq.cli.converters;
 
-import dagger.Component;
-import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
-import javax.inject.Singleton;
+import java.nio.ByteBuffer;
 
-@Singleton
-@Component(modules = {
-        ContextCommandModule.class
-})
-public interface ContextCommandLine {
+public class EnvVarToByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
 
-    @NotNull CommandLine commandLine();
+    static final String ENVIRONMENT_VARIABLE_IS_NULL = "The given environment variable is not defined.";
+
+    @Override
+    public ByteBuffer convert(String value) throws Exception {
+        final ByteBufferConverter converter = new ByteBufferConverter();
+        final String envVar = System.getenv(value);
+
+        if (envVar == null) {
+            throw new NullPointerException(ENVIRONMENT_VARIABLE_IS_NULL);
+        }
+
+        return converter.convert(envVar);
+    }
 }

@@ -14,19 +14,21 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.ioc;
+package com.hivemq.cli.converters;
 
-import dagger.Component;
-import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
-import javax.inject.Singleton;
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
 
-@Singleton
-@Component(modules = {
-        ContextCommandModule.class
-})
-public interface ContextCommandLine {
+public class FileToByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
+    @Override
+    public ByteBuffer convert(String value) throws Exception {
+        final FileConverter fileConverter = new FileConverter();
 
-    @NotNull CommandLine commandLine();
+        final File file = fileConverter.convert(value);
+
+        return ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
+    }
 }

@@ -16,6 +16,8 @@
  */
 package com.hivemq.cli.ioc;
 
+import com.hivemq.cli.commandline.CommandLineConfig;
+import com.hivemq.cli.commandline.ShellErrorMessageHandler;
 import com.hivemq.cli.commands.shell.ShellDisconnectCommand;
 import com.hivemq.cli.commands.shell.*;
 import dagger.Module;
@@ -27,7 +29,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Module
-public class ShellSubCommandModule {
+class ShellSubCommandModule {
 
     @Singleton
     @Provides
@@ -39,7 +41,9 @@ public class ShellSubCommandModule {
                                                     final @NotNull ContextSwitchCommand contextSwitchCommand,
                                                     final @NotNull ClearScreenCommand clearScreenCommand,
                                                     final @NotNull ListClientsCommand listClientsCommand,
-                                                    final @NotNull ShellExitCommand shellExitCommand) {
+                                                    final @NotNull ShellExitCommand shellExitCommand,
+                                                    final @NotNull CommandLineConfig config,
+                                                    final @NotNull ShellErrorMessageHandler handler) {
 
         return new CommandLine(shellCommand)
                 .addSubcommand(CommandLine.HelpCommand.class)
@@ -49,6 +53,9 @@ public class ShellSubCommandModule {
                 .addSubcommand(contextSwitchCommand)
                 .addSubcommand(listClientsCommand)
                 .addSubcommand(clearScreenCommand)
-                .addSubcommand(shellExitCommand);
+                .addSubcommand(shellExitCommand)
+                .setColorScheme(config.getColorScheme())
+                .setUsageHelpWidth(config.getCliWidth())
+                .setParameterExceptionHandler(handler);
     }
 }

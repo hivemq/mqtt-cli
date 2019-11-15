@@ -24,9 +24,10 @@ import javax.inject.Singleton;
 
 @Singleton
 @Component(modules = {
-        ContextCommandModule.class
+        CommandLineModule.class,
+        ShellSubCommandModule.class
 })
-public interface ContextCommandLine {
+public interface MqttCLI {
 
     @NotNull CommandLine commandLine();
 }
