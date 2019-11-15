@@ -279,15 +279,6 @@ compileTestJava {
 
 test {
     useJUnitPlatform()
-    if (project.hasProperty("test_temp_dir")) {
-        jvmArgs "-Djava.io.tmpdir=" + test_temp_dir
-    } else {
-        def tempDir = System.properties['java.io.tmpdir']
-        if (tempDir) {
-            jvmArgs "-Djava.io.tmpdir=" + tempDir
-        }
-    }
-
 }
 
 /****************

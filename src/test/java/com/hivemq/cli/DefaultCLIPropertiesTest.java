@@ -69,7 +69,7 @@ class DefaultCLIPropertiesTest {
         assertEquals("localhost", defaultCLIProperties.getHost());
         assertEquals(1883, defaultCLIProperties.getPort());
         assertEquals(Level.TRACE, defaultCLIProperties.getShellDebugLevel());
-        assertEquals("mqttClient", defaultCLIProperties.getClientPrefix());
+        assertEquals("mqtt", defaultCLIProperties.getClientPrefix());
         assertEquals(pathToTmpDir + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertNull(defaultCLIProperties.getUsername());
@@ -88,7 +88,7 @@ class DefaultCLIPropertiesTest {
         assertEquals("localhost", defaultCLIProperties.getHost());
         assertEquals(1883, defaultCLIProperties.getPort());
         assertEquals(Level.TRACE, defaultCLIProperties.getShellDebugLevel());
-        assertEquals("mqttClient", defaultCLIProperties.getClientPrefix());
+        assertEquals("mqtt", defaultCLIProperties.getClientPrefix());
         assertEquals(pathToTmpDir + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertNull(defaultCLIProperties.getUsername());

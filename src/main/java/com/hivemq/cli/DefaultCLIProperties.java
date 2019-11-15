@@ -42,7 +42,8 @@ public class DefaultCLIProperties {
     private static final String HOST = "mqtt.host";
     private static final String PORT = "mqtt.port";
     private static final String DEBUG_LEVEL_SHELL = "debug.level.shell";
-    private static final String CLIENT_PREFIX = "client.prefix";
+    private static final String CLIENT_ID_PREFIX = "client.id.prefix";
+    private static final String CLIENT_ID_LENGTH = "client.id.length";
     private static final String SUBSCRIBE_OUTPUT_FILE = "client.subscribe.output";
     private static final String LOGFILE_PATH = "logfile.path";
     private static final String USERNAME = "auth.username";
@@ -58,7 +59,8 @@ public class DefaultCLIProperties {
        put(HOST, "localhost");
        put(PORT, "1883");
        put(DEBUG_LEVEL_SHELL, "verbose");
-       put(CLIENT_PREFIX, "mqttClient");
+       put(CLIENT_ID_PREFIX, "mqtt");
+       put(CLIENT_ID_LENGTH, "8");
        put(SUBSCRIBE_OUTPUT_FILE, null);
        put(LOGFILE_PATH, System.getProperty("user.home") + File.separator +
                         ".mqtt-cli" + File.separator +
@@ -169,7 +171,11 @@ public class DefaultCLIProperties {
 
     @NotNull
     public String getClientPrefix() {
-        return propertyToValue.get(CLIENT_PREFIX);
+        return propertyToValue.get(CLIENT_ID_PREFIX);
+    }
+
+    public int getClientLength() {
+        return Integer.parseInt(propertyToValue.get(CLIENT_ID_LENGTH));
     }
 
     @Nullable
