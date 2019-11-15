@@ -78,7 +78,7 @@ public class MqttUtils {
     // See http://docs.oasis-open.org/mqtt/mqtt/v5.0/cs02/mqtt-v5.0-cs02.html#_Toc514345331
     public static @NotNull String buildRandomClientID(final int length) {
         if (length < 0) {
-            throw new NegativeArraySizeException("Length of random client id has to be positive");
+            throw new IllegalArgumentException("Length of random client id has to be positive");
         }
         final SecureRandom rnd = new SecureRandom();
         final StringBuilder sb = new StringBuilder(length);
