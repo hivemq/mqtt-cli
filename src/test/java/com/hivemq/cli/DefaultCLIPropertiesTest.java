@@ -19,59 +19,55 @@ package com.hivemq.cli;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.pmw.tinylog.Level;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultCLIPropertiesTest {
 
-    private static String propertyHomes;
-    private static String realUserHome;
+    private static String pathToHomeDir;
+    private static String pathToPropertiesDir;
+    private static String pathToEmptyProperties;
+    private static String pathToOverrideProperties;
+    private static String pathToNoProperties;
 
     @BeforeAll
     static void setUp() {
         final ClassLoader classLoader = DefaultCLIPropertiesTest.class.getClassLoader();
-        propertyHomes = classLoader.getResource("PropertyHomes").getPath();
-        realUserHome = System.getProperty("user.home");
+        pathToHomeDir = classLoader.getResource("home").getPath();
+        System.setProperty("user.home", pathToHomeDir);
+        pathToPropertiesDir = classLoader.getResource("PropertyFiles").getPath();
+        pathToEmptyProperties = pathToPropertiesDir + "/empty.properties";
+        pathToOverrideProperties = pathToPropertiesDir + "/override.properties";
+        pathToNoProperties = pathToPropertiesDir + "/" + UUID.randomUUID().toString();
     }
 
-    @AfterEach
-    void tearDown() {
-        System.setProperty("user.home", realUserHome);
+    @AfterAll
+    static void tearDown() {
+        File createdFile = new File(pathToNoProperties);
+        createdFile.delete();
     }
 
-    @AfterAll()
-    static void tearDownAll() {
-        final ClassLoader classLoader = DefaultCLIPropertiesTest.class.getClassLoader();
-        final URL defaultPropertyPath = classLoader.getResource("PropertyHomes/home3/.mqtt-cli/config.properties");
-        if (defaultPropertyPath != null) {
-            final File defaultPropertyFile = new File(defaultPropertyPath.getFile());
-            defaultPropertyFile.delete();
-        }
-
-    }
 
     @Test
     void noPropertyFile() throws Exception {
-        final String fullHomePath = setupHomePath("home1");
-        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties();
+        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties(pathToNoProperties);
 
-        assertThrows(IOException.class, defaultCLIProperties::readFromFile);
+        defaultCLIProperties.init();
 
         assertEquals(MqttVersion.MQTT_5_0, defaultCLIProperties.getMqttVersion());
         assertEquals("localhost", defaultCLIProperties.getHost());
         assertEquals(1883, defaultCLIProperties.getPort());
         assertEquals(Level.TRACE, defaultCLIProperties.getShellDebugLevel());
         assertEquals("mqttClient", defaultCLIProperties.getClientPrefix());
-        assertEquals(fullHomePath + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
+        assertEquals(pathToHomeDir + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertNull(defaultCLIProperties.getUsername());
         assertNull(defaultCLIProperties.getPassword());
@@ -82,37 +78,15 @@ class DefaultCLIPropertiesTest {
 
     @Test
     void emptyPropertyFile() throws Exception {
-        final String fullHomePath = setupHomePath("home2");
-        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties();
-        defaultCLIProperties.readFromFile();
+        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties(pathToEmptyProperties);
+        defaultCLIProperties.init();
 
         assertEquals(MqttVersion.MQTT_5_0, defaultCLIProperties.getMqttVersion());
         assertEquals("localhost", defaultCLIProperties.getHost());
         assertEquals(1883, defaultCLIProperties.getPort());
         assertEquals(Level.TRACE, defaultCLIProperties.getShellDebugLevel());
         assertEquals("mqttClient", defaultCLIProperties.getClientPrefix());
-        assertEquals(fullHomePath + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
-        assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
-        assertNull(defaultCLIProperties.getUsername());
-        assertNull(defaultCLIProperties.getPassword());
-        assertNull(defaultCLIProperties.getClientCertificate());
-        assertNull(defaultCLIProperties.getServerCertificate());
-        assertNull(defaultCLIProperties.getClientPrivateKey());
-    }
-
-    @Test
-    void defaultPropertyFile() throws Exception {
-        final String fullHomePath = setupHomePath("home3");
-        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties();
-        defaultCLIProperties.createFile();
-        defaultCLIProperties.readFromFile();
-
-        assertEquals(MqttVersion.MQTT_5_0, defaultCLIProperties.getMqttVersion());
-        assertEquals("localhost", defaultCLIProperties.getHost());
-        assertEquals(1883, defaultCLIProperties.getPort());
-        assertEquals(Level.TRACE, defaultCLIProperties.getShellDebugLevel());
-        assertEquals("mqttClient", defaultCLIProperties.getClientPrefix());
-        assertEquals(fullHomePath + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
+        assertEquals(pathToHomeDir + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertNull(defaultCLIProperties.getUsername());
         assertNull(defaultCLIProperties.getPassword());
@@ -123,9 +97,8 @@ class DefaultCLIPropertiesTest {
 
     @Test
     void overridePropertyFile() throws Exception {
-        final String fullHomePath = setupHomePath("home4");
-        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties();
-        defaultCLIProperties.readFromFile();
+        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties(pathToOverrideProperties);
+        defaultCLIProperties.init();
 
         assertEquals(MqttVersion.MQTT_3_1_1, defaultCLIProperties.getMqttVersion());
         assertEquals("broker.hivemq.com", defaultCLIProperties.getHost());
@@ -141,9 +114,4 @@ class DefaultCLIPropertiesTest {
         assertNull(defaultCLIProperties.getClientPrivateKey());
     }
 
-    String setupHomePath(final @NotNull String homeDirName) {
-        final String homePath = propertyHomes + "/" + homeDirName;
-        System.setProperty("user.home", homePath);
-        return homePath;
-    }
 }
