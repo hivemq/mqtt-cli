@@ -56,12 +56,15 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
-    @CommandLine.Option(names = {"-i", "--identifier"}, required = true, description = "The client identifier UTF-8 String (default randomly generated string)")
-    @NotNull
+    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "Disconnect all connected clients")
+    private boolean disconnectAll;
+
+    @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
+    @Nullable
     private String identifier;
 
-    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")
-    @NotNull
+    @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')")
+    @Nullable
     private String host;
 
     @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The session expiry of the disconnect (default: 0)")
@@ -77,16 +80,6 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     private Mqtt5UserProperty[] userProperties;
 
     @Override
-    public boolean isVerbose() {
-        return false;
-    }
-
-    @Override
-    public boolean isDebug() {
-        return false;
-    }
-
-    @Override
     public void run() {
 
         if (isVerbose()) {
@@ -94,10 +87,18 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
         }
 
         try {
-            mqttClientExecutor.disconnect(this);
+            if (disconnectAll) {
+                mqttClientExecutor.disconnectAllClients(this);
+            }
+            else {
+                if (identifier == null) {
+                    Logger.error("Missing required option '--identifier=<identifier>'");
+                }
+                mqttClientExecutor.disconnect(this);
+            }
         }
         catch (final Exception ex) {
-            LoggingContext.put("identifier", "PUBLISH");
+            LoggingContext.put("identifier", "DISCONNECT");
             if (isVerbose()) {
                 Logger.trace(ex);
             }
@@ -122,12 +123,10 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
                 '}';
     }
 
-
     @Override
     public String toString() {
         return "Disconnect::" + getKey();
     }
-
 
     @Override
     public @Nullable Long getSessionExpiryInterval() {
@@ -168,7 +167,15 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
 
     public void setUserProperties(final @Nullable Mqtt5UserProperty... userProperties) {
         this.userProperties = userProperties;
+    }
 
+    @Override
+    public boolean isVerbose() {
+        return ShellCommand.isVerbose();
+    }
 
+    @Override
+    public boolean isDebug() {
+        return ShellCommand.isDebug();
     }
 }
