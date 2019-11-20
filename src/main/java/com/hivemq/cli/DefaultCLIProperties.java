@@ -33,6 +33,16 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
+/**
+ * Represents the default properties which are used throughout the cli.
+ * This class pre defines values for every default property which can be overwritten by using the properties file given
+ * in the constructor.
+ *
+ * The CLI uses the default location of the properties file at `~/.mqtt-cli/config.properties` which will be written if
+ * not already present.
+ *
+ * @author Till Seeberger
+ */
 @Singleton
 public class DefaultCLIProperties {
 
