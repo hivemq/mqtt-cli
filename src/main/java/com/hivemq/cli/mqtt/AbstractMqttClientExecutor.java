@@ -138,8 +138,9 @@ abstract class AbstractMqttClientExecutor {
 
         LoggingContext.put("identifier", "CLIENT " + disconnect.getIdentifier());
 
+        final String clientKey = disconnect.getKey();
 
-        if (clientKeyToClientData.containsKey(disconnect.getKey())) {
+        if (clientKeyToClientData.containsKey(clientKey)) {
             final MqttClient client = clientKeyToClientData.get(disconnect.getKey()).getClient();
 
             switch (client.getConfig().getMqttVersion()) {
@@ -150,8 +151,10 @@ abstract class AbstractMqttClientExecutor {
                     mqtt3Disconnect((Mqtt3Client) client, disconnect);
                     break;
             }
+            clientKeyToClientData.remove(clientKey);
 
-        } else if (disconnect.isDebug()) {
+        }
+        else if (disconnect.isDebug()) {
             Logger.debug("client to disconnect is not connected: {} ", disconnect.getKey());
         }
 
