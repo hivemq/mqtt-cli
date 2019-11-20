@@ -34,7 +34,7 @@ import java.security.cert.X509Certificate;
 import java.util.*;
 
 /**
- * Represents the default properties which are used throughout the cli.
+ * Represents the default properties which are used throughout the CLI.
  * This class pre defines values for every default property which can be overwritten by using the properties file given
  * in the constructor.
  *
