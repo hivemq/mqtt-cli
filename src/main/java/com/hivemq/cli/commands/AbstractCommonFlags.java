@@ -16,6 +16,8 @@
  */
 package com.hivemq.cli.commands;
 
+import com.hivemq.cli.DefaultCLIProperties;
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
@@ -82,10 +84,56 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     private Collection<String> supportedTLSVersions;
 
     @CommandLine.Option(names = {"--cert"}, converter = FileToCertificateConverter.class, description = "The client certificate to use for client side authentication", order = 2)
-    @Nullable X509Certificate clientCertificate;
+    @Nullable
+    private X509Certificate clientCertificate;
 
     @CommandLine.Option(names = {"--key"}, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication", order = 2)
-    @Nullable PrivateKey clientPrivateKey;
+    @Nullable
+    private PrivateKey clientPrivateKey;
+
+    @Override
+    public void setDefaultOptions() {
+        super.setDefaultOptions();
+        final DefaultCLIProperties defaultCLIProperties = MqttCLIMain.MQTTCLI.defaultCLIProperties();
+
+        if (user == null) {
+            user = defaultCLIProperties.getUsername();
+        }
+
+        if (password == null) {
+            try {
+                password = defaultCLIProperties.getPassword();
+            } catch (Exception e) {
+                logPropertiesException(e, "Default password could not be loaded.");
+            }
+        }
+
+        if (clientCertificate == null) {
+            try {
+                clientCertificate = defaultCLIProperties.getClientCertificate();
+            } catch (Exception e) {
+                logPropertiesException(e, "Default client certificate could not be loaded.");
+            }
+        }
+
+        if (clientPrivateKey == null) {
+            try {
+                clientPrivateKey = defaultCLIProperties.getClientPrivateKey();
+            } catch (Exception e) {
+                logPropertiesException(e, "Default client private key could not be loaded.");
+            }
+        }
+
+        try {
+            final X509Certificate defaultServerCertificate = defaultCLIProperties.getServerCertificate();
+            if (defaultServerCertificate != null) {
+                certificates.add(defaultServerCertificate);
+            }
+        } catch (Exception e) {
+            logPropertiesException(e, "Default server certificate could not be loaded.");
+        }
+
+    }
 
 
     public @Nullable MqttClientSslConfig buildSslConfig() {
@@ -95,17 +143,31 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 return doBuildSslConfig();
             }
             catch (Exception e) {
-                if (isVerbose()) {
-                    Logger.trace(e);
-                }
-                else if (isDebug()) {
-                    Logger.debug(e.getMessage());
-                }
-                Logger.error(MqttUtils.getRootCause(e).getMessage());
+                logPropertiesException(e);
             }
         }
 
         return null;
+    }
+
+    private void logPropertiesException(final @NotNull Exception e) {
+        if (isVerbose()) {
+            Logger.trace(e);
+        }
+        else if (isDebug()) {
+            Logger.debug(e.getMessage());
+        }
+        Logger.error(MqttUtils.getRootCause(e).getMessage());
+    }
+
+    private void logPropertiesException(final @NotNull Exception e, final @NotNull String message) {
+        if (isVerbose()) {
+            Logger.trace(e);
+        }
+        else if (isDebug()) {
+            Logger.debug(e.getMessage());
+        }
+        Logger.error(message + " ({})", MqttUtils.getRootCause(e).getMessage());
     }
 
 

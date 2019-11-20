@@ -20,12 +20,12 @@ import com.hivemq.cli.ioc.DaggerMqttCLI;
 import com.hivemq.cli.ioc.MqttCLI;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.pmw.tinylog.Configurator;
 import org.pmw.tinylog.Level;
+import org.pmw.tinylog.Logger;
 import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
@@ -42,27 +42,26 @@ public class MqttCLIMain {
 
         Security.setProperty("crypto.policy", "unlimited");
 
-        MQTTCLI = DaggerMqttCLI.create();
-
-        final CommandLine commandLine = MQTTCLI.commandLine();
-
         Configurator.defaultConfig()
                 .writer(new ConsoleWriter())
                 .formatPattern("{context:identifier}: {message}")
                 .level(Level.INFO)
                 .activate();
 
+        MQTTCLI = DaggerMqttCLI.create();
+        final CommandLine commandLine = MQTTCLI.cli();
+        final DefaultCLIProperties defaultCLIProperties = MQTTCLI.defaultCLIProperties();
+
+        try {
+            defaultCLIProperties.init();
+        } catch (Exception e) {
+            Logger.error(e.getMessage());
+            System.exit(-1);
+        }
+
         if (args.length == 0) {
             System.out.println(commandLine.getUsageMessage());
             System.exit(0);
-        }
-
-        try {
-            setupProperties();
-        }
-        catch (final Exception e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
         }
 
         Runtime.getRuntime().addShutdownHook(new DisconnectAllClientsTask());
@@ -73,18 +72,6 @@ public class MqttCLIMain {
 
     }
 
-    private static void setupProperties() throws Exception {
-        Properties properties = null;
-
-        properties = PropertiesUtils.readDefaultProperties(PropertiesUtils.PROPERTIES_FILE_PATH);
-
-        if (properties == null) {
-            PropertiesUtils.createDefaultPropertiesFile(PropertiesUtils.DEFAULT_PROPERTIES, PropertiesUtils.PROPERTIES_FILE_PATH);
-        }
-        else {
-            PropertiesUtils.setDefaultProperties(properties);
-        }
-    }
 
     private static class DisconnectAllClientsTask extends Thread {
 

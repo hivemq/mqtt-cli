@@ -19,6 +19,7 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
+import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
@@ -264,7 +265,9 @@ abstract class AbstractMqttClientExecutor {
 
         final ClientData clientData = new ClientData(client);
 
-        clientKeyToClientData.put(connect.getKey(), clientData);
+        final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().get().toString(), client.getConfig().getServerHost());
+
+        clientKeyToClientData.put(key, clientData);
 
         return client;
     }
@@ -294,7 +297,9 @@ abstract class AbstractMqttClientExecutor {
 
         final ClientData clientData = new ClientData(client);
 
-        clientKeyToClientData.put(connect.getKey(), clientData);
+        final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().get().toString(), client.getConfig().getServerHost());
+
+        clientKeyToClientData.put(key, clientData);
 
         return client;
     }
