@@ -17,6 +17,7 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
@@ -40,16 +41,19 @@ import javax.inject.Inject;
 public class ShellDisconnectCommand implements MqttAction, Disconnect {
 
     private final MqttClientExecutor mqttClientExecutor;
+    private final DefaultCLIProperties defaultCLIProperties;
 
     //needed for pico cli - reflection code generation
     public ShellDisconnectCommand() {
-        this(null);
+        this(null, null);
     }
 
     @Inject
-    ShellDisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+    ShellDisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor,
+                           final @NotNull DefaultCLIProperties defaultCLIProperties) {
 
         this.mqttClientExecutor = mqttClientExecutor;
+        this.defaultCLIProperties = defaultCLIProperties;
 
     }
 
@@ -82,6 +86,10 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     @Override
     public void run() {
 
+        if (host == null) {
+            host = defaultCLIProperties.getHost();
+        }
+
         if (isVerbose()) {
             Logger.trace("Command: {} ", this);
         }
@@ -93,7 +101,9 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
             else {
                 if (identifier == null) {
                     Logger.error("Missing required option '--identifier=<identifier>'");
+                    return;
                 }
+
                 mqttClientExecutor.disconnect(this);
             }
         }
