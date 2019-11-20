@@ -38,8 +38,8 @@ import java.util.*;
  * This class pre defines values for every default property which can be overwritten by using the properties file given
  * in the constructor.
  *
- * The CLI uses the default location of the properties file at `~/.mqtt-cli/config.properties` which will be written if
- * not already present.
+ * The CLI uses the default location of the properties file at `~/.mqtt-cli/config.properties` which will be written by
+ * the 'init' method if not present or else the file defined properties will overwrite the pre defined properties.
  *
  * @author Till Seeberger
  */
@@ -81,14 +81,25 @@ public class DefaultCLIProperties {
        put(CLIENT_PRIVATE_KEY, null);
     }};
 
-
     private File storePropertiesFile;
 
+    /**
+     * A singleton instance of this class holds reference to a properties file which will be written or created with the
+     * 'init' method
+     * @param filePath the path to where the properties file shall be written oder read from
+     */
     public DefaultCLIProperties(final @NotNull String filePath) {
         storePropertiesFile = new File(filePath);
     }
 
 
+    /**
+     * Initializes the default properties from the file.
+     * If the file does not yet exist it will be created and populated with the pre defined values.
+     * Else the properties from the given file will be read which will override the pre defined values if given.
+     * @throws IOException the creation or reading of the properties file failed
+     * @throws IllegalArgumentException the path to the properties file is not valid
+     */
     void init() throws IOException, IllegalArgumentException {
         if (!storePropertiesFile.exists()) {
             createFile();
@@ -128,7 +139,7 @@ public class DefaultCLIProperties {
 
     }
 
-    public Properties getProperties() {
+    private Properties getProperties() {
         final Properties properties = new Properties();
 
         propertyToValue.entrySet().stream()
