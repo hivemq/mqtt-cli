@@ -161,13 +161,13 @@ dependencies {
     compileOnly 'com.oracle.substratevm:svm:19.2.0'
 
     def junitJupiterVersion = '5.5.1'
-    def junitJupiterParamVersion = '5.4.2'
+    def junitJupiterParamVersion = '5.5.1'
     
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterParamVersion
-
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
+
 }
 
 /**************

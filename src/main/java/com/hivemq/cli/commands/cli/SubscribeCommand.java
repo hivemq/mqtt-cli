@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.cli;
 
+import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
@@ -23,7 +24,6 @@ import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -49,6 +49,7 @@ import java.util.Arrays;
 public class SubscribeCommand extends AbstractConnectFlags implements MqttAction, Subscribe {
 
     private final MqttClientExecutor mqttClientExecutor;
+    private final DefaultCLIProperties defaultCLIProperties;
 
     private MqttClientSslConfig sslConfig;
 
@@ -56,14 +57,14 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     //needed for pico cli - reflection code generation
     public SubscribeCommand() {
-        this(null);
+        this(null,null);
     }
 
     @Inject
-    public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-
+    public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor,
+                            final @NotNull DefaultCLIProperties defaultCLIProperties) {
         this.mqttClientExecutor = mqttClientExecutor;
-
+        this.defaultCLIProperties = defaultCLIProperties;
     }
 
     @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
@@ -168,11 +169,11 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     public void setDefaultOptions() {
         super.setDefaultOptions();
 
-        if (publishFile == null && PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
+        if (publishFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
             if (isVerbose()) {
-                Logger.trace("Setting value of 'toFile' to {}", PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+                Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
             }
-            publishFile = new File(PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+            publishFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
         }
 
     }
