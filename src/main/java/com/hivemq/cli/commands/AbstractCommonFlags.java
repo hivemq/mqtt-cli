@@ -92,8 +92,11 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @Nullable
     private PrivateKey clientPrivateKey;
 
-    @CommandLine.Option(names = {"-ws", "--websockets"}, description = "Use websockets transport protocol (default: false)", order = 2)
-    private boolean useWebsockets;
+    @CommandLine.Option(names = {"-ws"}, description = "Use WebSocket transport protocol (default: false)", order = 2)
+    private boolean useWebSocket;
+
+    @CommandLine.Option(names = {"-ws:path"}, description = "The path of the WebSocket", order = 2)
+    @Nullable private String webSocketPath;
 
     @Override
     public void setDefaultOptions() {
@@ -126,6 +129,10 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             } catch (Exception e) {
                 logPropertiesException(e, "Default client private key could not be loaded.");
             }
+        }
+
+        if (useWebSocket && webSocketPath == null) {
+            webSocketPath = defaultCLIProperties.getWebsocketPath();
         }
 
         try {
@@ -283,7 +290,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 ", cleanStart=" + cleanStart +
                 ", useDefaultSsl=" + useSsl +
                 ", sslConfig=" + (getSslConfig() != null) +
-                ", useWebSockets=" + useWebsockets +
+                ", useWebSocket=" + useWebSocket +
+                ", webSocketPath=" + webSocketPath +
                 ", " + getWillOptions();
     }
 
@@ -331,9 +339,9 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
 
     @Nullable
     public MqttWebSocketConfig getWebSocketConfig() {
-        if (useWebsockets) {
+        if (useWebSocket) {
             return MqttWebSocketConfig.builder()
-                    .serverPath("/mqtt")
+                    .serverPath(webSocketPath)
                     .build();
         }
         else {
