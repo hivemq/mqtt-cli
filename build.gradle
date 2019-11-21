@@ -252,7 +252,7 @@ jar {
                 'Main-Class': application.mainClassName,
                 // 'Class-Path': configurations.compile.collect { 'lib/' + it.getName() }.join(' '),
                 'Built-Date': new Date().format("yyyy-MM-dd HH:mm:ss"),
-                // 'SplashScreen-Image': '01-mqtt-cli.svg',
+                // 'SplashScreen-Image': 'mqtt-logo.svg',
                 // 'Sealed': 'true'
         )
     }

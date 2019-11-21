@@ -379,6 +379,7 @@ abstract class AbstractMqttClientExecutor {
 
         return MqttClient.builder()
                 .addDisconnectedListener(new ContextClientDisconnectListener())
+                .webSocketConfig(connect.getWebSocketConfig())
                 .serverHost(connect.getHost())
                 .serverPort(connect.getPort())
                 .sslConfig(connect.getSslConfig())

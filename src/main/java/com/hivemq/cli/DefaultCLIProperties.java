@@ -61,6 +61,7 @@ public class DefaultCLIProperties {
     private static final String CLIENT_CERTIFICATE = "auth.client.cert";
     private static final String CLIENT_PRIVATE_KEY = "auth.client.key";
     private static final String SERVER_CERTIFICATE = "auth.server.cafile";
+    private static final String WEBSOCKET_PATH = "ws.path";
 
     private Map<String, String> propertyToValue = new HashMap<String, String>() {{
        put(MQTT_VERSION, "5");
@@ -79,6 +80,7 @@ public class DefaultCLIProperties {
        put(PASSWORD_ENV, null);
        put(CLIENT_CERTIFICATE, null);
        put(CLIENT_PRIVATE_KEY, null);
+       put(WEBSOCKET_PATH, "/mqtt");
     }};
 
     private File storePropertiesFile;
@@ -262,6 +264,11 @@ public class DefaultCLIProperties {
             return null;
         }
         return new FileToCertificateConverter().convert(serverCertificate);
+    }
+
+    @NotNull
+    public String getWebsocketPath() {
+        return propertyToValue.get(WEBSOCKET_PATH);
     }
 
 }
