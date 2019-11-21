@@ -15,6 +15,8 @@
 
 MQTT 5.0 and 3.1.1 compatible and feature-rich MQTT Command Line Interface
 
+<p align="center"><img src="/icon/shell-mode?raw=true"/></p>
+
 ## Documentation
 
 A detailed documentation can be found [here](https://hivemq.github.io/mqtt-cli)
