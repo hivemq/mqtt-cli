@@ -21,6 +21,7 @@ import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
+import com.hivemq.client.mqtt.MqttWebSocketConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
@@ -90,6 +91,9 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @CommandLine.Option(names = {"--key"}, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication", order = 2)
     @Nullable
     private PrivateKey clientPrivateKey;
+
+    @CommandLine.Option(names = {"-ws", "--websockets"}, description = "Use websockets transport protocol (default: false)", order = 2)
+    private boolean useWebsockets;
 
     @Override
     public void setDefaultOptions() {
@@ -279,6 +283,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 ", cleanStart=" + cleanStart +
                 ", useDefaultSsl=" + useSsl +
                 ", sslConfig=" + (getSslConfig() != null) +
+                ", useWebSockets=" + useWebsockets +
                 ", " + getWillOptions();
     }
 
@@ -324,5 +329,16 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         this.cleanStart = cleanStart;
     }
 
+    @Nullable
+    public MqttWebSocketConfig getWebSocketConfig() {
+        if (useWebsockets) {
+            return MqttWebSocketConfig.builder()
+                    .serverPath("/mqtt")
+                    .build();
+        }
+        else {
+            return null;
+        }
+    }
 
 }
