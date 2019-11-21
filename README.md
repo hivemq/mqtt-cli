@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://hivemq.github.io/mqtt-cli/">
-    <img src="01-mqtt-cli.svg" width="500"/>
+    <img src="/img/mqtt-logo.svg" width="500"/>
   </a>
 </p>
 
@@ -15,7 +15,7 @@
 
 MQTT 5.0 and 3.1.1 compatible and feature-rich MQTT Command Line Interface
 
-<p align="center"><img src="/icon/shell-mode?raw=true"/></p>
+<p align="center"><img src="/img/shell-mode.gif"/></p>
 
 ## Documentation
 
