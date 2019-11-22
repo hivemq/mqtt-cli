@@ -18,9 +18,8 @@ package com.hivemq.cli.commands;
 
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
-import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.MqttWebSocketConfig;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
-import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,5 +49,6 @@ public interface Connect extends Context, Will, ConnectRestrictions {
 
     @Nullable Mqtt5UserProperties getConnectUserProperties();
 
+    @Nullable MqttWebSocketConfig getWebSocketConfig();
 
 }

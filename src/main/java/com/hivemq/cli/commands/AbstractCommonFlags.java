@@ -21,6 +21,7 @@ import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
+import com.hivemq.client.mqtt.MqttWebSocketConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
@@ -91,6 +92,12 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @Nullable
     private PrivateKey clientPrivateKey;
 
+    @CommandLine.Option(names = {"-ws"}, description = "Use WebSocket transport protocol (default: false)", order = 2)
+    private boolean useWebSocket;
+
+    @CommandLine.Option(names = {"-ws:path"}, description = "The path of the WebSocket", order = 2)
+    @Nullable private String webSocketPath;
+
     @Override
     public void setDefaultOptions() {
         super.setDefaultOptions();
@@ -122,6 +129,10 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             } catch (Exception e) {
                 logPropertiesException(e, "Default client private key could not be loaded.");
             }
+        }
+
+        if (useWebSocket && webSocketPath == null) {
+            webSocketPath = defaultCLIProperties.getWebsocketPath();
         }
 
         try {
@@ -279,6 +290,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 ", cleanStart=" + cleanStart +
                 ", useDefaultSsl=" + useSsl +
                 ", sslConfig=" + (getSslConfig() != null) +
+                ", useWebSocket=" + useWebSocket +
+                ", webSocketPath=" + webSocketPath +
                 ", " + getWillOptions();
     }
 
@@ -324,5 +337,16 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         this.cleanStart = cleanStart;
     }
 
+    @Nullable
+    public MqttWebSocketConfig getWebSocketConfig() {
+        if (useWebSocket) {
+            return MqttWebSocketConfig.builder()
+                    .serverPath(webSocketPath)
+                    .build();
+        }
+        else {
+            return null;
+        }
+    }
 
 }
