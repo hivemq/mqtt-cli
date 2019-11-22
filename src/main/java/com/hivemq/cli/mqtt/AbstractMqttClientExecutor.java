@@ -141,7 +141,7 @@ abstract class AbstractMqttClientExecutor {
         final String clientKey = disconnect.getKey();
 
         if (clientKeyToClientData.containsKey(clientKey)) {
-            final MqttClient client = clientKeyToClientData.get(disconnect.getKey()).getClient();
+            final MqttClient client = clientKeyToClientData.get(clientKey).getClient();
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
@@ -155,7 +155,7 @@ abstract class AbstractMqttClientExecutor {
 
         }
         else if (disconnect.isDebug()) {
-            Logger.debug("client to disconnect is not connected: {} ", disconnect.getKey());
+            Logger.debug("client to disconnect is not connected: {} ", clientKey);
         }
 
     }
