@@ -43,9 +43,13 @@ mqtt sub    -t <topics> [-t <topics>]...
             [-ip <identifierPrefix>]
             [-k <keepAlive>]  
             [-se <sessionExpiryInterval>]      
-            [-Cup <connectUserProperties>]... 
+            [-Cup <connectUserProperties>]...
+            [-ws]
+            [-ws:path <webSocketPath>] 
             [-u <user>] 
-            [-pw [<password>]] 
+            [-pw [<password>]]
+            [-pw:env [<environmentVariable>]]
+            [-pw:file FILE]
             [--cert <clientCertificate>] 
             [--key <clientPrivateKey>]             
             [--cafile FILE]... 
@@ -102,6 +106,8 @@ mqtt sub    -t <topics> [-t <topics>]...
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-Cup``  | ``--connectUserProperty`` | A user property of the subscribe message. |
+| ``--ws``  |  | Use WebSocket transport protocol. | ``False``
+| ``--ws:path``  |  | The path to the WebSocket located at given broker host. | 
 
 ***
 
@@ -112,6 +118,8 @@ mqtt sub    -t <topics> [-t <topics>]...
 | ``-s``    | ``--secure``  | Whether a custom SSL configuration is used. | ``False``
 | ``-u``   | ``--user`` | Define the username for authentication. |
 | ``-pw``  | ``--password`` | Define the password for authentication directly. <br> If left blank the user will be prompted for the password in console. |
+| ``-pw:env``  |  | Define that the password for authentication is read in from an environment variable. | ``MQTT_CLI_PW`` if option is specified without value
+| ``-pw:file``  |  | Define the path to a file from which the password is read in. |
 |   |   ``--cert``  |   The path to the client certificate to use for client-side authentication. |
 |   |   ``--key``   |   The path to the corresponding private key for the given client certificate.    |
 |   | ``--cafile``    | The path to the file containing a trusted CA certificate to enable encrypted certificate based communication. |

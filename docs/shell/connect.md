@@ -33,8 +33,12 @@ mqtt> con   [-h <host>]
             [-k <keepAlive>] 
             [-se <sessionExpiryInterval>] 
             [-up <connectUserProperties>]...
+            [-ws]
+            [-ws:path <webSocketPath>]
             [-u <user>] 
-            [-pw [<password>]]           
+            [-pw [<password>]]
+            [-pw:env [<environmentVariable>]]
+            [-pw:file FILE]           
             [--cert <clientCertificate>] 
             [--key <clientPrivateKey>] 
             [--cafile FILE]... 
@@ -81,6 +85,8 @@ mqtt> con   [-h <host>]
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (No Expiry)
 | ``-up``  | ``--userProperty`` | A user property of the connect message.
+| ``--ws``  |  | Use WebSocket transport protocol. | ``False``
+| ``--ws:path``  |  | The path to the WebSocket located at given broker host. | 
 
 ***
 
@@ -91,6 +97,8 @@ mqtt> con   [-h <host>]
 | ``-s``    | ``--secure``  | Use the default SSL configuration. | ``False``
 | ``-u``   | ``--user`` | A username for authentication can be defined. |
 | ``-pw``  | ``--password`` | A password for authentication can be defined directly. <br> If left blank the user will be prompted for the password in console. |
+| ``-pw:env``  |  | Define that the password for authentication is read in from an environment variable. | ``MQTT_CLI_PW`` if option is specified without value
+| ``-pw:file``  |  | Define the path to a file from which the password is read in. |
 |   |   ``--cert``  |   The path to the client certificate to use for client-side authentication. |
 |   |   ``--key``   |   The path to the client certificate corresponding  private key to use for client-side authentication.    |
 |   | ``--cafile``    | Path to a file containing a trusted CA certificate to enable encrypted certificate based communication. |
