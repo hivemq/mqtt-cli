@@ -24,6 +24,7 @@ import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
+import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -50,6 +51,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     private final MqttClientExecutor mqttClientExecutor;
     private final DefaultCLIProperties defaultCLIProperties;
+    private MqttClient subscribeClient;
 
     private MqttClientSslConfig sslConfig;
 
@@ -112,7 +114,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
-            mqttClientExecutor.subscribe(this);
+            subscribeClient = mqttClientExecutor.subscribe(this);
         }
         catch (final Exception ex) {
             if (ex instanceof ConnectionFailedException) {
@@ -157,7 +159,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     }
 
     private void stay() throws InterruptedException {
-        while (mqttClientExecutor.isConnected(this)) {
+        while (subscribeClient.getState().isConnectedOrReconnect()) {
             Thread.sleep(IDLE_TIME);
         }
         if (isVerbose()) {

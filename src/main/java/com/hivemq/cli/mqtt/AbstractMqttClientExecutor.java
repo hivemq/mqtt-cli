@@ -78,11 +78,13 @@ abstract class AbstractMqttClientExecutor {
     abstract void mqtt3Disconnect(final @NotNull Mqtt3Client client, final @NotNull Disconnect disconnect);
 
 
-    public void subscribe(final @NotNull SubscribeCommand subscribeCommand) {
+    public MqttClient subscribe(final @NotNull SubscribeCommand subscribeCommand) {
 
         final MqttClient client = connect(subscribeCommand);
 
         subscribe(client, subscribeCommand);
+
+        return client;
 
     }
 
