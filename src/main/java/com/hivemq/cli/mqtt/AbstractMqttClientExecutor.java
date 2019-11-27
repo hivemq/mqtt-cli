@@ -49,11 +49,12 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 abstract class AbstractMqttClientExecutor {
 
-    @NotNull private static final Map<String, ClientData> clientKeyToClientData = new HashMap<>();
+    @NotNull private static final Map<String, ClientData> clientKeyToClientData = new ConcurrentHashMap<>();
 
 
     abstract void mqtt5Connect(final @NotNull Mqtt5Client client, final @NotNull Mqtt5Connect connectMessage, final @NotNull Connect connect);
@@ -137,9 +138,10 @@ abstract class AbstractMqttClientExecutor {
 
         LoggingContext.put("identifier", "CLIENT " + disconnect.getIdentifier());
 
+        final String clientKey = disconnect.getKey();
 
-        if (clientKeyToClientData.containsKey(disconnect.getKey())) {
-            final MqttClient client = clientKeyToClientData.get(disconnect.getKey()).getClient();
+        if (clientKeyToClientData.containsKey(clientKey)) {
+            final MqttClient client = clientKeyToClientData.get(clientKey).getClient();
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
@@ -149,11 +151,35 @@ abstract class AbstractMqttClientExecutor {
                     mqtt3Disconnect((Mqtt3Client) client, disconnect);
                     break;
             }
+            clientKeyToClientData.remove(clientKey);
 
-        } else if (disconnect.isDebug()) {
-            Logger.debug("client to disconnect is not connected: {} ", disconnect.getKey());
+        }
+        else if (disconnect.isDebug()) {
+            Logger.debug("client to disconnect is not connected: {} ", clientKey);
         }
 
+    }
+
+    public void disconnectAllClients(final @NotNull Disconnect disconnect) {
+
+        final String context = LoggingContext.get("identifier");
+
+        for (Map.Entry<String,ClientData> entry: clientKeyToClientData.entrySet()) {
+            final MqttClient client = entry.getValue().getClient();
+            LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get());
+            switch (client.getConfig().getMqttVersion()) {
+                case MQTT_5_0:
+                    mqtt5Disconnect((Mqtt5Client) client, disconnect);
+                    break;
+                case MQTT_3_1_1:
+                    mqtt3Disconnect((Mqtt3Client) client, disconnect);
+                    break;
+            }
+        }
+
+        clientKeyToClientData.clear();
+
+        LoggingContext.put("identifier", context);
     }
 
     public void unsubscribe(final @NotNull MqttClient client, final @NotNull Unsubscribe unsubscribe) {
