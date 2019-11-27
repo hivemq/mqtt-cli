@@ -151,7 +151,10 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         Logger.error("SUBSCRIBE to TOPIC '{}' failed with '{}'", topic, MqttUtils.getRootCause(throwable).getMessage());
                     } else {
 
-                        getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopicFilter.of(topic));
+                        final String clientKey = MqttUtils.buildKey(client.getConfig().getClientIdentifier().get().toString(),
+                                client.getConfig().getServerHost());
+
+                        getClientDataMap().get(clientKey).addSubscription(MqttTopicFilter.of(topic));
 
                         if (subscribe.isVerbose()) {
                             Logger.trace("received SUBACK: {}", subAck);
@@ -199,7 +202,10 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         Logger.error("SUBSCRIBE to TOPIC '{}' failed with '{}'", topic, MqttUtils.getRootCause(throwable).getMessage());
                     } else {
 
-                        getClientDataMap().get(subscribe.getKey()).addSubscription(MqttTopicFilter.of(topic));
+                        final String clientKey = MqttUtils.buildKey(client.getConfig().getClientIdentifier().get().toString(),
+                                client.getConfig().getServerHost());
+
+                        getClientDataMap().get(clientKey).addSubscription(MqttTopicFilter.of(topic));
 
                         if (subscribe.isVerbose()) {
                             Logger.trace("received SUBACK: {}", subAck);
