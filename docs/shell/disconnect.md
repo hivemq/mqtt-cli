@@ -15,6 +15,7 @@ Disconnects a previously connected client.
 
 ```
 mqtt> dis   -i <identifier> 
+            [-a]
             [-h <host>]  
             [-e <sessionExpiryInterval>] 
             [-r <reasonString>] 
@@ -26,7 +27,8 @@ mqtt> dis   -i <identifier>
 Disconnects the currently active client context.
 
 ```
-client@host>  dis   [-e <sessionExpiryInterval>]
+client@host>  dis   [-a]
+                    [-e <sessionExpiryInterval>]
                     [-r <reasonString>]
                     [-up <userProperty>]...
 ```
@@ -38,6 +40,7 @@ client@host>  dis   [-e <sessionExpiryInterval>]
  
 |Option   | Long Version   | Explanation               | Default  |
 | ------- | -------------- | ------------------------- | -------- |
+| ``-a``   | ``--all``| Disconnect all connected clients. |
 | ``-i``   | ``--identifier``| The unique identifier of a client. |
 | ``-h``| ``--host`` | The host the client is connected to. | ``localhost``
 | ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
