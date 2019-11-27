@@ -51,6 +51,9 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
+    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "Disconnect all connected clients")
+    private boolean disconnectAll;
+
     @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The session expiry of the disconnect (default: 0)")
     @Nullable
     private Long sessionExpiryInterval;
@@ -73,7 +76,12 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
         logUnusedDisconnectOptions();
 
         try {
-            mqttClientExecutor.disconnect(this);
+            if (disconnectAll) {
+                mqttClientExecutor.disconnectAllClients(this);
+            }
+            else {
+                mqttClientExecutor.disconnect(this);
+            }
         }
         catch (final Exception ex) {
             LoggingContext.put("identifier", "DISCONNECT");
