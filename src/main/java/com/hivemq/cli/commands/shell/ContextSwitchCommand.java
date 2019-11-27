@@ -85,7 +85,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
             Logger.trace("Command: {} ", this);
         }
 
-        final MqttClient client = mqttClientExecutor.getMqttClientFromCache(this);
+        final MqttClient client = mqttClientExecutor.getMqttClient(this);
 
         if (client != null) {
             updateContext(client);

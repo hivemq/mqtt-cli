@@ -29,29 +29,15 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 apply plugin: 'com.palantir.graal'
 
-// Project settings
-// Project settings
+
+/****************
+ * Project Settings *
+ ***************/
+
 javadoc.options.encoding = 'UTF-8'
 
-compileJava {
-    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-    options.encoding = 'UTF-8'
-
-    def jv = System.properties['java.version']
-    if ( jv.startsWith('6') || jv.startsWith('7')  ) {
-        throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
-    }
-}
-
-
-compileTestJava {
-    options.encoding = 'UTF-8'
-}
-
 group = 'com.hivemq'
-version = '1.0.1' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
+version = '1.1.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 description = 'MQTT CLI is a tool that provides a feature rich command line interface for connecting, ' +
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
@@ -72,6 +58,11 @@ repositories {
     mavenCentral()
     jcenter()
 }
+
+
+/****************
+ * Metadata *
+ ***************/
 
 
 ext {
@@ -137,6 +128,11 @@ ext {
     nettyVersion = '4.1.37.Final'
 }
 
+
+/****************
+ * Dependencies *
+ ***************/
+
 dependencies {
 
     compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion 
@@ -164,18 +160,13 @@ dependencies {
 
     compileOnly 'com.oracle.substratevm:svm:19.2.0'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    
-    def junitVintageVersion = '5.2.0'
     def junitJupiterVersion = '5.5.1'
-    def junitJupiterParamVersion = '5.4.2'
+    def junitJupiterParamVersion = '5.5.1'
     
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
-    testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine', version: junitVintageVersion
-    
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterParamVersion
+    testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
 
 }
 
@@ -232,18 +223,19 @@ forbiddenApis {
 //disable
 forbiddenApisTest.enabled = false
 
+/****************
+ * Jar *
+ ***************/
 
-test {
-    useJUnitPlatform()
-    if (project.hasProperty("test_temp_dir")) {
-        jvmArgs "-Djava.io.tmpdir=" + test_temp_dir
-    } else {
-        def tempDir = System.properties['java.io.tmpdir']
-        if (tempDir) {
-            jvmArgs "-Djava.io.tmpdir=" + tempDir
-        }
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+
+    def jv = System.properties['java.version']
+    if ( jv.startsWith('6') || jv.startsWith('7')  ) {
+        throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
     }
-
 }
 
 jar {
@@ -260,7 +252,7 @@ jar {
                 'Main-Class': application.mainClassName,
                 // 'Class-Path': configurations.compile.collect { 'lib/' + it.getName() }.join(' '),
                 'Built-Date': new Date().format("yyyy-MM-dd HH:mm:ss"),
-                // 'SplashScreen-Image': '01-mqtt-cli.svg',
+                // 'SplashScreen-Image': 'mqtt-logo.svg',
                 // 'Sealed': 'true'
         )
     }
@@ -275,25 +267,23 @@ jar {
     finalizedBy shadowJar
 }
 
-license {
-    include "**/*.java"
-    header = file('HEADER')
+
+/****************
+ * Tests *
+ ***************/
+
+compileTestJava {
+    options.encoding = 'UTF-8'
 }
 
 
 test {
     useJUnitPlatform()
-    if (project.hasProperty("test_temp_dir")) {
-        jvmArgs "-Djava.io.tmpdir=" + test_temp_dir
-    } else {
-        def tempDir = System.properties['java.io.tmpdir']
-        if (tempDir) {
-            jvmArgs "-Djava.io.tmpdir=" + tempDir
-        }
-    }
-    
 }
 
+/****************
+ * Graal *
+ ***************/
 
 graal {
     graalVersion '19.2.0'
@@ -326,7 +316,9 @@ graal {
             'com.hivemq.client.internal.mqtt.codec.encoder.mqtt3.Mqtt3DisconnectEncoder'
 }
 
-// Homebrew
+/****************
+ * Homebrew Package & Formula *
+ ***************/
 
 task buildPackageBrew(type: Zip) {
     dependsOn shadowJar
@@ -364,7 +356,9 @@ task buildBrewFormula(type: Copy) {
 
 }
 
-// DEB & RPM
+/****************
+ * Debian & RPM Packages *
+ ***************/
 
 ospackage {
     packageName project.readableName
@@ -431,7 +425,10 @@ task buildRpmPackage(type: Copy) {
     include "*.rpm"
 }
 
-// Windows
+/****************
+ * Windows Zipping *
+ ***************/
+
 launch4j {
     outputDir = 'packages/windows'
     headerType = "console"
@@ -464,11 +461,17 @@ task buildWindowsZip(type: Zip) {
     from project.license
 }
 
-// Package tasks
+/****************
+ * Package Task *
+ ***************/
 
 task buildPackageAll {
     dependsOn buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip
 }
+
+/****************
+ * Publish Draft-Release with all packages to GitHub Releases*
+ ***************/
 
 githubRelease {
     token "" + System.getenv("GITHUB_API_TOKEN")
@@ -483,6 +486,10 @@ githubRelease {
             buildWindowsZip
     overwrite false
 }
+
+/****************
+ * Update the Homebrew-Formula with the newly built package *
+ ***************/
 
 gitPublish {
     repoUri = "https://github.com/hivemq/homebrew-mqtt-cli.git"
@@ -502,7 +509,11 @@ gitPublish {
 
 tasks.githubRelease.dependsOn tasks.buildPackageAll
 
-// Helpers
+
+/****************
+ * Helpers *
+ ***************/
+
 import java.security.DigestInputStream
 import java.security.MessageDigest
 static def checkSum(File file) {

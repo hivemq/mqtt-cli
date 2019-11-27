@@ -17,11 +17,9 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.CliCommand;
-import com.hivemq.cli.mqtt.ClientCache;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.MqttClientState;
 import org.jetbrains.annotations.NotNull;
 import org.pmw.tinylog.Logger;
@@ -68,38 +66,28 @@ public class ListClientsCommand implements Runnable, CliCommand {
     @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false", description = "list subscribed topics of clients")
     private boolean listSubscriptions;
 
-    @CommandLine.Option(names = {"-a"}, defaultValue = "false", description = "list disconnected client")
-    private boolean includeDisconnectedClients;
 
 
 
     @Override
     public void run() {
 
-
         if (isVerbose()) {
             Logger.trace("Command: {}", this);
         }
 
-
-        final ClientCache<String, MqttClient> cache = mqttClientExecutor.getClientCache();
-        final Map<String, ClientData> clientDataMap = mqttClientExecutor.getClientDataMap();
-        Set<String> clientKeys = cache.keySet();
-
-
-        final String[] sortedKeys = getSortedClientKeys();
-        final Map<String, String> keyToPretty = mapKeyToPrettyOuput(sortedKeys);
+        final List<ClientData> sortedClientData = getSortedClientData();
 
         if (longOutput) {
-            System.out.println("total " + sortedKeys.length);
+            System.out.println("total " + sortedClientData.size());
 
-            if (sortedKeys.length == 0) {
+            if (sortedClientData.size() == 0) {
                 return;
             }
 
 
-            final Set<MqttClient> clients = clientKeys.stream()
-                    .map(s -> cache.get(s))
+            final Set<MqttClient> clients = sortedClientData.stream()
+                    .map(clientData -> clientData.getClient())
                     .collect(Collectors.toSet());
 
             final int longestID = clients.stream()
@@ -135,17 +123,13 @@ public class ListClientsCommand implements Runnable, CliCommand {
                     "%-" + longestVersion + "s " +
                     "%-" + longestSSLVersion + "s\n");
 
-            for (final String key : sortedKeys) {
+            for (final ClientData clientData : sortedClientData) {
 
-                final MqttClient client = cache.get(key);
+                final MqttClient client = clientData.getClient();
 
-                final LocalDateTime dateTime = clientDataMap.get(key).getCreationTime();
+                final LocalDateTime dateTime = clientData.getCreationTime();
 
                 final String connectionState = client.getState().toString();
-
-                if (!includeDisconnectedClients && client.getState() == MqttClientState.DISCONNECTED) {
-                        continue;
-                }
 
                 System.out.printf(format,
                         connectionState,
@@ -157,19 +141,17 @@ public class ListClientsCommand implements Runnable, CliCommand {
                         client.getConfig().getSslConfig().map(ssl -> ssl.getProtocols().get().toString()).orElse("NO_SSL"));
 
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientDataMap.get(key).getSubscribedTopics());
+                    System.out.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
 
 
         } else {
-            for (final String key : sortedKeys) {
-                if (!includeDisconnectedClients && !cache.get(key).getState().isConnectedOrReconnect()) {
-                    continue;
-                }
-                System.out.println(keyToPretty.get(key));
+
+            for (final ClientData clientData : sortedClientData) {
+                System.out.println(clientData.getClient().getConfig().getClientIdentifier().get() + "@" + clientData.getClient().getConfig().getServerHost());
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientDataMap.get(key).getSubscribedTopics());
+                    System.out.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
         }
@@ -177,36 +159,32 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
     }
 
-    private Map<String, String> mapKeyToPrettyOuput(final @NotNull String[] sortedKeys) {
-        final ClientCache<String, MqttClient> cache = mqttClientExecutor.getClientCache();
-        final Map<String, String> keyToPretty = new HashMap<>();
-        for (int i = 0; i < sortedKeys.length; i++) {
-            MqttClient client = cache.get(sortedKeys[i]);
-            keyToPretty.put(sortedKeys[i], client.getConfig().getClientIdentifier().get() + "@" + client.getConfig().getServerHost());
-        }
-        return keyToPretty;
-    }
 
-    public String[] getSortedClientKeys() {
-        final Set<String> keys = mqttClientExecutor.getClientCache().keySet();
-        final Map<String, ClientData> clientDataMap = mqttClientExecutor.getClientDataMap();
-        final String[] keysArr = keys.toArray(new String[0]);
+    public List<ClientData> getSortedClientData() {
+        List<ClientData> sortedClientData =  new ArrayList<>(MqttClientExecutor.getClientDataMap().values());
 
         if (doNotSort) {
-            return keysArr;
+            return sortedClientData;
         }
-        Comparator<String> comparator;
+
+        Comparator<ClientData> comparator;
         if (sortByTime) {
-            comparator = Comparator.comparing(s -> clientDataMap.get(s).getCreationTime());
+            comparator = Comparator.comparing(ClientData::getCreationTime);
         }
         else {
-            comparator = Comparator.naturalOrder();
+            comparator = Comparator.comparing(clientData -> clientData
+                    .getClient()
+                    .getConfig()
+                    .getClientIdentifier()
+                    .map(Object::toString)
+                    .orElse(""));
         }
         if (reverse) {
             comparator = comparator.reversed();
         }
-        Arrays.sort(keysArr, comparator);
-        return keysArr;
+
+        sortedClientData.sort(comparator);
+        return sortedClientData;
     }
 
 

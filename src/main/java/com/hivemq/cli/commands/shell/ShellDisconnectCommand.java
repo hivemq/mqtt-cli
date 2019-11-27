@@ -17,6 +17,7 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
@@ -40,28 +41,34 @@ import javax.inject.Inject;
 public class ShellDisconnectCommand implements MqttAction, Disconnect {
 
     private final MqttClientExecutor mqttClientExecutor;
+    private final DefaultCLIProperties defaultCLIProperties;
 
     //needed for pico cli - reflection code generation
     public ShellDisconnectCommand() {
-        this(null);
+        this(null, null);
     }
 
     @Inject
-    ShellDisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+    ShellDisconnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor,
+                           final @NotNull DefaultCLIProperties defaultCLIProperties) {
 
         this.mqttClientExecutor = mqttClientExecutor;
+        this.defaultCLIProperties = defaultCLIProperties;
 
     }
 
     @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
-    @CommandLine.Option(names = {"-i", "--identifier"}, required = true, description = "The client identifier UTF-8 String (default randomly generated string)")
-    @NotNull
+    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "Disconnect all connected clients")
+    private boolean disconnectAll;
+
+    @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
+    @Nullable
     private String identifier;
 
-    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")
-    @NotNull
+    @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')")
+    @Nullable
     private String host;
 
     @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The session expiry of the disconnect (default: 0)")
@@ -77,27 +84,31 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     private Mqtt5UserProperty[] userProperties;
 
     @Override
-    public boolean isVerbose() {
-        return false;
-    }
-
-    @Override
-    public boolean isDebug() {
-        return false;
-    }
-
-    @Override
     public void run() {
+
+        if (host == null) {
+            host = defaultCLIProperties.getHost();
+        }
 
         if (isVerbose()) {
             Logger.trace("Command: {} ", this);
         }
 
         try {
-            mqttClientExecutor.disconnect(this);
+            if (disconnectAll) {
+                mqttClientExecutor.disconnectAllClients(this);
+            }
+            else {
+                if (identifier == null) {
+                    Logger.error("Missing required option '--identifier=<identifier>'");
+                    return;
+                }
+
+                mqttClientExecutor.disconnect(this);
+            }
         }
         catch (final Exception ex) {
-            LoggingContext.put("identifier", "PUBLISH");
+            LoggingContext.put("identifier", "DISCONNECT");
             if (isVerbose()) {
                 Logger.trace(ex);
             }
@@ -122,12 +133,10 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
                 '}';
     }
 
-
     @Override
     public String toString() {
         return "Disconnect::" + getKey();
     }
-
 
     @Override
     public @Nullable Long getSessionExpiryInterval() {
@@ -168,7 +177,15 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
 
     public void setUserProperties(final @Nullable Mqtt5UserProperty... userProperties) {
         this.userProperties = userProperties;
+    }
 
+    @Override
+    public boolean isVerbose() {
+        return ShellCommand.isVerbose();
+    }
 
+    @Override
+    public boolean isDebug() {
+        return ShellCommand.isDebug();
     }
 }

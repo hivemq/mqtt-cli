@@ -1,3 +1,4 @@
+package com.hivemq.cli.converters;
 /*
  * Copyright 2019 HiveMQ and the HiveMQ Community
  *
@@ -14,21 +15,28 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.ioc;
-
-import dagger.Component;
-import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
-import javax.inject.Singleton;
+import java.io.File;
+import java.io.FileNotFoundException;
 
-@Singleton
-@Component(modules = {
-        CommandLineModule.class,
-        ShellSubCommandModule.class
-})
-public interface HiveMQCLI {
+class FileConverter implements CommandLine.ITypeConverter<File> {
 
-    @NotNull CommandLine commandLine();
+    static final String FILE_NOT_FOUND = "The given file was not found.";
+    static final String NOT_A_FILE = "The given path does not lead to a valid file.";
 
+    @Override
+    public File convert(String value) throws Exception {
+
+        final File file = new File(value);
+
+        if (!file.exists())
+            throw new FileNotFoundException(FILE_NOT_FOUND);
+
+        if (!file.isFile())
+            throw new IllegalArgumentException(NOT_A_FILE);
+
+
+        return file;
+    }
 }

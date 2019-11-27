@@ -14,27 +14,31 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.commands;
+package com.hivemq.cli.ioc;
 
-import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.cli.DefaultCLIProperties;
+import dagger.Component;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import picocli.CommandLine;
 
-import java.io.File;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-public interface Subscribe extends Context {
+@Singleton
+@Component(modules = {
+        CLIModule.class,
+        ShellModule.class
+})
+public interface MqttCLI {
 
-    @NotNull String[] getTopics();
+    @Named("cli")
+    @NotNull CommandLine cli();
 
-    @NotNull MqttQos[] getQos();
+    @Named("shell")
+    @NotNull CommandLine shell();
 
-    @Nullable File getPublishFile();
+    @Named("shell-context")
+    @NotNull CommandLine shellContext();
 
-    boolean isPrintToSTDOUT();
-
-    boolean isBase64();
-
-    @Nullable Mqtt5UserProperties getUserProperties();
-
+    @NotNull DefaultCLIProperties defaultCLIProperties();
 }

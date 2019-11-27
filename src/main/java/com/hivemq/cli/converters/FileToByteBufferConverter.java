@@ -14,27 +14,21 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.commands;
+package com.hivemq.cli.converters;
 
-import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import picocli.CommandLine;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
 
-public interface Subscribe extends Context {
+public class FileToByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
+    @Override
+    public ByteBuffer convert(String value) throws Exception {
+        final FileConverter fileConverter = new FileConverter();
 
-    @NotNull String[] getTopics();
+        final File file = fileConverter.convert(value);
 
-    @NotNull MqttQos[] getQos();
-
-    @Nullable File getPublishFile();
-
-    boolean isPrintToSTDOUT();
-
-    boolean isBase64();
-
-    @Nullable Mqtt5UserProperties getUserProperties();
-
+        return ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
+    }
 }

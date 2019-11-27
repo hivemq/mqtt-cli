@@ -16,11 +16,12 @@
  */
 package com.hivemq.cli.commands;
 
+import com.hivemq.cli.DefaultCLIProperties;
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
-import com.hivemq.client.mqtt.MqttVersion;
+import com.hivemq.client.mqtt.MqttWebSocketConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
@@ -36,7 +37,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlags implements Connect {
 
@@ -49,6 +49,14 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for authentication", order = 2)
     @Nullable
     private ByteBuffer password;
+
+    @CommandLine.Option(names = {"-pw:env"}, arity = "0..1", converter = EnvVarToByteBufferConverter.class, fallbackValue = "MQTT_CLI_PW", description = "The password for authentication read in from an environment variable", order = 2)
+    private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) { password = passwordEnvironmentVariable; }
+
+    @CommandLine.Option(names = {"-pw:file"}, converter = FileToByteBufferConverter.class, description = "The password for authentication read in from a file", order = 2)
+    private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) {
+        password = passwordFromFile;
+    }
 
     @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, description = "A keep alive of the client (in seconds) (default: 60)", order = 2)
     private @Nullable Integer keepAlive;
@@ -77,11 +85,66 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     private Collection<String> supportedTLSVersions;
 
     @CommandLine.Option(names = {"--cert"}, converter = FileToCertificateConverter.class, description = "The client certificate to use for client side authentication", order = 2)
-    @Nullable X509Certificate clientCertificate;
+    @Nullable
+    private X509Certificate clientCertificate;
 
     @CommandLine.Option(names = {"--key"}, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication", order = 2)
-    @Nullable PrivateKey clientPrivateKey;
+    @Nullable
+    private PrivateKey clientPrivateKey;
 
+    @CommandLine.Option(names = {"-ws"}, description = "Use WebSocket transport protocol (default: false)", order = 2)
+    private boolean useWebSocket;
+
+    @CommandLine.Option(names = {"-ws:path"}, description = "The path of the WebSocket", order = 2)
+    @Nullable private String webSocketPath;
+
+    @Override
+    public void setDefaultOptions() {
+        super.setDefaultOptions();
+        final DefaultCLIProperties defaultCLIProperties = MqttCLIMain.MQTTCLI.defaultCLIProperties();
+
+        if (user == null) {
+            user = defaultCLIProperties.getUsername();
+        }
+
+        if (password == null) {
+            try {
+                password = defaultCLIProperties.getPassword();
+            } catch (Exception e) {
+                logPropertiesException(e, "Default password could not be loaded.");
+            }
+        }
+
+        if (clientCertificate == null) {
+            try {
+                clientCertificate = defaultCLIProperties.getClientCertificate();
+            } catch (Exception e) {
+                logPropertiesException(e, "Default client certificate could not be loaded.");
+            }
+        }
+
+        if (clientPrivateKey == null) {
+            try {
+                clientPrivateKey = defaultCLIProperties.getClientPrivateKey();
+            } catch (Exception e) {
+                logPropertiesException(e, "Default client private key could not be loaded.");
+            }
+        }
+
+        if (useWebSocket && webSocketPath == null) {
+            webSocketPath = defaultCLIProperties.getWebsocketPath();
+        }
+
+        try {
+            final X509Certificate defaultServerCertificate = defaultCLIProperties.getServerCertificate();
+            if (defaultServerCertificate != null) {
+                certificates.add(defaultServerCertificate);
+            }
+        } catch (Exception e) {
+            logPropertiesException(e, "Default server certificate could not be loaded.");
+        }
+
+    }
 
 
     public @Nullable MqttClientSslConfig buildSslConfig() {
@@ -91,17 +154,31 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 return doBuildSslConfig();
             }
             catch (Exception e) {
-                if (isVerbose()) {
-                    Logger.trace(e);
-                }
-                else if (isDebug()) {
-                    Logger.debug(e.getMessage());
-                }
-                Logger.error(MqttUtils.getRootCause(e).getMessage());
+                logPropertiesException(e);
             }
         }
 
         return null;
+    }
+
+    private void logPropertiesException(final @NotNull Exception e) {
+        if (isVerbose()) {
+            Logger.trace(e);
+        }
+        else if (isDebug()) {
+            Logger.debug(e.getMessage());
+        }
+        Logger.error(MqttUtils.getRootCause(e).getMessage());
+    }
+
+    private void logPropertiesException(final @NotNull Exception e, final @NotNull String message) {
+        if (isVerbose()) {
+            Logger.trace(e);
+        }
+        else if (isDebug()) {
+            Logger.debug(e.getMessage());
+        }
+        Logger.error(message + " ({})", MqttUtils.getRootCause(e).getMessage());
     }
 
 
@@ -213,6 +290,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 ", cleanStart=" + cleanStart +
                 ", useDefaultSsl=" + useSsl +
                 ", sslConfig=" + (getSslConfig() != null) +
+                ", useWebSocket=" + useWebSocket +
+                ", webSocketPath=" + webSocketPath +
                 ", " + getWillOptions();
     }
 
@@ -258,5 +337,16 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         this.cleanStart = cleanStart;
     }
 
+    @Nullable
+    public MqttWebSocketConfig getWebSocketConfig() {
+        if (useWebSocket) {
+            return MqttWebSocketConfig.builder()
+                    .serverPath(webSocketPath)
+                    .build();
+        }
+        else {
+            return null;
+        }
+    }
 
 }

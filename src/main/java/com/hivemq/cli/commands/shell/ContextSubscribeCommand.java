@@ -16,13 +16,13 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.cli.utils.PropertiesUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 
@@ -49,14 +49,18 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     public static final int IDLE_TIME = 1000;
 
+    private final DefaultCLIProperties defaultCLIProperties;
+
     //needed for pico cli - reflection code generation
     public ContextSubscribeCommand() {
-        this(null);
+        this(null, null);
     }
 
     @Inject
-    public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+    public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor,
+                                   final @NotNull DefaultCLIProperties defaultCLIProperties) {
         super(mqttClientExecutor);
+        this.defaultCLIProperties = defaultCLIProperties;
     }
 
 
@@ -76,7 +80,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
     @Nullable
-    private File receivedMessagesFile;
+    private File publishFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
@@ -191,7 +195,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", userProperties=" + userProperties +
-                ", toFile=" + receivedMessagesFile +
+                ", toFile=" + publishFile +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
                 '}';
@@ -199,11 +203,11 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     public void setDefaultOptions() {
 
-        if (receivedMessagesFile == null && PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE != null) {
+        if (publishFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
             if (isVerbose()) {
-                Logger.trace("Setting value of 'toFile' to {}", PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+                Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
             }
-            receivedMessagesFile = new File(PropertiesUtils.DEFAULT_SUBSCRIBE_OUTPUT_FILE);
+            publishFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
         }
 
     }
@@ -235,12 +239,12 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     }
 
     @Nullable
-    public File getReceivedMessagesFile() {
-        return receivedMessagesFile;
+    public File getPublishFile() {
+        return publishFile;
     }
 
-    public void setReceivedMessagesFile(@Nullable final File receivedMessagesFile) {
-        this.receivedMessagesFile = receivedMessagesFile;
+    public void setPublishFile(@Nullable final File publishFile) {
+        this.publishFile = publishFile;
     }
 
     public boolean isPrintToSTDOUT() {
