@@ -41,7 +41,7 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
     @Nullable
     private ByteBuffer willMessage;
 
-    @CommandLine.Option(names = {"-Wq", "--willQualityOfService"}, converter = MqttQosConverter.class, description = "Quality of service level for the will message (default: 0)", order = 3)
+    @CommandLine.Option(names = {"-Wq", "--willQualityOfService"}, defaultValue = "0", converter = MqttQosConverter.class, description = "Quality of service level for the will message (default: 0)", order = 3)
     @Nullable
     private MqttQos willQos;
 
