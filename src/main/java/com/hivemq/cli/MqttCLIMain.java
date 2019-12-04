@@ -44,7 +44,7 @@ public class MqttCLIMain {
 
         Configurator.defaultConfig()
                 .writer(new ConsoleWriter())
-                .formatPattern("{context:identifier}: {message}")
+                .formatPattern("{message}")
                 .level(Level.INFO)
                 .activate();
 

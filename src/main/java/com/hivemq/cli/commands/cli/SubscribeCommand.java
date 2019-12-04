@@ -23,6 +23,7 @@ import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
@@ -59,7 +60,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     //needed for pico cli - reflection code generation
     public SubscribeCommand() {
-        this(null,null);
+        this(null, null);
     }
 
     @Inject
@@ -76,19 +77,16 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to", order = 1)
-    @NotNull
-    private String[] topics;
+    @NotNull private String[] topics;
 
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 2)", order = 1)
-    @NotNull
-    private MqttQos[] qos;
+    @NotNull private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the subscribe message", order = 1)
-    @Nullable Mqtt5UserProperty[] userProperties;
+    @Nullable private Mqtt5UserProperty[] userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written", order = 1)
-    @Nullable
-    private File publishFile;
+    @Nullable private File publishFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, hidden = true, defaultValue = "true", description = "The received messages will be written to the console (default: true)", order = 1)
     private boolean printToSTDOUT;
@@ -98,18 +96,8 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     @Override
     public void run() {
-
-        LoggingContext.put("identifier", "SUBSCRIBE");
-
-
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
-
         setDefaultOptions();
-
         sslConfig = buildSslConfig();
-
         logUnusedOptions();
 
         try {
@@ -117,32 +105,14 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             subscribeClient = mqttClientExecutor.subscribe(this);
         }
         catch (final Exception ex) {
-            if (ex instanceof ConnectionFailedException) {
-                LoggingContext.put("identifier", "CONNECT ERROR:");
-            }
-            else {
-                LoggingContext.put("identifier", "SUBSCRIBE ERROR:");
-            }
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            LoggerUtils.logOnRightLevels(this, ex);
         }
 
         try {
             stay();
         }
         catch (final InterruptedException ex) {
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            LoggerUtils.logOnRightLevels(this, ex);
         }
 
 
@@ -163,7 +133,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             Thread.sleep(IDLE_TIME);
         }
         if (isVerbose()) {
-            Logger.trace("Client disconnected.");
+            Logger.trace("Client disconnected");
         }
     }
 
@@ -200,18 +170,10 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         return topics;
     }
 
-    public void setTopics(final String[] topics) {
-        this.topics = topics;
-    }
-
     @NotNull
     @Override
     public MqttQos[] getQos() {
         return qos;
-    }
-
-    public void setQos(final MqttQos[] qos) {
-        this.qos = qos;
     }
 
     @Nullable
@@ -220,37 +182,21 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         return publishFile;
     }
 
-    public void setPublishFile(@Nullable final File publishFile) {
-        this.publishFile = publishFile;
-    }
-
     public boolean isPrintToSTDOUT() {
         return printToSTDOUT;
-    }
-
-    public void setPrintToSTDOUT(final boolean printToSTDOUT) {
-        this.printToSTDOUT = printToSTDOUT;
     }
 
     public boolean isBase64() {
         return base64;
     }
 
-    public void setBase64(final boolean base64) {
-        this.base64 = base64;
-    }
-
     @Nullable
     @Override
-    public Mqtt5UserProperties getUserProperties() {
-
-        return MqttUtils.convertToMqtt5UserProperties(userProperties);
-    }
+    public Mqtt5UserProperties getUserProperties() { return MqttUtils.convertToMqtt5UserProperties(userProperties); }
 
     public void setUserProperties(@Nullable final Mqtt5UserProperty... userProperties) {
         this.userProperties = userProperties;
     }
-
 
     @Nullable
     @Override
@@ -258,7 +204,4 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         return sslConfig;
     }
 
-    public void setSslConfig(final MqttClientSslConfig sslConfig) {
-        this.sslConfig = sslConfig;
-    }
 }

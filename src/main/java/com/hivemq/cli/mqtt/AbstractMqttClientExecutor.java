@@ -89,8 +89,6 @@ abstract class AbstractMqttClientExecutor {
     }
 
     public void subscribe(final @NotNull MqttClient client, final @NotNull Subscribe subscribe) {
-        LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get());
-
         for (int i = 0; i < subscribe.getTopics().length; i++) {
             final String topic = subscribe.getTopics()[i];
 
@@ -117,8 +115,6 @@ abstract class AbstractMqttClientExecutor {
     }
 
     public void publish(final @NotNull MqttClient client, final @NotNull Publish publish) {
-        LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get());
-
         for (int i = 0; i < publish.getTopics().length; i++) {
             final String topic = publish.getTopics()[i];
             int qosI = i < publish.getQos().length ? i: publish.getQos().length-1;
@@ -137,9 +133,6 @@ abstract class AbstractMqttClientExecutor {
     }
 
     public void disconnect(final @NotNull Disconnect disconnect) {
-
-        LoggingContext.put("identifier", "CLIENT " + disconnect.getIdentifier());
-
         final String clientKey = disconnect.getKey();
 
         if (clientKeyToClientData.containsKey(clientKey)) {
@@ -163,12 +156,8 @@ abstract class AbstractMqttClientExecutor {
     }
 
     public void disconnectAllClients(final @NotNull Disconnect disconnect) {
-
-        final String context = LoggingContext.get("identifier");
-
         for (Map.Entry<String,ClientData> entry: clientKeyToClientData.entrySet()) {
             final MqttClient client = entry.getValue().getClient();
-            LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get());
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
                     mqtt5Disconnect((Mqtt5Client) client, disconnect);
@@ -178,16 +167,10 @@ abstract class AbstractMqttClientExecutor {
                     break;
             }
         }
-
         clientKeyToClientData.clear();
-
-        LoggingContext.put("identifier", context);
     }
 
     public void unsubscribe(final @NotNull MqttClient client, final @NotNull Unsubscribe unsubscribe) {
-
-        LoggingContext.put("identifier", "CLIENT " + unsubscribe.getIdentifier());
-
         switch (client.getConfig().getMqttVersion()) {
             case MQTT_5_0:
                 mqtt5Unsubscribe((Mqtt5Client) client, unsubscribe);
@@ -201,7 +184,6 @@ abstract class AbstractMqttClientExecutor {
 
 
     public boolean isConnected(final @NotNull Context context) {
-
         if (clientKeyToClientData.containsKey(context.getKey())) {
             final MqttClient client = clientKeyToClientData.get(context.getKey()).getClient();
             final MqttClientState state = client.getState();
@@ -212,9 +194,6 @@ abstract class AbstractMqttClientExecutor {
 
 
     public @NotNull MqttClient connect(final @NotNull Connect connect) {
-
-        LoggingContext.put("identifier", "CLIENT " + connect.getIdentifier());
-
         if (isConnected(connect)) {
             if (connect.isVerbose()) {
                 Logger.trace("Client is already connected ({})", connect.getKey());

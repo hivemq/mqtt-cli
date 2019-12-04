@@ -22,6 +22,7 @@ import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -31,7 +32,6 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -48,7 +48,6 @@ import java.util.concurrent.Executors;
 public class ContextSubscribeCommand extends ShellContextCommand implements Runnable, Subscribe, Unsubscribe {
 
     public static final int IDLE_TIME = 1000;
-
     private final DefaultCLIProperties defaultCLIProperties;
 
     //needed for pico cli - reflection code generation
@@ -63,24 +62,20 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         this.defaultCLIProperties = defaultCLIProperties;
     }
 
-
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
-    @NotNull
-    private String[] topics;
+    @NotNull private String[] topics;
 
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 2)")
-    @NotNull
-    private MqttQos[] qos;
+    @NotNull private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the subscribe message")
     @Nullable Mqtt5UserProperty[] userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
-    @Nullable
-    private File publishFile;
+    @Nullable private File publishFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
@@ -93,8 +88,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     @Override
     public void run() {
-
-
+        //TODO
         if (isVerbose()) {
             Logger.trace("Command: {} ", this);
         }
@@ -107,20 +101,12 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
             printToSTDOUT = true;
         }
 
-
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(contextClient, this);
         }
         catch (final Exception ex) {
-            LoggingContext.put("identifier", "SUBSCRIBE");
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            LoggerUtils.logWithCurrentContext(this, ex);
         }
 
         if (stay) {
@@ -128,13 +114,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 stay();
             }
             catch (final InterruptedException ex) {
-                if (isVerbose()) {
-                    Logger.trace(ex);
-                }
-                else if (isDebug()) {
-                    Logger.debug(ex.getMessage());
-                }
-                Logger.error(MqttUtils.getRootCause(ex).getMessage());
+                LoggerUtils.logWithCurrentContext(this, ex);
             }
         }
     }
@@ -174,7 +154,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         WORKER_THREADS.shutdownNow();
 
         if (!contextClient.getState().isConnectedOrReconnect()) {
-            Logger.info("Client disconnected.");
+            Logger.info("{} : Client disconnected", LoggerUtils.getShellContextClientPrefix());
             removeContext();
         }
         else {
@@ -220,17 +200,9 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         return topics;
     }
 
-    public void setTopics(final String[] topics) {
-        this.topics = topics;
-    }
-
     @NotNull
     public MqttQos[] getQos() {
         return qos;
-    }
-
-    public void setQos(final MqttQos[] qos) {
-        this.qos = qos;
     }
 
     @Nullable
@@ -238,24 +210,12 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         return publishFile;
     }
 
-    public void setPublishFile(@Nullable final File publishFile) {
-        this.publishFile = publishFile;
-    }
-
     public boolean isPrintToSTDOUT() {
         return printToSTDOUT;
     }
 
-    public void setPrintToSTDOUT(final boolean printToSTDOUT) {
-        this.printToSTDOUT = printToSTDOUT;
-    }
-
     public boolean isBase64() {
         return base64;
-    }
-
-    public void setBase64(final boolean base64) {
-        this.base64 = base64;
     }
 
     @Override

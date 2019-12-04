@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.shell;
 import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
@@ -52,32 +53,26 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
     boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
-    @NotNull
-    private String[] topics;
+    @NotNull private String[] topics;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property for the unsubscribe message")
     @Nullable
     private Mqtt5UserProperty[] userProperties;
 
-
     @Override
     public void run() {
+        //TODO
         if (isVerbose()) {
             Logger.trace("Command {} ", this);
         }
+
+        logUnusedUnsubscribeOptions();
 
         try {
             mqttClientExecutor.unsubscribe(contextClient, this);
         }
         catch (final Exception ex) {
-            LoggingContext.put("identifier", "UNSUBSCRIBE");
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            LoggerUtils.logWithCurrentContext(this, ex);
         }
     }
 
@@ -102,10 +97,6 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
     @NotNull
     public String[] getTopics() {
         return topics;
-    }
-
-    public void setTopics(final String[] topics) {
-        this.topics = topics;
     }
 
     @Override

@@ -315,26 +315,14 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         return password;
     }
 
-    public void setPassword(final @Nullable ByteBuffer password) {
-        this.password = password;
-    }
-
     @Nullable
     public Integer getKeepAlive() {
         return keepAlive;
     }
 
-    public void setKeepAlive(final @Nullable Integer keepAlive) {
-        this.keepAlive = keepAlive;
-    }
-
     @Nullable
     public Boolean getCleanStart() {
         return cleanStart;
-    }
-
-    public void setCleanStart(final @Nullable Boolean cleanStart) {
-        this.cleanStart = cleanStart;
     }
 
     @Nullable

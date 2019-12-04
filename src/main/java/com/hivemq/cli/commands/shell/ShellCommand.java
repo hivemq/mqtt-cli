@@ -115,7 +115,7 @@ public class ShellCommand implements Runnable {
         final File dirFile = new File(dir);
         dirFile.mkdirs();
 
-        final String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} {context:identifier}: {message}";
+        final String logfileFormatPattern = "{date: HH:mm:ss} {{level}|min-size=7} {method} {line} : {message}";
 
         final RollingFileWriter logfileWriter = new RollingFileWriter(dir + "hmq-cli.log", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
 
@@ -128,14 +128,7 @@ public class ShellCommand implements Runnable {
                         "{message}")
                 .activate();
 
-        LoggingContext.put("identifier", "SHELL");
-
         logfilePath = logfileWriter.getFilename();
-
-        if (VERBOSE) {
-            Logger.trace("Command: {} ", this);
-        }
-
 
         interact();
     }
@@ -192,23 +185,8 @@ public class ShellCommand implements Runnable {
                         Logger.trace("User interrupted shell: {}", e);
                     }
                     return;
-                } catch (final EndOfFileException e) {
-                    if (VERBOSE) {
-                        Logger.trace(e);
-                    }
-                    else if (DEBUG) {
-                        Logger.debug(e.getMessage());
-                    }
-                    Logger.error(MqttUtils.getRootCause(e).getMessage());
-                    return;
-                } catch (final Exception all) {
-                    if (DEBUG) {
-                        Logger.trace(all);
-                    }
-                    else if (VERBOSE) {
-                        Logger.debug(all.getMessage());
-                    }
-                    Logger.error(MqttUtils.getRootCause(all).getMessage());
+                } catch (final Exception ex) {
+                    logOnRightLevels(ex);
                 }
             }
         } catch (final Throwable t) {
@@ -252,6 +230,15 @@ public class ShellCommand implements Runnable {
                 .toAnsi();
     }
 
+    private static void logOnRightLevels(final @NotNull Exception ex) {
+        if (VERBOSE) {
+            Logger.trace(ex);
+        }
+        else if (DEBUG) {
+            Logger.debug(ex.getMessage());
+        }
+        Logger.error(MqttUtils.getRootCause(ex).getMessage());
+    }
 
     static void usage(Object command) {
         currentCommandLine.usage(command, System.out);

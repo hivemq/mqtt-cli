@@ -23,6 +23,7 @@ import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
@@ -64,24 +65,19 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     private boolean disconnectAll;
 
     @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
-    @Nullable
-    private String identifier;
+    @Nullable private String identifier;
 
     @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')")
-    @Nullable
-    private String host;
+    @Nullable private String host;
 
     @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The session expiry of the disconnect (default: 0)")
-    @Nullable
-    private Long sessionExpiryInterval;
+    @Nullable private Long sessionExpiryInterval;
 
     @CommandLine.Option(names = {"-r", "--reason"}, description = "The reason of the disconnect")
-    @Nullable
-    private String reasonString;
+    @Nullable private String reasonString;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the disconnect message")
-    @Nullable
-    private Mqtt5UserProperty[] userProperties;
+    @Nullable private Mqtt5UserProperty[] userProperties;
 
     @Override
     public void run() {
@@ -90,6 +86,7 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
             host = defaultCLIProperties.getHost();
         }
 
+        //TODO
         if (isVerbose()) {
             Logger.trace("Command: {} ", this);
         }
@@ -108,14 +105,7 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
             }
         }
         catch (final Exception ex) {
-            LoggingContext.put("identifier", "DISCONNECT");
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            LoggerUtils.logOnRightLevels(this, ex);
         }
 
     }
@@ -156,23 +146,6 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     @Override
     public @Nullable Mqtt5UserProperties getUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(userProperties);
-    }
-
-    public void setSessionExpiryInterval(final @Nullable Long sessionExpiryInterval) {
-        this.sessionExpiryInterval = sessionExpiryInterval;
-    }
-
-    public void setReasonString(final @Nullable String reasonString) {
-        this.reasonString = reasonString;
-    }
-
-    public void setIdentifier(@NotNull final String identifier) {
-        this.identifier = identifier;
-    }
-
-
-    public void setHost(@NotNull final String host) {
-        this.host = host;
     }
 
     public void setUserProperties(final @Nullable Mqtt5UserProperty... userProperties) {

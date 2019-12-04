@@ -113,18 +113,10 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
         return receiveMaximum;
     }
 
-    public void setReceiveMaximum(@Nullable final Integer receiveMaximum) {
-        this.receiveMaximum = receiveMaximum;
-    }
-
     @Nullable
     @Override
     public Integer getSendMaximum() {
         return sendMaximum;
-    }
-
-    public void setSendMaximum(@Nullable final Integer sendMaximum) {
-        this.sendMaximum = sendMaximum;
     }
 
     @Nullable
@@ -133,18 +125,10 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
         return maximumPacketSize;
     }
 
-    public void setMaximumPacketSize(@Nullable final Integer maximumPacketSize) {
-        this.maximumPacketSize = maximumPacketSize;
-    }
-
     @Nullable
     @Override
     public Integer getSendMaximumPacketSize() {
         return sendMaximumPacketSize;
-    }
-
-    public void setSendMaximumPacketSize(@Nullable final Integer sendMaximumPacketSize) {
-        this.sendMaximumPacketSize = sendMaximumPacketSize;
     }
 
     @Nullable
@@ -153,18 +137,10 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
         return topicAliasMaximum;
     }
 
-    public void setTopicAliasMaximum(@Nullable final Integer topicAliasMaximum) {
-        this.topicAliasMaximum = topicAliasMaximum;
-    }
-
     @Nullable
     @Override
     public Integer getSendTopicAliasMaximum() {
         return sendTopicAliasMaximum;
-    }
-
-    public void setSendTopicAliasMaximum(@Nullable final Integer sendTopicAliasMaximum) {
-        this.sendTopicAliasMaximum = sendTopicAliasMaximum;
     }
 
     @Nullable
@@ -173,17 +149,10 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
         return requestProblemInformation;
     }
 
-    public void setRequestProblemInformation(@Nullable final Boolean requestProblemInformation) {
-        this.requestProblemInformation = requestProblemInformation;
-    }
-
     @Nullable
     @Override
     public Boolean getRequestResponseInformation() {
         return requestResponseInformation;
     }
 
-    public void setRequestResponseInformation(@Nullable final Boolean requestResponseInformation) {
-        this.requestResponseInformation = requestResponseInformation;
-    }
 }

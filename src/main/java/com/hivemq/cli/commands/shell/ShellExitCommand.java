@@ -36,10 +36,6 @@ public class ShellExitCommand implements Runnable, CliCommand {
 
     @Override
     public void run() {
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
-
         ShellCommand.exitShell();
     }
 

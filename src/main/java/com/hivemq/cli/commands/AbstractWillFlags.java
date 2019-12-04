@@ -124,18 +124,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willTopic;
     }
 
-    public void setWillTopic(@Nullable final String willTopic) {
-        this.willTopic = willTopic;
-    }
-
     @Nullable
     @Override
     public ByteBuffer getWillMessage() {
         return willMessage;
-    }
-
-    public void setWillMessage(@Nullable final ByteBuffer willMessage) {
-        this.willMessage = willMessage;
     }
 
     @Nullable
@@ -144,18 +136,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willQos;
     }
 
-    public void setWillQos(@Nullable final MqttQos willQos) {
-        this.willQos = willQos;
-    }
-
     @Nullable
     @Override
     public Boolean getWillRetain() {
         return willRetain;
-    }
-
-    public void setWillRetain(final @Nullable Boolean willRetain) {
-        this.willRetain = willRetain;
     }
 
     @Nullable
@@ -164,18 +148,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willMessageExpiryInterval;
     }
 
-    public void setWillMessageExpiryInterval(@Nullable final Long willMessageExpiryInterval) {
-        this.willMessageExpiryInterval = willMessageExpiryInterval;
-    }
-
     @Nullable
     @Override
     public Long getWillDelayInterval() {
         return willDelayInterval;
-    }
-
-    public void setWillDelayInterval(final long willDelayInterval) {
-        this.willDelayInterval = willDelayInterval;
     }
 
     @Nullable
@@ -184,18 +160,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willPayloadFormatIndicator;
     }
 
-    public void setWillPayloadFormatIndicator(@Nullable final Mqtt5PayloadFormatIndicator willPayloadFormatIndicator) {
-        this.willPayloadFormatIndicator = willPayloadFormatIndicator;
-    }
-
     @Nullable
     @Override
     public String getWillContentType() {
         return willContentType;
-    }
-
-    public void setWillContentType(@Nullable final String willContentType) {
-        this.willContentType = willContentType;
     }
 
     @Nullable
@@ -204,18 +172,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willResponseTopic;
     }
 
-    public void setWillResponseTopic(@Nullable final String willResponseTopic) {
-        this.willResponseTopic = willResponseTopic;
-    }
-
     @Nullable
     @Override
     public ByteBuffer getWillCorrelationData() {
         return willCorrelationData;
-    }
-
-    public void setWillCorrelationData(@Nullable final ByteBuffer willCorrelationData) {
-        this.willCorrelationData = willCorrelationData;
     }
 
     @Nullable
@@ -224,7 +184,4 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return MqttUtils.convertToMqtt5UserProperties(willUserProperties);
     }
 
-    public void setWillUserProperties(@Nullable final Mqtt5UserProperty... willUserProperties) {
-        this.willUserProperties = willUserProperties;
-    }
 }

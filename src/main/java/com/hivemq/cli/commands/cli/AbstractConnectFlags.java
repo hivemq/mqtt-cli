@@ -28,6 +28,8 @@ import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
+import java.util.Arrays;
+
 public abstract class AbstractConnectFlags extends AbstractCommonFlags implements Connect {
 
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client", order = 2)
@@ -42,7 +44,7 @@ public abstract class AbstractConnectFlags extends AbstractCommonFlags implement
     String connectOptions() {
         return commonOptions() +
                 ", sessionExpiryInterval= " + sessionExpiryInterval +
-                ", userProperties=" + connectUserProperties +
+                ", userProperties=" + (connectUserProperties == null? null : Arrays.toString(connectUserProperties)) +
                 ", " + connectRestrictionOptions();
 
     }
@@ -66,17 +68,9 @@ public abstract class AbstractConnectFlags extends AbstractCommonFlags implement
         return sessionExpiryInterval;
     }
 
-    public void setSessionExpiryInterval(@Nullable final Long sessionExpiryInterval) {
-        this.sessionExpiryInterval = sessionExpiryInterval;
-    }
-
     @Nullable
     public Mqtt5UserProperties getConnectUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(connectUserProperties);
-    }
-
-    public void setConnectUserProperties(@Nullable final Mqtt5UserProperty... connectUserProperties) {
-        this.connectUserProperties = connectUserProperties;
     }
 
 }

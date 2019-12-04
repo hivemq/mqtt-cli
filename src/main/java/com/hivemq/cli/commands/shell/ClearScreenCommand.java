@@ -37,18 +37,12 @@ import java.util.concurrent.Callable;
 public class ClearScreenCommand implements CliCommand, Callable<Void> {
 
     @Inject
-    ClearScreenCommand() {
-    }
+    ClearScreenCommand() {}
 
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
-    public Void call() throws IOException {
-
-        if (isVerbose()) {
-            Logger.trace("Command: {}", this);
-        }
-
+    public Void call() {
         ShellCommand.clearScreen();
         return null;
     }

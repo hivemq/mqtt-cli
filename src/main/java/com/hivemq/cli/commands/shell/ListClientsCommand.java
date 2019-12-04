@@ -66,12 +66,10 @@ public class ListClientsCommand implements Runnable, CliCommand {
     @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false", description = "list subscribed topics of clients")
     private boolean listSubscriptions;
 
-
-
-
     @Override
     public void run() {
 
+        //TODO
         if (isVerbose()) {
             Logger.trace("Command: {}", this);
         }

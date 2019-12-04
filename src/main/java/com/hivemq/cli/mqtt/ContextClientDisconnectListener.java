@@ -18,6 +18,7 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.shell.ShellCommand;
 import com.hivemq.cli.commands.shell.ShellContextCommand;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedContext;
@@ -32,18 +33,15 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
     @Override
     public void onDisconnected(final @NotNull MqttClientDisconnectedContext context) {
 
-        final String contextBefore = LoggingContext.get("identifier");
-
-        LoggingContext.put("identifier", "CLIENT " + context.getClientConfig().getClientIdentifier().orElse(null));
-
         if (context.getSource() != MqttDisconnectSource.USER) {
             final Throwable cause = context.getCause();
 
             if (ShellCommand.VERBOSE) {
-                Logger.trace(cause);
+                Logger.trace("{} {}", LoggerUtils.getClientPrefix(context.getClientConfig()), cause);
             }
             else if (ShellCommand.DEBUG) {
-                Logger.debug(cause.getMessage());
+                Logger.debug("{} {}", LoggerUtils.getClientPrefix(context.getClientConfig()),
+                        cause.getMessage());
             }
 
             // If the currently active shell client gets disconnected from the server prompt the user to enter
@@ -60,8 +58,8 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
 
         MqttClientExecutor.getClientDataMap().remove(getKeyFromConfig(context.getClientConfig()));
 
-        LoggingContext.put("identifier", contextBefore);
     }
+
 
     private String getKeyFromConfig(final @NotNull MqttClientConfig clientConfig) {
             return MqttUtils.buildKey(clientConfig.getClientIdentifier().get().toString(), clientConfig.getServerHost());

@@ -21,6 +21,7 @@ import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
@@ -43,9 +44,7 @@ import javax.inject.Inject;
 public class ShellConnectCommand extends AbstractCommonFlags implements Runnable, Connect {
 
     private final MqttClientExecutor mqttClientExecutor;
-
-    @Nullable
-    private MqttClientSslConfig sslConfig;
+    @Nullable private MqttClientSslConfig sslConfig;
 
     //needed for pico cli - reflection code generation
     public ShellConnectCommand() {
@@ -54,7 +53,6 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
     @Inject
     public ShellConnectCommand(@NotNull final MqttClientExecutor mqttClientExecutor) {
-
         this.mqttClientExecutor = mqttClientExecutor;
     }
 
@@ -62,47 +60,31 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client'")
-    @Nullable
-    private Long sessionExpiryInterval;
+    @Nullable private Long sessionExpiryInterval;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the connect message")
-    @Nullable
-    private Mqtt5UserProperty[] connectUserProperties;
-
+    @Nullable private Mqtt5UserProperty[] connectUserProperties;
 
     public void run() {
-
         setDefaultOptions();
-
         sslConfig = buildSslConfig();
-
         logUnusedOptions();
-
         final MqttClient client = connect();
-
         sslConfig = null;
-
         ShellContextCommand.updateContext(client);
     }
 
     private @Nullable MqttClient connect() {
+        //TODO
         if (isVerbose()) {
             Logger.trace("Command: {} ", this);
         }
 
         try {
-            MqttClient client = mqttClientExecutor.connect(this);
-            return client;
+            return mqttClientExecutor.connect(this);
         }
         catch (final Exception ex) {
-            LoggingContext.put("identifier", "CONNECT");
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            LoggerUtils.logOnRightLevels(this, ex);
         }
         return null;
     }
@@ -149,17 +131,9 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
         return sessionExpiryInterval;
     }
 
-    public void setSessionExpiryInterval(@Nullable final Long sessionExpiryInterval) {
-        this.sessionExpiryInterval = sessionExpiryInterval;
-    }
-
     @Nullable
     public Mqtt5UserProperties getConnectUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(connectUserProperties);
-    }
-
-    public void setConnectUserProperties(@Nullable final Mqtt5UserProperty... connectUserProperties) {
-        this.connectUserProperties = connectUserProperties;
     }
 
     @Nullable
@@ -168,7 +142,4 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
         return sslConfig;
     }
 
-    public void setSslConfig(final MqttClientSslConfig sslConfig) {
-        this.sslConfig = sslConfig;
-    }
 }

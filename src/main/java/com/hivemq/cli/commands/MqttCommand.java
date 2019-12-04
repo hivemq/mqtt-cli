@@ -34,7 +34,6 @@ import java.util.List;
 @CommandLine.Command()
 public abstract class MqttCommand extends AbstractCommand implements Context {
 
-
     @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The mqtt version used by the client (default: 5)", order = 1)
     private MqttVersion version;
 
@@ -154,16 +153,8 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
         return host;
     }
 
-    public void setHost(final String host) {
-        this.host = host;
-    }
-
     public int getPort() {
         return port;
-    }
-
-    public void setPort(final int port) {
-        this.port = port;
     }
 
     @NotNull
@@ -172,16 +163,4 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
         return identifier;
     }
 
-    public void setIdentifier(final @Nullable String identifier) {
-        this.identifier = identifier;
-    }
-
-    @Nullable
-    public String getIdentifierPrefix() {
-        return identifierPrefix;
-    }
-
-    public void setIdentifierPrefix(final String identifierPrefix) {
-        this.identifierPrefix = identifierPrefix;
-    }
 }

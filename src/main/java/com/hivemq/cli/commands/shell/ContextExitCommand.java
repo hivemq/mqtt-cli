@@ -42,10 +42,6 @@ public class ContextExitCommand extends ShellContextCommand implements Runnable 
 
     @Override
     public void run() {
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
-
         removeContext();
     }
 

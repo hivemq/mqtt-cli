@@ -20,6 +20,7 @@ import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
@@ -55,20 +56,18 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     private boolean disconnectAll;
 
     @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The session expiry of the disconnect (default: 0)")
-    @Nullable
-    private Long sessionExpiryInterval;
+    @Nullable private Long sessionExpiryInterval;
 
     @CommandLine.Option(names = {"-r", "--reason"}, description = "The reason of the disconnect")
-    @Nullable
-    private String reasonString;
+    @Nullable private String reasonString;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the disconnect message")
-    @Nullable
-    private Mqtt5UserProperty[] userProperties;
+    @Nullable private Mqtt5UserProperty[] userProperties;
 
     @Override
     public void run() {
 
+        // TODO
         if (isVerbose()) {
             Logger.trace("Command: {} ", this);
         }
@@ -84,14 +83,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
             }
         }
         catch (final Exception ex) {
-            LoggingContext.put("identifier", "DISCONNECT");
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            LoggerUtils.logWithCurrentContext(this, ex);
         }
 
     }
@@ -125,18 +117,10 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
         return sessionExpiryInterval;
     }
 
-    public void setSessionExpiryInterval(@Nullable final Long sessionExpiryInterval) {
-        this.sessionExpiryInterval = sessionExpiryInterval;
-    }
-
     @Nullable
     @Override
     public String getReasonString() {
         return reasonString;
-    }
-
-    public void setReasonString(@Nullable final String reasonString) {
-        this.reasonString = reasonString;
     }
 
     @Nullable
