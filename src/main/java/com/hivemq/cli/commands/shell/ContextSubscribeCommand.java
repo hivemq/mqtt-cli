@@ -143,20 +143,16 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        final Runnable waitForDisconnectRunnable = new Runnable() {
-
-            @Override
-            public void run() {
-                while (contextClient.getState().isConnected()) {
-                    try {
-                        Thread.sleep(IDLE_TIME);
-                    }
-                    catch (final InterruptedException e) {
-                        return;
-                    }
+        final Runnable waitForDisconnectRunnable = () -> {
+            while (contextClient.getState().isConnected()) {
+                try {
+                    Thread.sleep(IDLE_TIME);
                 }
-                latch.countDown();
+                catch (final InterruptedException e) {
+                    return;
+                }
             }
+            latch.countDown();
         };
 
         final Runnable waitForExitCommandRunnable = new Runnable() {
@@ -165,7 +161,6 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 final Scanner scanner = new Scanner(System.in);
                 scanner.nextLine();
                 latch.countDown();
-                return;
             }
         };
 

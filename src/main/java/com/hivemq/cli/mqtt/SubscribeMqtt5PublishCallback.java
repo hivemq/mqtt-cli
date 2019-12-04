@@ -21,33 +21,46 @@ import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
+import org.pmw.tinylog.LoggingContext;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
 
-    @NotNull private final Subscribe subscribe;
+    @NotNull private final String identifier;
+    @Nullable private final File publishFile;
+    private final boolean printToStdout;
+    private final boolean isBase64;
+    private final boolean debug;
+    private final boolean verbose;
 
     SubscribeMqtt5PublishCallback(final @NotNull Subscribe subscribe) {
-        this.subscribe = subscribe;
+        identifier = subscribe.getIdentifier();
+        printToStdout = subscribe.isPrintToSTDOUT();
+        publishFile = subscribe.getPublishFile();
+        isBase64 = subscribe.isBase64();
+        debug = subscribe.isDebug();
+        verbose = subscribe.isVerbose();
     }
 
     @Override
     public void accept(final @NotNull Mqtt5Publish mqtt5Publish) {
 
         PrintWriter fileWriter = null;
-        if (subscribe.getPublishFile() != null) {
-            fileWriter = FileUtils.createFileAppender(subscribe.getPublishFile());
+        if (publishFile != null) {
+            fileWriter = FileUtils.createFileAppender(publishFile);
         }
 
 
         byte[] payload = mqtt5Publish.getPayloadAsBytes();
         String payloadMessage = new String(payload);
 
-        if (subscribe.isBase64()) {
+        if (isBase64) {
             payloadMessage = Base64.toBase64String(payload);
         }
 
@@ -57,15 +70,15 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
             fileWriter.close();
         }
 
-        if (subscribe.isPrintToSTDOUT()) {
+        if (printToStdout) {
             System.out.println(payloadMessage);
         }
 
-        if (subscribe.isVerbose()) {
-            Logger.trace("received PUBLISH: {}, MESSAGE: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
+        if (verbose) {
+            Logger.trace("Client {} received PUBLISH: {}, MESSAGE: '{}'", identifier, mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
-        else if (subscribe.isDebug()) {
-            Logger.debug("received PUBLISH: (Topic: '{}', MESSAGE: '{}')", mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
+        else if (debug) {
+            Logger.debug("Client {} received PUBLISH: (Topic: '{}', MESSAGE: '{}')", identifier, mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
 
     }
