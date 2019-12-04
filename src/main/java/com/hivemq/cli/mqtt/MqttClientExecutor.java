@@ -266,8 +266,6 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 }
                 else {
 
-                    final String p = bufferToString(publish.getMessage());
-
                     if (publish.isVerbose()) {
                         Logger.trace("acknowledged PUBLISH: '{}' for PUBLISH to TOPIC: '{}'", publishResult, topic);
                     }
@@ -324,8 +322,6 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         Logger.error("PUBLISH to TOPIC '{}' failed with '{}'", topic, MqttUtils.getRootCause(throwable).getMessage());
 
                     } else {
-
-                        final String p = bufferToString(publish.getMessage());
 
                         if (publish.isVerbose()) {
                             Logger.trace("acknowledged PUBLISH: '{}' for PUBLISH to TOPIC: '{}'", publishResult, topic);
