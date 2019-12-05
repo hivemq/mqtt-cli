@@ -73,14 +73,14 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
             System.out.println(payloadMessage);
         }
 
-        if (verbose) {
-            Logger.trace("Client {} received PUBLISH: {}, MESSAGE: '{}'",
+        if (verbose) { //TODO unified logging
+            Logger.trace("Client {} received PUBLISH {}, MESSAGE: '{}'",
                     identifier,
                     mqtt3Publish,
                     new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
         else if (debug) {
-            Logger.debug("Client {} received PUBLISH: (Topic: '{}', MESSAGE: '{}')",
+            Logger.debug("Client {} received PUBLISH (topic={}, message={})",
                     identifier,
                     mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
