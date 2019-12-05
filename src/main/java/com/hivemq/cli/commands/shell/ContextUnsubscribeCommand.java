@@ -86,7 +86,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
 
     @Override
     public String toString() {
-        return "ContextUnsubscribe:: {" +
+        return getClass().getSimpleName() + "{" +
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
                 (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +

@@ -38,6 +38,7 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 @CommandLine.Command(name = "pub",
@@ -105,6 +106,10 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         setDefaultOptions();
         sslConfig = buildSslConfig();
 
+        if (isVerbose()) {
+            Logger.trace("Command {} ", this);
+        }
+
         logUnusedOptions();
 
         try {
@@ -146,17 +151,18 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     @Override
     public String toString() {
-        return "Publish:: {" +
-                "topics=" + Arrays.toString(topics) +
+        return getClass().getSimpleName() + "{" +
+                 connectOptions() +
+                ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
-                ", retain=" + retain +
-                ", messageExpiryInterval=" + messageExpiryInterval +
-                ", payloadFormatIndicator=" + payloadFormatIndicator +
-                ", contentType=" + contentType +
-                ", responseTopic=" + responseTopic +
-                ", correlationData=" + correlationData +
-                ", userProperties=" + getUserProperties() +
-                ", Connect:: {" + connectOptions() + "}" +
+                ", message=" + new String(message.array(), StandardCharsets.UTF_8) +
+                (retain != null ? (", retain=" + retain) : "") +
+                (messageExpiryInterval != null ? (", messageExpiryInterval=" + messageExpiryInterval) : "") +
+                (payloadFormatIndicator != null ? (", payloadFormatIndicator=" + payloadFormatIndicator) : "") +
+                (contentType != null ? (", contentType=" + contentType) : "") +
+                (responseTopic != null ? (", responseTopic=" + responseTopic) : "") +
+                (correlationData != null ? (", correlationData=" + new String(correlationData.array(), StandardCharsets.UTF_8)) : "") +
+                (userProperties != null ? (", userProperties=" + getUserProperties()) : "") +
                 '}';
     }
 

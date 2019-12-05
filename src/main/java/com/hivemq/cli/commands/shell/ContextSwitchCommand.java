@@ -76,7 +76,6 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
             }
         }
 
-        //TODO
         if (isVerbose()) {
             Logger.trace("Command {} ", this);
         }

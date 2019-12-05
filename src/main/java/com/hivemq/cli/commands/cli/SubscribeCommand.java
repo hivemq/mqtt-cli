@@ -98,6 +98,11 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     public void run() {
         setDefaultOptions();
         sslConfig = buildSslConfig();
+
+        if (isVerbose()) {
+            Logger.trace("Command {} ", this);
+        }
+
         logUnusedOptions();
 
         try {
@@ -152,14 +157,14 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     @Override
     public String toString() {
-        return "Subscribe:: {" +
+        return getClass().getSimpleName() + "{" +
+                connectOptions() +
                 "topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
-                ", userProperties=" + userProperties +
-                ", toFile=" + publishFile +
+                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
+                (publishFile != null ? (", publishFile=" + publishFile.getAbsolutePath()) : "") +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
-                ", Connect:: {" + commonOptions() + "}" +
                 '}';
     }
 
