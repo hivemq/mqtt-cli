@@ -49,7 +49,7 @@ public class ClearScreenCommand implements CliCommand, Callable<Void> {
 
     @Override
     public String toString() {
-        return "ClearScreen::";
+        return this.getClass().getSimpleName();
     }
 
     @Override

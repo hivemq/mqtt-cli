@@ -115,7 +115,7 @@ public class ShellCommand implements Runnable {
         final File dirFile = new File(dir);
         dirFile.mkdirs();
 
-        final String logfileFormatPattern = "{date: HH:mm:ss} {{level}|min-size=7} {method} {line} : {message}";
+        final String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{class_name}|min-size=25} | {{level}|min-size=7} | {message}";
 
         final RollingFileWriter logfileWriter = new RollingFileWriter(dir + "hmq-cli.log", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
 
@@ -262,7 +262,7 @@ public class ShellCommand implements Runnable {
 
     @Override
     public String toString() {
-        return "Shell:: {" +
+        return  getClass().getSimpleName() + "{" +
                 "logfilePath=" + logfilePath +
                 ", debug=" + DEBUG +
                 ", verbose=" + VERBOSE +

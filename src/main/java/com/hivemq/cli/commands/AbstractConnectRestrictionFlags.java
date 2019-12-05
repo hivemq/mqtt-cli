@@ -22,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
+import java.util.Arrays;
+
 public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags implements ConnectRestrictions {
 
     @CommandLine.Option(names = {"--rcvMax"}, description = "The maximum amount of not acknowledged publishes with QoS 1 or 2 the client accepts from the server concurrently. (default: " + Mqtt5ConnectRestrictions.DEFAULT_RECEIVE_MAXIMUM + ")", order = 3)
@@ -97,14 +99,14 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     }
 
     public String connectRestrictionOptions() {
-        return "receiveMaximum=" + receiveMaximum +
-                ", sendMaximum=" + sendMaximum +
-                ", maximumPacketSize=" + maximumPacketSize +
-                ", sendMaximumPacketSize=" + sendMaximumPacketSize +
-                ", topicAliasMaximum=" + topicAliasMaximum +
-                ", sendTopicAliasMaximum=" + sendTopicAliasMaximum +
-                ", requestProblemInformation=" + requestProblemInformation +
-                ", requestResponseInformation=" + requestResponseInformation;
+        return (receiveMaximum != null ? (", receiveMaximum=" + receiveMaximum) : "") +
+                (sendMaximum != null ? (", sendMaximum=" + sendMaximum) : "") +
+                (maximumPacketSize != null ? (", maximumPacketSize=" + maximumPacketSize) : "") +
+                (sendMaximumPacketSize != null ? (", sendMaximumPacketSize=" + sendMaximumPacketSize) : "") +
+                (topicAliasMaximum != null ? (", topicAliasMaximum=" + topicAliasMaximum) : "") +
+                (sendTopicAliasMaximum != null ? (", sendTopicAliasMaximum=" + sendTopicAliasMaximum) : "") +
+                (requestProblemInformation != null ? (", requestProblemInformation=" + requestProblemInformation) : "") +
+                (requestResponseInformation != null ? (", requestResponseInformation=" + requestResponseInformation) : "");
     }
 
     @Nullable

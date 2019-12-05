@@ -34,6 +34,7 @@ import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 @CommandLine.Command(name = "dis",
         aliases = "disconnect",
@@ -86,9 +87,8 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
             host = defaultCLIProperties.getHost();
         }
 
-        //TODO
         if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
+            Logger.trace("Command {} ", this);
         }
 
         try {
@@ -125,7 +125,15 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
 
     @Override
     public String toString() {
-        return "Disconnect::" + getKey();
+        return getClass().getSimpleName() + "{" +
+                "disconnectAll=" + disconnectAll +
+                (identifier != null ? (", identifier=" + identifier) : "") +
+                (host != null ? (", host=" + host) : "") +
+                (sessionExpiryInterval != null ? (", sessionExpiryInterval=" + host) : "") +
+                (reasonString != null ? (", reasonString=" + reasonString) : "") +
+                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
+                "}";
+
     }
 
     @Override

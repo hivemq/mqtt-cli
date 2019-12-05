@@ -47,7 +47,7 @@ public class ContextExitCommand extends ShellContextCommand implements Runnable 
 
     @Override
     public String toString() {
-        return "ContextExit::";
+        return getClass().getSimpleName();
     }
 
 }

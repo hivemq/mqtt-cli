@@ -285,14 +285,14 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
 
     public String commonOptions() {
         return super.toString() +
-                ", user='" + user + '\'' +
-                ", keepAlive=" + keepAlive +
-                ", cleanStart=" + cleanStart +
+                (user != null ? (", user=" + user) : "") +
+                (keepAlive != null ? (", keepAlive=" + keepAlive) : "") +
+                (cleanStart != null ? (", cleanStart=" + cleanStart) : "") +
                 ", useDefaultSsl=" + useSsl +
-                ", sslConfig=" + (getSslConfig() != null) +
+                (getSslConfig() != null ? (", sslConfig=" + getSslConfig()) : "") +
                 ", useWebSocket=" + useWebSocket +
-                ", webSocketPath=" + webSocketPath +
-                ", " + getWillOptions();
+                (webSocketPath != null ? (", webSocketPath=" + webSocketPath) : "") +
+                getWillOptions();
     }
 
     // GETTER AND SETTER

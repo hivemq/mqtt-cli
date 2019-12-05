@@ -61,7 +61,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
 
     @Override
     public void run() {
-        //TODO
+
         if (isVerbose()) {
             Logger.trace("Command {} ", this);
         }
@@ -89,7 +89,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
         return "ContextUnsubscribe:: {" +
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
-                ", userProperties=" + userProperties +
+                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
                 '}';
     }
 

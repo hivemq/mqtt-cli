@@ -88,9 +88,9 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     @Override
     public void run() {
-        //TODO
+
         if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
+            Logger.trace("Command {} ", this);
         }
 
         setDefaultOptions();
@@ -165,14 +165,14 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     @Override
     public String toString() {
-        return "ContextSubscribe:: {" +
+        return  getClass().getSimpleName() + "{" +
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
-                ", userProperties=" + userProperties +
-                ", toFile=" + publishFile +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
+                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
+                (publishFile != null ? (", publishFile=" + publishFile.getAbsolutePath()) : "") +
                 '}';
     }
 

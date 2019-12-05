@@ -29,6 +29,7 @@ import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 @CommandLine.Command
 public abstract class AbstractWillFlags extends MqttCommand implements Will {
@@ -79,17 +80,20 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
 
 
     String getWillOptions() {
-        return "willTopic='" + willTopic + '\'' +
-                ", willQos=" + willQos +
-                ", willMessage='" + willMessage + '\'' +
-                ", willRetain=" + willRetain +
-                ", willMessageExpiryInterval=" + willMessageExpiryInterval +
-                ", willDelayInterval=" + willDelayInterval +
-                ", willPayloadFormatIndicator=" + willPayloadFormatIndicator +
-                ", willContentType='" + willContentType + '\'' +
-                ", willResponseTopic='" + willResponseTopic + '\'' +
-                ", willCorrelationData=" + willCorrelationData +
-                ", willUserProperties=" + willUserProperties;
+        if (willTopic == null) {
+            return "";
+        }
+        return  ", willTopic=" + willTopic +
+                (willQos != null ? (", willQos=" + willQos) : "") +
+                (willMessage != null ? (", willMessage=" + willMessage) : "") +
+                (willRetain != null ? (", willRetain=" + willRetain) : "") +
+                (willMessageExpiryInterval != null ? (", willMessageExpiryInterval=" + willMessageExpiryInterval) : "") +
+                (willDelayInterval != null ? (", willDelayInterval=" + willDelayInterval) : "") +
+                (willPayloadFormatIndicator != null ? (", willPayloadFormatIndicator=" + willPayloadFormatIndicator) : "") +
+                (willContentType != null ? (", willContentType=" + willContentType) : "") +
+                (willResponseTopic != null ? (", willResponseTopic=" + willResponseTopic) : "") +
+                (willCorrelationData != null ? (", willCorrelationData=" + willCorrelationData) : "") +
+                (willUserProperties != null ? (", willUserProperties=" + Arrays.toString(willUserProperties)) : "");
     }
 
     public void logUnusedOptions() {

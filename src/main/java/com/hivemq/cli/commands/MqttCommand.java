@@ -129,7 +129,7 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
         return "host=" + host +
                 ", port=" + port +
                 ", version=" + version +
-                ", identifier=" + identifier;
+                (identifier != null && !identifier.isEmpty() ? (", identifier=" + identifier) : "");
     }
 
     @Override

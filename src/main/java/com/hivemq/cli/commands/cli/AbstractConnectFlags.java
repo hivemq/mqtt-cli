@@ -45,7 +45,7 @@ public abstract class AbstractConnectFlags extends AbstractCommonFlags implement
         return commonOptions() +
                 ", sessionExpiryInterval= " + sessionExpiryInterval +
                 ", userProperties=" + (connectUserProperties == null? null : Arrays.toString(connectUserProperties)) +
-                ", " + connectRestrictionOptions();
+                connectRestrictionOptions();
 
     }
 

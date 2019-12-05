@@ -69,9 +69,8 @@ public class ListClientsCommand implements Runnable, CliCommand {
     @Override
     public void run() {
 
-        //TODO
         if (isVerbose()) {
-            Logger.trace("Command: {}", this);
+            Logger.trace("Command {}", this);
         }
 
         final List<ClientData> sortedClientData = getSortedClientData();
@@ -188,9 +187,12 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
     @Override
     public String toString() {
-        return "List:: {" +
+        return getClass().getSimpleName() + "{" +
                 "sortByTime=" + sortByTime +
-                ", detailedOutput=" + longOutput +
+                ", doNotSort=" + doNotSort +
+                ", reverse=" + reverse +
+                ", listSubscriptions" + listSubscriptions +
+                ", longOutput=" + longOutput +
                 '}';
     }
 

@@ -32,6 +32,7 @@ import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 @CommandLine.Command(name = "dis",
         aliases = "disconnect",
@@ -67,9 +68,8 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     @Override
     public void run() {
 
-        // TODO
         if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
+            Logger.trace("Command {} ", this);
         }
 
         logUnusedDisconnectOptions();
@@ -106,8 +106,12 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
 
     @Override
     public String toString() {
-        return "ContextDisconnect:: {" +
+        return getClass().getSimpleName() + "{" +
                 "key=" + getKey() +
+                ", all=" + disconnectAll +
+                (sessionExpiryInterval != null ?  (", sessionExpiryInterval=" + sessionExpiryInterval) : "") +
+                (reasonString != null ?  (", reasonString=" + reasonString) : "") +
+                (userProperties != null ?  (", userProperties=" + Arrays.toString(userProperties)) : "") +
                 "}";
     }
 

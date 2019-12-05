@@ -41,7 +41,7 @@ public class ShellExitCommand implements Runnable, CliCommand {
 
     @Override
     public String toString() {
-        return "ShellExit::";
+        return getClass().getSimpleName();
     }
 
     @Override

@@ -78,7 +78,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
 
         //TODO
         if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
+            Logger.trace("Command {} ", this);
         }
 
         final MqttClient client = mqttClientExecutor.getMqttClient(this);
@@ -113,9 +113,9 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
 
     @Override
     public String toString() {
-        return "ContextSwitch:: {" +
-                "contextName='" + contextName + '\'' +
-                ", key=" + getKey() +
+        return getClass().getSimpleName() + "{" +
+                "identifier=" + identifier +
+                ", host=" + host +
                 '}';
     }
 

@@ -34,6 +34,7 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 
@@ -130,17 +131,18 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
 
     @Override
     public String toString() {
-        return "ContextPublish:: {" +
+        return  getClass().getSimpleName() + "{" +
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
+                ", message=" + new String(message.array(), StandardCharsets.UTF_8) +
                 ", retain=" + retain +
-                ", messageExpiryInterval=" + messageExpiryInterval +
-                ", payloadFormatIndicator=" + payloadFormatIndicator +
-                ", contentType=" + contentType +
-                ", responseTopic=" + responseTopic +
-                ", correlationData=" + correlationData +
-                ", userProperties=" + userProperties +
+                (messageExpiryInterval != null ? (", messageExpiryInterval=" + messageExpiryInterval) : "") +
+                (payloadFormatIndicator != null ? (", payloadFormatIndicator=" + payloadFormatIndicator) : "") +
+                (contentType != null ? (", contentType=" + contentType) : "") +
+                (responseTopic != null ? (", responseTopic=" + responseTopic) : "") +
+                (correlationData != null ? (", correlationData=" + new String(correlationData.array(), StandardCharsets.UTF_8)) : "") +
+                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
                 '}';
     }
 

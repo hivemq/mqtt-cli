@@ -35,6 +35,7 @@ import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 @CommandLine.Command(name = "con",
         aliases = "connect",
@@ -75,9 +76,9 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     }
 
     private @Nullable MqttClient connect() {
-        //TODO
+
         if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
+            Logger.trace("Command {} ", this);
         }
 
         try {
@@ -105,15 +106,15 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
     String connectOptions() {
         return commonOptions() +
-                ", sessionExpiryInterval= " + sessionExpiryInterval +
-                ", userProperties=" + connectUserProperties +
-                ", " + connectRestrictionOptions();
+                (sessionExpiryInterval != null ? (", sessionExpiryInterval=" + sessionExpiryInterval) : "") +
+                (connectUserProperties != null ? (", userProperties=" + Arrays.toString(connectUserProperties)) : "") +
+                connectRestrictionOptions();
     }
 
 
     @Override
     public String toString() {
-        return "ShellConnectCommand:: {" + connectOptions() + "}";
+        return getClass().getSimpleName() + "{" + connectOptions() + "}";
     }
 
     @Override
