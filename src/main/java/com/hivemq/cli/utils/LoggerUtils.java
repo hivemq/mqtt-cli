@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.utils;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.commands.shell.ShellContextCommand;
 import com.hivemq.client.mqtt.MqttClientConfig;
@@ -27,16 +28,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class LoggerUtils {
-
-    public static void logOnRightLevels(final @NotNull CliCommand cmd, final @NotNull Exception ex) {
-        if (cmd.isVerbose()) {
-            Logger.trace(ex);
-        }
-        else if (cmd.isDebug()) {
-            Logger.debug(ex.getMessage());
-        }
-        Logger.error(MqttUtils.getRootCause(ex).getMessage());
-    }
 
     public static void logWithCurrentContext(final @NotNull CliCommand cmd, final @NotNull Exception ex) {
         if (cmd.isVerbose()) {

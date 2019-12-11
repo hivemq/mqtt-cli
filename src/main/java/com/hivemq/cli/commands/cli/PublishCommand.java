@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.cli;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
@@ -129,7 +130,8 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
             mqttClientExecutor.publish(this);
         }
         catch (final Exception ex) {
-            LoggerUtils.logOnRightLevels(this, ex);
+            Logger.error(ex.getMessage());
+            System.err.println(Throwables.getRootCause(ex).getMessage());
         }
 
     }

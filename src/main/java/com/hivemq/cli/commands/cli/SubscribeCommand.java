@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.cli;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Subscribe;
@@ -122,7 +123,8 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             subscribeClient = mqttClientExecutor.subscribe(this);
         }
         catch (final Exception ex) {
-            LoggerUtils.logOnRightLevels(this, ex);
+            Logger.error(ex.getMessage());
+            System.err.println(Throwables.getRootCause(ex).getMessage());
             return;
         }
 
@@ -130,7 +132,8 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             stay();
         }
         catch (final InterruptedException ex) {
-            LoggerUtils.logOnRightLevels(this, ex);
+            Logger.error(ex.getMessage());
+            System.err.println(Throwables.getRootCause(ex).getMessage());
         }
 
 

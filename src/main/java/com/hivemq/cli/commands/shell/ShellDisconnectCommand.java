@@ -17,6 +17,7 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
@@ -104,7 +105,8 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
             }
         }
         catch (final Exception ex) {
-            LoggerUtils.logOnRightLevels(this, ex);
+            Logger.error(ex.getMessage());
+            System.err.println(Throwables.getRootCause(ex).getMessage());
         }
 
     }

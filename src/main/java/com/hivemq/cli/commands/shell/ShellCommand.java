@@ -121,7 +121,11 @@ public class ShellCommand implements Runnable {
 
         logfilePath = dir + "mqtt_cli_" + dateFormat.format(date) + ".log";
 
-        final String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{tag}|min-size=25} | {{level}|min-size=7} | {message}";
+        String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{tag}|min-size=10} | {{level}|min-size=7} | {message}";
+        if (isVerbose() || isDebug()) {
+            logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{level}|min-size=7} | {{class-name}.{method}:{line}|min-size=20} | {{tag}|min-size=10} | {message}";
+        }
+
 
         // TinyLog configuration
         Map<String, String> configurationMap = new HashMap<>();
@@ -132,11 +136,6 @@ public class ShellCommand implements Runnable {
         configurationMap.put("writer1.level", "off");
         if (isDebug()) { configurationMap.put("writer1.level", "debug"); }
         if (isVerbose()) { configurationMap.put("writer1.level", "trace"); }
-
-        // Writer inside shell
-        configurationMap.put("writer2", "console");
-        configurationMap.put("writer2.format", "{tag} {message}");
-        configurationMap.put("writer2.level", "info");
 
         Configuration.replace(configurationMap);
 
@@ -175,13 +174,13 @@ public class ShellCommand implements Runnable {
             TERMINAL_WRITER.println(shellCommandLine.getUsageMessage());
             TERMINAL_WRITER.flush();
 
-            Logger.info("Using default values from properties file {}:", defaultCLIProperties.getFile().getPath());
-            Logger.info("Host: {}, Port: {}, Mqtt-Version {}, Shell-Debug-Level: {}",
+            Logger.tag("Shell").info("Using default values from properties file {}:", defaultCLIProperties.getFile().getPath());
+            Logger.tag("Shell").info("Host: {}, Port: {}, Mqtt-Version {}, Shell-Debug-Level: {}",
                     defaultCLIProperties.getHost(),
                     defaultCLIProperties.getPort(),
                     defaultCLIProperties.getMqttVersion(),
                     defaultCLIProperties.getShellDebugLevel());
-            Logger.info("Writing Logfile to {}", logfilePath);
+            Logger.tag("Shell").info("Writing Logfile to {}", logfilePath);
 
             String line;
             while (!exitShell) {

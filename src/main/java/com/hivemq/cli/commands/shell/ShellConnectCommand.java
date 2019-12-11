@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.AbstractCommonFlags;
 import com.hivemq.cli.commands.Connect;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
@@ -84,7 +85,8 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
             return mqttClientExecutor.connect(this);
         }
         catch (final Exception ex) {
-            LoggerUtils.logOnRightLevels(this, ex);
+            Logger.error(ex);
+            System.err.println(Throwables.getRootCause(ex).getMessage());
         }
         return null;
     }
