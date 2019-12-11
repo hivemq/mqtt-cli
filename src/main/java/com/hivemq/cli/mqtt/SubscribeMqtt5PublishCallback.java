@@ -22,8 +22,7 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -75,10 +74,10 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
         }
 
         if (verbose) {
-            Logger.trace("Client {} received PUBLISH: {}, MESSAGE: '{}'", identifier, mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
+            Logger.trace("{} received PUBLISH {} (topic={})", identifier, mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
         else if (debug) {
-            Logger.debug("Client {} received PUBLISH: (Topic: '{}', MESSAGE: '{}')", identifier, mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
+            Logger.debug("{} received PUBLISH (topic={}, message={})", identifier, mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
 
     }

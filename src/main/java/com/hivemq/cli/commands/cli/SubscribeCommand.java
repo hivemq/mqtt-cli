@@ -29,18 +29,19 @@ import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @CommandLine.Command(name = "sub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -96,6 +97,17 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     @Override
     public void run() {
+
+        // TinyLog configuration
+        Map<String, String> configurationMap = new HashMap<>();
+        configurationMap.put("writer", "console");
+        configurationMap.put("writer.format", "{tag} {message}");
+        configurationMap.put("writer.level", "off");
+        if (isDebug()) { configurationMap.put("writer.level", "debug"); }
+        if (isVerbose()) { configurationMap.put("writer.level", "trace"); }
+
+        Configuration.replace(configurationMap);
+
         setDefaultOptions();
         sslConfig = buildSslConfig();
 
@@ -111,6 +123,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         }
         catch (final Exception ex) {
             LoggerUtils.logOnRightLevels(this, ex);
+            return;
         }
 
         try {

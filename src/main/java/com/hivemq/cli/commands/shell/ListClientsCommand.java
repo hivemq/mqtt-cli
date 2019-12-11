@@ -20,9 +20,8 @@ import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.MqttClientState;
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;

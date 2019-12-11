@@ -42,12 +42,10 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;

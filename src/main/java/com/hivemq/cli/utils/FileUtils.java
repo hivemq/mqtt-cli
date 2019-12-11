@@ -17,7 +17,7 @@
 package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import java.io.*;
 

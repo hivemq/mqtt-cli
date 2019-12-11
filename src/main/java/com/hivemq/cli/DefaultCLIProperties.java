@@ -24,7 +24,7 @@ import com.hivemq.cli.converters.FileToPrivateKeyConverter;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Level;
+import org.tinylog.Level;
 
 import javax.inject.Singleton;
 import java.io.*;

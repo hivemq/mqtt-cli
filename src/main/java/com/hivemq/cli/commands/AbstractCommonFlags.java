@@ -24,7 +24,7 @@ import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttWebSocketConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.net.ssl.KeyManagerFactory;

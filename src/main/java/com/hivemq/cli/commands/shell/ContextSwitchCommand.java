@@ -18,12 +18,10 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.LoggerUtils;
-import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;

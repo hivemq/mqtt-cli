@@ -25,8 +25,7 @@ import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedContext;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
 
 public class ContextClientDisconnectListener implements MqttClientDisconnectedListener {
 

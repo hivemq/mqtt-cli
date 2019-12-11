@@ -32,14 +32,16 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @CommandLine.Command(name = "pub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -102,6 +104,16 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     @Override
     public void run() {
+
+        // TinyLog configuration
+        Map<String, String> configurationMap = new HashMap<>();
+        configurationMap.put("writer", "console");
+        configurationMap.put("writer.format", "{tag} {message}");
+        configurationMap.put("writer.level", "off");
+        if (isDebug()) { configurationMap.put("writer.level", "debug"); }
+        if (isVerbose()) { configurationMap.put("writer.level", "trace"); }
+
+        Configuration.replace(configurationMap);
 
         setDefaultOptions();
         sslConfig = buildSslConfig();

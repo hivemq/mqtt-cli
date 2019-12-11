@@ -28,20 +28,21 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
-import org.pmw.tinylog.Configurator;
-import org.pmw.tinylog.Level;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
-import org.pmw.tinylog.labelers.TimestampLabeler;
-import org.pmw.tinylog.policies.SizePolicy;
-import org.pmw.tinylog.writers.ConsoleWriter;
-import org.pmw.tinylog.writers.RollingFileWriter;
+import org.tinylog.Level;
+import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 import picocli.shell.jline3.PicocliJLineCompleter;
+import sun.security.krb5.Config;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @CommandLine.Command(name = "shell", aliases = "sh",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -94,6 +95,8 @@ public class ShellCommand implements Runnable {
     @Override
     public void run() {
 
+        final String dir = defaultCLIProperties.getLogfilePath();
+
         final Level debugLevel = defaultCLIProperties.getShellDebugLevel();
         switch (debugLevel) {
             case TRACE:
@@ -110,25 +113,34 @@ public class ShellCommand implements Runnable {
                 break;
         }
 
-        final String dir = defaultCLIProperties.getLogfilePath();
-
         final File dirFile = new File(dir);
         dirFile.mkdirs();
 
-        final String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{class_name}|min-size=25} | {{level}|min-size=7} | {message}";
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
 
-        final RollingFileWriter logfileWriter = new RollingFileWriter(dir + "hmq-cli.log", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
+        logfilePath = dir + "mqtt_cli_" + dateFormat.format(date) + ".log";
 
-        Configurator.defaultConfig()
-                .writer(logfileWriter,
-                        debugLevel,
-                        logfileFormatPattern)
-                .addWriter(new ConsoleWriter(),
-                        Level.INFO,
-                        "{message}")
-                .activate();
+        final String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{tag}|min-size=25} | {{level}|min-size=7} | {message}";
 
-        logfilePath = logfileWriter.getFilename();
+        // TinyLog configuration
+        Map<String, String> configurationMap = new HashMap<>();
+        configurationMap.put("writer1", "file");
+        configurationMap.put("writer1.format", logfileFormatPattern);
+        configurationMap.put("writer1.file", logfilePath);
+        configurationMap.put("writer1.append", "true");
+        configurationMap.put("writer1.level", "off");
+        if (isDebug()) { configurationMap.put("writer1.level", "debug"); }
+        if (isVerbose()) { configurationMap.put("writer1.level", "trace"); }
+
+        // Writer inside shell
+        configurationMap.put("writer2", "console");
+        configurationMap.put("writer2.format", "{tag} {message}");
+        configurationMap.put("writer2.level", "info");
+
+        Configuration.replace(configurationMap);
+
+        logfilePath = Configuration.get("writer1.file");
 
         interact();
     }

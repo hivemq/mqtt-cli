@@ -25,7 +25,7 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.nio.ByteBuffer;

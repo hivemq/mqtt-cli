@@ -17,7 +17,6 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.CliCommand;
-import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;

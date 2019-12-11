@@ -21,7 +21,7 @@ import com.hivemq.cli.commands.shell.ShellContextCommand;
 import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import java.util.Objects;
 import java.util.Optional;

@@ -25,7 +25,7 @@ import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.util.Arrays;

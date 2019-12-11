@@ -19,10 +19,8 @@ package com.hivemq.cli.commands;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5ConnectRestrictions;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
-
-import java.util.Arrays;
 
 public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags implements ConnectRestrictions {
 

@@ -22,7 +22,7 @@ import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -74,13 +74,13 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
         }
 
         if (verbose) { //TODO unified logging
-            Logger.trace("Client {} received PUBLISH {}, MESSAGE: '{}'",
+            Logger.trace("{} received PUBLISH {}, (message={})",
                     identifier,
                     mqtt3Publish,
                     new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
         else if (debug) {
-            Logger.debug("Client {} received PUBLISH (topic={}, message={})",
+            Logger.debug("{} received PUBLISH (topic={}, message={})",
                     identifier,
                     mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }

@@ -45,7 +45,6 @@ import com.hivemq.client.mqtt.mqtt5.message.unsubscribe.Mqtt5Unsubscribe;
 import com.hivemq.client.mqtt.mqtt5.message.unsubscribe.unsuback.Mqtt5UnsubAck;
 import com.hivemq.client.util.TypeSwitch;
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -53,6 +52,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import org.bouncycastle.util.encoders.Base64;
+import org.tinylog.Logger;
 
 @Singleton
 public class MqttClientExecutor extends AbstractMqttClientExecutor {

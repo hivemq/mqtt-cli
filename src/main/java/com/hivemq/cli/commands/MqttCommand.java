@@ -26,7 +26,7 @@ import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.util.List;
