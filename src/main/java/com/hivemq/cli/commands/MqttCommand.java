@@ -53,24 +53,19 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
     public void setDefaultOptions() {
         final DefaultCLIProperties defaultCLIProperties = MqttCLIMain.MQTTCLI.defaultCLIProperties();
         if (version == null) {
-            if (isVerbose()) {
-                Logger.trace("Setting value of 'version' to default value: {}", defaultCLIProperties.getMqttVersion());
-            }
             version = defaultCLIProperties.getMqttVersion();
+            Logger.trace("Setting value of 'version' to default value: {}", version);
         }
 
         if (host == null) {
-            if (isVerbose()) {
-                Logger.trace("Setting value of 'host' to default value: {}", defaultCLIProperties.getHost());
-            }
             host = defaultCLIProperties.getHost();
+            Logger.trace("Setting value of 'host' to default value: {}", host);
+
         }
 
         if (port == null) {
-            if (isVerbose()) {
-                Logger.trace("Setting value of 'port' to default value: {}", defaultCLIProperties.getPort());
-            }
             port = defaultCLIProperties.getPort();
+            Logger.trace("Setting value of 'port' to default value: {}", port);
         }
 
         if (identifierPrefix == null) {
@@ -85,9 +80,7 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
             else {
                 final String rndID = MqttUtils.buildRandomClientID(defaultCLIProperties.getClientLength());
                 identifier = identifierPrefix + rndID;
-                if (isVerbose()) {
-                    Logger.trace("Created 'identifier': {}", identifier);
-                }
+                Logger.trace("Created 'identifier' ({})", identifier);
             }
         }
 

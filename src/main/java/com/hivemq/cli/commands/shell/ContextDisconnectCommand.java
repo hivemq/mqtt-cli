@@ -67,9 +67,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     @Override
     public void run() {
 
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         logUnusedDisconnectOptions();
 

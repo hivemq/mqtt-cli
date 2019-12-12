@@ -74,16 +74,14 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
             }
         }
 
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         final MqttClient client = mqttClientExecutor.getMqttClient(this);
 
         if (client != null) {
             updateContext(client);
         } else {
-            Logger.error("Context {}@{} not found", identifier, host);
+            Logger.debug("Context {}@{} not found", identifier, host);
         }
     }
 

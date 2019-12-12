@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.commands.Unsubscribe;
@@ -89,9 +90,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @Override
     public void run() {
 
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         setDefaultOptions();
 
@@ -106,7 +105,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
             mqttClientExecutor.subscribe(contextClient, this);
         }
         catch (final Exception ex) {
-            LoggerUtils.logWithCurrentContext(this, ex);
+            Logger.error(ex);
+            System.err.println(Throwables.getRootCause(ex).getMessage());
         }
 
         if (stay) {
@@ -114,7 +114,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 stay();
             }
             catch (final InterruptedException ex) {
-                LoggerUtils.logWithCurrentContext(this, ex);
+                Logger.error(ex);
+                System.err.println(Throwables.getRootCause(ex).getMessage());
             }
         }
     }
@@ -154,7 +155,6 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         WORKER_THREADS.shutdownNow();
 
         if (!contextClient.getState().isConnectedOrReconnect()) {
-            Logger.info("{} : Client disconnected", LoggerUtils.getShellContextClientPrefix());
             removeContext();
         }
         else {

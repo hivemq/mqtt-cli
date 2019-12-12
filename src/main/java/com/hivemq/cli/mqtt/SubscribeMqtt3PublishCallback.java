@@ -18,6 +18,8 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.utils.FileUtils;
+import com.hivemq.cli.utils.LoggerUtils;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
@@ -31,37 +33,27 @@ import java.util.function.Consumer;
 
 public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
 
-    @NotNull private final String identifier;
     @Nullable private final File publishFile;
     private final boolean printToStdout;
     private final boolean isBase64;
-    private final boolean debug;
-    private final boolean verbose;
+    private final Mqtt3Client client;
 
-    SubscribeMqtt3PublishCallback(final @NotNull Subscribe subscribe) {
-        identifier = subscribe.getIdentifier();
+    SubscribeMqtt3PublishCallback(final @NotNull Subscribe subscribe, final @NotNull Mqtt3Client client) {
         printToStdout = subscribe.isPrintToSTDOUT();
         publishFile = subscribe.getPublishFile();
         isBase64 = subscribe.isBase64();
-        debug = subscribe.isDebug();
-        verbose = subscribe.isVerbose();
+        this.client = client;
     }
 
     @Override
     public void accept(final @NotNull Mqtt3Publish mqtt3Publish) {
 
         PrintWriter fileWriter = null;
-        if (publishFile != null) {
-            fileWriter = FileUtils.createFileAppender(publishFile);
-        }
-
-
         byte[] payload = mqtt3Publish.getPayloadAsBytes();
         String payloadMessage = new String(payload);
 
-        if (isBase64) {
-            payloadMessage = Base64.toBase64String(payload);
-        }
+        if (publishFile != null) { fileWriter = FileUtils.createFileAppender(publishFile); }
+        if (isBase64) { payloadMessage = Base64.toBase64String(payload); }
 
         if (fileWriter != null) {
             fileWriter.println(mqtt3Publish.getTopic() + ": " + payloadMessage);
@@ -69,22 +61,12 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
             fileWriter.close();
         }
 
-        if (printToStdout) {
-            System.out.println(payloadMessage);
-        }
+        if (printToStdout) { System.out.println(payloadMessage); }
 
-        if (verbose) { //TODO unified logging
-            Logger.trace("{} received PUBLISH {}, (message={})",
-                    identifier,
-                    mqtt3Publish,
-                    new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
-        }
-        else if (debug) {
-            Logger.debug("{} received PUBLISH (topic={}, message={})",
-                    identifier,
-                    mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
-        }
-
+        Logger.debug("{} received PUBLISH ('{}') {}",
+                LoggerUtils.getClientPrefix(client.getConfig()),
+                new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
+                mqtt3Publish);
     }
 
 }

@@ -112,9 +112,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         setDefaultOptions();
         sslConfig = buildSslConfig();
 
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         logUnusedOptions();
 
@@ -163,9 +161,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         super.setDefaultOptions();
 
         if (publishFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
-            if (isVerbose()) {
-                Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
-            }
+            Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
             publishFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
         }
 

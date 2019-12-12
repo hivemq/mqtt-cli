@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.*;
@@ -111,7 +112,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             try {
                 password = defaultCLIProperties.getPassword();
             } catch (Exception e) {
-                logPropertiesException(e, "Default password could not be loaded.");
+                Logger.error(e);
+                System.err.printf("Default password could not be loaded (%s)\n", Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -119,7 +121,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             try {
                 clientCertificate = defaultCLIProperties.getClientCertificate();
             } catch (Exception e) {
-                logPropertiesException(e, "Default client certificate could not be loaded.");
+                Logger.error(e);
+                System.err.printf("Default client certificate could not be loaded (%s)\n", Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -127,7 +130,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             try {
                 clientPrivateKey = defaultCLIProperties.getClientPrivateKey();
             } catch (Exception e) {
-                logPropertiesException(e, "Default client private key could not be loaded.");
+                Logger.error(e);
+                System.err.printf("Default client private key could not be loaded (%s)\n", Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -141,7 +145,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 certificates.add(defaultServerCertificate);
             }
         } catch (Exception e) {
-            logPropertiesException(e, "Default server certificate could not be loaded.");
+            Logger.error(e);
+            System.err.printf("Default server certificate could not be loaded (%s)\n", Throwables.getRootCause(e).getMessage());
         }
 
     }
@@ -154,33 +159,13 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 return doBuildSslConfig();
             }
             catch (Exception e) {
-                logPropertiesException(e);
+                Logger.error(e);
+                System.err.println(Throwables.getRootCause(e).getMessage());
             }
         }
 
         return null;
     }
-
-    private void logPropertiesException(final @NotNull Exception e) {
-        if (isVerbose()) {
-            Logger.trace(e);
-        }
-        else if (isDebug()) {
-            Logger.debug(e.getMessage());
-        }
-        Logger.error(MqttUtils.getRootCause(e).getMessage());
-    }
-
-    private void logPropertiesException(final @NotNull Exception e, final @NotNull String message) {
-        if (isVerbose()) {
-            Logger.trace(e);
-        }
-        else if (isDebug()) {
-            Logger.debug(e.getMessage());
-        }
-        Logger.error(message + " ({})", MqttUtils.getRootCause(e).getMessage());
-    }
-
 
     private boolean useBuiltSslConfig() {
         return certificates != null ||

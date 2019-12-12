@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -91,16 +92,15 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     public void run() {
         logUnusedOptions();
 
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.publish(contextClient, this);
         }
         catch (final Exception ex) {
-            LoggerUtils.logWithCurrentContext(this, ex);
+            Logger.error(ex);
+            System.err.println(Throwables.getRootCause(ex).getMessage());
         }
     }
 

@@ -17,6 +17,7 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.utils.MqttUtils;
@@ -174,13 +175,13 @@ public class ShellCommand implements Runnable {
             TERMINAL_WRITER.println(shellCommandLine.getUsageMessage());
             TERMINAL_WRITER.flush();
 
-            Logger.tag("Shell").info("Using default values from properties file {}:", defaultCLIProperties.getFile().getPath());
-            Logger.tag("Shell").info("Host: {}, Port: {}, Mqtt-Version {}, Shell-Debug-Level: {}",
+            TERMINAL_WRITER.printf("Using default values from properties file %s:\n", defaultCLIProperties.getFile().getPath());
+            TERMINAL_WRITER.printf("Host: %s, Port: %d, Mqtt-Version %s, Shell-Debug-Level: %s\n",
                     defaultCLIProperties.getHost(),
                     defaultCLIProperties.getPort(),
                     defaultCLIProperties.getMqttVersion(),
                     defaultCLIProperties.getShellDebugLevel());
-            Logger.tag("Shell").info("Writing Logfile to {}", logfilePath);
+            TERMINAL_WRITER.printf("Writing Logfile to %s\n", logfilePath);
 
             String line;
             while (!exitShell) {
@@ -197,18 +198,13 @@ public class ShellCommand implements Runnable {
                     }
                     return;
                 } catch (final Exception ex) {
-                    logOnRightLevels(ex);
+                    Logger.error(ex);
+                    System.err.println(Throwables.getRootCause(ex).getMessage());
                 }
             }
-        } catch (final Throwable t) {
-            if (VERBOSE) {
-                Logger.trace(t);
-            }
-            else if (DEBUG) {
-                Logger.debug(t.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(t).getMessage());
-
+        } catch (final Exception ex) {
+            Logger.error(ex);
+            System.err.println(Throwables.getRootCause(ex).getMessage());
         }
     }
 

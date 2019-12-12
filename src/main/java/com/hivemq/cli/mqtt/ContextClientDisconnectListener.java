@@ -35,13 +35,7 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
         if (context.getSource() != MqttDisconnectSource.USER) {
             final Throwable cause = context.getCause();
 
-            if (ShellCommand.VERBOSE) {
-                Logger.trace("{} {}", LoggerUtils.getClientPrefix(context.getClientConfig()), cause);
-            }
-            else if (ShellCommand.DEBUG) {
-                Logger.debug("{} {}", LoggerUtils.getClientPrefix(context.getClientConfig()),
-                        cause.getMessage());
-            }
+            Logger.debug("{} {}", LoggerUtils.getClientPrefix(context.getClientConfig()), cause);
 
             // If the currently active shell client gets disconnected from the server prompt the user to enter
             if (contextEqualsShellContext(context)) {

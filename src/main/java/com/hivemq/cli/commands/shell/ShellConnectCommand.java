@@ -77,9 +77,7 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
     private @Nullable MqttClient connect() {
 
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         try {
             return mqttClientExecutor.connect(this);

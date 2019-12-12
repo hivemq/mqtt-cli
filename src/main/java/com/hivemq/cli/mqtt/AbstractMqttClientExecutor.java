@@ -20,6 +20,7 @@ import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
 import com.hivemq.cli.utils.MqttUtils;
+import com.hivemq.client.internal.mqtt.message.connect.MqttConnectRestrictions;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
@@ -148,7 +149,7 @@ abstract class AbstractMqttClientExecutor {
 
         }
         else if (disconnect.isDebug()) {
-            Logger.debug("client to disconnect is not connected: {} ", clientKey);
+            Logger.debug("client to disconnect is not connected ({}) ", clientKey);
         }
 
     }
@@ -193,12 +194,8 @@ abstract class AbstractMqttClientExecutor {
 
     public @NotNull MqttClient connect(final @NotNull Connect connect) {
         if (isConnected(connect)) {
-            if (connect.isVerbose()) {
-                Logger.trace("Client is already connected ({})", connect.getKey());
-            } else if (connect.isDebug()) {
-                Logger.debug("Client is already connected");
-            }
-            Logger.info("Using already connected client with key: {}", connect.getKey());
+            Logger.debug("Client is already connected ({})", connect.getKey());
+            Logger.info("Using already connected  ({})", connect.getKey());
             return clientKeyToClientData.get(connect.getKey()).getClient();
         }
 
@@ -220,28 +217,22 @@ abstract class AbstractMqttClientExecutor {
         final @NotNull Mqtt5ConnectRestrictions connectRestrictions = createMqtt5ConnectRestrictions(connect);
 
         final Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder()
-                .willPublish(willPublish)
-                .restrictions(connectRestrictions);
+                .willPublish(willPublish);
 
-        if (connect.getCleanStart() != null) {
-            connectBuilder.cleanStart(connect.getCleanStart());
+        // Workaround : if the built connect restrictions are the default ones do not append them to the connect builder
+        // -> Else the connectMessage.toString() method will flood the logging output
+        if (!connectRestrictions.equals(Mqtt5ConnectRestrictions.builder().build())) {
+            connectBuilder.restrictions(connectRestrictions);
         }
 
-        if (connect.getKeepAlive() != null) {
-            connectBuilder.keepAlive(connect.getKeepAlive());
-        }
-
-        if (connect.getSessionExpiryInterval() != null) {
-            connectBuilder.sessionExpiryInterval(connect.getSessionExpiryInterval());
-        }
-
-        if (connect.getConnectUserProperties() != null) {
-            connectBuilder.userProperties(connect.getConnectUserProperties());
-        }
+        if (connect.getCleanStart() != null) { connectBuilder.cleanStart(connect.getCleanStart()); }
+        if (connect.getKeepAlive() != null) { connectBuilder.keepAlive(connect.getKeepAlive()); }
+        if (connect.getSessionExpiryInterval() != null) { connectBuilder.sessionExpiryInterval(connect.getSessionExpiryInterval()); }
+        if (connect.getConnectUserProperties() != null) { connectBuilder.userProperties(connect.getConnectUserProperties()); }
 
         connectBuilder.simpleAuth(buildMqtt5Authentication(connect));
 
-        client.toAsync().publishes(MqttGlobalPublishFilter.REMAINING, buildRemainingMqtt5PublishesCallback(connect));
+        client.toAsync().publishes(MqttGlobalPublishFilter.REMAINING, buildRemainingMqtt5PublishesCallback(connect, client));
 
         mqtt5Connect(client, connectBuilder.build(), connect);
 
@@ -273,7 +264,7 @@ abstract class AbstractMqttClientExecutor {
 
         connectBuilder.simpleAuth(buildMqtt3Authentication(connect));
 
-        client.toAsync().publishes(MqttGlobalPublishFilter.REMAINING, buildRemainingMqtt3PublishesCallback(connect));
+        client.toAsync().publishes(MqttGlobalPublishFilter.REMAINING, buildRemainingMqtt3PublishesCallback(connect, client));
 
         mqtt3Connect(client, connectBuilder.build(), connect);
 
@@ -444,34 +435,24 @@ abstract class AbstractMqttClientExecutor {
         return client;
     }
 
-    @NotNull private Consumer<Mqtt5Publish> buildRemainingMqtt5PublishesCallback(final @NotNull Connect connect) {
+    @NotNull private Consumer<Mqtt5Publish> buildRemainingMqtt5PublishesCallback(final @NotNull Connect connect, final @NotNull Mqtt5Client client) {
         if (connect instanceof Subscribe) {
-            return new SubscribeMqtt5PublishCallback((Subscribe) connect);
+            return new SubscribeMqtt5PublishCallback((Subscribe) connect, client);
         }
         else {
             return mqtt5Publish -> {
-                if (connect.isVerbose()) {
-                    Logger.trace("received PUBLISH: {}, MESSAGE: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
-                }
-                else if (connect.isDebug()) {
-                    Logger.debug("received PUBLISH: (Topic: '{}', MESSAGE: '{}')", mqtt5Publish.getTopic(), new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
-                }
+                Logger.debug("received PUBLISH: {}, MESSAGE: '{}'", mqtt5Publish, new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
             };
         }
     }
 
-    @NotNull private Consumer<Mqtt3Publish> buildRemainingMqtt3PublishesCallback(final @NotNull Connect connect) {
+    @NotNull private Consumer<Mqtt3Publish> buildRemainingMqtt3PublishesCallback(final @NotNull Connect connect, final @NotNull Mqtt3Client client) {
         if (connect instanceof Subscribe) {
-            return new SubscribeMqtt3PublishCallback((Subscribe) connect);
+            return new SubscribeMqtt3PublishCallback((Subscribe) connect, client);
         }
         else {
             return mqtt3Publish -> {
-                if (connect.isVerbose()) {
-                    Logger.trace("received PUBLISH: {}, MESSAGE: '{}'", mqtt3Publish, new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
-                }
-                else if (connect.isDebug()) {
-                    Logger.debug("received PUBLISH: (Topic: '{}', MESSAGE: '{}')", mqtt3Publish.getTopic(), new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
-                }
+                Logger.debug("received PUBLISH: {}, MESSAGE: '{}'", mqtt3Publish, new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
             };
         }
     }

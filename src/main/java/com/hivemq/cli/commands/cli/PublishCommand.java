@@ -109,7 +109,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         // TinyLog configuration
         Map<String, String> configurationMap = new HashMap<>();
         configurationMap.put("writer", "console");
-        configurationMap.put("writer.format", "{tag} {message}");
+        configurationMap.put("writer.format", "{tag} {message|indent=4}");
         configurationMap.put("writer.level", "off");
         if (isDebug()) { configurationMap.put("writer.level", "debug"); }
         if (isVerbose()) { configurationMap.put("writer.level", "trace"); }
@@ -119,9 +119,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         setDefaultOptions();
         sslConfig = buildSslConfig();
 
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         logUnusedOptions();
 

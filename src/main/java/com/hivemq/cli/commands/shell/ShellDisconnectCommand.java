@@ -87,9 +87,7 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
             host = defaultCLIProperties.getHost();
         }
 
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         try {
             if (disconnectAll) {

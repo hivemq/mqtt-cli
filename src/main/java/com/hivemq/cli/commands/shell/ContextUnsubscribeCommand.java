@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -61,9 +62,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
     @Override
     public void run() {
 
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         logUnusedUnsubscribeOptions();
 
@@ -71,7 +70,8 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
             mqttClientExecutor.unsubscribe(contextClient, this);
         }
         catch (final Exception ex) {
-            LoggerUtils.logWithCurrentContext(this, ex);
+            Logger.error(ex);
+            System.err.println(Throwables.getRootCause(ex).getMessage());
         }
     }
 

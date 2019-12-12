@@ -68,9 +68,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
     @Override
     public void run() {
 
-        if (isVerbose()) {
-            Logger.trace("Command {}", this);
-        }
+        Logger.trace("Command {}", this);
 
         final List<ClientData> sortedClientData = getSortedClientData();
 
