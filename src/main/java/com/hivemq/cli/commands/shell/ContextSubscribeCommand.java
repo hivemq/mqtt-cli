@@ -23,7 +23,6 @@ import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -105,8 +104,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
             mqttClientExecutor.subscribe(contextClient, this);
         }
         catch (final Exception ex) {
-            Logger.error(ex);
-            System.err.println(Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
         if (stay) {
@@ -114,8 +112,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 stay();
             }
             catch (final InterruptedException ex) {
-                Logger.error(ex);
-                System.err.println(Throwables.getRootCause(ex).getMessage());
+                Logger.error(ex, Throwables.getRootCause(ex).getMessage());
             }
         }
     }

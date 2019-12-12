@@ -29,16 +29,6 @@ import java.util.Optional;
 
 public class LoggerUtils {
 
-    public static void logWithCurrentContext(final @NotNull CliCommand cmd, final @NotNull Exception ex) {
-        if (cmd.isVerbose()) {
-            Logger.trace("{} : ", getShellContextClientPrefix(), ex);
-        }
-        else if (cmd.isDebug()) {
-            Logger.debug("{} : ", getShellContextClientPrefix(), ex.getMessage());
-        }
-        Logger.error(MqttUtils.getRootCause(ex).getMessage());
-    }
-
     public static String getShellContextClientPrefix() {
         if (ShellContextCommand.contextClient != null) {
             final MqttClientConfig config = ShellContextCommand.contextClient.getConfig();

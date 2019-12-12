@@ -99,12 +99,10 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
             mqttClientExecutor.publish(contextClient, this);
         }
         catch (final Exception ex) {
-            Logger.error(ex);
-            System.err.println(Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
     }
 
-    //TODO
     private void logUnusedOptions() {
         if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
             if (messageExpiryInterval != null) {

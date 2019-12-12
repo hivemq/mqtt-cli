@@ -70,8 +70,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
             mqttClientExecutor.unsubscribe(contextClient, this);
         }
         catch (final Exception ex) {
-            Logger.error(ex);
-            System.err.println(Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
     }
 

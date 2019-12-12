@@ -83,8 +83,7 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
             return mqttClientExecutor.connect(this);
         }
         catch (final Exception ex) {
-            Logger.error(ex);
-            System.err.println(Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
         return null;
     }

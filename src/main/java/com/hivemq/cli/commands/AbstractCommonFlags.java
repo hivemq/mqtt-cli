@@ -112,8 +112,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             try {
                 password = defaultCLIProperties.getPassword();
             } catch (Exception e) {
-                Logger.error(e);
-                System.err.printf("Default password could not be loaded (%s)\n", Throwables.getRootCause(e).getMessage());
+                Logger.error(e,"Default password could not be loaded ({})", Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -121,8 +120,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             try {
                 clientCertificate = defaultCLIProperties.getClientCertificate();
             } catch (Exception e) {
-                Logger.error(e);
-                System.err.printf("Default client certificate could not be loaded (%s)\n", Throwables.getRootCause(e).getMessage());
+                Logger.error(e,"Default client certificate could not be loaded ({})", Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -130,8 +128,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             try {
                 clientPrivateKey = defaultCLIProperties.getClientPrivateKey();
             } catch (Exception e) {
-                Logger.error(e);
-                System.err.printf("Default client private key could not be loaded (%s)\n", Throwables.getRootCause(e).getMessage());
+                Logger.error(e,"Default client private key could not be loaded ({})", Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -145,8 +142,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 certificates.add(defaultServerCertificate);
             }
         } catch (Exception e) {
-            Logger.error(e);
-            System.err.printf("Default server certificate could not be loaded (%s)\n", Throwables.getRootCause(e).getMessage());
+            Logger.error(e,"Default server certificate could not be loaded ({})", Throwables.getRootCause(e).getMessage());
         }
 
     }
@@ -159,8 +155,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 return doBuildSslConfig();
             }
             catch (Exception e) {
-                Logger.error(e);
-                System.err.println(Throwables.getRootCause(e).getMessage());
+                Logger.error(e, Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -278,12 +273,6 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 ", useWebSocket=" + useWebSocket +
                 (webSocketPath != null ? (", webSocketPath=" + webSocketPath) : "") +
                 getWillOptions();
-    }
-
-    // GETTER AND SETTER
-
-    public void setUseSsl(final boolean useSsl) {
-        this.useSsl = useSsl;
     }
 
     @Nullable

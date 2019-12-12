@@ -103,8 +103,7 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
             }
         }
         catch (final Exception ex) {
-            Logger.error(ex.getMessage());
-            System.err.println(Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
     }

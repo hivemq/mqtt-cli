@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
@@ -80,7 +81,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
             }
         }
         catch (final Exception ex) {
-            LoggerUtils.logWithCurrentContext(this, ex);
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
     }

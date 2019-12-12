@@ -124,19 +124,25 @@ public class ShellCommand implements Runnable {
 
         String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{tag}|min-size=10} | {{level}|min-size=7} | {message}";
         if (isVerbose() || isDebug()) {
-            logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{level}|min-size=7} | {{class-name}.{method}:{line}|min-size=20} | {{tag}|min-size=10} | {message}";
+            logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{level}|min-size=7} | {{class-name}.{method}:{line}|min-size=20} | {message}";
         }
 
-
         // TinyLog configuration
+        // File Writer (creates logfiles under .mqtt-cli/logs folder)
         Map<String, String> configurationMap = new HashMap<>();
         configurationMap.put("writer1", "file");
         configurationMap.put("writer1.format", logfileFormatPattern);
         configurationMap.put("writer1.file", logfilePath);
         configurationMap.put("writer1.append", "true");
         configurationMap.put("writer1.level", "off");
+        configurationMap.put("writer1.tag", "-");
         if (isDebug()) { configurationMap.put("writer1.level", "debug"); }
         if (isVerbose()) { configurationMap.put("writer1.level", "trace"); }
+
+        // Console Writer (tagged with "CONSOLE" throughout the application)
+        configurationMap.put("writer2", "console");
+        configurationMap.put("writer2.format", "{message-only}");
+        configurationMap.put("writer2.level", "warn");
 
         Configuration.replace(configurationMap);
 
@@ -183,6 +189,8 @@ public class ShellCommand implements Runnable {
                     defaultCLIProperties.getShellDebugLevel());
             TERMINAL_WRITER.printf("Writing Logfile to %s\n", logfilePath);
 
+            Logger.info("--- Shell-Mode started ---");
+
             String line;
             while (!exitShell) {
                 try {
@@ -193,18 +201,14 @@ public class ShellCommand implements Runnable {
                         currentCommandLine.execute(arguments);
                     }
                 } catch (final UserInterruptException e) {
-                    if (VERBOSE) {
-                        Logger.trace("User interrupted shell: {}", e);
-                    }
+                    Logger.trace("User interrupted shell: {}", e);
                     return;
                 } catch (final Exception ex) {
-                    Logger.error(ex);
-                    System.err.println(Throwables.getRootCause(ex).getMessage());
+                    Logger.error(ex, Throwables.getRootCause(ex).getMessage());
                 }
             }
         } catch (final Exception ex) {
-            Logger.error(ex);
-            System.err.println(Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
     }
 
@@ -235,16 +239,6 @@ public class ShellCommand implements Runnable {
                 .style(AttributedStyle.DEFAULT)
                 .append(DEFAULT_PROMPT)
                 .toAnsi();
-    }
-
-    private static void logOnRightLevels(final @NotNull Exception ex) {
-        if (VERBOSE) {
-            Logger.trace(ex);
-        }
-        else if (DEBUG) {
-            Logger.debug(ex.getMessage());
-        }
-        Logger.error(MqttUtils.getRootCause(ex).getMessage());
     }
 
     static void usage(Object command) {

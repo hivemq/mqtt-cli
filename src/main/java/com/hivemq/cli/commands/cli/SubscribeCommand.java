@@ -102,8 +102,8 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         // TinyLog configuration
         Map<String, String> configurationMap = new HashMap<>();
         configurationMap.put("writer", "console");
-        configurationMap.put("writer.format", "{tag} {message}");
-        configurationMap.put("writer.level", "off");
+        configurationMap.put("writer.format", "{message-only}");
+        configurationMap.put("writer.level", "warn");
         if (isDebug()) { configurationMap.put("writer.level", "debug"); }
         if (isVerbose()) { configurationMap.put("writer.level", "trace"); }
 
@@ -121,8 +121,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             subscribeClient = mqttClientExecutor.subscribe(this);
         }
         catch (final Exception ex) {
-            Logger.error(ex.getMessage());
-            System.err.println(Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
             return;
         }
 
@@ -130,8 +129,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             stay();
         }
         catch (final InterruptedException ex) {
-            Logger.error(ex.getMessage());
-            System.err.println(Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
 
@@ -150,9 +148,6 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     private void stay() throws InterruptedException {
         while (subscribeClient.getState().isConnectedOrReconnect()) {
             Thread.sleep(IDLE_TIME);
-        }
-        if (isVerbose()) {
-            Logger.trace("Client disconnected");
         }
     }
 

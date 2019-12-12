@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -69,7 +70,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
                 extractKeyFromContextName(contextName);
             }
             catch (final IllegalArgumentException ex) {
-                Logger.error(ex.getMessage());
+                Logger.error(ex, Throwables.getRootCause(ex).getMessage());
                 return;
             }
         }
@@ -81,7 +82,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
         if (client != null) {
             updateContext(client);
         } else {
-            Logger.debug("Context {}@{} not found", identifier, host);
+            Logger.error("Context {}@{} not found", identifier, host);
         }
     }
 

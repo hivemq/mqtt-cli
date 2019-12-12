@@ -22,12 +22,10 @@ import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
@@ -57,14 +55,11 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     private MqttClientSslConfig sslConfig;
 
     //needed for pico cli - reflection code generation
-    public PublishCommand() {
-        this(null);
-    }
+    public PublishCommand() { this(null); }
 
     @Inject
     public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;
-
     }
 
     @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
@@ -109,8 +104,8 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         // TinyLog configuration
         Map<String, String> configurationMap = new HashMap<>();
         configurationMap.put("writer", "console");
-        configurationMap.put("writer.format", "{tag} {message|indent=4}");
-        configurationMap.put("writer.level", "off");
+        configurationMap.put("writer.format", "{message-only}");
+        configurationMap.put("writer.level", "warn");
         if (isDebug()) { configurationMap.put("writer.level", "debug"); }
         if (isVerbose()) { configurationMap.put("writer.level", "trace"); }
 
@@ -128,8 +123,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
             mqttClientExecutor.publish(this);
         }
         catch (final Exception ex) {
-            Logger.error(ex.getMessage());
-            System.err.println(Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
     }

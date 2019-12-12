@@ -107,12 +107,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((subAck, throwable) -> {
 
                     if (throwable != null) {
-                        Logger.error("{} failed SUBSCRIBE to TOPIC '{}': {}",
-                                clientLogPrefix,
-                                topic,
-                                throwable);
-
-                        System.err.printf("%s failed SUBSCRIBE to TOPIC '%s': %s\n",
+                        Logger.error(throwable,"{} failed SUBSCRIBE to TOPIC '{}': {}",
                                 clientLogPrefix,
                                 topic,
                                 Throwables.getRootCause(throwable).getMessage());
@@ -148,12 +143,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .subscribe(subscribeMessage, new SubscribeMqtt3PublishCallback(subscribe, client))
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
-                        Logger.error("{} failed SUBSCRIBE to TOPIC '{}': {}",
-                                clientLogPrefix,
-                                topic,
-                                throwable);
-
-                        System.err.printf("%s failed SUBSCRIBE to TOPIC '%s': %s\n",
+                        Logger.error(throwable, "{} failed SUBSCRIBE to TOPIC '{}': {}",
                                 clientLogPrefix,
                                 topic,
                                 Throwables.getRootCause(throwable).getMessage());
@@ -203,12 +193,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             .publish(publishMessage)
             .whenComplete((publishResult, throwable) -> {
                 if (throwable != null) {
-                    Logger.error("{} failed PUBLISH to TOPIC '{}': {}",
-                            clientLogPrefix,
-                            topic,
-                            throwable);
-
-                    System.err.printf("%s failed PUBLISH to TOPIC '%s': %s\n",
+                    Logger.error(throwable,"{} failed PUBLISH to TOPIC '{}': {}",
                             clientLogPrefix,
                             topic,
                             Throwables.getRootCause(throwable).getMessage());
@@ -245,16 +230,10 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .whenComplete((publishResult, throwable) -> {
                     if (throwable != null) {
 
-                        Logger.error("{} failed PUBLISH to TOPIC '{}': {}",
-                                clientLogPrefix,
-                                topic,
-                                throwable);
-
-                        System.err.printf("%s failed PUBLISH to TOPIC '%s': %s\n",
+                        Logger.error(throwable, "{} failed PUBLISH to TOPIC '{}': {}",
                                 clientLogPrefix,
                                 topic,
                                 Throwables.getRootCause(throwable).getMessage());
-
                     } else {
 
                         Logger.debug("{} received PUBLISH acknowledgement for PUBLISH to TOPIC '{}': {}",
@@ -286,12 +265,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
                         if (throwable != null) {
 
-                            Logger.error("{} failed UNSUBSCRIBE from TOPIC '{}': {}",
-                                    clientLogPrefix,
-                                    topic,
-                                    throwable);
-
-                            System.err.printf("%s failed UNSUBSCRIBE from TOPIC '%s': %s\n",
+                            Logger.error(throwable,"{} failed UNSUBSCRIBE from TOPIC '{}': {}",
                                     clientLogPrefix,
                                     topic,
                                     Throwables.getRootCause(throwable).getMessage());
@@ -327,11 +301,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     .whenComplete((Void unsubAck, Throwable throwable) -> {
 
                         if (throwable != null) {
-                            Logger.error("{} failed UNSUBSCRIBE from TOPIC '{}': {}",
-                                    clientLogPrefix,
-                                    topic,
-                                    throwable);
-                            System.err.printf("%s failed UNSUBSCRIBE from TOPIC '%s': %s\n",
+                            Logger.error(throwable, "{} failed UNSUBSCRIBE from TOPIC '{}': {}",
                                     clientLogPrefix,
                                     topic,
                                     Throwables.getRootCause(throwable).getMessage());
