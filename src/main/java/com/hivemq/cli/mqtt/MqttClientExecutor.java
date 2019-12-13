@@ -344,17 +344,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     @Override
     void mqtt3Disconnect(@NotNull final Mqtt3Client client, @NotNull final Disconnect disconnect) {
 
-        if (disconnect.getSessionExpiryInterval() != null) {
-            Logger.warn("Session expiry interval set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
-        }
-        if (disconnect.getReasonString() != null) {
-            Logger.warn("Reason string was set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
-        }
-        if (disconnect.getUserProperties() != null) {
-            Logger.warn("User properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
-        }
-
-        Logger.debug("Sending DISCONNECT with Mqtt3Disconnect: {}", Mqtt3Disconnect.class);
+        Logger.debug("{} Sending DISCONNECT", LoggerUtils.getClientPrefix(client.getConfig()));
 
         client.toBlocking().disconnect();
     }
