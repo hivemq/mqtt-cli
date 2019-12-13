@@ -22,6 +22,7 @@ import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -102,14 +103,15 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     public void run() {
 
         // TinyLog configuration
-        Map<String, String> configurationMap = new HashMap<>();
-        configurationMap.put("writer", "console");
-        configurationMap.put("writer.format", "{message-only}");
-        configurationMap.put("writer.level", "warn");
-        if (isDebug()) { configurationMap.put("writer.level", "debug"); }
-        if (isVerbose()) { configurationMap.put("writer.level", "trace"); }
+        Map<String, String> configurationMap = new HashMap<String, String>() {{
+            put("writer1", "console");
+            put("writer1.format", "{message-only}");
+            put("writer1.level", "warn");
+            if (isDebug()) put("writer1.level", "debug");
+            if (isVerbose()) put("writer1.level", "trace");
+        }};
 
-        Configuration.replace(configurationMap);
+        LoggerUtils.useDefaultLogging(configurationMap);
 
         setDefaultOptions();
         sslConfig = buildSslConfig();

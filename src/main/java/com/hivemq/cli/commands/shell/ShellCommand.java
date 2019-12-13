@@ -20,7 +20,7 @@ package com.hivemq.cli.commands.shell;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.utils.MqttUtils;
+import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
@@ -29,19 +29,13 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
-import org.tinylog.Level;
 import org.tinylog.Logger;
 import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 import picocli.shell.jline3.PicocliJLineCompleter;
-import sun.security.krb5.Config;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,57 +90,15 @@ public class ShellCommand implements Runnable {
     @Override
     public void run() {
 
-        final String dir = defaultCLIProperties.getLogfilePath();
+        Map<String, String> configurationMap = new HashMap<String, String>() {{
+            put("writer1", "console");
+            put("writer1.format", "{message-only}");
+            put("writer1.level", "warn");
+        }};
 
-        final Level debugLevel = defaultCLIProperties.getShellDebugLevel();
-        switch (debugLevel) {
-            case TRACE:
-                VERBOSE = true;
-                DEBUG = false;
-                break;
-            case DEBUG:
-                VERBOSE = false;
-                DEBUG = true;
-                break;
-            case INFO:
-                VERBOSE = false;
-                DEBUG = false;
-                break;
-        }
+        LoggerUtils.useDefaultLogging(configurationMap);
 
-        final File dirFile = new File(dir);
-        dirFile.mkdirs();
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-
-        logfilePath = dir + "mqtt_cli_" + dateFormat.format(date) + ".log";
-
-        String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{tag}|min-size=10} | {{level}|min-size=7} | {message}";
-        if (isVerbose() || isDebug()) {
-            logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {{level}|min-size=7} | {{class-name}.{method}:{line}|min-size=20} | {message}";
-        }
-
-        // TinyLog configuration
-        // File Writer (creates logfiles under .mqtt-cli/logs folder)
-        Map<String, String> configurationMap = new HashMap<>();
-        configurationMap.put("writer1", "file");
-        configurationMap.put("writer1.format", logfileFormatPattern);
-        configurationMap.put("writer1.file", logfilePath);
-        configurationMap.put("writer1.append", "true");
-        configurationMap.put("writer1.level", "off");
-        configurationMap.put("writer1.tag", "-");
-        if (isDebug()) { configurationMap.put("writer1.level", "debug"); }
-        if (isVerbose()) { configurationMap.put("writer1.level", "trace"); }
-
-        // Console Writer (tagged with "CONSOLE" throughout the application)
-        configurationMap.put("writer2", "console");
-        configurationMap.put("writer2.format", "{message-only}");
-        configurationMap.put("writer2.level", "warn");
-
-        Configuration.replace(configurationMap);
-
-        logfilePath = Configuration.get("writer1.file");
+        logfilePath = Configuration.get("writer.file");
 
         interact();
     }
@@ -182,11 +134,11 @@ public class ShellCommand implements Runnable {
             TERMINAL_WRITER.flush();
 
             TERMINAL_WRITER.printf("Using default values from properties file %s:\n", defaultCLIProperties.getFile().getPath());
-            TERMINAL_WRITER.printf("Host: %s, Port: %d, Mqtt-Version %s, Shell-Debug-Level: %s\n",
+            TERMINAL_WRITER.printf("Host: %s, Port: %d, Mqtt-Version %s, Logfile-Debug-Level: %s\n",
                     defaultCLIProperties.getHost(),
                     defaultCLIProperties.getPort(),
                     defaultCLIProperties.getMqttVersion(),
-                    defaultCLIProperties.getShellDebugLevel());
+                    defaultCLIProperties.getLogfileDebugLevel());
             TERMINAL_WRITER.printf("Writing Logfile to %s\n", logfilePath);
 
             Logger.info("--- Shell-Mode started ---");

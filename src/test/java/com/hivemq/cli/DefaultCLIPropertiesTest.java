@@ -68,7 +68,7 @@ class DefaultCLIPropertiesTest {
         assertEquals(MqttVersion.MQTT_5_0, defaultCLIProperties.getMqttVersion());
         assertEquals("localhost", defaultCLIProperties.getHost());
         assertEquals(1883, defaultCLIProperties.getPort());
-        assertEquals(Level.TRACE, defaultCLIProperties.getShellDebugLevel());
+        assertEquals(Level.DEBUG, defaultCLIProperties.getLogfileDebugLevel());
         assertEquals("mqtt", defaultCLIProperties.getClientPrefix());
         assertEquals(pathToTmpDir + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
@@ -87,7 +87,7 @@ class DefaultCLIPropertiesTest {
         assertEquals(MqttVersion.MQTT_5_0, defaultCLIProperties.getMqttVersion());
         assertEquals("localhost", defaultCLIProperties.getHost());
         assertEquals(1883, defaultCLIProperties.getPort());
-        assertEquals(Level.TRACE, defaultCLIProperties.getShellDebugLevel());
+        assertEquals(Level.DEBUG, defaultCLIProperties.getLogfileDebugLevel());
         assertEquals("mqtt", defaultCLIProperties.getClientPrefix());
         assertEquals(pathToTmpDir + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
@@ -106,7 +106,7 @@ class DefaultCLIPropertiesTest {
         assertEquals(MqttVersion.MQTT_3_1_1, defaultCLIProperties.getMqttVersion());
         assertEquals("broker.hivemq.com", defaultCLIProperties.getHost());
         assertEquals(1884, defaultCLIProperties.getPort());
-        assertEquals(Level.DEBUG, defaultCLIProperties.getShellDebugLevel());
+        assertEquals(Level.TRACE, defaultCLIProperties.getLogfileDebugLevel());
         assertEquals("testprefix", defaultCLIProperties.getClientPrefix());
         assertEquals("/.mqtt-cli/logs", defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());

@@ -16,27 +16,53 @@
  */
 package com.hivemq.cli.utils;
 
-import com.google.common.base.Throwables;
-import com.hivemq.cli.commands.CliCommand;
-import com.hivemq.cli.commands.shell.ShellContextCommand;
+import com.hivemq.cli.DefaultCLIProperties;
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import org.jetbrains.annotations.NotNull;
-import org.tinylog.Logger;
+import org.jetbrains.annotations.Nullable;
+import org.tinylog.Level;
+import org.tinylog.configuration.Configuration;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class LoggerUtils {
 
-    public static String getShellContextClientPrefix() {
-        if (ShellContextCommand.contextClient != null) {
-            final MqttClientConfig config = ShellContextCommand.contextClient.getConfig();
-            return getClientPrefix(config);
+    public static void useDefaultLogging(@Nullable final Map<String, String> extendedProperties) {
+        final DefaultCLIProperties defaultCLIProperties = MqttCLIMain.MQTTCLI.defaultCLIProperties();
+        final String dir = defaultCLIProperties.getLogfilePath();
+        final Level  logLevel = defaultCLIProperties.getLogfileDebugLevel();
+        final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        final Date date = new Date();
+        final String logfilePath = dir + "mqtt_cli_" + dateFormat.format(date) + ".log";
+        final String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {pid} | {{level}|min-size=5} | {message}";
+        final File dirFile = new File(dir);
+
+        dirFile.mkdirs();
+
+        // TinyLog configuration
+        // File Writer (creates logfiles under .mqtt-cli/logs folder)
+        Map<String, String> configurationMap = new HashMap<String, String>() {{
+            put("writer", "file");
+            put("writer.format", logfileFormatPattern);
+            put("writer.file", logfilePath);
+            put("writer.append", "true");
+            put("writer.level", logLevel.name().toLowerCase());
+        }};
+
+        if (extendedProperties != null) {
+            configurationMap.putAll(extendedProperties);
         }
-        else {
-            return "";
-        }
+
+        Configuration.replace(configurationMap);
+    }
+
+    public static void useDefaultLogging() {
+        useDefaultLogging(null);
     }
 
     public static String getClientPrefix(final @NotNull MqttClientConfig config) {

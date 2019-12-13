@@ -49,7 +49,7 @@ public class DefaultCLIProperties {
     private static final String MQTT_VERSION = "mqtt.version";
     private static final String HOST = "mqtt.host";
     private static final String PORT = "mqtt.port";
-    private static final String DEBUG_LEVEL_SHELL = "debug.level.shell";
+    private static final String LOGFILE_DEBUG_LEVEL = "logfile.level";
     private static final String CLIENT_ID_PREFIX = "client.id.prefix";
     private static final String CLIENT_ID_LENGTH = "client.id.length";
     private static final String SUBSCRIBE_OUTPUT_FILE = "client.subscribe.output";
@@ -67,7 +67,7 @@ public class DefaultCLIProperties {
        put(MQTT_VERSION, "5");
        put(HOST, "localhost");
        put(PORT, "1883");
-       put(DEBUG_LEVEL_SHELL, "verbose");
+       put(LOGFILE_DEBUG_LEVEL, "debug");
        put(CLIENT_ID_PREFIX, "mqtt");
        put(CLIENT_ID_LENGTH, "8");
        put(SUBSCRIBE_OUTPUT_FILE, null);
@@ -181,16 +181,18 @@ public class DefaultCLIProperties {
     }
 
     @NotNull
-    public Level getShellDebugLevel() {
-        final String shellDebugLevel = propertyToValue.get(DEBUG_LEVEL_SHELL);
-        switch (shellDebugLevel.toLowerCase()) {
+    public Level getLogfileDebugLevel() {
+        final String debugLevel = propertyToValue.get(LOGFILE_DEBUG_LEVEL);
+        switch (debugLevel.toLowerCase()) {
             case "trace":
             case "verbose":
                 return Level.TRACE;
             case "debug": return Level.DEBUG;
             case "info": return Level.INFO;
+            case "warn": return Level.WARN;
+            case "error": return Level.ERROR;
         }
-        throw new IllegalArgumentException("'" + shellDebugLevel + "' is not a valid debug level");
+        throw new IllegalArgumentException("'" + debugLevel + "' is not a valid debug level");
     }
 
     @NotNull
