@@ -25,6 +25,7 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,8 +73,10 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
         final List<ClientData> sortedClientData = getSortedClientData();
 
+        final PrintWriter writer = ShellCommand.TERMINAL_WRITER;
+
         if (longOutput) {
-            System.out.println("total " + sortedClientData.size());
+            writer.println("total " + sortedClientData.size());
 
             if (sortedClientData.size() == 0) {
                 return;
@@ -125,7 +128,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
                 final String connectionState = client.getState().toString();
 
-                System.out.printf(format,
+                writer.printf(format,
                         connectionState,
                         dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond(),
                         client.getConfig().getClientIdentifier().get().toString(),
@@ -135,7 +138,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
                         client.getConfig().getSslConfig().map(ssl -> ssl.getProtocols().get().toString()).orElse("NO_SSL"));
 
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
+                    writer.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
 
@@ -143,9 +146,9 @@ public class ListClientsCommand implements Runnable, CliCommand {
         } else {
 
             for (final ClientData clientData : sortedClientData) {
-                System.out.println(clientData.getClient().getConfig().getClientIdentifier().get() + "@" + clientData.getClient().getConfig().getServerHost());
+                writer.println(clientData.getClient().getConfig().getClientIdentifier().get() + "@" + clientData.getClient().getConfig().getServerHost());
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
+                    writer.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
         }

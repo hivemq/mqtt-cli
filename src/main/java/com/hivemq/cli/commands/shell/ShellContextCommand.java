@@ -65,7 +65,7 @@ public class ShellContextCommand implements Runnable, CliCommand {
 
     @Override
     public void run() {
-        System.out.println(ShellCommand.getUsageMessage());
+        ShellCommand.TERMINAL_WRITER.println(ShellCommand.getUsageMessage());
     }
 
     public String getKey() {
