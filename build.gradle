@@ -217,8 +217,8 @@ forbiddenApisMain {
 }
 
 forbiddenApis {
-    bundledSignatures = ['jdk-system-out']
-    ignoreFailures = true
+    bundledSignatures = ['jdk-deprecated', 'jdk-non-portable', 'jdk-reflection' ]
+    ignoreFailures = false
 }
 
 //disable
