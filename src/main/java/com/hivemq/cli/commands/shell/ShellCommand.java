@@ -153,12 +153,13 @@ public class ShellCommand implements Runnable {
                         currentCommandLine.execute(arguments);
                     }
                 } catch (final UserInterruptException e) {
-                    Logger.trace("User interrupted shell: {}", e);
+                    Logger.trace("--- User interrupted shell ---");
                     return;
                 } catch (final Exception ex) {
                     Logger.error(ex, Throwables.getRootCause(ex).getMessage());
                 }
             }
+            Logger.info("--- Shell-Mode exited ---");
         } catch (final Exception ex) {
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }

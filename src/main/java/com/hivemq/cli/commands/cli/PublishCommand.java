@@ -27,6 +27,7 @@ import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
@@ -123,6 +124,9 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.publish(this);
+        }
+        catch (final ConnectionFailedException cex) {
+            Logger.error(cex, cex.getCause().getMessage());
         }
         catch (final Exception ex) {
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());

@@ -199,9 +199,8 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             Throwables.getRootCause(throwable).getMessage());
                 }
                 else {
-                Logger.debug("{} received PUBLISH acknowledgement for PUBLISH to TOPIC '{}': {}",
+                Logger.debug("{} received PUBLISH acknowledgement {}",
                         clientLogPrefix,
-                        topic,
                         publishResult);
                 }
             })
@@ -236,9 +235,8 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                                 Throwables.getRootCause(throwable).getMessage());
                     } else {
 
-                        Logger.debug("{} received PUBLISH acknowledgement for PUBLISH to TOPIC '{}': {}",
+                        Logger.debug("{} received PUBLISH acknowledgement {}",
                                 clientLogPrefix,
-                                topic,
                                 publishResult);
                     }
                 })
