@@ -20,8 +20,8 @@ mqtt.port=1883
 mqtt.version=5
 client.id.prefix=mqtt
 ws.path=/mqtt
-debug.level.shell=verbose
 client.id.length=8
+logfile.level=verbose
 logfile.path=/Users/tseeberg/.mqtt-cli/logs/
 ```
 
@@ -45,6 +45,6 @@ Therefore you have to specify the values to the following keys if you want to ov
 | ``auth.client.key`` | The path to the default client key corresponding to the certificate  |
 | ``auth.server.cafile`` | The path to the default server certificate  |
 | ``client.subscribe.output``| The default filepath to which all the received publishes of a subscribed client will be written to. See `sub -of` option |
-| ``debug.level.shell``| The default debug level of the shell which may be one of the following values: ``{INFO | DEBUG | VERBOSE}`` | ``VERBOSE``
-| ``debug.logfile.path`` | The default path to the logfile directory to which all the logs will be written | `~/.mqtt-cli/logs`
+| ``logfile.level``| The default debug level for the logfile which may be one of the following values: ``{INFO | DEBUG | TRACE}`` | ``TRACE‚``
+| ``logfile.path`` | The default path to the logfile directory to which all the logs will be written | `~/.mqtt-cli/logs`
 
