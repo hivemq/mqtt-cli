@@ -80,7 +80,7 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
             else {
                 final String rndID = MqttUtils.buildRandomClientID(defaultCLIProperties.getClientLength());
                 identifier = identifierPrefix + rndID;
-                Logger.trace("Created 'identifier' ({})", identifier);
+                Logger.trace("Created identifier ('{}')", identifier);
             }
         }
 
