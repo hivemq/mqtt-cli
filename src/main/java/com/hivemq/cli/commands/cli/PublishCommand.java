@@ -16,11 +16,13 @@
  */
 package com.hivemq.cli.commands.cli;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -31,13 +33,16 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @CommandLine.Command(name = "pub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -52,14 +57,11 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     private MqttClientSslConfig sslConfig;
 
     //needed for pico cli - reflection code generation
-    public PublishCommand() {
-        this(null);
-    }
+    public PublishCommand() { this(null); }
 
     @Inject
     public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;
-
     }
 
     @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
@@ -69,57 +71,53 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to", order = 1)
-    @NotNull
-    private String[] topics;
+    @NotNull private String[] topics;
 
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default for all: 0)", order = 1)
-    @NotNull
-    private MqttQos[] qos;
+    @NotNull private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message to publish", order = 1)
-    @NotNull
-    private ByteBuffer message;
+    @NotNull private ByteBuffer message;
 
     @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, description = "The message will be retained (default: false)", order = 1)
-    @Nullable
-    private Boolean retain;
+    @Nullable private Boolean retain;
 
     @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default: no message expiry)", order = 1)
-    @Nullable
-    private Long messageExpiryInterval;
+    @Nullable private Long messageExpiryInterval;
 
     @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the publish message", order = 1)
-    @Nullable
-    private Mqtt5PayloadFormatIndicator payloadFormatIndicator;
+    @Nullable private Mqtt5PayloadFormatIndicator payloadFormatIndicator;
 
     @CommandLine.Option(names = {"-ct", "--contentType"}, description = "A description of publish message's content", order = 1)
-    @Nullable
-    private String contentType;
+    @Nullable private String contentType;
 
     @CommandLine.Option(names = {"-rt", "--responseTopic"}, description = "The topic name for the publish message`s response message", order = 1)
-    @Nullable
-    private String responseTopic;
+    @Nullable private String responseTopic;
 
     @CommandLine.Option(names = {"-cd", "--correlationData"}, converter = ByteBufferConverter.class, description = "The correlation data of the publish message", order = 1)
-    @Nullable
-    private ByteBuffer correlationData;
-
+    @Nullable private ByteBuffer correlationData;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the publish message", order = 1)
-    @Nullable
-    private Mqtt5UserProperty[] userProperties;
+    @Nullable private Mqtt5UserProperty[] userProperties;
 
     @Override
     public void run() {
 
-        LoggingContext.put("identifier", "PUBLISH");
+        // TinyLog configuration
+        Map<String, String> configurationMap = new HashMap<String, String>() {{
+            put("writer1", "console");
+            put("writer1.format", "{message-only}");
+            put("writer1.level", "warn");
+            if (isDebug()) put("writer1.level", "debug");
+            if (isVerbose()) put("writer1.level", "trace");
+        }};
 
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
+        LoggerUtils.useDefaultLogging(configurationMap);
 
         setDefaultOptions();
         sslConfig = buildSslConfig();
+
+        Logger.trace("Command {} ", this);
 
         logUnusedOptions();
 
@@ -127,20 +125,11 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.publish(this);
         }
+        catch (final ConnectionFailedException cex) {
+            Logger.error(cex, cex.getCause().getMessage());
+        }
         catch (final Exception ex) {
-            if (ex instanceof ConnectionFailedException) {
-                LoggingContext.put("identifier", "CONNECT ERROR:");
-            }
-            else {
-                LoggingContext.put("identifier", "PUBLISH ERROR:");
-            }
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
     }
@@ -174,17 +163,18 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
 
     @Override
     public String toString() {
-        return "Publish:: {" +
-                "topics=" + Arrays.toString(topics) +
+        return getClass().getSimpleName() + "{" +
+                 connectOptions() +
+                ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
-                ", retain=" + retain +
-                ", messageExpiryInterval=" + messageExpiryInterval +
-                ", payloadFormatIndicator=" + payloadFormatIndicator +
-                ", contentType=" + contentType +
-                ", responseTopic=" + responseTopic +
-                ", correlationData=" + correlationData +
-                ", userProperties=" + getUserProperties() +
-                ", Connect:: {" + connectOptions() + "}" +
+                ", message=" + new String(message.array(), StandardCharsets.UTF_8) +
+                (retain != null ? (", retain=" + retain) : "") +
+                (messageExpiryInterval != null ? (", messageExpiryInterval=" + messageExpiryInterval) : "") +
+                (payloadFormatIndicator != null ? (", payloadFormatIndicator=" + payloadFormatIndicator) : "") +
+                (contentType != null ? (", contentType=" + contentType) : "") +
+                (responseTopic != null ? (", responseTopic=" + responseTopic) : "") +
+                (correlationData != null ? (", correlationData=" + new String(correlationData.array(), StandardCharsets.UTF_8)) : "") +
+                (userProperties != null ? (", userProperties=" + getUserProperties()) : "") +
                 '}';
     }
 
@@ -195,18 +185,10 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         return topics;
     }
 
-    public void setTopics(final String[] topics) {
-        this.topics = topics;
-    }
-
     @NotNull
     @Override
     public MqttQos[] getQos() {
         return qos;
-    }
-
-    public void setQos(final MqttQos[] qos) {
-        this.qos = qos;
     }
 
     @NotNull
@@ -225,18 +207,10 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         return retain;
     }
 
-    public void setRetain(final @Nullable Boolean retain) {
-        this.retain = retain;
-    }
-
     @Override
     @Nullable
     public Long getMessageExpiryInterval() {
         return messageExpiryInterval;
-    }
-
-    public void setMessageExpiryInterval(@Nullable final Long messageExpiryInterval) {
-        this.messageExpiryInterval = messageExpiryInterval;
     }
 
     @Nullable
@@ -245,18 +219,10 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         return payloadFormatIndicator;
     }
 
-    public void setPayloadFormatIndicator(@Nullable final Mqtt5PayloadFormatIndicator payloadFormatIndicator) {
-        this.payloadFormatIndicator = payloadFormatIndicator;
-    }
-
     @Nullable
     @Override
     public String getContentType() {
         return contentType;
-    }
-
-    public void setContentType(@Nullable final String contentType) {
-        this.contentType = contentType;
     }
 
     @Nullable
@@ -265,18 +231,10 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         return responseTopic;
     }
 
-    public void setResponseTopic(@Nullable final String responseTopic) {
-        this.responseTopic = responseTopic;
-    }
-
     @Nullable
     @Override
     public ByteBuffer getCorrelationData() {
         return correlationData;
-    }
-
-    public void setCorrelationData(@Nullable final ByteBuffer correlationData) {
-        this.correlationData = correlationData;
     }
 
     @Nullable
@@ -295,7 +253,4 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         return sslConfig;
     }
 
-    public void setSslConfig(final MqttClientSslConfig sslConfig) {
-        this.sslConfig = sslConfig;
-    }
 }

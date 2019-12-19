@@ -16,21 +16,23 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.Disconnect;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 @CommandLine.Command(name = "dis",
         aliases = "disconnect",
@@ -55,23 +57,18 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     private boolean disconnectAll;
 
     @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The session expiry of the disconnect (default: 0)")
-    @Nullable
-    private Long sessionExpiryInterval;
+    @Nullable private Long sessionExpiryInterval;
 
     @CommandLine.Option(names = {"-r", "--reason"}, description = "The reason of the disconnect")
-    @Nullable
-    private String reasonString;
+    @Nullable private String reasonString;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the disconnect message")
-    @Nullable
-    private Mqtt5UserProperty[] userProperties;
+    @Nullable private Mqtt5UserProperty[] userProperties;
 
     @Override
     public void run() {
 
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         logUnusedDisconnectOptions();
 
@@ -84,14 +81,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
             }
         }
         catch (final Exception ex) {
-            LoggingContext.put("identifier", "DISCONNECT");
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
     }
@@ -114,8 +104,12 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
 
     @Override
     public String toString() {
-        return "ContextDisconnect:: {" +
+        return getClass().getSimpleName() + "{" +
                 "key=" + getKey() +
+                ", all=" + disconnectAll +
+                (sessionExpiryInterval != null ?  (", sessionExpiryInterval=" + sessionExpiryInterval) : "") +
+                (reasonString != null ?  (", reasonString=" + reasonString) : "") +
+                (userProperties != null ?  (", userProperties=" + Arrays.toString(userProperties)) : "") +
                 "}";
     }
 
@@ -125,18 +119,10 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
         return sessionExpiryInterval;
     }
 
-    public void setSessionExpiryInterval(@Nullable final Long sessionExpiryInterval) {
-        this.sessionExpiryInterval = sessionExpiryInterval;
-    }
-
     @Nullable
     @Override
     public String getReasonString() {
         return reasonString;
-    }
-
-    public void setReasonString(@Nullable final String reasonString) {
-        this.reasonString = reasonString;
     }
 
     @Nullable

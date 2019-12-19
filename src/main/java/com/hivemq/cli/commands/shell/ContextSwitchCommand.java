@@ -16,13 +16,13 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.Context;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -70,29 +70,18 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
                 extractKeyFromContextName(contextName);
             }
             catch (final IllegalArgumentException ex) {
-                if (isVerbose()) {
-                    Logger.trace(ex);
-                }
-                else if (isDebug()) {
-                    Logger.debug(ex.getMessage());
-                }
-                Logger.error(MqttUtils.getRootCause(ex).getMessage());
+                Logger.error(ex, Throwables.getRootCause(ex).getMessage());
                 return;
             }
         }
 
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
+        Logger.trace("Command {} ", this);
 
         final MqttClient client = mqttClientExecutor.getMqttClient(this);
 
         if (client != null) {
             updateContext(client);
         } else {
-            if (isVerbose()) {
-                Logger.trace("Client with key: {} not in Cache", getKey());
-            }
             Logger.error("Context {}@{} not found", identifier, host);
         }
     }
@@ -120,19 +109,15 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
 
     @Override
     public String toString() {
-        return "ContextSwitch:: {" +
-                "contextName='" + contextName + '\'' +
-                ", key=" + getKey() +
+        return getClass().getSimpleName() + "{" +
+                "identifier=" + identifier +
+                ", host=" + host +
                 '}';
     }
 
     @NotNull
     public String getHost() {
         return host;
-    }
-
-    public void setHost(final String host) {
-        this.host = host;
     }
 
     @Override

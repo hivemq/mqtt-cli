@@ -23,10 +23,6 @@ import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import org.pmw.tinylog.Configurator;
-import org.pmw.tinylog.Level;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.writers.ConsoleWriter;
 import picocli.CommandLine;
 
 import java.security.Security;
@@ -42,12 +38,6 @@ public class MqttCLIMain {
 
         Security.setProperty("crypto.policy", "unlimited");
 
-        Configurator.defaultConfig()
-                .writer(new ConsoleWriter())
-                .formatPattern("{context:identifier}: {message}")
-                .level(Level.INFO)
-                .activate();
-
         MQTTCLI = DaggerMqttCLI.create();
         final CommandLine commandLine = MQTTCLI.cli();
         final DefaultCLIProperties defaultCLIProperties = MQTTCLI.defaultCLIProperties();
@@ -55,7 +45,7 @@ public class MqttCLIMain {
         try {
             defaultCLIProperties.init();
         } catch (Exception e) {
-            Logger.error(e.getMessage());
+            System.err.println(e.getMessage());
             System.exit(-1);
         }
 

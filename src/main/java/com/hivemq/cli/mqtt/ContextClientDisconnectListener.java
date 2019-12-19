@@ -16,39 +16,32 @@
  */
 package com.hivemq.cli.mqtt;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.shell.ShellCommand;
 import com.hivemq.cli.commands.shell.ShellContextCommand;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedContext;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
 
 public class ContextClientDisconnectListener implements MqttClientDisconnectedListener {
 
     @Override
     public void onDisconnected(final @NotNull MqttClientDisconnectedContext context) {
 
-        final String contextBefore = LoggingContext.get("identifier");
-
-        LoggingContext.put("identifier", "CLIENT " + context.getClientConfig().getClientIdentifier().orElse(null));
-
         if (context.getSource() != MqttDisconnectSource.USER) {
             final Throwable cause = context.getCause();
 
-            if (ShellCommand.VERBOSE) {
-                Logger.trace(cause);
-            }
-            else if (ShellCommand.DEBUG) {
-                Logger.debug(cause.getMessage());
-            }
+            Logger.debug(cause, "{} DISCONNECTED {}", LoggerUtils.getClientPrefix(context.getClientConfig()),
+                    Throwables.getRootCause(cause).getMessage());
 
             // If the currently active shell client gets disconnected from the server prompt the user to enter
             if (contextEqualsShellContext(context)) {
-                Logger.error(MqttUtils.getRootCause(cause).getMessage());
+                Logger.error(cause, Throwables.getRootCause(cause).getMessage());
                 ShellContextCommand.removeContext();
                 ShellCommand.TERMINAL_WRITER.printf("Press ENTER to resume: ");
                 ShellCommand.TERMINAL_WRITER.flush();
@@ -59,8 +52,6 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
         }
 
         MqttClientExecutor.getClientDataMap().remove(getKeyFromConfig(context.getClientConfig()));
-
-        LoggingContext.put("identifier", contextBefore);
     }
 
     private String getKeyFromConfig(final @NotNull MqttClientConfig clientConfig) {

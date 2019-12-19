@@ -29,7 +29,6 @@ import org.bouncycastle.operator.InputDecryptorProvider;
 import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo;
 import org.bouncycastle.pkcs.PKCSException;
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -58,7 +57,6 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
         try {
             object = pemParser.readObject();
         } catch (PEMException pe) {
-            Logger.debug(pe);
             throw new Exception(MALFORMED_KEY);
         }
 

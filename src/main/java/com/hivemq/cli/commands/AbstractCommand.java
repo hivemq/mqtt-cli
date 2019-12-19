@@ -17,9 +17,6 @@
 
 package com.hivemq.cli.commands;
 
-import com.hivemq.cli.commands.CliCommand;
-import org.pmw.tinylog.Configurator;
-import org.pmw.tinylog.Level;
 import picocli.CommandLine;
 
 @CommandLine.Command(sortOptions = false,
@@ -39,7 +36,6 @@ public abstract class AbstractCommand implements CliCommand {
 
         if (debug && !verbose) {
             this.debug = true;
-            Configurator.currentConfig().level(Level.DEBUG).activate();
         }
     }
 
@@ -49,7 +45,6 @@ public abstract class AbstractCommand implements CliCommand {
         if (verbose) {
             this.verbose = true;
             debug = true;
-            Configurator.currentConfig().level(Level.TRACE).activate();
         } else {
             this.verbose = false;
         }

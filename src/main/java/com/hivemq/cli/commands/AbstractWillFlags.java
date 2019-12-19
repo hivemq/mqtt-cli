@@ -25,10 +25,11 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 @CommandLine.Command
 public abstract class AbstractWillFlags extends MqttCommand implements Will {
@@ -41,7 +42,7 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
     @Nullable
     private ByteBuffer willMessage;
 
-    @CommandLine.Option(names = {"-Wq", "--willQualityOfService"}, converter = MqttQosConverter.class, description = "Quality of service level for the will message (default: 0)", order = 3)
+    @CommandLine.Option(names = {"-Wq", "--willQualityOfService"}, defaultValue = "0", converter = MqttQosConverter.class, description = "Quality of service level for the will message (default: 0)", order = 3)
     @Nullable
     private MqttQos willQos;
 
@@ -79,17 +80,20 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
 
 
     String getWillOptions() {
-        return "willTopic='" + willTopic + '\'' +
-                ", willQos=" + willQos +
-                ", willMessage='" + willMessage + '\'' +
-                ", willRetain=" + willRetain +
-                ", willMessageExpiryInterval=" + willMessageExpiryInterval +
-                ", willDelayInterval=" + willDelayInterval +
-                ", willPayloadFormatIndicator=" + willPayloadFormatIndicator +
-                ", willContentType='" + willContentType + '\'' +
-                ", willResponseTopic='" + willResponseTopic + '\'' +
-                ", willCorrelationData=" + willCorrelationData +
-                ", willUserProperties=" + willUserProperties;
+        if (willTopic == null) {
+            return "";
+        }
+        return  ", willTopic=" + willTopic +
+                (willQos != null ? (", willQos=" + willQos) : "") +
+                (willMessage != null ? (", willMessage=" + willMessage) : "") +
+                (willRetain != null ? (", willRetain=" + willRetain) : "") +
+                (willMessageExpiryInterval != null ? (", willMessageExpiryInterval=" + willMessageExpiryInterval) : "") +
+                (willDelayInterval != null ? (", willDelayInterval=" + willDelayInterval) : "") +
+                (willPayloadFormatIndicator != null ? (", willPayloadFormatIndicator=" + willPayloadFormatIndicator) : "") +
+                (willContentType != null ? (", willContentType=" + willContentType) : "") +
+                (willResponseTopic != null ? (", willResponseTopic=" + willResponseTopic) : "") +
+                (willCorrelationData != null ? (", willCorrelationData=" + willCorrelationData) : "") +
+                (willUserProperties != null ? (", willUserProperties=" + Arrays.toString(willUserProperties)) : "");
     }
 
     public void logUnusedOptions() {
@@ -124,18 +128,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willTopic;
     }
 
-    public void setWillTopic(@Nullable final String willTopic) {
-        this.willTopic = willTopic;
-    }
-
     @Nullable
     @Override
     public ByteBuffer getWillMessage() {
         return willMessage;
-    }
-
-    public void setWillMessage(@Nullable final ByteBuffer willMessage) {
-        this.willMessage = willMessage;
     }
 
     @Nullable
@@ -144,18 +140,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willQos;
     }
 
-    public void setWillQos(@Nullable final MqttQos willQos) {
-        this.willQos = willQos;
-    }
-
     @Nullable
     @Override
     public Boolean getWillRetain() {
         return willRetain;
-    }
-
-    public void setWillRetain(final @Nullable Boolean willRetain) {
-        this.willRetain = willRetain;
     }
 
     @Nullable
@@ -164,18 +152,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willMessageExpiryInterval;
     }
 
-    public void setWillMessageExpiryInterval(@Nullable final Long willMessageExpiryInterval) {
-        this.willMessageExpiryInterval = willMessageExpiryInterval;
-    }
-
     @Nullable
     @Override
     public Long getWillDelayInterval() {
         return willDelayInterval;
-    }
-
-    public void setWillDelayInterval(final long willDelayInterval) {
-        this.willDelayInterval = willDelayInterval;
     }
 
     @Nullable
@@ -184,18 +164,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willPayloadFormatIndicator;
     }
 
-    public void setWillPayloadFormatIndicator(@Nullable final Mqtt5PayloadFormatIndicator willPayloadFormatIndicator) {
-        this.willPayloadFormatIndicator = willPayloadFormatIndicator;
-    }
-
     @Nullable
     @Override
     public String getWillContentType() {
         return willContentType;
-    }
-
-    public void setWillContentType(@Nullable final String willContentType) {
-        this.willContentType = willContentType;
     }
 
     @Nullable
@@ -204,18 +176,10 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return willResponseTopic;
     }
 
-    public void setWillResponseTopic(@Nullable final String willResponseTopic) {
-        this.willResponseTopic = willResponseTopic;
-    }
-
     @Nullable
     @Override
     public ByteBuffer getWillCorrelationData() {
         return willCorrelationData;
-    }
-
-    public void setWillCorrelationData(@Nullable final ByteBuffer willCorrelationData) {
-        this.willCorrelationData = willCorrelationData;
     }
 
     @Nullable
@@ -224,7 +188,4 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         return MqttUtils.convertToMqtt5UserProperties(willUserProperties);
     }
 
-    public void setWillUserProperties(@Nullable final Mqtt5UserProperty... willUserProperties) {
-        this.willUserProperties = willUserProperties;
-    }
 }

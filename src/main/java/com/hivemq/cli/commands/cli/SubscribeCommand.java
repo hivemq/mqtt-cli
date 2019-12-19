@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.cli;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Subscribe;
@@ -23,7 +24,9 @@ import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
+import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -32,13 +35,15 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @CommandLine.Command(name = "sub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -50,6 +55,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     private final MqttClientExecutor mqttClientExecutor;
     private final DefaultCLIProperties defaultCLIProperties;
+    private MqttClient subscribeClient;
 
     private MqttClientSslConfig sslConfig;
 
@@ -57,7 +63,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     //needed for pico cli - reflection code generation
     public SubscribeCommand() {
-        this(null,null);
+        this(null, null);
     }
 
     @Inject
@@ -74,19 +80,16 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to", order = 1)
-    @NotNull
-    private String[] topics;
+    @NotNull private String[] topics;
 
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 2)", order = 1)
-    @NotNull
-    private MqttQos[] qos;
+    @NotNull private MqttQos[] qos;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the subscribe message", order = 1)
-    @Nullable Mqtt5UserProperty[] userProperties;
+    @Nullable private Mqtt5UserProperty[] userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written", order = 1)
-    @Nullable
-    private File publishFile;
+    @Nullable private File publishFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, hidden = true, defaultValue = "true", description = "The received messages will be written to the console (default: true)", order = 1)
     private boolean printToSTDOUT;
@@ -97,50 +100,41 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @Override
     public void run() {
 
-        LoggingContext.put("identifier", "SUBSCRIBE");
+        // TinyLog configuration
+        Map<String, String> configurationMap = new HashMap<String, String>() {{
+            put("writer1", "console");
+            put("writer1.format", "{message-only}");
+            put("writer1.level", "warn");
+            if (isDebug()) put("writer1.level", "debug");
+            if (isVerbose()) put("writer1.level", "trace");
+        }};
 
-
-        if (isVerbose()) {
-            Logger.trace("Command: {} ", this);
-        }
+        LoggerUtils.useDefaultLogging(configurationMap);
 
         setDefaultOptions();
-
         sslConfig = buildSslConfig();
+
+        Logger.trace("Command {} ", this);
 
         logUnusedOptions();
 
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
-            mqttClientExecutor.subscribe(this);
+            subscribeClient = mqttClientExecutor.subscribe(this);
+        }
+        catch (final ConnectionFailedException cex) {
+            Logger.error(cex, cex.getCause().getMessage());
         }
         catch (final Exception ex) {
-            if (ex instanceof ConnectionFailedException) {
-                LoggingContext.put("identifier", "CONNECT ERROR:");
-            }
-            else {
-                LoggingContext.put("identifier", "SUBSCRIBE ERROR:");
-            }
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
+            return;
         }
 
         try {
             stay();
         }
         catch (final InterruptedException ex) {
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
 
@@ -157,11 +151,8 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     }
 
     private void stay() throws InterruptedException {
-        while (mqttClientExecutor.isConnected(this)) {
+        while (subscribeClient.getState().isConnectedOrReconnect()) {
             Thread.sleep(IDLE_TIME);
-        }
-        if (isVerbose()) {
-            Logger.trace("Client disconnected.");
         }
     }
 
@@ -170,9 +161,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         super.setDefaultOptions();
 
         if (publishFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
-            if (isVerbose()) {
-                Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
-            }
+            Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
             publishFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
         }
 
@@ -180,14 +169,14 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     @Override
     public String toString() {
-        return "Subscribe:: {" +
+        return getClass().getSimpleName() + "{" +
+                connectOptions() +
                 "topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
-                ", userProperties=" + userProperties +
-                ", toFile=" + publishFile +
+                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
+                (publishFile != null ? (", publishFile=" + publishFile.getAbsolutePath()) : "") +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
-                ", Connect:: {" + commonOptions() + "}" +
                 '}';
     }
 
@@ -198,18 +187,10 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         return topics;
     }
 
-    public void setTopics(final String[] topics) {
-        this.topics = topics;
-    }
-
     @NotNull
     @Override
     public MqttQos[] getQos() {
         return qos;
-    }
-
-    public void setQos(final MqttQos[] qos) {
-        this.qos = qos;
     }
 
     @Nullable
@@ -218,37 +199,21 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         return publishFile;
     }
 
-    public void setPublishFile(@Nullable final File publishFile) {
-        this.publishFile = publishFile;
-    }
-
     public boolean isPrintToSTDOUT() {
         return printToSTDOUT;
-    }
-
-    public void setPrintToSTDOUT(final boolean printToSTDOUT) {
-        this.printToSTDOUT = printToSTDOUT;
     }
 
     public boolean isBase64() {
         return base64;
     }
 
-    public void setBase64(final boolean base64) {
-        this.base64 = base64;
-    }
-
     @Nullable
     @Override
-    public Mqtt5UserProperties getUserProperties() {
-
-        return MqttUtils.convertToMqtt5UserProperties(userProperties);
-    }
+    public Mqtt5UserProperties getUserProperties() { return MqttUtils.convertToMqtt5UserProperties(userProperties); }
 
     public void setUserProperties(@Nullable final Mqtt5UserProperty... userProperties) {
         this.userProperties = userProperties;
     }
-
 
     @Nullable
     @Override
@@ -256,7 +221,4 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         return sslConfig;
     }
 
-    public void setSslConfig(final MqttClientSslConfig sslConfig) {
-        this.sslConfig = sslConfig;
-    }
 }

@@ -17,7 +17,7 @@
 package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import java.io.*;
 
@@ -31,7 +31,7 @@ public class FileUtils {
             try {
                 out = new FileOutputStream(file, true);
             } catch (final FileNotFoundException e) {
-                Logger.error("Could not open file: {} ", file.getName(), e.getMessage());
+                Logger.error(e,"Could not open file ({}) ", file.getName(), e.getMessage());
             }
         }
         else { // file has to be created
@@ -39,7 +39,7 @@ public class FileUtils {
             try {
                 out = new FileOutputStream(file);
             } catch (final FileNotFoundException e) {
-                Logger.error("Could not create file: {} ", file.getName(), e.getMessage());
+                Logger.error(e, "Could not create file ({}) ", file.getName(), e.getMessage());
             }
         }
 

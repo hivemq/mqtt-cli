@@ -22,8 +22,6 @@ import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -53,29 +51,21 @@ public class ShellContextCommand implements Runnable, CliCommand {
         this.mqttClientExecutor = mqttClientExecutor;
     }
 
-    public static void updateContext(final @Nullable MqttClient client) {
+    static void updateContext(final @Nullable MqttClient client) {
         if (client != null && client.getConfig().getState().isConnectedOrReconnect()) {
-            if (ShellCommand.isVerbose()) {
-                Logger.trace("Update context to {}@{}", client.getConfig().getClientIdentifier().get(), client.getConfig().getServerHost());
-            }
-            LoggingContext.put("identifier", "CLIENT " + client.getConfig().getClientIdentifier().get());
             contextClient = client;
             ShellCommand.readFromContext();
         }
     }
 
     public static void removeContext() {
-        if (ShellCommand.isVerbose()) {
-            Logger.trace("Remove context");
-        }
-        LoggingContext.put("identifier", "SHELL");
         contextClient = null;
         ShellCommand.readFromShell();
     }
 
     @Override
     public void run() {
-        System.out.println(ShellCommand.getUsageMessage());
+        ShellCommand.TERMINAL_WRITER.println(ShellCommand.getUsageMessage());
     }
 
     public String getKey() {

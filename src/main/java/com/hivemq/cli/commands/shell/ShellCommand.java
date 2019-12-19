@@ -17,9 +17,10 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.utils.MqttUtils;
+import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
@@ -28,20 +29,15 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
-import org.pmw.tinylog.Configurator;
-import org.pmw.tinylog.Level;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
-import org.pmw.tinylog.labelers.TimestampLabeler;
-import org.pmw.tinylog.policies.SizePolicy;
-import org.pmw.tinylog.writers.ConsoleWriter;
-import org.pmw.tinylog.writers.RollingFileWriter;
+import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 import picocli.shell.jline3.PicocliJLineCompleter;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 @CommandLine.Command(name = "shell", aliases = "sh",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -94,48 +90,15 @@ public class ShellCommand implements Runnable {
     @Override
     public void run() {
 
-        final Level debugLevel = defaultCLIProperties.getShellDebugLevel();
-        switch (debugLevel) {
-            case TRACE:
-                VERBOSE = true;
-                DEBUG = false;
-                break;
-            case DEBUG:
-                VERBOSE = false;
-                DEBUG = true;
-                break;
-            case INFO:
-                VERBOSE = false;
-                DEBUG = false;
-                break;
-        }
+        Map<String, String> configurationMap = new HashMap<String, String>() {{
+            put("writer1", "console");
+            put("writer1.format", "{message-only}");
+            put("writer1.level", "warn");
+        }};
 
-        final String dir = defaultCLIProperties.getLogfilePath();
+        LoggerUtils.useDefaultLogging(configurationMap);
 
-        final File dirFile = new File(dir);
-        dirFile.mkdirs();
-
-        final String logfileFormatPattern = "{date:yyyy-MM-dd HH:mm:ss}: {{level}:|min-size=6} {context:identifier}: {message}";
-
-        final RollingFileWriter logfileWriter = new RollingFileWriter(dir + "hmq-cli.log", 30, false, new TimestampLabeler("yyyy-MM-dd"), new SizePolicy(1024 * 10));
-
-        Configurator.defaultConfig()
-                .writer(logfileWriter,
-                        debugLevel,
-                        logfileFormatPattern)
-                .addWriter(new ConsoleWriter(),
-                        Level.INFO,
-                        "{message}")
-                .activate();
-
-        LoggingContext.put("identifier", "SHELL");
-
-        logfilePath = logfileWriter.getFilename();
-
-        if (VERBOSE) {
-            Logger.trace("Command: {} ", this);
-        }
-
+        logfilePath = Configuration.get("writer.file");
 
         interact();
     }
@@ -170,13 +133,15 @@ public class ShellCommand implements Runnable {
             TERMINAL_WRITER.println(shellCommandLine.getUsageMessage());
             TERMINAL_WRITER.flush();
 
-            Logger.info("Using default values from properties file {}:", defaultCLIProperties.getFile().getPath());
-            Logger.info("Host: {}, Port: {}, Mqtt-Version {}, Shell-Debug-Level: {}",
+            TERMINAL_WRITER.printf("Using default values from properties file %s:\n", defaultCLIProperties.getFile().getPath());
+            TERMINAL_WRITER.printf("Host: %s, Port: %d, Mqtt-Version %s, Logfile-Debug-Level: %s\n",
                     defaultCLIProperties.getHost(),
                     defaultCLIProperties.getPort(),
                     defaultCLIProperties.getMqttVersion(),
-                    defaultCLIProperties.getShellDebugLevel());
-            Logger.info("Writing Logfile to {}", logfilePath);
+                    defaultCLIProperties.getLogfileDebugLevel());
+            TERMINAL_WRITER.printf("Writing Logfile to %s\n", logfilePath);
+
+            Logger.info("--- Shell-Mode started ---");
 
             String line;
             while (!exitShell) {
@@ -188,38 +153,15 @@ public class ShellCommand implements Runnable {
                         currentCommandLine.execute(arguments);
                     }
                 } catch (final UserInterruptException e) {
-                    if (VERBOSE) {
-                        Logger.trace("User interrupted shell: {}", e);
-                    }
+                    Logger.trace("--- User interrupted shell ---");
                     return;
-                } catch (final EndOfFileException e) {
-                    if (VERBOSE) {
-                        Logger.trace(e);
-                    }
-                    else if (DEBUG) {
-                        Logger.debug(e.getMessage());
-                    }
-                    Logger.error(MqttUtils.getRootCause(e).getMessage());
-                    return;
-                } catch (final Exception all) {
-                    if (DEBUG) {
-                        Logger.trace(all);
-                    }
-                    else if (VERBOSE) {
-                        Logger.debug(all.getMessage());
-                    }
-                    Logger.error(MqttUtils.getRootCause(all).getMessage());
+                } catch (final Exception ex) {
+                    Logger.error(ex, Throwables.getRootCause(ex).getMessage());
                 }
             }
-        } catch (final Throwable t) {
-            if (VERBOSE) {
-                Logger.trace(t);
-            }
-            else if (DEBUG) {
-                Logger.debug(t.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(t).getMessage());
-
+            Logger.info("--- Shell-Mode exited ---");
+        } catch (final Exception ex) {
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
     }
 
@@ -252,7 +194,6 @@ public class ShellCommand implements Runnable {
                 .toAnsi();
     }
 
-
     static void usage(Object command) {
         currentCommandLine.usage(command, System.out);
     }
@@ -275,7 +216,7 @@ public class ShellCommand implements Runnable {
 
     @Override
     public String toString() {
-        return "Shell:: {" +
+        return  getClass().getSimpleName() + "{" +
                 "logfilePath=" + logfilePath +
                 ", debug=" + DEBUG +
                 ", verbose=" + VERBOSE +
