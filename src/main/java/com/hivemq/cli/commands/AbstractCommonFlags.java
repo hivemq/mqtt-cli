@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.*;
@@ -24,7 +25,7 @@ import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttWebSocketConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -111,7 +112,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             try {
                 password = defaultCLIProperties.getPassword();
             } catch (Exception e) {
-                logPropertiesException(e, "Default password could not be loaded.");
+                Logger.error(e,"Default password could not be loaded ({})", Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -119,7 +120,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             try {
                 clientCertificate = defaultCLIProperties.getClientCertificate();
             } catch (Exception e) {
-                logPropertiesException(e, "Default client certificate could not be loaded.");
+                Logger.error(e,"Default client certificate could not be loaded ({})", Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -127,7 +128,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             try {
                 clientPrivateKey = defaultCLIProperties.getClientPrivateKey();
             } catch (Exception e) {
-                logPropertiesException(e, "Default client private key could not be loaded.");
+                Logger.error(e,"Default client private key could not be loaded ({})", Throwables.getRootCause(e).getMessage());
             }
         }
 
@@ -141,7 +142,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 certificates.add(defaultServerCertificate);
             }
         } catch (Exception e) {
-            logPropertiesException(e, "Default server certificate could not be loaded.");
+            Logger.error(e,"Default server certificate could not be loaded ({})", Throwables.getRootCause(e).getMessage());
         }
 
     }
@@ -154,33 +155,12 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 return doBuildSslConfig();
             }
             catch (Exception e) {
-                logPropertiesException(e);
+                Logger.error(e, Throwables.getRootCause(e).getMessage());
             }
         }
 
         return null;
     }
-
-    private void logPropertiesException(final @NotNull Exception e) {
-        if (isVerbose()) {
-            Logger.trace(e);
-        }
-        else if (isDebug()) {
-            Logger.debug(e.getMessage());
-        }
-        Logger.error(MqttUtils.getRootCause(e).getMessage());
-    }
-
-    private void logPropertiesException(final @NotNull Exception e, final @NotNull String message) {
-        if (isVerbose()) {
-            Logger.trace(e);
-        }
-        else if (isDebug()) {
-            Logger.debug(e.getMessage());
-        }
-        Logger.error(message + " ({})", MqttUtils.getRootCause(e).getMessage());
-    }
-
 
     private boolean useBuiltSslConfig() {
         return certificates != null ||
@@ -285,20 +265,14 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
 
     public String commonOptions() {
         return super.toString() +
-                ", user='" + user + '\'' +
-                ", keepAlive=" + keepAlive +
-                ", cleanStart=" + cleanStart +
+                (user != null ? (", user=" + user) : "") +
+                (keepAlive != null ? (", keepAlive=" + keepAlive) : "") +
+                (cleanStart != null ? (", cleanStart=" + cleanStart) : "") +
                 ", useDefaultSsl=" + useSsl +
-                ", sslConfig=" + (getSslConfig() != null) +
+                (getSslConfig() != null ? (", sslConfig=" + getSslConfig()) : "") +
                 ", useWebSocket=" + useWebSocket +
-                ", webSocketPath=" + webSocketPath +
-                ", " + getWillOptions();
-    }
-
-    // GETTER AND SETTER
-
-    public void setUseSsl(final boolean useSsl) {
-        this.useSsl = useSsl;
+                (webSocketPath != null ? (", webSocketPath=" + webSocketPath) : "") +
+                getWillOptions();
     }
 
     @Nullable
@@ -315,26 +289,14 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         return password;
     }
 
-    public void setPassword(final @Nullable ByteBuffer password) {
-        this.password = password;
-    }
-
     @Nullable
     public Integer getKeepAlive() {
         return keepAlive;
     }
 
-    public void setKeepAlive(final @Nullable Integer keepAlive) {
-        this.keepAlive = keepAlive;
-    }
-
     @Nullable
     public Boolean getCleanStart() {
         return cleanStart;
-    }
-
-    public void setCleanStart(final @Nullable Boolean cleanStart) {
-        this.cleanStart = cleanStart;
     }
 
     @Nullable

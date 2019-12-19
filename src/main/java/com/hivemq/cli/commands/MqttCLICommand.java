@@ -36,9 +36,7 @@ public class MqttCLICommand {
 
     public static final @NotNull String VERSION_STRING = "1.0";
 
-
     @Inject
-    MqttCLICommand() {
-    }
+    MqttCLICommand() { }
 
 }

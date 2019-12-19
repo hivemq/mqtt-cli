@@ -25,8 +25,10 @@ import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
+
+import java.util.Arrays;
 
 public abstract class AbstractConnectFlags extends AbstractCommonFlags implements Connect {
 
@@ -41,9 +43,9 @@ public abstract class AbstractConnectFlags extends AbstractCommonFlags implement
 
     String connectOptions() {
         return commonOptions() +
-                ", sessionExpiryInterval= " + sessionExpiryInterval +
-                ", userProperties=" + connectUserProperties +
-                ", " + connectRestrictionOptions();
+                (sessionExpiryInterval != null ? (", sessionExpiryInterval=" + sessionExpiryInterval) : "") +
+                (connectUserProperties != null ? (", userProperties=" + Arrays.toString(connectUserProperties)) : "") +
+                connectRestrictionOptions();
 
     }
 
@@ -66,17 +68,9 @@ public abstract class AbstractConnectFlags extends AbstractCommonFlags implement
         return sessionExpiryInterval;
     }
 
-    public void setSessionExpiryInterval(@Nullable final Long sessionExpiryInterval) {
-        this.sessionExpiryInterval = sessionExpiryInterval;
-    }
-
     @Nullable
     public Mqtt5UserProperties getConnectUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(connectUserProperties);
-    }
-
-    public void setConnectUserProperties(@Nullable final Mqtt5UserProperty... connectUserProperties) {
-        this.connectUserProperties = connectUserProperties;
     }
 
 }

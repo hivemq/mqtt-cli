@@ -19,7 +19,7 @@ package com.hivemq.cli.commands;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5ConnectRestrictions;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags implements ConnectRestrictions {
@@ -97,14 +97,14 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     }
 
     public String connectRestrictionOptions() {
-        return "receiveMaximum=" + receiveMaximum +
-                ", sendMaximum=" + sendMaximum +
-                ", maximumPacketSize=" + maximumPacketSize +
-                ", sendMaximumPacketSize=" + sendMaximumPacketSize +
-                ", topicAliasMaximum=" + topicAliasMaximum +
-                ", sendTopicAliasMaximum=" + sendTopicAliasMaximum +
-                ", requestProblemInformation=" + requestProblemInformation +
-                ", requestResponseInformation=" + requestResponseInformation;
+        return (receiveMaximum != null ? (", receiveMaximum=" + receiveMaximum) : "") +
+                (sendMaximum != null ? (", sendMaximum=" + sendMaximum) : "") +
+                (maximumPacketSize != null ? (", maximumPacketSize=" + maximumPacketSize) : "") +
+                (sendMaximumPacketSize != null ? (", sendMaximumPacketSize=" + sendMaximumPacketSize) : "") +
+                (topicAliasMaximum != null ? (", topicAliasMaximum=" + topicAliasMaximum) : "") +
+                (sendTopicAliasMaximum != null ? (", sendTopicAliasMaximum=" + sendTopicAliasMaximum) : "") +
+                (requestProblemInformation != null ? (", requestProblemInformation=" + requestProblemInformation) : "") +
+                (requestResponseInformation != null ? (", requestResponseInformation=" + requestResponseInformation) : "");
     }
 
     @Nullable
@@ -113,18 +113,10 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
         return receiveMaximum;
     }
 
-    public void setReceiveMaximum(@Nullable final Integer receiveMaximum) {
-        this.receiveMaximum = receiveMaximum;
-    }
-
     @Nullable
     @Override
     public Integer getSendMaximum() {
         return sendMaximum;
-    }
-
-    public void setSendMaximum(@Nullable final Integer sendMaximum) {
-        this.sendMaximum = sendMaximum;
     }
 
     @Nullable
@@ -133,18 +125,10 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
         return maximumPacketSize;
     }
 
-    public void setMaximumPacketSize(@Nullable final Integer maximumPacketSize) {
-        this.maximumPacketSize = maximumPacketSize;
-    }
-
     @Nullable
     @Override
     public Integer getSendMaximumPacketSize() {
         return sendMaximumPacketSize;
-    }
-
-    public void setSendMaximumPacketSize(@Nullable final Integer sendMaximumPacketSize) {
-        this.sendMaximumPacketSize = sendMaximumPacketSize;
     }
 
     @Nullable
@@ -153,18 +137,10 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
         return topicAliasMaximum;
     }
 
-    public void setTopicAliasMaximum(@Nullable final Integer topicAliasMaximum) {
-        this.topicAliasMaximum = topicAliasMaximum;
-    }
-
     @Nullable
     @Override
     public Integer getSendTopicAliasMaximum() {
         return sendTopicAliasMaximum;
-    }
-
-    public void setSendTopicAliasMaximum(@Nullable final Integer sendTopicAliasMaximum) {
-        this.sendTopicAliasMaximum = sendTopicAliasMaximum;
     }
 
     @Nullable
@@ -173,17 +149,10 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
         return requestProblemInformation;
     }
 
-    public void setRequestProblemInformation(@Nullable final Boolean requestProblemInformation) {
-        this.requestProblemInformation = requestProblemInformation;
-    }
-
     @Nullable
     @Override
     public Boolean getRequestResponseInformation() {
         return requestResponseInformation;
     }
 
-    public void setRequestResponseInformation(@Nullable final Boolean requestResponseInformation) {
-        this.requestResponseInformation = requestResponseInformation;
-    }
 }

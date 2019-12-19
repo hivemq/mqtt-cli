@@ -16,17 +16,18 @@
  */
 package com.hivemq.cli.commands.shell;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
-import org.pmw.tinylog.LoggingContext;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -52,32 +53,24 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
     boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
-    @NotNull
-    private String[] topics;
+    @NotNull private String[] topics;
 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property for the unsubscribe message")
     @Nullable
     private Mqtt5UserProperty[] userProperties;
 
-
     @Override
     public void run() {
-        if (isVerbose()) {
-            Logger.trace("Command {} ", this);
-        }
+
+        Logger.trace("Command {} ", this);
+
+        logUnusedUnsubscribeOptions();
 
         try {
             mqttClientExecutor.unsubscribe(contextClient, this);
         }
         catch (final Exception ex) {
-            LoggingContext.put("identifier", "UNSUBSCRIBE");
-            if (isVerbose()) {
-                Logger.trace(ex);
-            }
-            else if (isDebug()) {
-                Logger.debug(ex.getMessage());
-            }
-            Logger.error(MqttUtils.getRootCause(ex).getMessage());
+            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
     }
 
@@ -91,10 +84,10 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
 
     @Override
     public String toString() {
-        return "ContextUnsubscribe:: {" +
+        return getClass().getSimpleName() + "{" +
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
-                ", userProperties=" + userProperties +
+                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
                 '}';
     }
 
@@ -102,10 +95,6 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
     @NotNull
     public String[] getTopics() {
         return topics;
-    }
-
-    public void setTopics(final String[] topics) {
-        this.topics = topics;
     }
 
     @Override

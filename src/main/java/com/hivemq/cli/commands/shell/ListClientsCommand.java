@@ -20,12 +20,12 @@ import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.MqttClientState;
 import org.jetbrains.annotations.NotNull;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,20 +66,17 @@ public class ListClientsCommand implements Runnable, CliCommand {
     @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false", description = "list subscribed topics of clients")
     private boolean listSubscriptions;
 
-
-
-
     @Override
     public void run() {
 
-        if (isVerbose()) {
-            Logger.trace("Command: {}", this);
-        }
+        Logger.trace("Command {}", this);
 
         final List<ClientData> sortedClientData = getSortedClientData();
 
+        final PrintWriter writer = ShellCommand.TERMINAL_WRITER;
+
         if (longOutput) {
-            System.out.println("total " + sortedClientData.size());
+            writer.println("total " + sortedClientData.size());
 
             if (sortedClientData.size() == 0) {
                 return;
@@ -131,7 +128,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
                 final String connectionState = client.getState().toString();
 
-                System.out.printf(format,
+                writer.printf(format,
                         connectionState,
                         dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond(),
                         client.getConfig().getClientIdentifier().get().toString(),
@@ -141,7 +138,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
                         client.getConfig().getSslConfig().map(ssl -> ssl.getProtocols().get().toString()).orElse("NO_SSL"));
 
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
+                    writer.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
 
@@ -149,9 +146,9 @@ public class ListClientsCommand implements Runnable, CliCommand {
         } else {
 
             for (final ClientData clientData : sortedClientData) {
-                System.out.println(clientData.getClient().getConfig().getClientIdentifier().get() + "@" + clientData.getClient().getConfig().getServerHost());
+                writer.println(clientData.getClient().getConfig().getClientIdentifier().get() + "@" + clientData.getClient().getConfig().getServerHost());
                 if (listSubscriptions) {
-                    System.out.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
+                    writer.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
         }
@@ -190,9 +187,12 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
     @Override
     public String toString() {
-        return "List:: {" +
+        return getClass().getSimpleName() + "{" +
                 "sortByTime=" + sortByTime +
-                ", detailedOutput=" + longOutput +
+                ", doNotSort=" + doNotSort +
+                ", reverse=" + reverse +
+                ", listSubscriptions" + listSubscriptions +
+                ", longOutput=" + longOutput +
                 '}';
     }
 
