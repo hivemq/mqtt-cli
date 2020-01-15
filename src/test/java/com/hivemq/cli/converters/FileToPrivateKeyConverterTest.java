@@ -80,11 +80,4 @@ class FileToPrivateKeyConverterTest {
         assertEquals(FileToPrivateKeyConverter.MALFORMED_KEY, e.getMessage());
     }
 
-    @Test
-    void convert_ENCRYPTED_RSA_KEY_WRONG_PASSWORD_FAILURE() throws Exception {
-        System.setIn(new ByteArrayInputStream("badpassword".getBytes()));
-        Exception e = assertThrows(Exception.class, () -> fileToPrivateKeyConverter.convert(pathToEncryptedRSAKey));
-        assertEquals(FileToPrivateKeyConverter.WRONG_PASSWORD, e.getMessage());
-    }
-
 }
