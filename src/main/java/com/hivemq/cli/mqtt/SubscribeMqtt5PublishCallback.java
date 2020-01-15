@@ -18,6 +18,7 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.utils.FileUtils;
+import com.hivemq.cli.utils.JsonUtils;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
@@ -36,12 +37,14 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
     @Nullable private final File publishFile;
     private final boolean printToStdout;
     private final boolean isBase64;
+    private final boolean isJsonOutput;
     private final Mqtt5Client client;
 
     SubscribeMqtt5PublishCallback(final @NotNull Subscribe subscribe, final @NotNull Mqtt5Client client) {
         printToStdout = subscribe.isPrintToSTDOUT();
         publishFile = subscribe.getPublishFile();
         isBase64 = subscribe.isBase64();
+        isJsonOutput = subscribe.isJsonOutput();
         this.client  = client;
     }
 
@@ -55,13 +58,19 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
         if (publishFile != null) { fileWriter = FileUtils.createFileAppender(publishFile); }
         if (isBase64) { payloadMessage = Base64.toBase64String(payload); }
 
+        String message = payloadMessage;
+
+        if (isJsonOutput) {
+            message = JsonUtils.prettyFormat(message);
+        }
+
         if (fileWriter != null) {
-            fileWriter.println(mqtt5Publish.getTopic() + ": " + payloadMessage);
+            fileWriter.println(mqtt5Publish.getTopic() + ": " + message);
             fileWriter.flush();
             fileWriter.close();
         }
 
-        if (printToStdout) { System.out.println(payloadMessage); }
+        if (printToStdout) { System.out.println(message); }
 
         Logger.debug("{} received PUBLISH ('{}') {}",
                 LoggerUtils.getClientPrefix(client.getConfig()),
