@@ -133,13 +133,10 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
             latch.countDown();
         };
 
-        final Runnable waitForExitCommandRunnable = new Runnable() {
-            @Override
-            public void run() {
-                final Scanner scanner = new Scanner(System.in);
-                scanner.nextLine();
-                latch.countDown();
-            }
+        final Runnable waitForExitCommandRunnable = () -> {
+            final Scanner scanner = new Scanner(System.in);
+            scanner.nextLine();
+            latch.countDown();
         };
 
         final ExecutorService WORKER_THREADS = Executors.newFixedThreadPool(2);
@@ -151,19 +148,22 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
         WORKER_THREADS.shutdownNow();
 
-        if (!contextClient.getState().isConnectedOrReconnect()) {
-            removeContext();
+        if (contextClient != null) {
+            if (!contextClient.getState().isConnectedOrReconnect()) {
+                removeContext();
+            }
+            else {
+                mqttClientExecutor.unsubscribe(contextClient, this);
+            }
         }
-        else {
-            mqttClientExecutor.unsubscribe(contextClient, this);
-        }
+
 
     }
 
     @Override
     public String toString() {
         return  getClass().getSimpleName() + "{" +
-                "key=" + getKey() +
+                "key=" + ((contextClient == null)? "null" : getKey()) +
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
                 ", outputToConsole=" + printToSTDOUT +
