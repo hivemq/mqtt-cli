@@ -86,6 +86,9 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)")
     private boolean base64;
 
+    @CommandLine.Option(names = {"-T", "--showTopics"}, defaultValue = "false", description = "Prepend the specific topic name to the received publish", order = 1)
+    private boolean showTopics;
+
     @Override
     public void run() {
 
@@ -168,6 +171,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 ", qos=" + Arrays.toString(qos) +
                 ", outputToConsole=" + printToSTDOUT +
                 ", base64=" + base64 +
+                ", showTopics=" + showTopics +
                 (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
                 (publishFile != null ? (", publishFile=" + publishFile.getAbsolutePath()) : "") +
                 '}';
@@ -214,6 +218,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     public boolean isBase64() {
         return base64;
     }
+
+    public boolean showTopics() { return showTopics; }
 
     @Override
     @Nullable
