@@ -126,6 +126,7 @@ ext {
     jetbrainsAnnotationsVersion = '17.0.0'
     bouncycastleVersion='1.62'
     nettyVersion = '4.1.37.Final'
+    gsonVersion = "2.8.6"
 }
 
 
@@ -146,6 +147,7 @@ dependencies {
     implementation group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
 
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
+    implementation group: "com.google.code.gson", name: "gson", version: gsonVersion
     implementation "org.tinylog:tinylog-api:$tinylogVersion"
     implementation "org.tinylog:tinylog-impl:$tinylogVersion"
     implementation group: 'org.jetbrains', name: 'annotations', version: jetbrainsAnnotationsVersion
