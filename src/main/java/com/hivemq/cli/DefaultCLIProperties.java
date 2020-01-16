@@ -80,6 +80,7 @@ public class DefaultCLIProperties {
        put(PASSWORD_ENV, null);
        put(CLIENT_CERTIFICATE, null);
        put(CLIENT_PRIVATE_KEY, null);
+       put(SERVER_CERTIFICATE, null);
        put(WEBSOCKET_PATH, "/mqtt");
     }};
 
