@@ -18,7 +18,7 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.utils.FileUtils;
-import com.hivemq.cli.utils.JsonUtils;
+import com.hivemq.cli.utils.json.JsonMqtt5Publish;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
@@ -61,7 +61,7 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
         String message = payloadMessage;
 
         if (isJsonOutput) {
-            message = JsonUtils.prettyFormat(message);
+            message = new JsonMqtt5Publish(mqtt5Publish, isBase64).toString();
         }
 
         if (fileWriter != null) {

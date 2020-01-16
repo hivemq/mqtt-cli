@@ -18,8 +18,8 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.utils.FileUtils;
-import com.hivemq.cli.utils.JsonUtils;
 import com.hivemq.cli.utils.LoggerUtils;
+import com.hivemq.cli.utils.json.JsonMqtt3Publish;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import org.bouncycastle.util.encoders.Base64;
@@ -61,7 +61,7 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
         String message = payloadMessage;
 
         if (isJsonOutput) {
-            message = JsonUtils.prettyFormat(message);
+            message = new JsonMqtt3Publish(mqtt3Publish, isBase64).toString();
         }
 
         if (fileWriter != null) {
