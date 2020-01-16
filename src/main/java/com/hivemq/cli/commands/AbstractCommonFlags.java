@@ -139,6 +139,9 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         try {
             final X509Certificate defaultServerCertificate = defaultCLIProperties.getServerCertificate();
             if (defaultServerCertificate != null) {
+                if(certificates == null){
+                    certificates = new ArrayList<>();
+                }
                 certificates.add(defaultServerCertificate);
             }
         } catch (Exception e) {
