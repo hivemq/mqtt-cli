@@ -14,29 +14,20 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.utils;
+package com.hivemq.cli.utils.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import org.jetbrains.annotations.NotNull;
 
-public class JsonUtils {
+abstract class JsonFormatted {
 
-    private final static  Gson gson = new GsonBuilder()
+     private final static Gson gson = new GsonBuilder()
             .setPrettyPrinting()
             .setLenient()
             .create();
 
-    public static String prettyFormat(final @NotNull String json) {
-        try {
-            JsonElement je = JsonParser.parseString(json);
-            return gson.toJson(je);
-        }
-        catch (JsonSyntaxException ex) {
-            return json;
-        }
+    public String toString() {
+        return gson.toJson(this);
     }
+
 }
