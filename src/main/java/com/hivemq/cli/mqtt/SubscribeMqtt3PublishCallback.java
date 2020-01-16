@@ -51,20 +51,19 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
     @Override
     public void accept(final @NotNull Mqtt3Publish mqtt3Publish) {
 
-        PrintWriter fileWriter = null;
-        byte[] payload = mqtt3Publish.getPayloadAsBytes();
-        String payloadMessage = new String(payload);
-
-        if (publishFile != null) { fileWriter = FileUtils.createFileAppender(publishFile); }
-        if (isBase64) { payloadMessage = Base64.toBase64String(payload); }
-
-        String message = payloadMessage;
+        String message;
 
         if (isJsonOutput) {
             message = new JsonMqtt3Publish(mqtt3Publish, isBase64).toString();
+        } else if (isBase64) {
+            message = Base64.toBase64String(mqtt3Publish.getPayloadAsBytes());
+        }
+        else {
+            message = new String(mqtt3Publish.getPayloadAsBytes());
         }
 
-        if (fileWriter != null) {
+        if (publishFile != null) {
+            PrintWriter fileWriter = FileUtils.createFileAppender(publishFile);
             fileWriter.println(mqtt3Publish.getTopic() + ": " + message);
             fileWriter.flush();
             fileWriter.close();

@@ -51,20 +51,19 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
     @Override
     public void accept(final @NotNull Mqtt5Publish mqtt5Publish) {
 
-        PrintWriter fileWriter = null;
-        byte[] payload = mqtt5Publish.getPayloadAsBytes();
-        String payloadMessage = new String(payload);
-
-        if (publishFile != null) { fileWriter = FileUtils.createFileAppender(publishFile); }
-        if (isBase64) { payloadMessage = Base64.toBase64String(payload); }
-
-        String message = payloadMessage;
+        String message;
 
         if (isJsonOutput) {
             message = new JsonMqtt5Publish(mqtt5Publish, isBase64).toString();
+        } else if (isBase64) {
+            message = Base64.toBase64String(mqtt5Publish.getPayloadAsBytes());
+        }
+        else {
+            message = new String(mqtt5Publish.getPayloadAsBytes());
         }
 
-        if (fileWriter != null) {
+        if (publishFile != null) {
+            PrintWriter fileWriter = FileUtils.createFileAppender(publishFile);
             fileWriter.println(mqtt5Publish.getTopic() + ": " + message);
             fileWriter.flush();
             fileWriter.close();
