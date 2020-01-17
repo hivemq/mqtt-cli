@@ -35,6 +35,8 @@ public interface Subscribe extends Context {
 
     boolean isBase64();
 
+    boolean showTopics();
+
     @Nullable Mqtt5UserProperties getUserProperties();
 
 }
