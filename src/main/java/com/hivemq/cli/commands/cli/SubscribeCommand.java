@@ -97,7 +97,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)", order = 1)
     private boolean base64;
 
-    @CommandLine.Option(names = {"-J", "--jsonOutput"}, defaultValue = "false", description = "Print the received publishes in pretty Json format", order = 1)
+    @CommandLine.Option(names = {"-J", "--jsonOutput"}, defaultValue = "false", description = "Print the received publishes in pretty JSON format", order = 1)
     private boolean jsonOutput;
 
     @CommandLine.Option(names = {"-T", "--showTopics"}, defaultValue = "false", description = "Prepend the specific topic name to the received publish", order = 1)

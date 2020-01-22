@@ -129,7 +129,6 @@ ext {
     gsonVersion = '2.8.6'
     substrateVmVersion = '19.2.0'
     junitJupiterVersion = '5.5.1'
-    junitJupiterParamVersion = '5.5.1'
 }
 
 
@@ -162,7 +161,7 @@ dependencies {
 
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterParamVersion
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
 
 }
