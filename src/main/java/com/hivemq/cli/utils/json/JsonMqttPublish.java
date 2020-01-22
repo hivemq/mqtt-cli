@@ -20,6 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
+import com.hivemq.cli.utils.MqttPublishUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttTopic;
 import com.hivemq.client.mqtt.datatypes.MqttUtf8String;
@@ -84,9 +85,8 @@ public class JsonMqttPublish extends JsonFormatted {
     }
 
     private JsonElement payloadToJson(final byte[] payload, final boolean isBase64) {
-        final String payloadString;
-        if (isBase64) { payloadString = Base64.toBase64String(payload); }
-        else { payloadString = new String(payload); }
+
+        final String payloadString = MqttPublishUtils.formatPayload(payload, isBase64);
 
         JsonElement payloadJson;
         try { payloadJson = JsonParser.parseString(payloadString); }
