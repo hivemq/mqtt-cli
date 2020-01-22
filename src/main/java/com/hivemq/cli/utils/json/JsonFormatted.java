@@ -14,31 +14,20 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.commands;
+package com.hivemq.cli.utils.json;
 
-import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import java.io.File;
+abstract class JsonFormatted {
 
-public interface Subscribe extends Context {
+     private final static Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .setLenient()
+            .create();
 
-    @NotNull String[] getTopics();
-
-    @NotNull MqttQos[] getQos();
-
-    @Nullable File getPublishFile();
-
-    boolean isPrintToSTDOUT();
-
-    boolean isBase64();
-
-    boolean isJsonOutput();
-
-    boolean showTopics();
-
-    @Nullable Mqtt5UserProperties getUserProperties();
+    public String toString() {
+        return gson.toJson(this);
+    }
 
 }

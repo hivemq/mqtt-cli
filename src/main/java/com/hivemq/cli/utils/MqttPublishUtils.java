@@ -14,31 +14,30 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.commands;
+package com.hivemq.cli.utils;
 
-import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.PrintWriter;
 
-public interface Subscribe extends Context {
+public class MqttPublishUtils {
 
-    @NotNull String[] getTopics();
+    public static String formatPayload(final byte[] payload, final boolean isBase64) {
+        if (isBase64) {
+            return Base64.toBase64String(payload);
+        }
+        else {
+            return new String(payload);
+        }
+    }
 
-    @NotNull MqttQos[] getQos();
-
-    @Nullable File getPublishFile();
-
-    boolean isPrintToSTDOUT();
-
-    boolean isBase64();
-
-    boolean isJsonOutput();
-
-    boolean showTopics();
-
-    @Nullable Mqtt5UserProperties getUserProperties();
+    public static void printToFile(final @NotNull File publishFile, final @NotNull String message) {
+        final PrintWriter fileWriter = FileUtils.createFileAppender(publishFile);
+        fileWriter.println(message);
+        fileWriter.flush();
+        fileWriter.close();
+    }
 
 }

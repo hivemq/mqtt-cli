@@ -126,6 +126,9 @@ ext {
     jetbrainsAnnotationsVersion = '17.0.0'
     bouncycastleVersion='1.62'
     nettyVersion = '4.1.37.Final'
+    gsonVersion = '2.8.6'
+    substrateVmVersion = '19.2.0'
+    junitJupiterVersion = '5.5.1'
 }
 
 
@@ -135,38 +138,30 @@ ext {
 
 dependencies {
 
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion 
-    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion 
-
     compile group: 'org.jline', name: 'jline', version: jline3Version
     compile group: 'org.jline', name: 'jline-terminal-jansi', version: jline3JansiVersion
+    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
+    compileOnly group: 'com.oracle.substratevm', name: "svm", version: substrateVmVersion
+    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
 
     implementation group: 'info.picocli', name: 'picocli', version: picocliVersion
     implementation group: 'info.picocli', name: 'picocli-shell-jline3', version: picoclishell3Version
     implementation group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
-
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
-    implementation "org.tinylog:tinylog-api:$tinylogVersion"
-    implementation "org.tinylog:tinylog-impl:$tinylogVersion"
+    implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
+    implementation group: 'org.tinylog', name: 'tinylog-api', version: tinylogVersion
+    implementation group: 'org.tinylog', name: 'tinylog-impl', version: tinylogVersion
     implementation group: 'org.jetbrains', name: 'annotations', version: jetbrainsAnnotationsVersion
-    
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: bouncycastleVersion
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: bouncycastleVersion
-
     implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: hivemqclientVersion
-
     implementation group: 'io.netty', name: 'netty-handler', version: nettyVersion
     implementation group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
     implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
 
-    compileOnly 'com.oracle.substratevm:svm:19.2.0'
-
-    def junitJupiterVersion = '5.5.1'
-    def junitJupiterParamVersion = '5.5.1'
-    
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterParamVersion
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
 
 }
