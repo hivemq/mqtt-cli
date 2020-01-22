@@ -18,8 +18,8 @@ package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.utils.FileUtils;
-import com.hivemq.cli.utils.json.JsonMqtt5Publish;
 import com.hivemq.cli.utils.LoggerUtils;
+import com.hivemq.cli.utils.json.JsonMqttPublish;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import org.bouncycastle.util.encoders.Base64;
@@ -56,7 +56,7 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
         String message;
 
         if (isJsonOutput) {
-            message = new JsonMqtt5Publish(mqtt5Publish, isBase64).toString();
+            message = new JsonMqttPublish(mqtt5Publish, isBase64).toString();
         } else if (isBase64) {
             message = Base64.toBase64String(mqtt5Publish.getPayloadAsBytes());
         }
