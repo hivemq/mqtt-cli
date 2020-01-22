@@ -38,23 +38,23 @@ import java.util.Map;
 
 public class JsonMqttPublish extends JsonFormatted {
 
-    @NotNull private final String topic;
-    @NotNull private JsonElement payload;
-    @NotNull private MqttQos qos;
-    @NotNull private String receivedAt;
-    private boolean retain;
-    @Nullable private String contentType;
-    @Nullable private Mqtt5PayloadFormatIndicator payloadFormatIndicator;
-    @Nullable private Long messageExpiryInterval;
-    @Nullable private String responseTopic;
-    @Nullable private String correlationData;
-    @Nullable private Map<String, String> userProperties;
+    private final @NotNull String topic;
+    private final @NotNull JsonElement payload;
+    private final @NotNull MqttQos qos;
+    private final @NotNull String receivedAt;
+    private final boolean retain;
+    private @Nullable String contentType;
+    private @Nullable Mqtt5PayloadFormatIndicator payloadFormatIndicator;
+    private @Nullable Long messageExpiryInterval;
+    private @Nullable String responseTopic;
+    private @Nullable String correlationData;
+    private @Nullable Map<String, String> userProperties;
 
     public JsonMqttPublish(final @NotNull Mqtt3Publish publish, final boolean isBase64) {
         payload = payloadToJson(publish.getPayloadAsBytes(), isBase64);
         topic = publish.getTopic().toString();
         qos = publish.getQos();
-        receivedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        receivedAt = getReceivedAt();
         retain = publish.isRetain();
     }
 
@@ -62,7 +62,7 @@ public class JsonMqttPublish extends JsonFormatted {
         payload = payloadToJson(publish.getPayloadAsBytes(), isBase64);
         topic = publish.getTopic().toString();
         qos = publish.getQos();
-        receivedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        receivedAt = getReceivedAt();
         retain = publish.isRetain();
         contentType = publish.getContentType().map(MqttUtf8String::toString).orElse(null);
         payloadFormatIndicator = publish.getPayloadFormatIndicator().orElse(null);
@@ -93,5 +93,10 @@ public class JsonMqttPublish extends JsonFormatted {
         catch (JsonSyntaxException ex) { payloadJson = new JsonPrimitive(payloadString); }
 
         return payloadJson;
+    }
+
+    @NotNull
+    private String getReceivedAt() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 }

@@ -19,6 +19,7 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.cli.utils.LoggerUtils;
+import com.hivemq.cli.utils.MqttPublishUtils;
 import com.hivemq.cli.utils.json.JsonMqttPublish;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
@@ -34,12 +35,12 @@ import java.util.function.Consumer;
 
 public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
 
-    @Nullable private final File publishFile;
+    private final @Nullable File publishFile;
+    private final @NotNull Mqtt3Client client;
     private final boolean printToStdout;
     private final boolean isBase64;
     private final boolean isJsonOutput;
     private final boolean showTopics;
-    private final Mqtt3Client client;
 
     SubscribeMqtt3PublishCallback(final @NotNull Subscribe subscribe, final @NotNull Mqtt3Client client) {
         printToStdout = subscribe.isPrintToSTDOUT();
@@ -55,26 +56,12 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
 
         String message;
 
-        if (isJsonOutput) {
-            message = new JsonMqttPublish(mqtt3Publish, isBase64).toString();
-        } else if (isBase64) {
-            message = Base64.toBase64String(mqtt3Publish.getPayloadAsBytes());
-        }
-        else {
-            message = new String(mqtt3Publish.getPayloadAsBytes());
-        }
+        if (isJsonOutput) { message = new JsonMqttPublish(mqtt3Publish, isBase64).toString(); }
+        else { message = MqttPublishUtils.formatPayload(mqtt3Publish.getPayloadAsBytes(), isBase64); }
 
-        if (showTopics) {
-            message = mqtt3Publish.getTopic() + ": " + message;
-        }
+        if (showTopics) { message = mqtt3Publish.getTopic().toString() + ": " + message; }
 
-        if (publishFile != null) {
-            PrintWriter fileWriter = FileUtils.createFileAppender(publishFile);
-            fileWriter.println(message);
-            fileWriter.flush();
-            fileWriter.close();
-        }
-
+        if (publishFile != null) { MqttPublishUtils.printToFile(publishFile, message); }
         if (printToStdout) { System.out.println(message); }
 
         Logger.debug("{} received PUBLISH ('{}') {}",
