@@ -322,9 +322,6 @@ task buildPackageBrew(type: Zip) {
     archiveFileName = project.readableName + '-' + project.version + '-brew.zip'
     destinationDirectory = file(project.buildBrewDir)
 
-    from shadowJar.archiveFile
-    from "$brewDir/mqtt"
-
     into('brew') {
         from shadowJar.archiveFile
         from "$brewDir/mqtt"
