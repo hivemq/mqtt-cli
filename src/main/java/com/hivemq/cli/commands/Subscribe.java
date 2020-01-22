@@ -37,6 +37,8 @@ public interface Subscribe extends Context {
 
     boolean isJsonOutput();
 
+    boolean showTopics();
+
     @Nullable Mqtt5UserProperties getUserProperties();
 
 }

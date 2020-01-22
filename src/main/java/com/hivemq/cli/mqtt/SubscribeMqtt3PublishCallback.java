@@ -38,6 +38,7 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
     private final boolean printToStdout;
     private final boolean isBase64;
     private final boolean isJsonOutput;
+    private final boolean showTopics;
     private final Mqtt3Client client;
 
     SubscribeMqtt3PublishCallback(final @NotNull Subscribe subscribe, final @NotNull Mqtt3Client client) {
@@ -45,6 +46,7 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
         publishFile = subscribe.getPublishFile();
         isBase64 = subscribe.isBase64();
         isJsonOutput = subscribe.isJsonOutput();
+        showTopics = subscribe.showTopics();
         this.client = client;
     }
 
@@ -62,9 +64,13 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
             message = new String(mqtt3Publish.getPayloadAsBytes());
         }
 
+        if (showTopics) {
+            message = mqtt3Publish.getTopic() + ": " + message;
+        }
+
         if (publishFile != null) {
             PrintWriter fileWriter = FileUtils.createFileAppender(publishFile);
-            fileWriter.println(mqtt3Publish.getTopic() + ": " + message);
+            fileWriter.println(message);
             fileWriter.flush();
             fileWriter.close();
         }

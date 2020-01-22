@@ -38,6 +38,7 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
     private final boolean printToStdout;
     private final boolean isBase64;
     private final boolean isJsonOutput;
+    private final boolean showTopics;
     private final Mqtt5Client client;
 
     SubscribeMqtt5PublishCallback(final @NotNull Subscribe subscribe, final @NotNull Mqtt5Client client) {
@@ -45,6 +46,7 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
         publishFile = subscribe.getPublishFile();
         isBase64 = subscribe.isBase64();
         isJsonOutput = subscribe.isJsonOutput();
+        showTopics = subscribe.showTopics();
         this.client  = client;
     }
 
@@ -62,9 +64,13 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
             message = new String(mqtt5Publish.getPayloadAsBytes());
         }
 
+        if (showTopics) {
+            message = mqtt5Publish.getTopic() + ": " + message;
+        }
+
         if (publishFile != null) {
             PrintWriter fileWriter = FileUtils.createFileAppender(publishFile);
-            fileWriter.println(mqtt5Publish.getTopic() + ": " + message);
+            fileWriter.println(message);
             fileWriter.flush();
             fileWriter.close();
         }
