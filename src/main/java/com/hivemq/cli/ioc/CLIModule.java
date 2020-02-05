@@ -22,6 +22,7 @@ import com.hivemq.cli.commandline.CommandLineConfig;
 import com.hivemq.cli.commands.MqttCLICommand;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
+import com.hivemq.cli.commands.cli.TestBrokerCommand;
 import com.hivemq.cli.commands.shell.ShellCommand;
 import dagger.Module;
 import dagger.Provides;
@@ -51,6 +52,7 @@ class CLIModule {
             final @NotNull PublishCommand publishCommand,
             final @NotNull SubscribeCommand subscribeCommand,
             final @NotNull ShellCommand shellCommand,
+            final @NotNull TestBrokerCommand testBrokerCommand,
             final @NotNull CommandLineConfig config,
             final @NotNull CommandErrorMessageHandler handler) {
 
@@ -58,6 +60,7 @@ class CLIModule {
                 .addSubcommand(publishCommand)
                 .addSubcommand(subscribeCommand)
                 .addSubcommand(shellCommand)
+                .addSubcommand(testBrokerCommand)
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
                 .setParameterExceptionHandler(handler);
