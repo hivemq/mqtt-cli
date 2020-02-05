@@ -19,7 +19,7 @@ package com.hivemq.cli.ioc;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commandline.CommandErrorMessageHandler;
 import com.hivemq.cli.commandline.CommandLineConfig;
-import com.hivemq.cli.commands.*;
+import com.hivemq.cli.commands.MqttCLICommand;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
 import com.hivemq.cli.commands.shell.ShellCommand;

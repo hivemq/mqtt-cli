@@ -27,11 +27,18 @@ import org.jetbrains.annotations.Nullable;
 import org.tinylog.Level;
 
 import javax.inject.Singleton;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Represents the default properties which are used throughout the CLI.

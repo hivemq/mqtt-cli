@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 

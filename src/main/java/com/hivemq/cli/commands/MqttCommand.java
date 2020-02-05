@@ -17,11 +17,11 @@
 package com.hivemq.cli.commands;
 
 
+import com.google.common.base.Joiner;
+import com.google.common.primitives.Chars;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.MqttVersionConverter;
-import com.google.common.base.Joiner;
-import com.google.common.primitives.Chars;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
