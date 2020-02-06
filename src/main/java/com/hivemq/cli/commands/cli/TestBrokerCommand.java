@@ -65,7 +65,7 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
 
         // Test if MQTT3 is supported
         System.out.print("MQTT 3: ");
-        final Mqtt3ConnAck connAck = client.connect();
+        final Mqtt3ConnAck connAck = client.testConnect();
         if (connAck == null) { System.out.println("NO"); }
         else if (connAck.getReturnCode() == Mqtt3ConnAckReturnCode.SUCCESS) {
             mqtt3Support = true;
@@ -76,15 +76,22 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
         if (mqtt3Support) {
             // Test if wildcard subscriptions are allowed
             System.out.print("\t- Wildcard subscriptions: ");
-            final Mqtt3SubAck subAck = client.testWildcardSubscription();
-            if (subAck == null) { System.out.println("NO"); }
-            else if (!subAck.getReturnCodes().contains(Mqtt3SubAckReturnCode.FAILURE)) { System.out.println("OK"); }
-            else { System.out.println("NO"); }
+            System.out.println(client.testWildcardSubscription()? "OK" : "NO");
+
+            // Test retain
+            System.out.print("\t- Retain: ");
+            System.out.println(client.testRetain()? "OK" : "NO");
 
             // Test max length of topic names
             System.out.print("\t- Max. topic length: ");
             final int maxTopicLength = client.testTopicLength();
             System.out.println(maxTopicLength + " bytes");
+
+            // Test max client id length
+            System.out.print("\t- Max. client id length: ");
+            System.out.println("TODO");
+
+
         }
 
     }
