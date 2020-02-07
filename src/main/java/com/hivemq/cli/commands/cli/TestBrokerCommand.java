@@ -20,6 +20,8 @@ import com.google.common.base.Joiner;
 import com.google.common.primitives.Chars;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.AbstractCommand;
+import com.hivemq.cli.commands.options.AuthenticationOptions;
+import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
@@ -41,6 +43,12 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
     @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)", order = 1)
     private Integer port;
 
+    @CommandLine.Mixin
+    private AuthenticationOptions authenticationOptions = new AuthenticationOptions();
+
+    @CommandLine.Mixin
+    private SslOptions sslOptions = new SslOptions();
+
     //needed for pico cli - reflection code generation
     private final DefaultCLIProperties defaultCLIProperties;
 
@@ -58,11 +66,14 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
         if (port == null) { port = defaultCLIProperties.getPort(); }
 
         testMqtt3Features();
-
     }
 
     public void testMqtt3Features() {
-        final Mqtt3FeatureTester client = new Mqtt3FeatureTester(host, port);
+        final Mqtt3FeatureTester client = new Mqtt3FeatureTester(host,
+                port,
+                authenticationOptions.getUser(),
+                authenticationOptions.getPassword());
+
         boolean mqtt3Support = false;
 
         // Test if MQTT3 is supported

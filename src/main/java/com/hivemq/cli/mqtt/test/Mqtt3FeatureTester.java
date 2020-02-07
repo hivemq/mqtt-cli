@@ -32,6 +32,7 @@ import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3Subscribe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -46,10 +47,17 @@ public class Mqtt3FeatureTester {
     private int maxTopicLength = -1;
     private final String host;
     private final int port;
+    private final String username;
+    private final ByteBuffer password;
 
-    public Mqtt3FeatureTester(final @NotNull String host, final @NotNull Integer port) {
+    public Mqtt3FeatureTester(final @NotNull String host,
+                              final @NotNull Integer port,
+                              final @Nullable String username,
+                              final @Nullable ByteBuffer password) {
         this.host = host;
         this.port = port;
+        this.username = username;
+        this.password = password;
     }
 
     // Test methods
@@ -296,9 +304,7 @@ public class Mqtt3FeatureTester {
     // Helpers
 
     private @NotNull Mqtt3Client buildClient() {
-        return Mqtt3Client.builder()
-                .serverHost(host)
-                .serverPort(port)
+        return getClientBuilder()
                 .build();
     }
 
