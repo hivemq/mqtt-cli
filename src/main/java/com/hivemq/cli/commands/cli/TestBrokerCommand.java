@@ -16,13 +16,13 @@
  */
 package com.hivemq.cli.commands.cli;
 
+import com.google.common.base.Joiner;
+import com.google.common.primitives.Chars;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.AbstractCommand;
-import com.hivemq.cli.mqtt.test.Mqtt3TestClient;
+import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
-import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
-import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAckReturnCode;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -32,6 +32,8 @@ import javax.inject.Inject;
         name = "test",
         description = "Tests the specified broker on different MQTT feature support and prints the results")
 public class TestBrokerCommand extends AbstractCommand implements Runnable {
+
+    final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
 
     @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')", order = 1)
     private String host;
@@ -60,7 +62,7 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
     }
 
     public void testMqtt3Features() {
-        final Mqtt3TestClient client = new Mqtt3TestClient(host, port);
+        final Mqtt3FeatureTester client = new Mqtt3FeatureTester(host, port);
         boolean mqtt3Support = false;
 
         // Test if MQTT3 is supported
@@ -74,22 +76,39 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
         else { System.out.println(connAck.getReturnCode().toString()); }
 
         if (mqtt3Support) {
+
+            // Test max length of topic names & set length for next tests
+            final int maxTopicLength = client.testTopicLength();
+            if (maxTopicLength != 65535) { client.setMaxTopicLength(maxTopicLength); }
+
             // Test if wildcard subscriptions are allowed
             System.out.print("\t- Wildcard subscriptions: ");
-            System.out.println(client.testWildcardSubscription()? "OK" : "NO");
+            System.out.println(client.testWildcardSubscriptions()? "OK" : "NO");
 
             // Test retain
             System.out.print("\t- Retain: ");
-            System.out.println(client.testRetain()? "OK" : "NO");
+            System.out.println(client.testRetain() ? "OK" : "NO");
 
-            // Test max length of topic names
-            System.out.print("\t- Max. topic length: ");
-            final int maxTopicLength = client.testTopicLength();
-            System.out.println(maxTopicLength + " bytes");
+            // Test max payload size
+            System.out.print("\t- Payload size: ");
+            final int payloadSize = client.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
+            if (payloadSize == MAX_PAYLOAD_TEST_SIZE) { System.out.println(">= " + payloadSize + " bytes"); }
+            else { System.out.println(payloadSize + " bytes"); }
 
             // Test max client id length
             System.out.print("\t- Max. client id length: ");
-            System.out.println("TODO");
+            final int maxClientIdLength = client.testClientIdLength();
+            System.out.println(maxClientIdLength + " bytes");
+
+            // Print max topic length
+            System.out.print("\t- Max. topic length: ");
+            System.out.println(maxTopicLength + " bytes");
+
+            // Test supported Ascii chars
+            System.out.print("\t- Unsupported Ascii Chars: ");
+            final String unsupportedChars = client.testClientIdAsciiChars();
+            if (unsupportedChars.isEmpty()) { System.out.println("ALL SUPPORTED"); }
+            else { System.out.println("{'" + Joiner.on("', '").join(Chars.asList(unsupportedChars.toCharArray())) + "'}"); }
 
 
         }
