@@ -3,14 +3,29 @@ package com.hivemq.cli.commands.options;
 import com.hivemq.cli.converters.DirectoryToCertificateCollectionConverter;
 import com.hivemq.cli.converters.FileToCertificateConverter;
 import com.hivemq.cli.converters.FileToPrivateKeyConverter;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class SslOptions {
+
+    private static final String DEFAULT_TLS_VERSION = "TLSv1.2";
+
     @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use default ssl configuration if no other ssl options are specified (default: false)", order = 2)
     private boolean useSsl;
 
@@ -37,4 +52,111 @@ public class SslOptions {
     @CommandLine.Option(names = {"--key"}, converter = FileToPrivateKeyConverter.class, description = "The path to the client private key for client side authentication", order = 2)
     @Nullable
     private PrivateKey clientPrivateKey;
+
+    private boolean useBuiltSslConfig() {
+        return certificates != null ||
+                certificatesFromDir != null ||
+                cipherSuites != null ||
+                supportedTLSVersions != null ||
+                clientPrivateKey != null ||
+                clientCertificate != null ||
+                useSsl;
+    }
+
+    public @Nullable MqttClientSslConfig buildSslConfig() throws Exception {
+
+        if (!useBuiltSslConfig()) {
+            return null;
+        }
+
+        if (certificatesFromDir != null) {
+            if (certificates == null) {
+                certificates = certificatesFromDir;
+            }
+            else {
+                certificates.addAll(certificatesFromDir);
+            }
+        }
+
+
+        // build trustManagerFactory for server side authentication and to enable tls
+        TrustManagerFactory trustManagerFactory = null;
+        if (certificates != null && !certificates.isEmpty()) {
+            trustManagerFactory = buildTrustManagerFactory(certificates);
+        }
+
+
+        // build keyManagerFactory if clientSideAuthentication is used
+        KeyManagerFactory keyManagerFactory = null;
+        if (clientCertificate != null && clientPrivateKey != null) {
+            keyManagerFactory = buildKeyManagerFactory(clientCertificate, clientPrivateKey);
+        }
+
+        // default to tlsv.2
+        if (supportedTLSVersions == null) {
+            supportedTLSVersions = new ArrayList<>();
+            supportedTLSVersions.add(DEFAULT_TLS_VERSION);
+        }
+
+        return MqttClientSslConfig.builder()
+                .trustManagerFactory(trustManagerFactory)
+                .keyManagerFactory(keyManagerFactory)
+                .cipherSuites(cipherSuites)
+                .protocols(supportedTLSVersions)
+                .build();
+    }
+
+
+    private TrustManagerFactory buildTrustManagerFactory(final @NotNull Collection<X509Certificate> certCollection) throws Exception {
+
+        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        ks.load(null, null);
+
+        // add all certificates of the collection to the KeyStore
+        int i = 1;
+        for (final X509Certificate cert : certCollection) {
+            final String alias = Integer.toString(i);
+            ks.setCertificateEntry(alias, cert);
+            i++;
+        }
+
+        final TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+
+        trustManagerFactory.init(ks);
+
+        return trustManagerFactory;
+    }
+
+    private KeyManagerFactory buildKeyManagerFactory(final @NotNull X509Certificate cert, final @NotNull PrivateKey key) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
+
+        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+
+        ks.load(null, null);
+
+        final Certificate[] certChain = new Certificate[1];
+        certChain[0] = cert;
+        ks.setKeyEntry("mykey", key, null, certChain);
+
+        final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+
+        keyManagerFactory.init(ks, null);
+
+        return keyManagerFactory;
+    }
+
+    public boolean isUseSsl() {
+        return useSsl;
+    }
+
+    public @Nullable Collection<X509Certificate> getCertificates() { return certificates; }
+
+    public @Nullable Collection<X509Certificate> getCertificatesFromDir() { return certificatesFromDir; }
+
+    public @Nullable Collection<String> getCipherSuites() { return cipherSuites; }
+
+    public @Nullable Collection<String> getSupportedTLSVersions() { return supportedTLSVersions; }
+
+    public @Nullable X509Certificate getClientCertificate() { return clientCertificate; }
+
+    public @Nullable PrivateKey getClientPrivateKey() { return clientPrivateKey; }
 }

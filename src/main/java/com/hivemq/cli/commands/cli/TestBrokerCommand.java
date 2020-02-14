@@ -22,10 +22,18 @@ import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.AbstractCommand;
 import com.hivemq.cli.commands.options.AuthenticationOptions;
 import com.hivemq.cli.commands.options.SslOptions;
+import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
+import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
+import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
+import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
+import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckReasonCode;
+import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckRestrictions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -38,16 +46,21 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
     final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
 
     @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')", order = 1)
-    private String host;
+    private @Nullable String host;
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)", order = 1)
-    private Integer port;
+    private @Nullable Integer port;
+
+    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The mqtt version to test the broker on", order = 1)
+    private @Nullable MqttVersion version;
 
     @CommandLine.Mixin
     private AuthenticationOptions authenticationOptions = new AuthenticationOptions();
 
     @CommandLine.Mixin
     private SslOptions sslOptions = new SslOptions();
+
+    private @Nullable MqttClientSslConfig sslConfig;
 
     //needed for pico cli - reflection code generation
     private final DefaultCLIProperties defaultCLIProperties;
@@ -59,20 +72,91 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
         this.defaultCLIProperties = defaultCLIProperties;
     }
 
-
     @Override
     public void run() {
         if (host == null) { host = defaultCLIProperties.getHost(); }
         if (port == null) { port = defaultCLIProperties.getPort(); }
 
-        testMqtt3Features();
+        try { sslConfig = sslOptions.buildSslConfig(); }
+        catch (Exception e) { e.printStackTrace(); }
+
+        if (version != null) {
+            if (version == MqttVersion.MQTT_3_1_1) { testMqtt3Features(); }
+            else if (version == MqttVersion.MQTT_5_0) { testMqtt5Features(); }
+        }
+        else {
+            testMqtt3Features();
+            testMqtt5Features();
+        }
+    }
+
+    public void testMqtt5Features() {
+        final Mqtt5FeatureTester tester = new Mqtt5FeatureTester(
+                host,
+                port,
+                authenticationOptions.getUser(),
+                authenticationOptions.getPassword(),
+                sslConfig
+        );
+
+        boolean mqtt5Support = false;
+
+        // Test if MQTT5 is supported
+        System.out.print("MQTT 5: ");
+        final Mqtt5ConnAck connAck = tester.testConnect();
+        if (connAck == null) { System.out.println("NO"); }
+        else if (connAck.getReasonCode() == Mqtt5ConnAckReasonCode.SUCCESS) {
+            mqtt5Support = true;
+            System.out.println("OK");
+        }
+        else { System.out.println(connAck.getReasonCode().toString()); }
+
+        if (mqtt5Support) {
+
+            final Mqtt5ConnAckRestrictions restrictions = connAck.getRestrictions();
+
+            System.out.print("\t- Wildcard subscriptions: ");
+            System.out.println(restrictions.isWildcardSubscriptionAvailable()? "OK" : "NO");
+
+            System.out.print("\t- Retain: ");
+            System.out.println(restrictions.isRetainAvailable()? "OK" : "NO");
+
+            System.out.print("\t- Max. QoS: ");
+            System.out.println(restrictions.getMaximumQos().ordinal());
+
+            System.out.print("\t- Receive Maximum: ");
+            System.out.println(restrictions.getReceiveMaximum());
+
+            System.out.print("\t- Shared subscriptions: ");
+            System.out.println(restrictions.isSharedSubscriptionAvailable()? "OK" : "NO");
+
+            System.out.print("\t- Maximum packet size: ");
+            System.out.println(restrictions.getMaximumPacketSize() + " bytes");
+
+            System.out.print("\t- Topic alias maximum: ");
+            System.out.println(restrictions.getTopicAliasMaximum());
+
+            System.out.print("\t- Subscription identifiers: ");
+            System.out.println(restrictions.areSubscriptionIdentifiersAvailable()? "OK" : "NO");
+
+            System.out.print("\t- Session expiry interval: ");
+            System.out.println(connAck.getSessionExpiryInterval().isPresent()? connAck.getSessionExpiryInterval().getAsLong() + "s" : "Client-based");
+
+            System.out.print("\t- Server keep alive: ");
+            System.out.println(connAck.getServerKeepAlive().isPresent()? connAck.getServerKeepAlive().getAsInt() + "s" : "Client-based");
+
+            // TODO: max topic length
+        }
     }
 
     public void testMqtt3Features() {
-        final Mqtt3FeatureTester client = new Mqtt3FeatureTester(host,
+        final Mqtt3FeatureTester client = new Mqtt3FeatureTester(
+                host,
                 port,
                 authenticationOptions.getUser(),
-                authenticationOptions.getPassword());
+                authenticationOptions.getPassword(),
+                sslConfig
+        );
 
         boolean mqtt3Support = false;
 
@@ -100,6 +184,18 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
             System.out.print("\t- Retain: ");
             System.out.println(client.testRetain() ? "OK" : "NO");
 
+            // Test QoS 0
+            System.out.print("\t- QoS 0: ");
+            System.out.println(client.testQos0() ? "OK" : "NO");
+
+            // Test QoS 1
+            System.out.print("\t- QoS 1: ");
+            System.out.println(client.testQos1() ? "OK" : "NO");
+
+            // Test QoS 2
+            System.out.print("\t- QoS 2: ");
+            System.out.println(client.testQos2() ? "OK" : "NO");
+
             // Test max payload size
             System.out.print("\t- Payload size: ");
             final int payloadSize = client.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
@@ -117,11 +213,9 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
 
             // Test supported Ascii chars
             System.out.print("\t- Unsupported Ascii Chars: ");
-            final String unsupportedChars = client.testClientIdAsciiChars();
+            final String unsupportedChars = client.testSpecialAsciiChars();
             if (unsupportedChars.isEmpty()) { System.out.println("ALL SUPPORTED"); }
             else { System.out.println("{'" + Joiner.on("', '").join(Chars.asList(unsupportedChars.toCharArray())) + "'}"); }
-
-
         }
 
     }

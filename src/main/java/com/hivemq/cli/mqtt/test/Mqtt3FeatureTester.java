@@ -17,6 +17,7 @@
 package com.hivemq.cli.mqtt.test;
 
 import com.google.common.base.Strings;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
@@ -25,6 +26,8 @@ import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
 import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3ConnAckException;
 import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3DisconnectException;
 import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3PubAckException;
+import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3SubAckException;
+import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
@@ -38,6 +41,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient.*;
@@ -49,15 +53,18 @@ public class Mqtt3FeatureTester {
     private final int port;
     private final String username;
     private final ByteBuffer password;
+    private final MqttClientSslConfig sslConfig;
 
     public Mqtt3FeatureTester(final @NotNull String host,
                               final @NotNull Integer port,
                               final @Nullable String username,
-                              final @Nullable ByteBuffer password) {
+                              final @Nullable ByteBuffer password,
+                              final @Nullable MqttClientSslConfig sslConfig) {
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
+        this.sslConfig = sslConfig;
     }
 
     // Test methods
@@ -172,6 +179,143 @@ public class Mqtt3FeatureTester {
         return countDownLatch.getCount() == 0;
     }
 
+    public boolean testQos0(final int tries) {
+        final Mqtt3Client publisher = buildClient();
+        final Mqtt3Client subscriber = buildClient();
+        final String topic = generateTopicUUID(maxTopicLength);
+        final byte[] qos0Payload = "QOS_0_TEST".getBytes();
+        final int publishTries = 10;
+
+        subscriber.toBlocking().connect();
+        publisher.toBlocking().connect();
+
+        subscriber.toBlocking().subscribeWith().topicFilter(topic).qos(MqttQos.AT_MOST_ONCE).send()
+
+        final Mqtt3Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
+        final AtomicInteger countDown = new AtomicInteger(publishTries + 1);
+
+        CompletableFuture.runAsync(() -> {
+            AtomicBoolean timedOut = new AtomicBoolean(false);
+            while (!timedOut.get() && countDown.get() > 0) {
+                try {
+                    publishes.receive(2, TimeUnit.SECONDS).ifPresentOrElse(publish -> {
+                        if (Arrays.equals(publish.getPayloadAsBytes(), qos0Payload) &&
+                            publish.getQos() == MqttQos.AT_MOST_ONCE) {
+                            countDown.decrementAndGet();
+                        }
+                    }, () -> timedOut.set(true)
+                    );
+                } catch (InterruptedException e) { e.printStackTrace(); }
+            }
+        });
+
+        for (int i = 0; i < publishTries; i++) {
+            try {
+                publisher.toBlocking().publishWith()
+                        .topic(topic)
+                        .qos(MqttQos.AT_MOST_ONCE)
+                        .payload(qos0Payload)
+                        .send();
+            } catch (final Mqtt3DisconnectException | Mqtt3PubAckException ex) { return false; }
+        }
+
+
+        if (publisher.getState().isConnected()) { publisher.toBlocking().disconnect(); }
+        if (subscriber.getState().isConnected()) { subscriber.toBlocking().disconnect(); }
+
+        // At least one message should have been received but no more than publishTries
+        return countDown.get() >= 1 && countDown.get() <= publishTries;
+    }
+
+    public boolean testQos1() {
+        final Mqtt3Client publisher = buildClient();
+        final Mqtt3Client subscriber = buildClient();
+        final String topic = generateTopicUUID(maxTopicLength);
+        final byte[] qos1Payload = "QOS_1_TEST".getBytes();
+
+        try {
+            subscriber.toBlocking().connect();
+            publisher.toBlocking().connect();
+
+            subscriber.toBlocking().subscribeWith()
+                    .topicFilter(topic)
+                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .send();
+
+            publisher.toBlocking().publishWith()
+                    .topic(topic)
+                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .payload(qos1Payload)
+                    .send();
+
+        } catch (final Mqtt3DisconnectException | Mqtt3SubAckException | Mqtt3PubAckException ex) { return false; }
+
+        final Mqtt3Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
+        AtomicBoolean payloadReceived = new AtomicBoolean(false);
+
+        try {
+            publishes.receive(2, TimeUnit.SECONDS).ifPresent(publish -> {
+                if (Arrays.equals(publish.getPayloadAsBytes(), qos1Payload) &&
+                    publish.getQos() == MqttQos.AT_LEAST_ONCE) {
+                    payloadReceived.set(true);
+                }
+            });
+        } catch (InterruptedException e) { e.printStackTrace(); }
+        finally {
+            if (subscriber.getState().isConnected()) { subscriber.toBlocking().disconnect(); }
+            if (publisher.getState().isConnected()) { publisher.toBlocking().disconnect(); }
+        }
+
+        return payloadReceived.get();
+    }
+
+    public boolean testQos2() {
+        final Mqtt3Client publisher = buildClient();
+        final Mqtt3Client subscriber = buildClient();
+        final String topic = generateTopicUUID(maxTopicLength);
+        final byte[] qos2Payload = "QOS_2_TEST".getBytes();
+        final int publishTries = 10;
+
+        try {
+            subscriber.toBlocking().connect();
+            publisher.toBlocking().connect();
+
+            subscriber.toBlocking().subscribeWith()
+                    .topicFilter(topic)
+                    .qos(MqttQos.EXACTLY_ONCE)
+                    .send();
+        } catch (final Mqtt3DisconnectException | Mqtt3SubAckException | Mqtt3PubAckException ex) { return false; }
+
+        final Mqtt3Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
+        final AtomicInteger countDown = new AtomicInteger(publishTries + 1);
+
+        CompletableFuture.runAsync(() -> {
+            AtomicBoolean timedOut = new AtomicBoolean(false);
+
+            while (!timedOut.get()) {
+                try {
+                    publishes.receive(2, TimeUnit.SECONDS).ifPresentOrElse(publish -> {
+                        if (Arrays.equals(publish.getPayloadAsBytes(), qos2Payload) &&
+                                publish.getQos() == MqttQos.EXACTLY_ONCE) {
+                            countDown.decrementAndGet();
+                        }
+                    }, () -> timedOut.set(true)
+                    );
+                } catch (InterruptedException e) { e.printStackTrace(); }
+            }
+        });
+
+        for (int i = 0; i < publishTries; i++) {
+            publisher.toBlocking().publishWith()
+                    .topic(topic)
+                    .qos(MqttQos.EXACTLY_ONCE)
+                    .payload(qos2Payload)
+                    .send();
+        }
+
+        return countDown.get() == 1;
+    }
+
     public int testPayloadSize(final int maxSize) {
         final Mqtt3Client client = buildClient();
         final String topic = (maxTopicLength == -1 ? generateTopicUUID() : generateTopicUUID(maxTopicLength));
@@ -260,7 +404,9 @@ public class Mqtt3FeatureTester {
         // Binary search the right client id length
         while (bottom <= top) {
             final String currentIdentifier = Strings.repeat(oneByte, mid);
-            final Mqtt3Client currClient = mqtt3ClientBuilder.identifier(currentIdentifier).build();
+            final Mqtt3Client currClient = getClientBuilder()
+                    .identifier(currentIdentifier)
+                    .build();
 
             try {
                 final Mqtt3ConnAck connAck = currClient.toBlocking().connect();
@@ -276,8 +422,8 @@ public class Mqtt3FeatureTester {
         return mid;
     }
     
-    public @NotNull String testClientIdAsciiChars() {
-        final String ASCII = " !\"#$%&\\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    public @NotNull String testSpecialAsciiChars() {
+        final String ASCII = " !\"#$%&\\'()*+,-./:;<=>?@[\\\\]^_`{|}~";
         final StringBuilder unsupportedChars = new StringBuilder();
 
         for (int i = 0; i < ASCII.length(); i++) {
@@ -309,9 +455,34 @@ public class Mqtt3FeatureTester {
     }
 
     private @NotNull Mqtt3ClientBuilder getClientBuilder() {
-        return Mqtt3Client.builder()
+        final Mqtt3ClientBuilder mqtt3ClientBuilder = Mqtt3Client.builder()
                 .serverHost(host)
-                .serverPort(port);
+                .serverPort(port)
+                .simpleAuth(buildAuth());
+
+        if (sslConfig != null) {
+            mqtt3ClientBuilder.sslConfig(sslConfig);
+        }
+
+        return mqtt3ClientBuilder;
+    }
+
+    private @Nullable  Mqtt3SimpleAuth buildAuth() {
+        if (username != null && password != null) {
+            return Mqtt3SimpleAuth.builder()
+                    .username(username)
+                    .password(password)
+                    .build();
+        }
+        else if (username != null) {
+            Mqtt3SimpleAuth.builder()
+                    .username(username)
+                    .build();
+        }
+        else if (password != null) {
+            throw new IllegalArgumentException("Password-Only Authentication is not allowed in MQTT 3");
+        }
+        return null;
     }
 
     private @NotNull String generateTopicUUID() {
@@ -320,7 +491,8 @@ public class Mqtt3FeatureTester {
     }
 
     private @NotNull String generateTopicUUID(final int maxLength) {
-        return generateTopicUUID().substring(0, maxLength);
+        if (maxLength == -1) return generateTopicUUID();
+        else return generateTopicUUID().substring(0, maxLength);
     }
 
 }
