@@ -179,52 +179,39 @@ public class Mqtt3FeatureTester {
         return countDownLatch.getCount() == 0;
     }
 
-    public boolean testQos0(final int tries) {
+    public long testQos0(final int tries) throws InterruptedException {
         final Mqtt3Client publisher = buildClient();
         final Mqtt3Client subscriber = buildClient();
         final String topic = generateTopicUUID(maxTopicLength);
         final byte[] qos0Payload = "QOS_0_TEST".getBytes();
-        final int publishTries = 10;
 
         subscriber.toBlocking().connect();
         publisher.toBlocking().connect();
 
-        subscriber.toBlocking().subscribeWith().topicFilter(topic).qos(MqttQos.AT_MOST_ONCE).send()
+        final CountDownLatch countDownLatch = new CountDownLatch(tries);
 
-        final Mqtt3Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
-        final AtomicInteger countDown = new AtomicInteger(publishTries + 1);
+        subscriber.toAsync().subscribeWith()
+                .topicFilter(topic)
+                .qos(MqttQos.AT_MOST_ONCE)
+                .callback(publish -> {
+                   if (publish.getQos() == MqttQos.AT_MOST_ONCE
+                           && Arrays.equals(publish.getPayloadAsBytes(), qos0Payload)) {
+                       countDownLatch.countDown();
+                   }
+                }).send();
 
-        CompletableFuture.runAsync(() -> {
-            AtomicBoolean timedOut = new AtomicBoolean(false);
-            while (!timedOut.get() && countDown.get() > 0) {
-                try {
-                    publishes.receive(2, TimeUnit.SECONDS).ifPresentOrElse(publish -> {
-                        if (Arrays.equals(publish.getPayloadAsBytes(), qos0Payload) &&
-                            publish.getQos() == MqttQos.AT_MOST_ONCE) {
-                            countDown.decrementAndGet();
-                        }
-                    }, () -> timedOut.set(true)
-                    );
-                } catch (InterruptedException e) { e.printStackTrace(); }
-            }
-        });
-
-        for (int i = 0; i < publishTries; i++) {
-            try {
-                publisher.toBlocking().publishWith()
-                        .topic(topic)
-                        .qos(MqttQos.AT_MOST_ONCE)
-                        .payload(qos0Payload)
-                        .send();
-            } catch (final Mqtt3DisconnectException | Mqtt3PubAckException ex) { return false; }
+        for (int i = 0; i < tries; i++) {
+            publisher.toAsync().publishWith()
+                    .topic(topic)
+                    .qos(MqttQos.AT_MOST_ONCE)
+                    .payload(qos0Payload)
+                    .send();
         }
 
+        countDownLatch.await(10, TimeUnit.SECONDS);
 
-        if (publisher.getState().isConnected()) { publisher.toBlocking().disconnect(); }
-        if (subscriber.getState().isConnected()) { subscriber.toBlocking().disconnect(); }
+        return tries - countDownLatch.getCount();
 
-        // At least one message should have been received but no more than publishTries
-        return countDown.get() >= 1 && countDown.get() <= publishTries;
     }
 
     public boolean testQos1() {
@@ -232,41 +219,7 @@ public class Mqtt3FeatureTester {
         final Mqtt3Client subscriber = buildClient();
         final String topic = generateTopicUUID(maxTopicLength);
         final byte[] qos1Payload = "QOS_1_TEST".getBytes();
-
-        try {
-            subscriber.toBlocking().connect();
-            publisher.toBlocking().connect();
-
-            subscriber.toBlocking().subscribeWith()
-                    .topicFilter(topic)
-                    .qos(MqttQos.AT_LEAST_ONCE)
-                    .send();
-
-            publisher.toBlocking().publishWith()
-                    .topic(topic)
-                    .qos(MqttQos.AT_LEAST_ONCE)
-                    .payload(qos1Payload)
-                    .send();
-
-        } catch (final Mqtt3DisconnectException | Mqtt3SubAckException | Mqtt3PubAckException ex) { return false; }
-
-        final Mqtt3Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
-        AtomicBoolean payloadReceived = new AtomicBoolean(false);
-
-        try {
-            publishes.receive(2, TimeUnit.SECONDS).ifPresent(publish -> {
-                if (Arrays.equals(publish.getPayloadAsBytes(), qos1Payload) &&
-                    publish.getQos() == MqttQos.AT_LEAST_ONCE) {
-                    payloadReceived.set(true);
-                }
-            });
-        } catch (InterruptedException e) { e.printStackTrace(); }
-        finally {
-            if (subscriber.getState().isConnected()) { subscriber.toBlocking().disconnect(); }
-            if (publisher.getState().isConnected()) { publisher.toBlocking().disconnect(); }
-        }
-
-        return payloadReceived.get();
+        return true;
     }
 
     public boolean testQos2() {
@@ -276,44 +229,7 @@ public class Mqtt3FeatureTester {
         final byte[] qos2Payload = "QOS_2_TEST".getBytes();
         final int publishTries = 10;
 
-        try {
-            subscriber.toBlocking().connect();
-            publisher.toBlocking().connect();
-
-            subscriber.toBlocking().subscribeWith()
-                    .topicFilter(topic)
-                    .qos(MqttQos.EXACTLY_ONCE)
-                    .send();
-        } catch (final Mqtt3DisconnectException | Mqtt3SubAckException | Mqtt3PubAckException ex) { return false; }
-
-        final Mqtt3Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
-        final AtomicInteger countDown = new AtomicInteger(publishTries + 1);
-
-        CompletableFuture.runAsync(() -> {
-            AtomicBoolean timedOut = new AtomicBoolean(false);
-
-            while (!timedOut.get()) {
-                try {
-                    publishes.receive(2, TimeUnit.SECONDS).ifPresentOrElse(publish -> {
-                        if (Arrays.equals(publish.getPayloadAsBytes(), qos2Payload) &&
-                                publish.getQos() == MqttQos.EXACTLY_ONCE) {
-                            countDown.decrementAndGet();
-                        }
-                    }, () -> timedOut.set(true)
-                    );
-                } catch (InterruptedException e) { e.printStackTrace(); }
-            }
-        });
-
-        for (int i = 0; i < publishTries; i++) {
-            publisher.toBlocking().publishWith()
-                    .topic(topic)
-                    .qos(MqttQos.EXACTLY_ONCE)
-                    .payload(qos2Payload)
-                    .send();
-        }
-
-        return countDown.get() == 1;
+        return true;
     }
 
     public int testPayloadSize(final int maxSize) {

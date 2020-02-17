@@ -159,6 +159,7 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
         );
 
         boolean mqtt3Support = false;
+        final int qosTries = 10;
 
         // Test if MQTT3 is supported
         System.out.print("MQTT 3: ");
@@ -185,8 +186,10 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
             System.out.println(client.testRetain() ? "OK" : "NO");
 
             // Test QoS 0
-            System.out.print("\t- QoS 0: ");
-            System.out.println(client.testQos0() ? "OK" : "NO");
+            System.out.print("\t- Testing QoS 0: ");
+            try { System.out.println("Received " + client.testQos0(qosTries) + "/" + qosTries + " publishes"); }
+            catch (InterruptedException e) { e.printStackTrace(); }
+
 
             // Test QoS 1
             System.out.print("\t- QoS 1: ");
