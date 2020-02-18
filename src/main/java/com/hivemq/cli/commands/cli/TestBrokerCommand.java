@@ -25,8 +25,11 @@ import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
+import com.hivemq.cli.mqtt.test.QosTestResult;
+import com.hivemq.cli.mqtt.test.WildcardSubscriptionsTestResult;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
@@ -44,6 +47,7 @@ import javax.inject.Inject;
 public class TestBrokerCommand extends AbstractCommand implements Runnable {
 
     final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
+    final int QOS_TEST_TRIES = 10;
 
     @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')", order = 1)
     private @Nullable String host;
@@ -113,37 +117,47 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
 
         if (mqtt5Support) {
 
+            //*********************//
+            /* Connect Restriction */
+            //*********************//
+
             final Mqtt5ConnAckRestrictions restrictions = connAck.getRestrictions();
 
-            System.out.print("\t- Wildcard subscriptions: ");
-            System.out.println(restrictions.isWildcardSubscriptionAvailable()? "OK" : "NO");
+            System.out.println("\t- Connect Restrictions: ");
 
-            System.out.print("\t- Retain: ");
+            System.out.print("\t\t> Retain: ");
             System.out.println(restrictions.isRetainAvailable()? "OK" : "NO");
 
-            System.out.print("\t- Max. QoS: ");
-            System.out.println(restrictions.getMaximumQos().ordinal());
+            System.out.print("\t\t> Wildcard subscriptions: ");
+            System.out.println(restrictions.isWildcardSubscriptionAvailable()? "OK" : "NO");
 
-            System.out.print("\t- Receive Maximum: ");
-            System.out.println(restrictions.getReceiveMaximum());
-
-            System.out.print("\t- Shared subscriptions: ");
+            System.out.print("\t\t> Shared subscriptions: ");
             System.out.println(restrictions.isSharedSubscriptionAvailable()? "OK" : "NO");
 
-            System.out.print("\t- Maximum packet size: ");
+            System.out.print("\t\t> Max. QoS: ");
+            System.out.println(restrictions.getMaximumQos().ordinal());
+
+            System.out.print("\t\t> Receive Maximum: ");
+            System.out.println(restrictions.getReceiveMaximum());
+
+            System.out.print("\t\t> Maximum packet size: ");
             System.out.println(restrictions.getMaximumPacketSize() + " bytes");
 
-            System.out.print("\t- Topic alias maximum: ");
+            System.out.print("\t\t> Topic alias maximum: ");
             System.out.println(restrictions.getTopicAliasMaximum());
 
-            System.out.print("\t- Subscription identifiers: ");
+            System.out.print("\t\t> Subscription identifiers: ");
             System.out.println(restrictions.areSubscriptionIdentifiersAvailable()? "OK" : "NO");
 
-            System.out.print("\t- Session expiry interval: ");
+            System.out.print("\t\t> Session expiry interval: ");
             System.out.println(connAck.getSessionExpiryInterval().isPresent()? connAck.getSessionExpiryInterval().getAsLong() + "s" : "Client-based");
 
-            System.out.print("\t- Server keep alive: ");
+            System.out.print("\t\t> Server keep alive: ");
             System.out.println(connAck.getServerKeepAlive().isPresent()? connAck.getServerKeepAlive().getAsInt() + "s" : "Client-based");
+
+            //**************//
+            /* Force Tests */
+            //*************//
 
             // TODO: max topic length
         }
@@ -159,7 +173,6 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
         );
 
         boolean mqtt3Support = false;
-        final int qosTries = 10;
 
         // Test if MQTT3 is supported
         System.out.print("MQTT 3: ");
@@ -177,27 +190,42 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
             final int maxTopicLength = client.testTopicLength();
             if (maxTopicLength != 65535) { client.setMaxTopicLength(maxTopicLength); }
 
-            // Test if wildcard subscriptions are allowed
-            System.out.print("\t- Wildcard subscriptions: ");
-            System.out.println(client.testWildcardSubscriptions()? "OK" : "NO");
+            // Test QoS 0
+            System.out.print("\t- Testing QoS 0: ");
+            final QosTestResult qos0TestResult = client.testQos(MqttQos.AT_MOST_ONCE, QOS_TEST_TRIES);
+            final int qos0Publishes = qos0TestResult.getReceivedPublishes();
+            final float qos0Time = qos0TestResult.getTimeToReceivePublishes() / 1_000_000F;
+            System.out.printf("Received %d/%d publishes in %.2fms\n", qos0Publishes, QOS_TEST_TRIES, qos0Time);
+
+            // Test QoS 1
+            System.out.print("\t- Testing QoS 1: ");
+            final QosTestResult qos1TestResult = client.testQos(MqttQos.AT_LEAST_ONCE, QOS_TEST_TRIES);
+            final int qos1Publishes = qos1TestResult.getReceivedPublishes();
+            final float qos1Time = qos1TestResult.getTimeToReceivePublishes() / 1_000_000F;
+            System.out.printf("Received %d/%d publishes in %.2fms\n", qos1Publishes, QOS_TEST_TRIES, qos1Time);
+
+            // Test QoS 2
+            System.out.print("\t- Testing QoS 2: ");
+            final QosTestResult qos2TestResult  = client.testQos(MqttQos.EXACTLY_ONCE, QOS_TEST_TRIES);
+            final int qos2Publishes = qos2TestResult.getReceivedPublishes();
+            final float qos2Time = qos2TestResult.getTimeToReceivePublishes() / 1_000_000F;
+            System.out.printf("Received %d/%d publishes in %.2fms\n", qos2Publishes, QOS_TEST_TRIES, qos2Time);
 
             // Test retain
             System.out.print("\t- Retain: ");
-            System.out.println(client.testRetain() ? "OK" : "NO");
+            System.out.println(client.testRetain());
 
-            // Test QoS 0
-            System.out.print("\t- Testing QoS 0: ");
-            try { System.out.println("Received " + client.testQos0(qosTries) + "/" + qosTries + " publishes"); }
-            catch (InterruptedException e) { e.printStackTrace(); }
-
-
-            // Test QoS 1
-            System.out.print("\t- QoS 1: ");
-            System.out.println(client.testQos1() ? "OK" : "NO");
-
-            // Test QoS 2
-            System.out.print("\t- QoS 2: ");
-            System.out.println(client.testQos2() ? "OK" : "NO");
+            // Test if wildcard subscriptions are allowed
+            System.out.print("\t- Wildcard subscriptions: ");
+            final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = client.testWildcardSubscriptions();
+            if (wildcardSubscriptionsTestResult.isSuccess()) { System.out.println("OK"); }
+            else {
+                System.out.println("NO");
+                System.out.print("\t\t> '+' Wildcard: ");
+                System.out.println(wildcardSubscriptionsTestResult.getPlusWildcardTest());
+                System.out.print("\t\t> '#' Wildcard: ");
+                System.out.println(wildcardSubscriptionsTestResult.getHashWildcardTest());
+            }
 
             // Test max payload size
             System.out.print("\t- Payload size: ");
