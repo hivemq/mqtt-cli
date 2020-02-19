@@ -1,4 +1,4 @@
-package com.hivemq.cli.mqtt.test;
+package com.hivemq.cli.mqtt.test.results;
 
 public class QosTestResult {
     private final int receivedPublishes;

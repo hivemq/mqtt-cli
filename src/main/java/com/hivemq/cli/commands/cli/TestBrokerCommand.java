@@ -25,8 +25,11 @@ import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
-import com.hivemq.cli.mqtt.test.QosTestResult;
-import com.hivemq.cli.mqtt.test.WildcardSubscriptionsTestResult;
+import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
+import com.hivemq.cli.mqtt.test.results.QosTestResult;
+import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -134,6 +137,9 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
             System.out.print("\t\t> Shared subscriptions: ");
             System.out.println(restrictions.isSharedSubscriptionAvailable()? "OK" : "NO");
 
+            System.out.print("\t\t> Subscription identifiers: ");
+            System.out.println(restrictions.areSubscriptionIdentifiersAvailable()? "OK" : "NO");
+
             System.out.print("\t\t> Max. QoS: ");
             System.out.println(restrictions.getMaximumQos().ordinal());
 
@@ -145,9 +151,6 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
 
             System.out.print("\t\t> Topic alias maximum: ");
             System.out.println(restrictions.getTopicAliasMaximum());
-
-            System.out.print("\t\t> Subscription identifiers: ");
-            System.out.println(restrictions.areSubscriptionIdentifiersAvailable()? "OK" : "NO");
 
             System.out.print("\t\t> Session expiry interval: ");
             System.out.println(connAck.getSessionExpiryInterval().isPresent()? connAck.getSessionExpiryInterval().getAsLong() + "s" : "Client-based");
@@ -187,7 +190,8 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
         if (mqtt3Support) {
 
             // Test max length of topic names & set length for next tests
-            final int maxTopicLength = client.testTopicLength();
+            final TopicLengthTestResults topicLengthTestResults = client.testTopicLength();
+            final int maxTopicLength = topicLengthTestResults.getMaxTopicLength();
             if (maxTopicLength != 65535) { client.setMaxTopicLength(maxTopicLength); }
 
             // Test QoS 0
@@ -229,13 +233,15 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
 
             // Test max payload size
             System.out.print("\t- Payload size: ");
-            final int payloadSize = client.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
+            final PayloadTestResults payloadTestResults = client.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
+            final int payloadSize = payloadTestResults.getPayloadSize();
             if (payloadSize == MAX_PAYLOAD_TEST_SIZE) { System.out.println(">= " + payloadSize + " bytes"); }
             else { System.out.println(payloadSize + " bytes"); }
 
             // Test max client id length
             System.out.print("\t- Max. client id length: ");
-            final int maxClientIdLength = client.testClientIdLength();
+            final ClientIdLengthTestResults clientIdLengthTestResults = client.testClientIdLength();
+            final int maxClientIdLength = clientIdLengthTestResults.getMaxClientIdLength();
             System.out.println(maxClientIdLength + " bytes");
 
             // Print max topic length
@@ -244,7 +250,7 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
 
             // Test supported Ascii chars
             System.out.print("\t- Unsupported Ascii Chars: ");
-            final String unsupportedChars = client.testSpecialAsciiChars();
+            final String unsupportedChars = client.testAsciiCharsInClientId();
             if (unsupportedChars.isEmpty()) { System.out.println("ALL SUPPORTED"); }
             else { System.out.println("{'" + Joiner.on("', '").join(Chars.asList(unsupportedChars.toCharArray())) + "'}"); }
         }

@@ -17,26 +17,35 @@
 package com.hivemq.cli.mqtt.test;
 
 import com.google.common.base.Strings;
+import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
+import com.hivemq.cli.mqtt.test.results.QosTestResult;
+import com.hivemq.cli.mqtt.test.results.TestResult;
+import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
+import com.hivemq.cli.utils.Tuple;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
 import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3ConnAckException;
-import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3PubAckException;
 import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
+import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3Subscribe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -72,9 +81,7 @@ public class Mqtt3FeatureTester {
         //TODO Wrap with object instead of Mqtt3Connack
         final Mqtt3Client client = buildClient();
 
-        try {
-            return client.toAsync().connect().get(LONG_TIME_OUT, TimeUnit.SECONDS);
-        }
+        try { return client.toAsync().connect().get(LONG_TIME_OUT, TimeUnit.SECONDS); }
         catch (final Mqtt3ConnAckException ex) { return ex.getMqttMessage(); }
         catch (final Exception ex) { return null; }
         finally {
@@ -85,13 +92,13 @@ public class Mqtt3FeatureTester {
     }
 
     public @NotNull WildcardSubscriptionsTestResult testWildcardSubscriptions() {
-        final WildcardTestResult plusWildcardResult = testWildcard("+", "test");
-        final WildcardTestResult hashWildcardResult = testWildcard("#", "test/subtopic");
+        final TestResult plusWildcardResult = testWildcard("+", "test");
+        final TestResult hashWildcardResult = testWildcard("#", "test/subtopic");
 
         return new WildcardSubscriptionsTestResult(plusWildcardResult, hashWildcardResult);
     }
 
-    public @NotNull RetainTestResult testRetain() {
+    public @NotNull TestResult testRetain() {
         final Mqtt3Client publisher = buildClient();
         final Mqtt3Client subscriber = buildClient();
         final String topic = (maxTopicLength == -1 ? generateTopicUUID() : generateTopicUUID(maxTopicLength));
@@ -107,7 +114,7 @@ public class Mqtt3FeatureTester {
                 .payload("RETAIN".getBytes())
                 .send();
         }
-        catch (final Exception ex) { return RetainTestResult.PUBLISH_FAILED; }
+        catch (final Exception ex) { return TestResult.PUBLISH_FAILED; }
 
         subscriber.toBlocking().connect();
 
@@ -127,7 +134,7 @@ public class Mqtt3FeatureTester {
             // TODO Log
         }
 
-        return countDownLatch.getCount() == 0 ? RetainTestResult.OK : RetainTestResult.TIME_OUT;
+        return countDownLatch.getCount() == 0 ? TestResult.OK : TestResult.TIME_OUT;
     }
 
     public @NotNull QosTestResult testQos(final @NotNull MqttQos qos, final int tries) {
@@ -174,24 +181,28 @@ public class Mqtt3FeatureTester {
         return new QosTestResult(totalReceived.get(), timeToComplete);
     }
 
-    public int testPayloadSize(final int maxSize) {
-        final Mqtt3Client client = buildClient();
+    public @NotNull PayloadTestResults testPayloadSize(final int maxSize) {
+        final Mqtt3Client subscriber = buildClient();
+        final Mqtt3Client publisher = buildClient();
+        final List<Tuple<Integer, TestResult>> testResults = new LinkedList<>();
         final String topic = (maxTopicLength == -1 ? generateTopicUUID() : generateTopicUUID(maxTopicLength));
-        final Mqtt3Publishes publishes = client.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
+        final Mqtt3Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
         final String oneByte = "a";
-        final AtomicInteger top = new AtomicInteger(maxSize);
-        final AtomicInteger bottom = new AtomicInteger(0);
-        int mid = top.get() / 2;
+        int top = maxSize;
+        int bottom = 0;
+        int mid = -1;
 
-        client.toBlocking().connect();
+        subscriber.toBlocking().connect();
+        publisher.toBlocking().connect();
 
-        client.toBlocking().subscribeWith()
+        subscriber.toBlocking().subscribeWith()
                 .topicFilter(topic)
                 .qos(MqttQos.AT_LEAST_ONCE)
                 .send();
 
         // Binary search the payload size
-        while (bottom.get() <= top.get()) {
+        while (bottom <= top) {
+            mid = (bottom + top) / 2;
             final String currentPayload = Strings.repeat(oneByte, mid);
             final Mqtt3Publish publish = Mqtt3Publish.builder()
                     .topic(topic)
@@ -200,67 +211,126 @@ public class Mqtt3FeatureTester {
                     .build();
 
             try {
-                client.toBlocking().publish(publish);
-                int finalMid = mid;
-                publishes.receive(5, TimeUnit.SECONDS).ifPresent(mqtt3Publish -> {
-                    if (Arrays.equals(mqtt3Publish.getPayloadAsBytes(), currentPayload.getBytes())) {
-                        bottom.set(finalMid + 1);
-                    }
-                    else { top.set(finalMid - 1); }
-                });
+                publisher.toBlocking().publish(publish);
             }
-            catch (final Mqtt3PubAckException pubAckEx) { top.set(mid - 1); }
-            catch (final InterruptedException e) { e.printStackTrace(); }
+            catch (final Exception ex) {
+                testResults.add(new Tuple<>(mid, TestResult.PUBLISH_FAILED));
+                top = mid -1;
+                continue;
+            }
 
-            mid = (bottom.get() + top.get()) / 2;
+            try {
+                final Optional<Mqtt3Publish> receive = publishes.receive(LONG_TIME_OUT, TimeUnit.SECONDS);
+                if (!receive.isPresent()) {
+                    testResults.add(new Tuple<>(mid, TestResult.TIME_OUT));
+                    top = mid - 1;
+                    continue;
+                }
+                else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentPayload.getBytes())) {
+                    testResults.add(new Tuple<>(mid, TestResult.WRONG_PAYLOAD));
+                    top = mid - 1;
+                    continue;
+                }
+
+            }
+            catch (InterruptedException e) { e.printStackTrace(); }
+
+            testResults.add(new Tuple<>(mid, TestResult.OK));
+            bottom = mid + 1;
         }
-        client.toBlocking().disconnect();
-        return mid;
+
+        subscriber.toBlocking().disconnect();
+        publisher.toBlocking().disconnect();
+
+        return new PayloadTestResults(mid, testResults);
     }
 
-    public int testTopicLength() {
-        final Mqtt3Client client = buildClient();
-        client.toBlocking().connect();
+    public @NotNull TopicLengthTestResults testTopicLength() {
+        final Mqtt3Client subscriber = buildClient();
+        final Mqtt3Client publisher = buildClient();
+        final Mqtt3Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
+        final List<Tuple<Integer, TestResult>> testResults = new LinkedList<>();
         final String oneByte = "a";
         int top = 65535;
         int bottom = 0;
-        int mid = top / 2;
+        int mid = -1;
+
+        subscriber.toBlocking().connect();
+        publisher.toBlocking().connect();
 
         // Binary search the right topic length
         while (bottom <= top) {
-            final String currentTopicName = Strings.repeat(oneByte, mid);
-
-            try {
-                Mqtt3Publish publish = Mqtt3Publish.builder()
-                        .topic(currentTopicName)
-                        .qos(MqttQos.EXACTLY_ONCE)
-                        .build();
-
-                client.toBlocking().publish(publish);
-
-                bottom = mid + 1;
-            }
-            catch (final Mqtt3PubAckException pubAckEx) { top = mid - 1; }
             mid = (bottom + top) / 2;
+            final String currentTopicName = Strings.repeat(oneByte, mid);
+            final Mqtt3Publish publish = Mqtt3Publish.builder()
+                    .topic(currentTopicName)
+                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .payload(currentTopicName.getBytes())
+                    .build();
+            final Mqtt3Subscribe subscribe = Mqtt3Subscribe.builder()
+                    .topicFilter(currentTopicName)
+                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .build();
+
+            // Test subscribe to topic
+            try { subscriber.toBlocking().subscribe(subscribe); }
+            catch (final Exception ex) {
+                testResults.add(new Tuple<>(mid, TestResult.SUBSCRIBE_FAILED));
+                top = mid - 1;
+                continue;
+            }
+
+            // Test publish to topic
+            try {
+                publisher.toBlocking().publish(publish);
+            }
+            catch (final Exception ex) {
+                testResults.add(new Tuple<>(mid, TestResult.PUBLISH_FAILED));
+                top = mid - 1;
+                continue;
+            }
+
+            // Subscriber retrieves payload
+            try {
+                final Optional<Mqtt3Publish> receive = publishes.receive(LONG_TIME_OUT, TimeUnit.SECONDS);
+                if (!receive.isPresent()) {
+                    testResults.add(new Tuple<>(mid, TestResult.TIME_OUT));
+                    top = mid - 1;
+                    continue;
+                }
+                else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentTopicName.getBytes())) {
+                    testResults.add(new Tuple<>(mid, TestResult.WRONG_PAYLOAD));
+                    top = mid - 1;
+                    continue;
+                }
+             }
+            catch (InterruptedException e) { e.printStackTrace(); }
+
+            // Everything successful
+            testResults.add(new Tuple<>(mid, TestResult.OK));
+            bottom = mid + 1;
         }
 
-        client.toBlocking().disconnect();
+        subscriber.toBlocking().disconnect();
+        publisher.toBlocking().disconnect();
 
-        return mid;
+        return new TopicLengthTestResults(mid, testResults);
     }
 
-    public int testClientIdLength() {
+    public @NotNull ClientIdLengthTestResults testClientIdLength() {
         final Mqtt3Client client = buildClient();
+        final List<Tuple<Integer, Mqtt3ConnAckReturnCode>> connectResults = new LinkedList<>();
         final String oneByte = "a";
         final Mqtt3ClientBuilder mqtt3ClientBuilder = Mqtt3Client.builder()
                 .serverHost(client.getConfig().getServerHost())
                 .serverPort(client.getConfig().getServerPort());
         int top = 65535;
         int bottom = 0;
-        int mid = top / 2;
+        int mid = -1;
 
         // Binary search the right client id length
         while (bottom <= top) {
+            mid = (bottom + top) / 2;
             final String currentIdentifier = Strings.repeat(oneByte, mid);
             final Mqtt3Client currClient = getClientBuilder()
                     .identifier(currentIdentifier)
@@ -268,19 +338,32 @@ public class Mqtt3FeatureTester {
 
             try {
                 final Mqtt3ConnAck connAck = currClient.toBlocking().connect();
-                if (connAck.getReturnCode() == Mqtt3ConnAckReturnCode.SUCCESS) { bottom = mid + 1; }
-                else { top = mid - 1; }
+                connectResults.add(new Tuple<>(mid, connAck.getReturnCode()));
+                if (connAck.getReturnCode() != Mqtt3ConnAckReturnCode.SUCCESS) {
+                    top = mid - 1;
+                    continue;
+                }
             }
-            catch (final Mqtt3ConnAckException connAckEx) { top = mid - 1; }
+            catch (final Mqtt3ConnAckException connAckEx) {
+                connectResults.add(new Tuple<>(mid, connAckEx.getMqttMessage().getReturnCode()));
+                top = mid - 1;
+                continue;
+            }
+            catch (final Exception ex) {
+                // TODO What to return in this case?
+                connectResults.add(new Tuple<>(mid, Mqtt3ConnAckReturnCode.SERVER_UNAVAILABLE));
+                top = mid -1;
+                continue;
+            }
 
+            bottom = mid + 1;
             if (currClient.getConfig().getState().isConnected()) { currClient.toBlocking().disconnect(); }
-            mid = (bottom + top) / 2;
         }
 
-        return mid;
+        return new ClientIdLengthTestResults(mid, connectResults);
     }
 
-    private @NotNull WildcardTestResult testWildcard(final String subscribeWildcardTopic, final String publishTopic) {
+    private @NotNull TestResult testWildcard(final String subscribeWildcardTopic, final String publishTopic) {
         final Mqtt3Client client = buildClient();
         final String topic = (maxTopicLength == -1 ? generateTopicUUID() : generateTopicUUID(maxTopicLength));
         final String subscribeToTopic = topic + "/" + subscribeWildcardTopic;
@@ -303,7 +386,7 @@ public class Mqtt3FeatureTester {
                     .send()
                     .join();
         }
-        catch (final Exception ex) { return WildcardTestResult.SUBSCRIBE_FAILED; }
+        catch (final Exception ex) { return TestResult.SUBSCRIBE_FAILED; }
 
         try {
             client.toBlocking().publishWith()
@@ -312,7 +395,7 @@ public class Mqtt3FeatureTester {
                     .payload(payload)
                     .send();
         }
-        catch (final Exception ex) { return WildcardTestResult.PUBLISH_FAILED; }
+        catch (final Exception ex) { return TestResult.PUBLISH_FAILED; }
 
         try {
             countDownLatch.await(SHORT_TIME_OUT, TimeUnit.SECONDS);
@@ -320,13 +403,14 @@ public class Mqtt3FeatureTester {
             // TODO Log
         }
 
-        if (countDownLatch.getCount() == 0) { return WildcardTestResult.OK; }
-        else { return WildcardTestResult.TIME_OUT; }
+        if (countDownLatch.getCount() == 0) { return TestResult.OK; }
+        else { return TestResult.TIME_OUT; }
     }
     
-    public @NotNull String testSpecialAsciiChars() {
+    public @NotNull String testAsciiCharsInClientId() {
         final String ASCII = " !\"#$%&\\'()*+,-./:;<=>?@[\\\\]^_`{|}~";
         final StringBuilder unsupportedChars = new StringBuilder();
+        final List<Tuple<Character, Mqtt3ConnAckReturnCode>> connectResults = new LinkedList<>();
 
         for (int i = 0; i < ASCII.length(); i++) {
             final String currChar = String.valueOf(ASCII.charAt(i));
@@ -335,7 +419,11 @@ public class Mqtt3FeatureTester {
                     .build();
 
             try { client.toBlocking().connect(); }
-            catch (final Exception ex) { unsupportedChars.append(currChar); }
+            catch (final Mqtt3ConnAckException ex) {
+                connectResults.add(new Tuple<>(currChar.charAt(0), ex.getMqttMessage().getReturnCode()));
+            }
+            catch (final Exception ex) {
+                unsupportedChars.append(currChar); }
 
             if (client.getConfig().getState().isConnected()) { client.toBlocking().disconnect(); }
         }
