@@ -56,7 +56,6 @@ import java.util.Map;
 public class TestBrokerCommand implements Runnable {
 
     final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
-    final int QOS_TEST_TRIES = 10;
 
     @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')", order = 1)
     private @Nullable String host;
@@ -66,6 +65,12 @@ public class TestBrokerCommand implements Runnable {
 
     @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The mqtt version to test the broker on", order = 1)
     private @Nullable MqttVersion version;
+
+    @CommandLine.Option(names = {"-t", "--timeOut"}, defaultValue = "10", description = "The time to wait for the broker to respond", order = 1)
+    private @NotNull Integer timeOut;
+
+    @CommandLine.Option(names = {"-q", "--qosTries"}, defaultValue = "10", description = "The amount of publishes to send to the broker on every qos level", order = 1)
+    private @NotNull Integer qosTries;
 
     @CommandLine.Mixin
     private AuthenticationOptions authenticationOptions = new AuthenticationOptions();
@@ -190,7 +195,8 @@ public class TestBrokerCommand implements Runnable {
                 port,
                 authenticationOptions.getUser(),
                 authenticationOptions.getPassword(),
-                sslConfig
+                sslConfig,
+                timeOut
         );
 
         boolean mqtt3Support = false;
@@ -214,24 +220,24 @@ public class TestBrokerCommand implements Runnable {
 
             // Test QoS 0
             System.out.print("\t- Testing QoS 0: ");
-            final QosTestResult qos0TestResult = client.testQos(MqttQos.AT_MOST_ONCE, QOS_TEST_TRIES);
+            final QosTestResult qos0TestResult = client.testQos(MqttQos.AT_MOST_ONCE, qosTries);
             final int qos0Publishes = qos0TestResult.getReceivedPublishes();
             final float qos0Time = qos0TestResult.getTimeToReceivePublishes() / 1_000_000F;
-            System.out.printf("Received %d/%d publishes in %.2fms\n", qos0Publishes, QOS_TEST_TRIES, qos0Time);
+            System.out.printf("Received %d/%d publishes in %.2fms\n", qos0Publishes, qosTries, qos0Time);
 
             // Test QoS 1
             System.out.print("\t- Testing QoS 1: ");
-            final QosTestResult qos1TestResult = client.testQos(MqttQos.AT_LEAST_ONCE, QOS_TEST_TRIES);
+            final QosTestResult qos1TestResult = client.testQos(MqttQos.AT_LEAST_ONCE, qosTries);
             final int qos1Publishes = qos1TestResult.getReceivedPublishes();
             final float qos1Time = qos1TestResult.getTimeToReceivePublishes() / 1_000_000F;
-            System.out.printf("Received %d/%d publishes in %.2fms\n", qos1Publishes, QOS_TEST_TRIES, qos1Time);
+            System.out.printf("Received %d/%d publishes in %.2fms\n", qos1Publishes, qosTries, qos1Time);
 
             // Test QoS 2
             System.out.print("\t- Testing QoS 2: ");
-            final QosTestResult qos2TestResult  = client.testQos(MqttQos.EXACTLY_ONCE, QOS_TEST_TRIES);
+            final QosTestResult qos2TestResult  = client.testQos(MqttQos.EXACTLY_ONCE, qosTries);
             final int qos2Publishes = qos2TestResult.getReceivedPublishes();
             final float qos2Time = qos2TestResult.getTimeToReceivePublishes() / 1_000_000F;
-            System.out.printf("Received %d/%d publishes in %.2fms\n", qos2Publishes, QOS_TEST_TRIES, qos2Time);
+            System.out.printf("Received %d/%d publishes in %.2fms\n", qos2Publishes, qosTries, qos2Time);
 
             // Test retain
             System.out.print("\t- Retain: ");

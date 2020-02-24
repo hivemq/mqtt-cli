@@ -38,7 +38,6 @@ import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3Subscribe;
-import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
@@ -58,8 +57,7 @@ import static com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient.*;
 
 public class Mqtt3FeatureTester {
 
-    private final int LONG_TIME_OUT = 10;
-    private final int SHORT_TIME_OUT = 2;
+    private int timeOut = 10;
 
     private int maxTopicLength = -1;
     private final String host;
@@ -72,12 +70,14 @@ public class Mqtt3FeatureTester {
                               final @NotNull Integer port,
                               final @Nullable String username,
                               final @Nullable ByteBuffer password,
-                              final @Nullable MqttClientSslConfig sslConfig) {
+                              final @Nullable MqttClientSslConfig sslConfig,
+                              final int timeOut) {
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
         this.sslConfig = sslConfig;
+        this.timeOut = timeOut;
     }
 
     // Test methods
@@ -85,7 +85,7 @@ public class Mqtt3FeatureTester {
     public @Nullable Mqtt3ConnAck testConnect() {
         final Mqtt3Client client = buildClient();
 
-        try { return client.toAsync().connect().get(LONG_TIME_OUT, TimeUnit.SECONDS); }
+        try { return client.toAsync().connect().get(timeOut, TimeUnit.SECONDS); }
         catch (final Mqtt3ConnAckException ex) { return ex.getMqttMessage(); }
         catch (final Exception ex) {
             Logger.error(ex, "Could not connect MQTT3 client");
@@ -147,7 +147,7 @@ public class Mqtt3FeatureTester {
             return TestResult.SUBSCRIBE_FAILED;
         }
 
-        try { countDownLatch.await(LONG_TIME_OUT, TimeUnit.SECONDS); }
+        try { countDownLatch.await(timeOut, TimeUnit.SECONDS); }
         catch (final InterruptedException ex) {
             Logger.error(ex, "Interrupted while waiting for retained publish to arrive at subscriber");
         }
@@ -202,7 +202,7 @@ public class Mqtt3FeatureTester {
             }
         }
 
-        try { countDownLatch.await(LONG_TIME_OUT, TimeUnit.SECONDS); }
+        try { countDownLatch.await(timeOut, TimeUnit.SECONDS); }
         catch (InterruptedException e) {
             Logger.error("Interrupted while waiting for QoS {} publish to arrive at subscriber", qos.ordinal());
         }
@@ -257,7 +257,7 @@ public class Mqtt3FeatureTester {
             }
 
             try {
-                final Optional<Mqtt3Publish> receive = publishes.receive(LONG_TIME_OUT, TimeUnit.SECONDS);
+                final Optional<Mqtt3Publish> receive = publishes.receive(timeOut, TimeUnit.SECONDS);
                 if (!receive.isPresent()) {
                     testResults.add(new Tuple<>(mid, TestResult.TIME_OUT));
                     top = mid - 1;
@@ -335,7 +335,7 @@ public class Mqtt3FeatureTester {
 
             // Subscriber retrieves payload
             try {
-                final Optional<Mqtt3Publish> receive = publishes.receive(LONG_TIME_OUT, TimeUnit.SECONDS);
+                final Optional<Mqtt3Publish> receive = publishes.receive(timeOut, TimeUnit.SECONDS);
                 if (!receive.isPresent()) {
                     testResults.add(new Tuple<>(mid, TestResult.TIME_OUT));
                     top = mid - 1;
@@ -458,7 +458,7 @@ public class Mqtt3FeatureTester {
         }
 
         try {
-            countDownLatch.await(SHORT_TIME_OUT, TimeUnit.SECONDS);
+            countDownLatch.await(timeOut, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Logger.error(e,
                     "Interrupted while subscription to '{}' receives publish to '{}'",

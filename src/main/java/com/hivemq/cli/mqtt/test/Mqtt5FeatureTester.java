@@ -10,6 +10,7 @@ import com.hivemq.client.mqtt.mqtt5.message.auth.Mqtt5SimpleAuth;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tinylog.Logger;
 
 import java.nio.ByteBuffer;
 
@@ -43,13 +44,16 @@ public class Mqtt5FeatureTester {
             return mqtt5Client.toBlocking().connect();
         }
         catch (final Mqtt5ConnAckException connAckEx) { return connAckEx.getMqttMessage(); }
-        catch (final ConnectionFailedException | Mqtt5DisconnectException ex) { return null; }
+        catch (final Exception ex) {
+            Logger.error(ex, "Could not connect MQTT5 client");
+            return null;
+        }
         finally {
-            if (mqtt5Client.getConfig().getState().isConnected()) {
-                mqtt5Client.toBlocking().disconnect();
-            }
+            disconnectIfNotConnected(mqtt5Client);
         }
     }
+
+
 
 
 
@@ -90,6 +94,14 @@ public class Mqtt5FeatureTester {
         }
         else {
             return null;
+        }
+    }
+
+    private void disconnectIfNotConnected(final @NotNull Mqtt5Client ... clients) {
+        for (Mqtt5Client client: clients) {
+            if (client.getState().isConnected()) {
+                client.toBlocking().disconnect();
+            }
         }
     }
 }
