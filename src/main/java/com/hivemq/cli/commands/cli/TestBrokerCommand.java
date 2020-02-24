@@ -25,6 +25,7 @@ import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
+import com.hivemq.cli.mqtt.test.results.AsciiCharsInClientIdTestResults;
 import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
 import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
 import com.hivemq.cli.mqtt.test.results.QosTestResult;
@@ -40,14 +41,19 @@ import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckReasonCo
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckRestrictions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @CommandLine.Command(
         name = "test",
         description = "Tests the specified broker on different MQTT feature support and prints the results")
-public class TestBrokerCommand extends AbstractCommand implements Runnable {
+public class TestBrokerCommand implements Runnable {
 
     final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
     final int QOS_TEST_TRIES = 10;
@@ -81,11 +87,23 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
 
     @Override
     public void run() {
+
+        // TinyLog configuration
+        Map<String, String> configurationMap = new HashMap<String, String>() {{
+            put("writer", "console");
+            put("writer.format", "{message}");
+            put("writer.level", "warn");
+        }};
+
+        Configuration.replace(configurationMap);
+
         if (host == null) { host = defaultCLIProperties.getHost(); }
         if (port == null) { port = defaultCLIProperties.getPort(); }
 
         try { sslConfig = sslOptions.buildSslConfig(); }
-        catch (Exception e) { e.printStackTrace(); }
+        catch (Exception e) {
+            Logger.error(e, "Could not build SSL configuration");
+        }
 
         if (version != null) {
             if (version == MqttVersion.MQTT_3_1_1) { testMqtt3Features(); }
@@ -250,9 +268,10 @@ public class TestBrokerCommand extends AbstractCommand implements Runnable {
 
             // Test supported Ascii chars
             System.out.print("\t- Unsupported Ascii Chars: ");
-            final String unsupportedChars = client.testAsciiCharsInClientId();
+            final AsciiCharsInClientIdTestResults asciiTestResults = client.testAsciiCharsInClientId();
+            final List<Character> unsupportedChars = asciiTestResults.getUnsupportedChars();
             if (unsupportedChars.isEmpty()) { System.out.println("ALL SUPPORTED"); }
-            else { System.out.println("{'" + Joiner.on("', '").join(Chars.asList(unsupportedChars.toCharArray())) + "'}"); }
+            else { System.out.println("{'" + Joiner.on("', '").join(unsupportedChars) + "'}"); }
         }
 
     }
