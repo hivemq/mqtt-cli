@@ -83,7 +83,7 @@ mqtt> con   [-h <host>]
 | ``-v``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
 | ``-c``   | ``--[no-]cleanStart`` | Enable clean start if set. | ``True``
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
-| ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (No Expiry)
+| ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-up``  | ``--userProperty`` | A user property of the connect message.
 | ``--ws``  |  | Use WebSocket transport protocol. | ``False``
 | ``--ws:path``  |  | The path to the WebSocket located at given broker host. | 
