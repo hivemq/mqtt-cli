@@ -17,7 +17,6 @@
 package com.hivemq.cli.mqtt.test.results;
 
 import com.hivemq.cli.utils.Tuple;
-import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +36,7 @@ public class AsciiCharsInClientIdTestResults {
 
     public @NotNull List<Character> getUnsupportedChars() {
         final List<Character> unsupportedChars = new LinkedList<>();
-        for (Tuple<Character, String> tuple: testResults) {
+        for (Tuple<Character, String> tuple : testResults) {
             if (!tuple.getValue().equals("SUCCESS")) {
                 unsupportedChars.add(tuple.getKey());
             }

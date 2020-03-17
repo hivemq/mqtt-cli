@@ -79,13 +79,12 @@ public class Mqtt5FeatureTester {
 
         try {
             return mqtt5Client.toBlocking().connect();
-        }
-        catch (final Mqtt5ConnAckException connAckEx) { return connAckEx.getMqttMessage(); }
-        catch (final Exception ex) {
+        } catch (final Mqtt5ConnAckException connAckEx) {
+            return connAckEx.getMqttMessage();
+        } catch (final Exception ex) {
             Logger.error(ex, "Could not connect MQTT5 client");
             return null;
-        }
-        finally {
+        } finally {
             disconnectIfConnected(mqtt5Client);
         }
     }
@@ -115,8 +114,7 @@ public class Mqtt5FeatureTester {
                     })
                     .send()
                     .join();
-        }
-        catch (final Exception ex) {
+        } catch (final Exception ex) {
             Logger.error(ex, "Could not subscribe with QoS {}", qos.ordinal());
         }
 
@@ -129,14 +127,14 @@ public class Mqtt5FeatureTester {
                         .qos(qos)
                         .payload(payload)
                         .send();
-            }
-            catch (final Exception ex) {
+            } catch (final Exception ex) {
                 Logger.error("Could not publish with QoS {}", qos.ordinal());
             }
         }
 
-        try { countDownLatch.await(timeOut, TimeUnit.SECONDS); }
-        catch (InterruptedException e) {
+        try {
+            countDownLatch.await(timeOut, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
             Logger.error("Interrupted while waiting for QoS {} publish to arrive at subscriber", qos.ordinal());
         }
 
@@ -163,8 +161,7 @@ public class Mqtt5FeatureTester {
                     .retain(true)
                     .payload("RETAIN".getBytes())
                     .send();
-        }
-        catch (final Exception ex) {
+        } catch (final Exception ex) {
             if (!(ex instanceof Mqtt5PubAckException)) {
                 Logger.error(ex, "Retained publish failed");
             }
@@ -184,16 +181,16 @@ public class Mqtt5FeatureTester {
                     })
                     .send()
                     .join();
-        }
-        catch (final Exception ex) {
+        } catch (final Exception ex) {
             if (!(ex instanceof Mqtt5SubAckException)) {
                 Logger.error(ex, "Retained subscribe failed");
             }
             return TestResult.SUBSCRIBE_FAILED;
         }
 
-        try { countDownLatch.await(timeOut, TimeUnit.SECONDS); }
-        catch (final InterruptedException ex) {
+        try {
+            countDownLatch.await(timeOut, TimeUnit.SECONDS);
+        } catch (final InterruptedException ex) {
             Logger.error(ex, "Interrupted while waiting for retained publish to arrive at subscriber");
         }
 
@@ -220,7 +217,9 @@ public class Mqtt5FeatureTester {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
         final Consumer<Mqtt5Publish> publishCallback = publish -> {
-            if (Arrays.equals(publish.getPayloadAsBytes(), payload)) { countDownLatch.countDown(); }
+            if (Arrays.equals(publish.getPayloadAsBytes(), payload)) {
+                countDownLatch.countDown();
+            }
         };
 
         subscriber.toBlocking().connect();
@@ -233,8 +232,7 @@ public class Mqtt5FeatureTester {
                     .callback(publishCallback)
                     .send()
                     .join();
-        }
-        catch (final Exception ex) {
+        } catch (final Exception ex) {
             if (!(ex instanceof Mqtt5SubAckException)) {
                 Logger.error(ex, "Subscribe to wildcard topic '{}' failed", subscribeToTopic);
             }
@@ -247,8 +245,7 @@ public class Mqtt5FeatureTester {
                     .qos(MqttQos.AT_LEAST_ONCE)
                     .payload(payload)
                     .send();
-        }
-        catch (final Exception ex) {
+        } catch (final Exception ex) {
             if (!(ex instanceof Mqtt5PubAckException)) {
                 Logger.error(ex, "Publish to topic '{}' failed", publishToTopic);
             }
@@ -300,13 +297,12 @@ public class Mqtt5FeatureTester {
 
             try {
                 publisher.toBlocking().publish(publish);
-            }
-            catch (final Exception ex) {
-                if (!(ex instanceof  Mqtt5PubAckException)) {
+            } catch (final Exception ex) {
+                if (!(ex instanceof Mqtt5PubAckException)) {
                     Logger.error(ex, "Publish with payload of size {} bytes failed", currentPayload.getBytes().length);
                 }
                 testResults.add(new Tuple<>(mid, TestResult.PUBLISH_FAILED));
-                top = mid -1;
+                top = mid - 1;
                 continue;
             }
 
@@ -316,8 +312,7 @@ public class Mqtt5FeatureTester {
                     testResults.add(new Tuple<>(mid, TestResult.TIME_OUT));
                     top = mid - 1;
                     continue;
-                }
-                else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentPayload.getBytes())) {
+                } else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentPayload.getBytes())) {
                     testResults.add(new Tuple<>(mid, TestResult.WRONG_PAYLOAD));
                     top = mid - 1;
                     continue;
@@ -365,8 +360,9 @@ public class Mqtt5FeatureTester {
                     .build();
 
             // Test subscribe to topic
-            try { subscriber.toBlocking().subscribe(subscribe); }
-            catch (final Exception ex) {
+            try {
+                subscriber.toBlocking().subscribe(subscribe);
+            } catch (final Exception ex) {
                 if (!(ex instanceof Mqtt5SubAckException)) {
                     Logger.error(ex, "Subscribe to topic of length {} bytes failed", currentTopicName.getBytes().length);
                 }
@@ -378,9 +374,8 @@ public class Mqtt5FeatureTester {
             // Test publish to topic
             try {
                 publisher.toBlocking().publish(publish);
-            }
-            catch (final Exception ex) {
-                if (!(ex instanceof  Mqtt5PubAckException)) {
+            } catch (final Exception ex) {
+                if (!(ex instanceof Mqtt5PubAckException)) {
                     Logger.error(ex, "Publish to topic of length {}", currentTopicName.getBytes().length);
                 }
                 testResults.add(new Tuple<>(mid, TestResult.PUBLISH_FAILED));
@@ -395,14 +390,12 @@ public class Mqtt5FeatureTester {
                     testResults.add(new Tuple<>(mid, TestResult.TIME_OUT));
                     top = mid - 1;
                     continue;
-                }
-                else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentTopicName.getBytes())) {
+                } else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentTopicName.getBytes())) {
                     testResults.add(new Tuple<>(mid, TestResult.WRONG_PAYLOAD));
                     top = mid - 1;
                     continue;
                 }
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 Logger.error(e, "Interrupted while waiting to receive publish to topic with {} bytes", currentTopicName.getBytes().length);
             }
 
@@ -438,20 +431,18 @@ public class Mqtt5FeatureTester {
                     top = mid - 1;
                     continue;
                 }
-            }
-            catch (final Mqtt5ConnAckException connAckEx) {
+            } catch (final Mqtt5ConnAckException connAckEx) {
                 connectResults.add(new Tuple<>(mid, connAckEx.getMqttMessage().getReasonCode().toString()));
                 top = mid - 1;
                 continue;
-            }
-            catch (final Exception ex) {
-                if (!(ex instanceof  Mqtt5ConnAckException)) {
+            } catch (final Exception ex) {
+                if (!(ex instanceof Mqtt5ConnAckException)) {
                     Logger.error(ex, "Connect with client id length {} bytes",
                             currClient.getConfig().getClientIdentifier()
                                     .map(id -> id.toString().getBytes().length).orElse(0));
                 }
                 connectResults.add(new Tuple<>(mid, null));
-                top = mid -1;
+                top = mid - 1;
                 continue;
             }
 
@@ -472,11 +463,11 @@ public class Mqtt5FeatureTester {
                     .identifier(currChar)
                     .build();
 
-            try { client.toBlocking().connect(); }
-            catch (final Mqtt5ConnAckException ex) {
+            try {
+                client.toBlocking().connect();
+            } catch (final Mqtt5ConnAckException ex) {
                 connectResults.add(new Tuple<>(currChar.charAt(0), ex.getMqttMessage().getReasonCode().toString()));
-            }
-            catch (final Exception ex) {
+            } catch (final Exception ex) {
                 Logger.error("Connect with Ascii char '{}' failed", currChar);
                 connectResults.add(new Tuple<>(currChar.charAt(0), null));
             }
@@ -505,7 +496,9 @@ public class Mqtt5FeatureTester {
                 .serverPort(port)
                 .simpleAuth(buildAuth());
 
-        if (sslConfig != null) { mqtt5ClientBuilder.sslConfig(sslConfig); }
+        if (sslConfig != null) {
+            mqtt5ClientBuilder.sslConfig(sslConfig);
+        }
 
         return mqtt5ClientBuilder;
     }
@@ -516,24 +509,21 @@ public class Mqtt5FeatureTester {
                     .username(username)
                     .password(password)
                     .build();
-        }
-        else if (username != null) {
+        } else if (username != null) {
             return Mqtt5SimpleAuth.builder()
                     .username(username)
                     .build();
-        }
-        else if (password != null) {
+        } else if (password != null) {
             return Mqtt5SimpleAuth.builder()
                     .password(password)
                     .build();
-        }
-        else {
+        } else {
             return null;
         }
     }
 
-    private void disconnectIfConnected(final @NotNull Mqtt5Client ... clients) {
-        for (Mqtt5Client client: clients) {
+    private void disconnectIfConnected(final @NotNull Mqtt5Client... clients) {
+        for (Mqtt5Client client : clients) {
             if (client.getState().isConnected()) {
                 client.toBlocking().disconnect();
             }

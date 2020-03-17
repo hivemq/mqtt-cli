@@ -28,9 +28,13 @@ public class Tuple<A, B> {
         this.value = value;
     }
 
-    public @NotNull A getKey() { return key; }
+    public @NotNull A getKey() {
+        return key;
+    }
 
-    public @Nullable B getValue() { return value; }
+    public @Nullable B getValue() {
+        return value;
+    }
 
     @Override
     public String toString() {

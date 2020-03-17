@@ -30,8 +30,12 @@ public class TopicLengthTestResults {
         this.testResults = testResults;
     }
 
-    public int getMaxTopicLength() { return maxTopicLength; }
+    public int getMaxTopicLength() {
+        return maxTopicLength;
+    }
 
-    public @NotNull List<Tuple<Integer, TestResult>> getTestResults() { return testResults; }
+    public @NotNull List<Tuple<Integer, TestResult>> getTestResults() {
+        return testResults;
+    }
 
 }

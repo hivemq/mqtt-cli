@@ -31,9 +31,15 @@ public class WildcardSubscriptionsTestResult {
         success = (plusWildcardTest == TestResult.OK) && (hashWildcardTest == TestResult.OK);
     }
 
-    public boolean isSuccess() { return success; }
+    public boolean isSuccess() {
+        return success;
+    }
 
-    public @NotNull TestResult getPlusWildcardTest() { return plusWildcardTest; }
+    public @NotNull TestResult getPlusWildcardTest() {
+        return plusWildcardTest;
+    }
 
-    public @NotNull TestResult getHashWildcardTest() { return hashWildcardTest; }
+    public @NotNull TestResult getHashWildcardTest() {
+        return hashWildcardTest;
+    }
 }

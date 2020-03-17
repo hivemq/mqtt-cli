@@ -17,20 +17,13 @@
 package com.hivemq.cli.commands.cli;
 
 import com.google.common.base.Joiner;
-import com.google.common.primitives.Chars;
 import com.hivemq.cli.DefaultCLIProperties;
-import com.hivemq.cli.commands.AbstractCommand;
 import com.hivemq.cli.commands.options.AuthenticationOptions;
 import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
-import com.hivemq.cli.mqtt.test.results.AsciiCharsInClientIdTestResults;
-import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
-import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
-import com.hivemq.cli.mqtt.test.results.QosTestResult;
-import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
-import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
+import com.hivemq.cli.mqtt.test.results.*;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -86,7 +79,9 @@ public class TestBrokerCommand implements Runnable {
     //needed for pico cli - reflection code generation
     private final DefaultCLIProperties defaultCLIProperties;
 
-    public TestBrokerCommand() { this(null); }
+    public TestBrokerCommand() {
+        this(null);
+    }
 
     @Inject
     public TestBrokerCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
@@ -105,19 +100,26 @@ public class TestBrokerCommand implements Runnable {
 
         Configuration.replace(configurationMap);
 
-        if (host == null) { host = defaultCLIProperties.getHost(); }
-        if (port == null) { port = defaultCLIProperties.getPort(); }
+        if (host == null) {
+            host = defaultCLIProperties.getHost();
+        }
+        if (port == null) {
+            port = defaultCLIProperties.getPort();
+        }
 
-        try { sslConfig = sslOptions.buildSslConfig(); }
-        catch (Exception e) {
+        try {
+            sslConfig = sslOptions.buildSslConfig();
+        } catch (Exception e) {
             Logger.error(e, "Could not build SSL configuration");
         }
 
         if (version != null) {
-            if (version == MqttVersion.MQTT_3_1_1) { testMqtt3Features(); }
-            else if (version == MqttVersion.MQTT_5_0) { testMqtt5Features(); }
-        }
-        else {
+            if (version == MqttVersion.MQTT_3_1_1) {
+                testMqtt3Features();
+            } else if (version == MqttVersion.MQTT_5_0) {
+                testMqtt5Features();
+            }
+        } else {
             testMqtt3Features();
             testMqtt5Features();
         }
@@ -138,12 +140,14 @@ public class TestBrokerCommand implements Runnable {
         // Test if MQTT5 is supported
         System.out.print("MQTT 5: ");
         final Mqtt5ConnAck connAck = tester.testConnect();
-        if (connAck == null) { System.out.println("NO"); }
-        else if (connAck.getReasonCode() == Mqtt5ConnAckReasonCode.SUCCESS) {
+        if (connAck == null) {
+            System.out.println("NO");
+        } else if (connAck.getReasonCode() == Mqtt5ConnAckReasonCode.SUCCESS) {
             mqtt5Support = true;
             System.out.println("OK");
+        } else {
+            System.out.println(connAck.getReasonCode().toString());
         }
-        else { System.out.println(connAck.getReasonCode().toString()); }
 
         if (mqtt5Support) {
 
@@ -156,16 +160,16 @@ public class TestBrokerCommand implements Runnable {
             System.out.println("\t- Connect Restrictions: ");
 
             System.out.print("\t\t> Retain: ");
-            System.out.println(restrictions.isRetainAvailable()? "OK" : "NO");
+            System.out.println(restrictions.isRetainAvailable() ? "OK" : "NO");
 
             System.out.print("\t\t> Wildcard subscriptions: ");
-            System.out.println(restrictions.isWildcardSubscriptionAvailable()? "OK" : "NO");
+            System.out.println(restrictions.isWildcardSubscriptionAvailable() ? "OK" : "NO");
 
             System.out.print("\t\t> Shared subscriptions: ");
-            System.out.println(restrictions.isSharedSubscriptionAvailable()? "OK" : "NO");
+            System.out.println(restrictions.isSharedSubscriptionAvailable() ? "OK" : "NO");
 
             System.out.print("\t\t> Subscription identifiers: ");
-            System.out.println(restrictions.areSubscriptionIdentifiersAvailable()? "OK" : "NO");
+            System.out.println(restrictions.areSubscriptionIdentifiersAvailable() ? "OK" : "NO");
 
             System.out.print("\t\t> Max. QoS: ");
             System.out.println(restrictions.getMaximumQos().ordinal());
@@ -180,10 +184,10 @@ public class TestBrokerCommand implements Runnable {
             System.out.println(restrictions.getTopicAliasMaximum());
 
             System.out.print("\t\t> Session expiry interval: ");
-            System.out.println(connAck.getSessionExpiryInterval().isPresent()? connAck.getSessionExpiryInterval().getAsLong() + "s" : "Client-based");
+            System.out.println(connAck.getSessionExpiryInterval().isPresent() ? connAck.getSessionExpiryInterval().getAsLong() + "s" : "Client-based");
 
             System.out.print("\t\t> Server keep alive: ");
-            System.out.println(connAck.getServerKeepAlive().isPresent()? connAck.getServerKeepAlive().getAsInt() + "s" : "Client-based");
+            System.out.println(connAck.getServerKeepAlive().isPresent() ? connAck.getServerKeepAlive().getAsInt() + "s" : "Client-based");
 
 
             if (force) {
@@ -273,12 +277,14 @@ public class TestBrokerCommand implements Runnable {
         // Test if MQTT3 is supported
         System.out.print("MQTT 3: ");
         final Mqtt3ConnAck connAck = client.testConnect();
-        if (connAck == null) { System.out.println("NO"); }
-        else if (connAck.getReturnCode() == Mqtt3ConnAckReturnCode.SUCCESS) {
+        if (connAck == null) {
+            System.out.println("NO");
+        } else if (connAck.getReturnCode() == Mqtt3ConnAckReturnCode.SUCCESS) {
             mqtt3Support = true;
             System.out.println("OK");
+        } else {
+            System.out.println(connAck.getReturnCode().toString());
         }
-        else { System.out.println(connAck.getReturnCode().toString()); }
 
         if (mqtt3Support) {
 
@@ -287,7 +293,9 @@ public class TestBrokerCommand implements Runnable {
             final TopicLengthTestResults topicLengthTestResults = client.testTopicLength();
             final int maxTopicLength = topicLengthTestResults.getMaxTopicLength();
             System.out.println(maxTopicLength + " bytes");
-            if (maxTopicLength != 65535) { client.setMaxTopicLength(maxTopicLength); }
+            if (maxTopicLength != 65535) {
+                client.setMaxTopicLength(maxTopicLength);
+            }
 
             // Test QoS 0
             System.out.print("\t- Testing QoS 0: ");
@@ -305,7 +313,7 @@ public class TestBrokerCommand implements Runnable {
 
             // Test QoS 2
             System.out.print("\t- Testing QoS 2: ");
-            final QosTestResult qos2TestResult  = client.testQos(MqttQos.EXACTLY_ONCE, qosTries);
+            final QosTestResult qos2TestResult = client.testQos(MqttQos.EXACTLY_ONCE, qosTries);
             final int qos2Publishes = qos2TestResult.getReceivedPublishes();
             final float qos2Time = qos2TestResult.getTimeToReceivePublishes() / 1_000_000F;
             System.out.printf("Received %d/%d publishes in %.2fms\n", qos2Publishes, qosTries, qos2Time);
@@ -317,8 +325,9 @@ public class TestBrokerCommand implements Runnable {
             // Test if wildcard subscriptions are allowed
             System.out.print("\t- Wildcard subscriptions: ");
             final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = client.testWildcardSubscriptions();
-            if (wildcardSubscriptionsTestResult.isSuccess()) { System.out.println("OK"); }
-            else {
+            if (wildcardSubscriptionsTestResult.isSuccess()) {
+                System.out.println("OK");
+            } else {
                 System.out.println("NO");
                 System.out.print("\t\t> '+' Wildcard: ");
                 System.out.println(wildcardSubscriptionsTestResult.getPlusWildcardTest());
@@ -330,8 +339,11 @@ public class TestBrokerCommand implements Runnable {
             System.out.print("\t- Payload size: ");
             final PayloadTestResults payloadTestResults = client.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
             final int payloadSize = payloadTestResults.getPayloadSize();
-            if (payloadSize == MAX_PAYLOAD_TEST_SIZE) { System.out.println(">= " + payloadSize + " bytes"); }
-            else { System.out.println(payloadSize + " bytes"); }
+            if (payloadSize == MAX_PAYLOAD_TEST_SIZE) {
+                System.out.println(">= " + payloadSize + " bytes");
+            } else {
+                System.out.println(payloadSize + " bytes");
+            }
 
             // Test max client id length
             System.out.print("\t- Max. client id length: ");
@@ -343,8 +355,11 @@ public class TestBrokerCommand implements Runnable {
             System.out.print("\t- Unsupported Ascii Chars: ");
             final AsciiCharsInClientIdTestResults asciiTestResults = client.testAsciiCharsInClientId();
             final List<Character> unsupportedChars = asciiTestResults.getUnsupportedChars();
-            if (unsupportedChars.isEmpty()) { System.out.println("ALL SUPPORTED"); }
-            else { System.out.println("{'" + Joiner.on("', '").join(unsupportedChars) + "'}"); }
+            if (unsupportedChars.isEmpty()) {
+                System.out.println("ALL SUPPORTED");
+            } else {
+                System.out.println("{'" + Joiner.on("', '").join(unsupportedChars) + "'}");
+            }
         }
 
     }

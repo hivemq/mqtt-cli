@@ -31,7 +31,11 @@ public class PayloadTestResults {
         this.testResults = testResults;
     }
 
-    public int getPayloadSize() { return payloadSize; }
+    public int getPayloadSize() {
+        return payloadSize;
+    }
 
-    public @NotNull List<Tuple<Integer, TestResult>> getTestResults() { return testResults; }
+    public @NotNull List<Tuple<Integer, TestResult>> getTestResults() {
+        return testResults;
+    }
 }

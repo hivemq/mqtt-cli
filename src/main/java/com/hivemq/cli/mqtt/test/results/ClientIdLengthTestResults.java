@@ -17,11 +17,9 @@
 package com.hivemq.cli.mqtt.test.results;
 
 import com.hivemq.cli.utils.Tuple;
-import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class ClientIdLengthTestResults {
@@ -33,7 +31,11 @@ public class ClientIdLengthTestResults {
         this.testResults = testResults;
     }
 
-    public int getMaxClientIdLength() { return maxClientIdLength; }
+    public int getMaxClientIdLength() {
+        return maxClientIdLength;
+    }
 
-    public @NotNull List<Tuple<@NotNull Integer, @Nullable String>> getTestResults() { return testResults; }
+    public @NotNull List<Tuple<@NotNull Integer, @Nullable String>> getTestResults() {
+        return testResults;
+    }
 }

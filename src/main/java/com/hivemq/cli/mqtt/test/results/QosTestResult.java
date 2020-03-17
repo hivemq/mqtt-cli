@@ -25,7 +25,11 @@ public class QosTestResult {
         this.timeToReceivePublishes = timeToReceivePublishes;
     }
 
-    public int getReceivedPublishes() { return receivedPublishes; }
+    public int getReceivedPublishes() {
+        return receivedPublishes;
+    }
 
-    public long getTimeToReceivePublishes() { return timeToReceivePublishes; }
+    public long getTimeToReceivePublishes() {
+        return timeToReceivePublishes;
+    }
 }

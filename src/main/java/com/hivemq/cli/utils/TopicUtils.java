@@ -24,7 +24,7 @@ public class TopicUtils {
 
     public static @NotNull String generateTopicUUID() {
         final String uuid = UUID.randomUUID().toString();
-        return uuid.replace("-","");
+        return uuid.replace("-", "");
     }
 
     public static @NotNull String generateTopicUUID(final int maxLength) {
