@@ -9,20 +9,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AsciiCharsInClientIdTestResults {
-    private final List<Tuple<@NotNull Character, @Nullable Mqtt3ConnAckReturnCode>> testResults;
+    private final List<Tuple<@NotNull Character, @Nullable String>> testResults;
 
-    public AsciiCharsInClientIdTestResults(final @NotNull List<Tuple<Character, Mqtt3ConnAckReturnCode>> testResults) {
+    public AsciiCharsInClientIdTestResults(final @NotNull List<Tuple<Character, String>> testResults) {
         this.testResults = testResults;
     }
 
-    public @NotNull List<Tuple<Character, Mqtt3ConnAckReturnCode>> getTestResults() {
+    public @NotNull List<Tuple<Character, String>> getTestResults() {
         return testResults;
     }
 
     public @NotNull List<Character> getUnsupportedChars() {
         final List<Character> unsupportedChars = new LinkedList<>();
-        for (Tuple<Character, Mqtt3ConnAckReturnCode> tuple: testResults) {
-            if (tuple.getValue() != Mqtt3ConnAckReturnCode.SUCCESS) {
+        for (Tuple<Character, String> tuple: testResults) {
+            if (!tuple.getValue().equals("SUCCESS")) {
                 unsupportedChars.add(tuple.getKey());
             }
         }

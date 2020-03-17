@@ -66,6 +66,9 @@ public class TestBrokerCommand implements Runnable {
     @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The mqtt version to test the broker on", order = 1)
     private @Nullable MqttVersion version;
 
+    @CommandLine.Option(names = {"-f", "--force"}, defaultValue = "false", description = "Force test MQTT 5 features (even if MQTT3 features were already tested)", order = 1)
+    private boolean force;
+
     @CommandLine.Option(names = {"-t", "--timeOut"}, defaultValue = "10", description = "The time to wait for the broker to respond", order = 1)
     private @NotNull Integer timeOut;
 
@@ -126,7 +129,8 @@ public class TestBrokerCommand implements Runnable {
                 port,
                 authenticationOptions.getUser(),
                 authenticationOptions.getPassword(),
-                sslConfig
+                sslConfig,
+                timeOut
         );
 
         boolean mqtt5Support = false;
@@ -144,7 +148,7 @@ public class TestBrokerCommand implements Runnable {
         if (mqtt5Support) {
 
             //*********************//
-            /* Connect Restriction */
+            /* Connect Restrictions */
             //*********************//
 
             final Mqtt5ConnAckRestrictions restrictions = connAck.getRestrictions();
@@ -181,11 +185,76 @@ public class TestBrokerCommand implements Runnable {
             System.out.print("\t\t> Server keep alive: ");
             System.out.println(connAck.getServerKeepAlive().isPresent()? connAck.getServerKeepAlive().getAsInt() + "s" : "Client-based");
 
-            //**************//
-            /* Force Tests */
-            //*************//
 
-            // TODO: max topic length
+            if (force) {
+                //**************//
+                /* Force Tests */
+                //*************//
+
+                // Print max topic length
+                System.out.print("\t- Max. topic length: ");
+                final TopicLengthTestResults topicLengthTestResults = tester.testTopicLength();
+                final int maxTopicLength = topicLengthTestResults.getMaxTopicLength();
+                System.out.println(maxTopicLength + " bytes");
+                if (maxTopicLength != 65535) {
+                    tester.setMaxTopicLength(maxTopicLength);
+                }
+
+                // Test QoS 0
+                System.out.print("\t- Testing QoS 0: ");
+                final QosTestResult qos0TestResult = tester.testQos(MqttQos.AT_MOST_ONCE, qosTries);
+                final int qos0Publishes = qos0TestResult.getReceivedPublishes();
+                final float qos0Time = qos0TestResult.getTimeToReceivePublishes() / 1_000_000F;
+                System.out.printf("Received %d/%d publishes in %.2fms\n", qos0Publishes, qosTries, qos0Time);
+
+                // Test QoS 1
+                System.out.print("\t- Testing QoS 1: ");
+                final QosTestResult qos1TestResult = tester.testQos(MqttQos.AT_LEAST_ONCE, qosTries);
+                final int qos1Publishes = qos1TestResult.getReceivedPublishes();
+                final float qos1Time = qos1TestResult.getTimeToReceivePublishes() / 1_000_000F;
+                System.out.printf("Received %d/%d publishes in %.2fms\n", qos1Publishes, qosTries, qos1Time);
+
+                // Test QoS 2
+                System.out.print("\t- Testing QoS 2: ");
+                final QosTestResult qos2TestResult = tester.testQos(MqttQos.EXACTLY_ONCE, qosTries);
+                final int qos2Publishes = qos2TestResult.getReceivedPublishes();
+                final float qos2Time = qos2TestResult.getTimeToReceivePublishes() / 1_000_000F;
+                System.out.printf("Received %d/%d publishes in %.2fms\n", qos2Publishes, qosTries, qos2Time);
+
+                // Test retain
+                System.out.print("\t- Retain: ");
+                System.out.println(tester.testRetain());
+
+                // Test if wildcard subscriptions are allowed
+                System.out.print("\t- Wildcard subscriptions: ");
+                final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = tester.testWildcardSubscriptions();
+                if (wildcardSubscriptionsTestResult.isSuccess()) {
+                    System.out.println("OK");
+                } else {
+                    System.out.println("NO");
+                    System.out.print("\t\t> '+' Wildcard: ");
+                    System.out.println(wildcardSubscriptionsTestResult.getPlusWildcardTest());
+                    System.out.print("\t\t> '#' Wildcard: ");
+                    System.out.println(wildcardSubscriptionsTestResult.getHashWildcardTest());
+                }
+
+                // Test max payload size
+                System.out.print("\t- Payload size: ");
+                final PayloadTestResults payloadTestResults = tester.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
+                final int payloadSize = payloadTestResults.getPayloadSize();
+                if (payloadSize == MAX_PAYLOAD_TEST_SIZE) {
+                    System.out.println(">= " + payloadSize + " bytes");
+                } else {
+                    System.out.println(payloadSize + " bytes");
+                }
+
+                // Test max client id length
+                System.out.print("\t- Max. client id length: ");
+                final ClientIdLengthTestResults clientIdLengthTestResults = tester.testClientIdLength();
+                final int maxClientIdLength = clientIdLengthTestResults.getMaxClientIdLength();
+                System.out.println(maxClientIdLength + " bytes");
+            }
+
         }
     }
 
@@ -214,8 +283,10 @@ public class TestBrokerCommand implements Runnable {
         if (mqtt3Support) {
 
             // Test max length of topic names & set length for next tests
+            System.out.print("\t- Max. topic length: ");
             final TopicLengthTestResults topicLengthTestResults = client.testTopicLength();
             final int maxTopicLength = topicLengthTestResults.getMaxTopicLength();
+            System.out.println(maxTopicLength + " bytes");
             if (maxTopicLength != 65535) { client.setMaxTopicLength(maxTopicLength); }
 
             // Test QoS 0
@@ -267,10 +338,6 @@ public class TestBrokerCommand implements Runnable {
             final ClientIdLengthTestResults clientIdLengthTestResults = client.testClientIdLength();
             final int maxClientIdLength = clientIdLengthTestResults.getMaxClientIdLength();
             System.out.println(maxClientIdLength + " bytes");
-
-            // Print max topic length
-            System.out.print("\t- Max. topic length: ");
-            System.out.println(maxTopicLength + " bytes");
 
             // Test supported Ascii chars
             System.out.print("\t- Unsupported Ascii Chars: ");

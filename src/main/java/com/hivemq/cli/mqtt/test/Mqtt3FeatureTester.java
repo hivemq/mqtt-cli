@@ -24,6 +24,7 @@ import com.hivemq.cli.mqtt.test.results.QosTestResult;
 import com.hivemq.cli.mqtt.test.results.TestResult;
 import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
 import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
+import com.hivemq.cli.utils.TopicUtils;
 import com.hivemq.cli.utils.Tuple;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
@@ -57,7 +58,6 @@ import static com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient.*;
 
 public class Mqtt3FeatureTester {
 
-    private int timeOut = 10;
 
     private int maxTopicLength = -1;
     private final String host;
@@ -65,6 +65,7 @@ public class Mqtt3FeatureTester {
     private final String username;
     private final ByteBuffer password;
     private final MqttClientSslConfig sslConfig;
+    private final int timeOut;
 
     public Mqtt3FeatureTester(final @NotNull String host,
                               final @NotNull Integer port,
@@ -106,7 +107,7 @@ public class Mqtt3FeatureTester {
     public @NotNull TestResult testRetain() {
         final Mqtt3Client publisher = buildClient();
         final Mqtt3Client subscriber = buildClient();
-        final String topic = (maxTopicLength == -1 ? generateTopicUUID() : generateTopicUUID(maxTopicLength));
+        final String topic = (maxTopicLength == -1 ? TopicUtils.generateTopicUUID() : TopicUtils.generateTopicUUID(maxTopicLength));
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
         publisher.toBlocking().connect();
@@ -160,7 +161,7 @@ public class Mqtt3FeatureTester {
     public @NotNull QosTestResult testQos(final @NotNull MqttQos qos, final int tries) {
         final Mqtt3Client publisher = buildClient();
         final Mqtt3Client subscriber = buildClient();
-        final String topic = generateTopicUUID(maxTopicLength);
+        final String topic = TopicUtils.generateTopicUUID(maxTopicLength);
         final byte[] payload = qos.toString().getBytes();
 
         subscriber.toBlocking().connect();
@@ -219,7 +220,7 @@ public class Mqtt3FeatureTester {
         final Mqtt3Client subscriber = buildClient();
         final Mqtt3Client publisher = buildClient();
         final List<Tuple<Integer, TestResult>> testResults = new LinkedList<>();
-        final String topic = (maxTopicLength == -1 ? generateTopicUUID() : generateTopicUUID(maxTopicLength));
+        final String topic = (maxTopicLength == -1 ? TopicUtils.generateTopicUUID() : TopicUtils.generateTopicUUID(maxTopicLength));
         final Mqtt3Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
         final String oneByte = "a";
         int top = maxSize;
@@ -362,12 +363,8 @@ public class Mqtt3FeatureTester {
     }
 
     public @NotNull ClientIdLengthTestResults testClientIdLength() {
-        final Mqtt3Client client = buildClient();
-        final List<Tuple<Integer, Mqtt3ConnAckReturnCode>> connectResults = new LinkedList<>();
+        final List<Tuple<Integer, String>> connectResults = new LinkedList<>();
         final String oneByte = "a";
-        final Mqtt3ClientBuilder mqtt3ClientBuilder = Mqtt3Client.builder()
-                .serverHost(client.getConfig().getServerHost())
-                .serverPort(client.getConfig().getServerPort());
         int top = 65535;
         int bottom = 0;
         int mid = -1;
@@ -382,14 +379,14 @@ public class Mqtt3FeatureTester {
 
             try {
                 final Mqtt3ConnAck connAck = currClient.toBlocking().connect();
-                connectResults.add(new Tuple<>(mid, connAck.getReturnCode()));
+                connectResults.add(new Tuple<>(mid, connAck.getReturnCode().toString()));
                 if (connAck.getReturnCode() != Mqtt3ConnAckReturnCode.SUCCESS) {
                     top = mid - 1;
                     continue;
                 }
             }
             catch (final Mqtt3ConnAckException connAckEx) {
-                connectResults.add(new Tuple<>(mid, connAckEx.getMqttMessage().getReturnCode()));
+                connectResults.add(new Tuple<>(mid, connAckEx.getMqttMessage().getReturnCode().toString()));
                 top = mid - 1;
                 continue;
             }
@@ -414,7 +411,7 @@ public class Mqtt3FeatureTester {
     private @NotNull TestResult testWildcard(final String subscribeWildcardTopic, final String publishTopic) {
         final Mqtt3Client subscriber = buildClient();
         final Mqtt3Client publisher = buildClient();
-        final String topic = (maxTopicLength == -1 ? generateTopicUUID() : generateTopicUUID(maxTopicLength));
+        final String topic = (maxTopicLength == -1 ? TopicUtils.generateTopicUUID() : TopicUtils.generateTopicUUID(maxTopicLength));
         final String subscribeToTopic = topic + "/" + subscribeWildcardTopic;
         final String publishToTopic = topic + "/" + publishTopic;
         final byte[] payload = "WILDCARD_TEST".getBytes();
@@ -473,7 +470,7 @@ public class Mqtt3FeatureTester {
     
     public @NotNull AsciiCharsInClientIdTestResults testAsciiCharsInClientId() {
         final String ASCII = " !\"#$%&\\'()*+,-./:;<=>?@[\\\\]^_`{|}~";
-        final List<Tuple<Character, Mqtt3ConnAckReturnCode>> connectResults = new LinkedList<>();
+        final List<Tuple<Character, String>> connectResults = new LinkedList<>();
 
         for (int i = 0; i < ASCII.length(); i++) {
             final String currChar = String.valueOf(ASCII.charAt(i));
@@ -483,7 +480,7 @@ public class Mqtt3FeatureTester {
 
             try { client.toBlocking().connect(); }
             catch (final Mqtt3ConnAckException ex) {
-                connectResults.add(new Tuple<>(currChar.charAt(0), ex.getMqttMessage().getReturnCode()));
+                connectResults.add(new Tuple<>(currChar.charAt(0), ex.getMqttMessage().getReturnCode().toString()));
             }
             catch (final Exception ex) {
                 Logger.error("Connect with Ascii char '{}' failed", currChar);
@@ -533,16 +530,6 @@ public class Mqtt3FeatureTester {
             throw new IllegalArgumentException("Password-Only Authentication is not allowed in MQTT 3");
         }
         return null;
-    }
-
-    private @NotNull String generateTopicUUID() {
-        final String uuid = UUID.randomUUID().toString();
-        return uuid.replace("-","");
-    }
-
-    private @NotNull String generateTopicUUID(final int maxLength) {
-        if (maxLength == -1) return generateTopicUUID();
-        else return generateTopicUUID().substring(0, maxLength);
     }
 
     private void disconnectIfConnected(final @NotNull Mqtt3Client ... clients) {
