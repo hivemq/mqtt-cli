@@ -473,7 +473,8 @@ githubRelease {
     body ""
     draft true
     prerelease false
-    releaseAssets file("${project.buildRpmDir}/${project.readableName}-${project.version}.noarch.rpm"),
+    releaseAssets file("${project.buildDir}/libs/${project.readableName}-${project.version}.jar"),
+            file("${project.buildRpmDir}/${project.readableName}-${project.version}.noarch.rpm"),
             file("${project.buildDebDir}/${project.readableName}_${project.version}_all.deb"),
             file("${project.buildBrewDir}/${project.readableName}-${project.version}-brew.zip"),
             buildWindowsZip
