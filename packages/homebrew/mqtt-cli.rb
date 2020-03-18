@@ -7,7 +7,7 @@ class MqttCli < Formula
 
   def install
     inreplace "brew/mqtt", "##PREFIX##", "#{prefix}/mqtt-cli-@@version@@.jar"
-    prefix.install "mqtt-cli-@@version@@.jar"
+    prefix.install "brew/mqtt-cli-@@version@@.jar"
     bin.install "brew/mqtt"
   end
 
