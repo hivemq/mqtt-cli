@@ -114,10 +114,10 @@ ext {
 
     // Dependency versions
 
-    picoclishell3Version = '4.0.4'
-    picocliVersion = '4.0.4'
-    jline3Version = '3.12.1'
-    jline3JansiVersion = '3.12.1'
+    picoclishell3Version = '4.2.0'
+    picocliVersion = '4.2.0'
+    jline3Version = '3.14.0'
+    jline3JansiVersion = '3.14.0'
     daggerVersion = '2.21'
     guavaVersion ='27.0.1-jre'
     hivemqclientVersion = '1.1.3'

@@ -27,8 +27,6 @@
     "allDeclaredMethods" : true,
     "allPublicMethods" : true,
     "methods" : [
-      { "name" : "activateDebugMode", "parameterTypes" : ["boolean"] },
-      { "name" : "activateVerboseMode", "parameterTypes" : ["boolean"] }
     ]
   },
   {
@@ -38,29 +36,21 @@
     "allDeclaredMethods" : true,
     "allPublicMethods" : true,
     "fields" : [
+      { "name" : "certificates" },
+      { "name" : "certificatesFromDir" },
       { "name" : "cipherSuites" },
       { "name" : "cleanStart" },
-      { "name" : "clientSideAuthentication" },
+      { "name" : "clientCertificate" },
+      { "name" : "clientPrivateKey" },
       { "name" : "keepAlive" },
       { "name" : "password" },
       { "name" : "supportedTLSVersions" },
       { "name" : "useSsl" },
-      { "name" : "user" }
+      { "name" : "useWebSocket" },
+      { "name" : "user" },
+      { "name" : "webSocketPath" }
     ],
     "methods" : [
-      { "name" : "addCACollection", "parameterTypes" : ["java.util.Collection"] },
-      { "name" : "addCAFile", "parameterTypes" : ["java.security.cert.X509Certificate"] }
-    ]
-  },
-  {
-    "name" : "com.hivemq.cli.commands.AbstractCommonFlags$ClientSideAuthentication",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "clientCertificate" },
-      { "name" : "clientPrivateKey" }
     ]
   },
   {
@@ -151,6 +141,8 @@
       { "name" : "usageHelpRequested" },
       { "name" : "userProperties" },
       { "name" : "versionInfoRequested" }
+    ],
+    "methods" : [
     ]
   },
   {
@@ -161,13 +153,17 @@
     "allPublicMethods" : true,
     "fields" : [
       { "name" : "base64" },
+      { "name" : "jsonOutput" },
       { "name" : "printToSTDOUT" },
+      { "name" : "publishFile" },
       { "name" : "qos" },
-      { "name" : "receivedMessagesFile" },
+      { "name" : "showTopics" },
       { "name" : "topics" },
       { "name" : "usageHelpRequested" },
       { "name" : "userProperties" },
       { "name" : "versionInfoRequested" }
+    ],
+    "methods" : [
     ]
   },
   {
@@ -187,6 +183,7 @@
     "allDeclaredMethods" : true,
     "allPublicMethods" : true,
     "fields" : [
+      { "name" : "disconnectAll" },
       { "name" : "reasonString" },
       { "name" : "sessionExpiryInterval" },
       { "name" : "usageHelpRequested" },
@@ -231,9 +228,11 @@
     "allPublicMethods" : true,
     "fields" : [
       { "name" : "base64" },
+      { "name" : "jsonOutput" },
       { "name" : "printToSTDOUT" },
+      { "name" : "publishFile" },
       { "name" : "qos" },
-      { "name" : "receivedMessagesFile" },
+      { "name" : "showTopics" },
       { "name" : "stay" },
       { "name" : "topics" },
       { "name" : "usageHelpRequested" },
@@ -273,7 +272,6 @@
     "allPublicMethods" : true,
     "fields" : [
       { "name" : "doNotSort" },
-      { "name" : "includeDisconnectedClients" },
       { "name" : "listSubscriptions" },
       { "name" : "longOutput" },
       { "name" : "reverse" },
@@ -303,6 +301,8 @@
       { "name" : "connectUserProperties" },
       { "name" : "sessionExpiryInterval" },
       { "name" : "usageHelpRequested" }
+    ],
+    "methods" : [
     ]
   },
   {
@@ -319,6 +319,7 @@
     "allDeclaredMethods" : true,
     "allPublicMethods" : true,
     "fields" : [
+      { "name" : "disconnectAll" },
       { "name" : "host" },
       { "name" : "identifier" },
       { "name" : "reasonString" },
@@ -356,6 +357,20 @@
   },
   {
     "name" : "com.hivemq.cli.converters.DirectoryToCertificateCollectionConverter",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.hivemq.cli.converters.EnvVarToByteBufferConverter",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.hivemq.cli.converters.FileToByteBufferConverter",
     "allDeclaredConstructors" : true,
     "allPublicConstructors" : true,
     "allDeclaredMethods" : true,
@@ -511,12 +526,5 @@
       { "name" : "helpRequested" },
       { "name" : "versionRequested" }
     ]
-  },
-  {
-    "name" : "picocli.CommandLine$HelpCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
   }
 ]
