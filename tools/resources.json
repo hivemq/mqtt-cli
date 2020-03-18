@@ -1,0 +1,6 @@
+{
+  "resources": [
+    {"pattern": ".*.caps"},
+    {"pattern": ".*.txt"}
+  ]
+}

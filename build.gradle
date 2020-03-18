@@ -127,7 +127,7 @@ ext {
     bouncycastleVersion='1.62'
     nettyVersion = '4.1.37.Final'
     gsonVersion = '2.8.6'
-    substrateVmVersion = '19.2.0'
+    substrateVmVersion = '19.2.1'
     junitJupiterVersion = '5.5.1'
 }
 
@@ -282,11 +282,12 @@ test {
  ***************/
 
 graal {
-    graalVersion '19.2.0'
+    graalVersion '19.2.1'
     outputName "${rootProject.name}"
     mainClass application.mainClassName
     option '-H:+PrintClassInitialization'
     option '-H:ReflectionConfigurationFiles=tools/reflection.json'
+    option "-H:ResourceConfigurationFiles=tools/resources.json"
     option '-H:-UseServiceLoaderFeature'
     option '-H:IncludeResources="org/jline/utils/*.*'
     option '-H:IncludeResources="org/jline/terminal/*.*'

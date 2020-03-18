@@ -18,6 +18,13 @@ com.hivemq.cli.commands.shell.ShellExitCommand \
 com.hivemq.cli.commands.cli.PublishCommand \
 com.hivemq.cli.commands.cli.SubscribeCommand \
 com.hivemq.cli.commands.MqttCLICommand \
-> reflection.json
+> reflection_pico.json
 
-## the methods from the abstract classes in the PublishCommand and SubscribeCommand must be removed!
+
+# Add additional mappings (currently, only HelpCommand for shell mode)
+# jq filter from https://stackoverflow.com/questions/42011086/merge-arrays-of-json requires jq >= 1.5
+# the methods from the abstract classes in the PublishCommand and SubscribeCommand must be removed,
+# the second query in the pipeline does just that (remove methods array for classes that contain the activateDebugMethod method mapping, which is invalid)
+jq -s '.[0]=([.[]]|flatten)|.[0]' reflection_pico.json reflection_additional.json \
+  | jq 'del(.[].methods | select(. != null) | select(.[].name == "activateDebugMode"))' \
+  > reflection.json

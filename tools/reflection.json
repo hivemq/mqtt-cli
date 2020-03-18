@@ -1,530 +1,779 @@
 [
   {
-    "name" : "[Lcom.hivemq.client.mqtt.datatypes.MqttQos;",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "[Lcom.hivemq.client.mqtt.datatypes.MqttQos;",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "[Lcom.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "[Lcom.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.MqttCLIMain$CLIVersionProvider",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.MqttCLIMain$CLIVersionProvider",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.commands.AbstractCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "methods" : [
-    ]
+    "name": "com.hivemq.cli.commands.AbstractCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.commands.AbstractCommonFlags",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "certificates" },
-      { "name" : "certificatesFromDir" },
-      { "name" : "cipherSuites" },
-      { "name" : "cleanStart" },
-      { "name" : "clientCertificate" },
-      { "name" : "clientPrivateKey" },
-      { "name" : "keepAlive" },
-      { "name" : "password" },
-      { "name" : "supportedTLSVersions" },
-      { "name" : "useSsl" },
-      { "name" : "useWebSocket" },
-      { "name" : "user" },
-      { "name" : "webSocketPath" }
+    "name": "com.hivemq.cli.commands.AbstractCommonFlags",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "certificates"
+      },
+      {
+        "name": "certificatesFromDir"
+      },
+      {
+        "name": "cipherSuites"
+      },
+      {
+        "name": "cleanStart"
+      },
+      {
+        "name": "clientCertificate"
+      },
+      {
+        "name": "clientPrivateKey"
+      },
+      {
+        "name": "keepAlive"
+      },
+      {
+        "name": "password"
+      },
+      {
+        "name": "supportedTLSVersions"
+      },
+      {
+        "name": "useSsl"
+      },
+      {
+        "name": "useWebSocket"
+      },
+      {
+        "name": "user"
+      },
+      {
+        "name": "webSocketPath"
+      }
     ],
-    "methods" : [
+    "methods": [
+      {
+        "name": "setPasswordFromEnv",
+        "parameterTypes": [
+          "java.nio.ByteBuffer"
+        ]
+      },
+      {
+        "name": "setPasswordFromFile",
+        "parameterTypes": [
+          "java.nio.ByteBuffer"
+        ]
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.AbstractConnectRestrictionFlags",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "maximumPacketSize" },
-      { "name" : "receiveMaximum" },
-      { "name" : "requestProblemInformation" },
-      { "name" : "requestResponseInformation" },
-      { "name" : "sendMaximum" },
-      { "name" : "sendMaximumPacketSize" },
-      { "name" : "sendTopicAliasMaximum" },
-      { "name" : "topicAliasMaximum" }
+    "name": "com.hivemq.cli.commands.AbstractConnectRestrictionFlags",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "maximumPacketSize"
+      },
+      {
+        "name": "receiveMaximum"
+      },
+      {
+        "name": "requestProblemInformation"
+      },
+      {
+        "name": "requestResponseInformation"
+      },
+      {
+        "name": "sendMaximum"
+      },
+      {
+        "name": "sendMaximumPacketSize"
+      },
+      {
+        "name": "sendTopicAliasMaximum"
+      },
+      {
+        "name": "topicAliasMaximum"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.AbstractWillFlags",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "willContentType" },
-      { "name" : "willCorrelationData" },
-      { "name" : "willDelayInterval" },
-      { "name" : "willMessage" },
-      { "name" : "willMessageExpiryInterval" },
-      { "name" : "willPayloadFormatIndicator" },
-      { "name" : "willQos" },
-      { "name" : "willResponseTopic" },
-      { "name" : "willRetain" },
-      { "name" : "willTopic" },
-      { "name" : "willUserProperties" }
+    "name": "com.hivemq.cli.commands.AbstractWillFlags",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "willContentType"
+      },
+      {
+        "name": "willCorrelationData"
+      },
+      {
+        "name": "willDelayInterval"
+      },
+      {
+        "name": "willMessage"
+      },
+      {
+        "name": "willMessageExpiryInterval"
+      },
+      {
+        "name": "willPayloadFormatIndicator"
+      },
+      {
+        "name": "willQos"
+      },
+      {
+        "name": "willResponseTopic"
+      },
+      {
+        "name": "willRetain"
+      },
+      {
+        "name": "willTopic"
+      },
+      {
+        "name": "willUserProperties"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.MqttCLICommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.commands.MqttCLICommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.commands.MqttCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "host" },
-      { "name" : "identifier" },
-      { "name" : "identifierPrefix" },
-      { "name" : "port" },
-      { "name" : "version" }
+    "name": "com.hivemq.cli.commands.MqttCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "host"
+      },
+      {
+        "name": "identifier"
+      },
+      {
+        "name": "identifierPrefix"
+      },
+      {
+        "name": "port"
+      },
+      {
+        "name": "version"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.cli.AbstractConnectFlags",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "connectUserProperties" },
-      { "name" : "sessionExpiryInterval" }
+    "name": "com.hivemq.cli.commands.cli.AbstractConnectFlags",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "connectUserProperties"
+      },
+      {
+        "name": "sessionExpiryInterval"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.cli.PublishCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "contentType" },
-      { "name" : "correlationData" },
-      { "name" : "message" },
-      { "name" : "messageExpiryInterval" },
-      { "name" : "payloadFormatIndicator" },
-      { "name" : "qos" },
-      { "name" : "responseTopic" },
-      { "name" : "retain" },
-      { "name" : "topics" },
-      { "name" : "usageHelpRequested" },
-      { "name" : "userProperties" },
-      { "name" : "versionInfoRequested" }
-    ],
-    "methods" : [
+    "name": "com.hivemq.cli.commands.cli.PublishCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "contentType"
+      },
+      {
+        "name": "correlationData"
+      },
+      {
+        "name": "message"
+      },
+      {
+        "name": "messageExpiryInterval"
+      },
+      {
+        "name": "payloadFormatIndicator"
+      },
+      {
+        "name": "qos"
+      },
+      {
+        "name": "responseTopic"
+      },
+      {
+        "name": "retain"
+      },
+      {
+        "name": "topics"
+      },
+      {
+        "name": "usageHelpRequested"
+      },
+      {
+        "name": "userProperties"
+      },
+      {
+        "name": "versionInfoRequested"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.cli.SubscribeCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "base64" },
-      { "name" : "jsonOutput" },
-      { "name" : "printToSTDOUT" },
-      { "name" : "publishFile" },
-      { "name" : "qos" },
-      { "name" : "showTopics" },
-      { "name" : "topics" },
-      { "name" : "usageHelpRequested" },
-      { "name" : "userProperties" },
-      { "name" : "versionInfoRequested" }
-    ],
-    "methods" : [
+    "name": "com.hivemq.cli.commands.cli.SubscribeCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "base64"
+      },
+      {
+        "name": "jsonOutput"
+      },
+      {
+        "name": "printToSTDOUT"
+      },
+      {
+        "name": "publishFile"
+      },
+      {
+        "name": "qos"
+      },
+      {
+        "name": "showTopics"
+      },
+      {
+        "name": "topics"
+      },
+      {
+        "name": "usageHelpRequested"
+      },
+      {
+        "name": "userProperties"
+      },
+      {
+        "name": "versionInfoRequested"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ClearScreenCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "usageHelpRequested" }
+    "name": "com.hivemq.cli.commands.shell.ClearScreenCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "usageHelpRequested"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ContextDisconnectCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "disconnectAll" },
-      { "name" : "reasonString" },
-      { "name" : "sessionExpiryInterval" },
-      { "name" : "usageHelpRequested" },
-      { "name" : "userProperties" }
+    "name": "com.hivemq.cli.commands.shell.ContextDisconnectCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "disconnectAll"
+      },
+      {
+        "name": "reasonString"
+      },
+      {
+        "name": "sessionExpiryInterval"
+      },
+      {
+        "name": "usageHelpRequested"
+      },
+      {
+        "name": "userProperties"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ContextExitCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "usageHelpRequested" }
+    "name": "com.hivemq.cli.commands.shell.ContextExitCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "usageHelpRequested"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ContextPublishCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "contentType" },
-      { "name" : "correlationData" },
-      { "name" : "message" },
-      { "name" : "messageExpiryInterval" },
-      { "name" : "payloadFormatIndicator" },
-      { "name" : "qos" },
-      { "name" : "responseTopic" },
-      { "name" : "retain" },
-      { "name" : "topics" },
-      { "name" : "usageHelpRequested" },
-      { "name" : "userProperties" }
+    "name": "com.hivemq.cli.commands.shell.ContextPublishCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "contentType"
+      },
+      {
+        "name": "correlationData"
+      },
+      {
+        "name": "message"
+      },
+      {
+        "name": "messageExpiryInterval"
+      },
+      {
+        "name": "payloadFormatIndicator"
+      },
+      {
+        "name": "qos"
+      },
+      {
+        "name": "responseTopic"
+      },
+      {
+        "name": "retain"
+      },
+      {
+        "name": "topics"
+      },
+      {
+        "name": "usageHelpRequested"
+      },
+      {
+        "name": "userProperties"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ContextSubscribeCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "base64" },
-      { "name" : "jsonOutput" },
-      { "name" : "printToSTDOUT" },
-      { "name" : "publishFile" },
-      { "name" : "qos" },
-      { "name" : "showTopics" },
-      { "name" : "stay" },
-      { "name" : "topics" },
-      { "name" : "usageHelpRequested" },
-      { "name" : "userProperties" }
+    "name": "com.hivemq.cli.commands.shell.ContextSubscribeCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "base64"
+      },
+      {
+        "name": "jsonOutput"
+      },
+      {
+        "name": "printToSTDOUT"
+      },
+      {
+        "name": "publishFile"
+      },
+      {
+        "name": "qos"
+      },
+      {
+        "name": "showTopics"
+      },
+      {
+        "name": "stay"
+      },
+      {
+        "name": "topics"
+      },
+      {
+        "name": "usageHelpRequested"
+      },
+      {
+        "name": "userProperties"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ContextSwitchCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "contextName" },
-      { "name" : "host" },
-      { "name" : "identifier" },
-      { "name" : "usageHelpRequested" }
+    "name": "com.hivemq.cli.commands.shell.ContextSwitchCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "contextName"
+      },
+      {
+        "name": "host"
+      },
+      {
+        "name": "identifier"
+      },
+      {
+        "name": "usageHelpRequested"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ContextUnsubscribeCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "topics" },
-      { "name" : "usageHelpRequested" },
-      { "name" : "userProperties" }
+    "name": "com.hivemq.cli.commands.shell.ContextUnsubscribeCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "topics"
+      },
+      {
+        "name": "usageHelpRequested"
+      },
+      {
+        "name": "userProperties"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ListClientsCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "doNotSort" },
-      { "name" : "listSubscriptions" },
-      { "name" : "longOutput" },
-      { "name" : "reverse" },
-      { "name" : "sortByTime" },
-      { "name" : "usageHelpRequested" }
+    "name": "com.hivemq.cli.commands.shell.ListClientsCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "doNotSort"
+      },
+      {
+        "name": "listSubscriptions"
+      },
+      {
+        "name": "longOutput"
+      },
+      {
+        "name": "reverse"
+      },
+      {
+        "name": "sortByTime"
+      },
+      {
+        "name": "usageHelpRequested"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ShellCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "spec" },
-      { "name" : "usageHelpRequested" },
-      { "name" : "versionInfoRequested" }
+    "name": "com.hivemq.cli.commands.shell.ShellCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "spec"
+      },
+      {
+        "name": "usageHelpRequested"
+      },
+      {
+        "name": "versionInfoRequested"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ShellConnectCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "connectUserProperties" },
-      { "name" : "sessionExpiryInterval" },
-      { "name" : "usageHelpRequested" }
-    ],
-    "methods" : [
+    "name": "com.hivemq.cli.commands.shell.ShellConnectCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "connectUserProperties"
+      },
+      {
+        "name": "sessionExpiryInterval"
+      },
+      {
+        "name": "usageHelpRequested"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ShellContextCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.commands.shell.ShellContextCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ShellDisconnectCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "disconnectAll" },
-      { "name" : "host" },
-      { "name" : "identifier" },
-      { "name" : "reasonString" },
-      { "name" : "sessionExpiryInterval" },
-      { "name" : "usageHelpRequested" },
-      { "name" : "userProperties" }
+    "name": "com.hivemq.cli.commands.shell.ShellDisconnectCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "disconnectAll"
+      },
+      {
+        "name": "host"
+      },
+      {
+        "name": "identifier"
+      },
+      {
+        "name": "reasonString"
+      },
+      {
+        "name": "sessionExpiryInterval"
+      },
+      {
+        "name": "usageHelpRequested"
+      },
+      {
+        "name": "userProperties"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.ShellExitCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "usageHelpRequested" }
+    "name": "com.hivemq.cli.commands.shell.ShellExitCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "usageHelpRequested"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.commands.shell.VersionCommand",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "spec" }
+    "name": "com.hivemq.cli.commands.shell.VersionCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "spec"
+      }
     ]
   },
   {
-    "name" : "com.hivemq.cli.converters.ByteBufferConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.ByteBufferConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.DirectoryToCertificateCollectionConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.DirectoryToCertificateCollectionConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.EnvVarToByteBufferConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.EnvVarToByteBufferConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.FileToByteBufferConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.FileToByteBufferConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.FileToCertificateConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.FileToCertificateConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.FileToPrivateKeyConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.FileToPrivateKeyConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.Mqtt5UserPropertyConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.Mqtt5UserPropertyConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.MqttQosConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.MqttQosConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.MqttVersionConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.MqttVersionConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.PayloadFormatIndicatorConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.PayloadFormatIndicatorConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.UnsignedIntConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.UnsignedIntConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.cli.converters.UnsignedShortConverter",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.cli.converters.UnsignedShortConverter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.client.mqtt.MqttVersion",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.client.mqtt.MqttVersion",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.client.mqtt.datatypes.MqttQos",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.client.mqtt.datatypes.MqttQos",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "java.lang.Boolean",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "java.lang.Boolean",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "java.lang.Integer",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "java.lang.Integer",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "java.lang.Long",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "java.lang.Long",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "java.nio.ByteBuffer",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "java.nio.ByteBuffer",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "java.security.PrivateKey",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "java.security.PrivateKey",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "java.security.cert.X509Certificate",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "java.security.cert.X509Certificate",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "java.util.Collection",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "java.util.Collection",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "java.util.Collections$UnmodifiableRandomAccessList",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true
+    "name": "java.util.Collections$UnmodifiableRandomAccessList",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   },
   {
-    "name" : "picocli.CommandLine$AutoHelpMixin",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "fields" : [
-      { "name" : "helpRequested" },
-      { "name" : "versionRequested" }
+    "name": "picocli.CommandLine$AutoHelpMixin",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "fields": [
+      {
+        "name": "helpRequested"
+      },
+      {
+        "name": "versionRequested"
+      }
     ]
+  },
+  {
+    "name": "picocli.CommandLine$HelpCommand",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   }
 ]
