@@ -30,7 +30,7 @@ public class PasswordFileToByteBufferConverter implements CommandLine.ITypeConve
         final String lineSeparator = System.getProperty("line.separator");
         String wholeFile = new String(Files.readAllBytes(file.toPath()));
 
-        wholeFile = wholeFile.replaceAll(lineSeparator + "$", "");
+        wholeFile = wholeFile.replaceAll(lineSeparator + "*$", "");
 
         return ByteBuffer.wrap(wholeFile.getBytes());
     }
