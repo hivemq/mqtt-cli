@@ -18,6 +18,7 @@ package com.hivemq.cli.converters;
 
 import picocli.CommandLine;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -27,11 +28,9 @@ public class PasswordFileToByteBufferConverter implements CommandLine.ITypeConve
     public ByteBuffer convert(String value) throws Exception {
         final FileConverter fileConverter = new FileConverter();
         final File file = fileConverter.convert(value);
-        final String lineSeparator = System.getProperty("line.separator");
-        String wholeFile = new String(Files.readAllBytes(file.toPath()));
 
-        wholeFile = wholeFile.replaceAll(lineSeparator + "*$", "");
+        final BufferedReader in = Files.newBufferedReader(file.toPath());
 
-        return ByteBuffer.wrap(wholeFile.getBytes());
+        return ByteBuffer.wrap(in.readLine().getBytes());
     }
 }
