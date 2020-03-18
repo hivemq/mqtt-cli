@@ -23,6 +23,7 @@ import com.hivemq.cli.converters.EnvVarToByteBufferConverter;
 import com.hivemq.cli.converters.PasswordFileToByteBufferConverter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.nio.ByteBuffer;
@@ -56,9 +57,8 @@ public class AuthenticationOptions {
             try {
                 password = properties.getPassword();
             } catch (Exception e) {
-                e.printStackTrace();
+                Logger.error("Could not read password from properties", password);
             }
-            //TODO Log error instead of throwing the exception
         }
     }
 
