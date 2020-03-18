@@ -18,7 +18,7 @@ package com.hivemq.cli;
 
 
 import com.hivemq.cli.converters.EnvVarToByteBufferConverter;
-import com.hivemq.cli.converters.FileToByteBufferConverter;
+import com.hivemq.cli.converters.PasswordFileToByteBufferConverter;
 import com.hivemq.cli.converters.FileToCertificateConverter;
 import com.hivemq.cli.converters.FileToPrivateKeyConverter;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -232,7 +232,7 @@ public class DefaultCLIProperties {
         }
 
         if (passwordFile != null) {
-            password = new FileToByteBufferConverter().convert(passwordFile);
+            password = new PasswordFileToByteBufferConverter().convert(passwordFile);
         }
 
         if (passwordFromEnv != null) {
