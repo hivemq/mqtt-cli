@@ -53,6 +53,9 @@ public class TestBrokerCommand implements Runnable {
     @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')", order = 1)
     private @Nullable String host;
 
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)", order = 1)
     private @Nullable Integer port;
 
