@@ -22,7 +22,7 @@ import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.ByteBufferConverter;
 import com.hivemq.cli.converters.DirectoryToCertificateCollectionConverter;
 import com.hivemq.cli.converters.EnvVarToByteBufferConverter;
-import com.hivemq.cli.converters.FileToByteBufferConverter;
+import com.hivemq.cli.converters.PasswordFileToByteBufferConverter;
 import com.hivemq.cli.converters.FileToCertificateConverter;
 import com.hivemq.cli.converters.FileToPrivateKeyConverter;
 import com.hivemq.cli.converters.UnsignedShortConverter;
@@ -63,10 +63,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @CommandLine.Option(names = {"-pw:env"}, arity = "0..1", converter = EnvVarToByteBufferConverter.class, fallbackValue = "MQTT_CLI_PW", description = "The password for authentication read in from an environment variable", order = 2)
     private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) { password = passwordEnvironmentVariable; }
 
-    @CommandLine.Option(names = {"-pw:file"}, converter = FileToByteBufferConverter.class, description = "The password for authentication read in from a file", order = 2)
-    private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) {
-        password = passwordFromFile;
-    }
+    @CommandLine.Option(names = {"-pw:file"}, converter = PasswordFileToByteBufferConverter.class, description = "The password for authentication read in from a file", order = 2)
+    private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) { password = passwordFromFile; }
 
     @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, description = "A keep alive of the client (in seconds) (default: 60)", order = 2)
     private @Nullable Integer keepAlive;
