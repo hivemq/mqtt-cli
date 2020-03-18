@@ -37,7 +37,7 @@ class PasswordFileToByteBufferConverterTest {
     }
 
     @Test
-    void test_single_Line() throws Exception {
+    void test_single_line() throws Exception {
         final File file = getFile("password_with_single_line.txt");
 
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();
