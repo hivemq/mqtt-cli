@@ -20,7 +20,6 @@ import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.converters.*;
-import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttWebSocketConfig;
 import org.jetbrains.annotations.NotNull;
@@ -54,10 +53,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @CommandLine.Option(names = {"-pw:env"}, arity = "0..1", converter = EnvVarToByteBufferConverter.class, fallbackValue = "MQTT_CLI_PW", description = "The password for authentication read in from an environment variable", order = 2)
     private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) { password = passwordEnvironmentVariable; }
 
-    @CommandLine.Option(names = {"-pw:file"}, converter = FileToByteBufferConverter.class, description = "The password for authentication read in from a file", order = 2)
-    private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) {
-        password = passwordFromFile;
-    }
+    @CommandLine.Option(names = {"-pw:file"}, converter = PasswordFileToByteBufferConverter.class, description = "The password for authentication read in from a file", order = 2)
+    private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) { password = passwordFromFile; }
 
     @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, description = "A keep alive of the client (in seconds) (default: 60)", order = 2)
     private @Nullable Integer keepAlive;
