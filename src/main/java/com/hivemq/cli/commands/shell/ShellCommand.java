@@ -70,14 +70,11 @@ public class ShellCommand implements Runnable {
 
     private static boolean exitShell = false;
 
-    private DefaultCLIProperties defaultCLIProperties;
+    private final DefaultCLIProperties defaultCLIProperties;
 
     @SuppressWarnings("NullableProblems")
     @CommandLine.Spec
     private @NotNull CommandLine.Model.CommandSpec spec;
-
-    public ShellCommand() {
-    }
 
     @Inject
     ShellCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
