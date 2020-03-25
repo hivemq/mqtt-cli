@@ -56,6 +56,6 @@ For Red Hat, Fedora, Mandriva, OpenSuse, CentOS distributions you can use the rp
 The preferred way is to install the package via the `yum` package manager. To install the package simply execute:
 
 ``` 
-sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v1.1.2./mqtt-cli-1.1.2.noarch.rpm
+sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v1.1.2/mqtt-cli-1.1.2.noarch.rpm
 ```
 
