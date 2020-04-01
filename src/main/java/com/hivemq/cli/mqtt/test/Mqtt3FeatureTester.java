@@ -345,6 +345,10 @@ public class Mqtt3FeatureTester {
             bottom = mid + 1;
         }
 
+        if (mid != 65535) {
+            setMaxTopicLength(mid);
+        }
+
         disconnectIfConnected(publisher, subscriber);
 
         return new TopicLengthTestResults(mid, testResults);

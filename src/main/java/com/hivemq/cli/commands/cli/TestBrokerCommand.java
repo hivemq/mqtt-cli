@@ -199,9 +199,6 @@ public class TestBrokerCommand implements Runnable {
             final TopicLengthTestResults topicLengthTestResults = tester.testTopicLength();
             final int maxTopicLength = topicLengthTestResults.getMaxTopicLength();
             System.out.println(maxTopicLength + " bytes");
-            if (maxTopicLength != 65535) {
-                tester.setMaxTopicLength(maxTopicLength);
-            }
 
             // Test QoS 0
             System.out.print("\t- QoS 0: ");
@@ -256,6 +253,16 @@ public class TestBrokerCommand implements Runnable {
             final ClientIdLengthTestResults clientIdLengthTestResults = tester.testClientIdLength();
             final int maxClientIdLength = clientIdLengthTestResults.getMaxClientIdLength();
             System.out.println(maxClientIdLength + " bytes");
+
+            // Test supported Ascii chars
+            System.out.print("\t- Unsupported Ascii Chars: ");
+            final AsciiCharsInClientIdTestResults asciiTestResults = tester.testAsciiCharsInClientId();
+            final List<Character> unsupportedChars = asciiTestResults.getUnsupportedChars();
+            if (unsupportedChars.isEmpty()) {
+                System.out.println("ALL SUPPORTED");
+            } else {
+                System.out.println("{'" + Joiner.on("', '").join(unsupportedChars) + "'}");
+            }
         }
 
     }
@@ -291,9 +298,6 @@ public class TestBrokerCommand implements Runnable {
         final TopicLengthTestResults topicLengthTestResults = client.testTopicLength();
         final int maxTopicLength = topicLengthTestResults.getMaxTopicLength();
         System.out.println(maxTopicLength + " bytes");
-        if (maxTopicLength != 65535) {
-            client.setMaxTopicLength(maxTopicLength);
-        }
 
         // Test QoS 0
         System.out.print("\t- QoS 0: ");
