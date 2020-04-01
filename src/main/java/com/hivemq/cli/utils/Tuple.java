@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Tuple<A, B> {
-    private final A key;
-    private final B value;
+    private @NotNull final A key;
+    private @Nullable final B value;
 
     public Tuple(final @NotNull A key, final @Nullable B value) {
         this.key = key;

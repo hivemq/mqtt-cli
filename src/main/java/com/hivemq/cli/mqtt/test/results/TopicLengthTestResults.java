@@ -23,9 +23,9 @@ import java.util.List;
 
 public class TopicLengthTestResults {
     private final int maxTopicLength;
-    private final List<Tuple<Integer, TestResult>> testResults;
+    private final @NotNull List<@NotNull Tuple<Integer, TestResult>> testResults;
 
-    public TopicLengthTestResults(int maxTopicLength, List<Tuple<Integer, TestResult>> testResults) {
+    public TopicLengthTestResults(final int maxTopicLength, final @NotNull List<@NotNull Tuple<Integer, TestResult>> testResults) {
         this.maxTopicLength = maxTopicLength;
         this.testResults = testResults;
     }
@@ -34,7 +34,7 @@ public class TopicLengthTestResults {
         return maxTopicLength;
     }
 
-    public @NotNull List<Tuple<Integer, TestResult>> getTestResults() {
+    public @NotNull List<@NotNull Tuple<Integer, TestResult>> getTestResults() {
         return testResults;
     }
 

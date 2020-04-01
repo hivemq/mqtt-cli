@@ -24,20 +24,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AsciiCharsInClientIdTestResults {
-    private final List<Tuple<@NotNull Character, @Nullable String>> testResults;
+    private final @NotNull List<@NotNull Tuple<Character, String>> testResults;
 
     public AsciiCharsInClientIdTestResults(final @NotNull List<Tuple<Character, String>> testResults) {
         this.testResults = testResults;
     }
 
-    public @NotNull List<Tuple<Character, String>> getTestResults() {
+    public @NotNull List<@NotNull Tuple<Character, String>> getTestResults() {
         return testResults;
     }
 
     public @NotNull List<Character> getUnsupportedChars() {
         final List<Character> unsupportedChars = new LinkedList<>();
         for (Tuple<Character, String> tuple : testResults) {
-            if (!tuple.getValue().equals("SUCCESS")) {
+            if (tuple.getValue() == null || !("SUCCESS").equals(tuple.getValue())) {
                 unsupportedChars.add(tuple.getKey());
             }
         }

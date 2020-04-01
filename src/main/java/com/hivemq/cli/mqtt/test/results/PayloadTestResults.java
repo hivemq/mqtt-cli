@@ -24,7 +24,7 @@ import java.util.List;
 
 public class PayloadTestResults {
     private final int payloadSize;
-    private final List<Tuple<Integer, TestResult>> testResults;
+    private final @NotNull List<@NotNull Tuple<Integer, TestResult>> testResults;
 
     public PayloadTestResults(final int payloadSize, final @NotNull List<Tuple<Integer, TestResult>> testResults) {
         this.payloadSize = payloadSize;
@@ -35,7 +35,7 @@ public class PayloadTestResults {
         return payloadSize;
     }
 
-    public @NotNull List<Tuple<Integer, TestResult>> getTestResults() {
+    public @NotNull List<@NotNull Tuple<Integer, TestResult>> getTestResults() {
         return testResults;
     }
 }

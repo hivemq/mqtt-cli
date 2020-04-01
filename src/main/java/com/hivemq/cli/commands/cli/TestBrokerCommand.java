@@ -138,196 +138,99 @@ public class TestBrokerCommand implements Runnable {
                 timeOut
         );
 
-        boolean mqtt5Support = false;
-
         // Test if MQTT5 is supported
         System.out.print("MQTT 5: ");
         final Mqtt5ConnAck connAck = tester.testConnect();
         if (connAck == null) {
             System.out.println("NO");
-        } else if (connAck.getReasonCode() == Mqtt5ConnAckReasonCode.SUCCESS) {
-            mqtt5Support = true;
-            System.out.println("OK");
-        } else {
+            return;
+        } else if (connAck.getReasonCode() != Mqtt5ConnAckReasonCode.SUCCESS) {
             System.out.println(connAck.getReasonCode().toString());
-        }
-
-        if (mqtt5Support) {
-
-            //*********************//
-            /* Connect Restrictions */
-            //*********************//
-
-            final Mqtt5ConnAckRestrictions restrictions = connAck.getRestrictions();
-
-            System.out.println("\t- Connect Restrictions: ");
-
-            System.out.print("\t\t> Retain: ");
-            System.out.println(restrictions.isRetainAvailable() ? "OK" : "NO");
-
-            System.out.print("\t\t> Wildcard subscriptions: ");
-            System.out.println(restrictions.isWildcardSubscriptionAvailable() ? "OK" : "NO");
-
-            System.out.print("\t\t> Shared subscriptions: ");
-            System.out.println(restrictions.isSharedSubscriptionAvailable() ? "OK" : "NO");
-
-            System.out.print("\t\t> Subscription identifiers: ");
-            System.out.println(restrictions.areSubscriptionIdentifiersAvailable() ? "OK" : "NO");
-
-            System.out.print("\t\t> Max. QoS: ");
-            System.out.println(restrictions.getMaximumQos().ordinal());
-
-            System.out.print("\t\t> Receive Maximum: ");
-            System.out.println(restrictions.getReceiveMaximum());
-
-            System.out.print("\t\t> Maximum packet size: ");
-            System.out.println(restrictions.getMaximumPacketSize() + " bytes");
-
-            System.out.print("\t\t> Topic alias maximum: ");
-            System.out.println(restrictions.getTopicAliasMaximum());
-
-            System.out.print("\t\t> Session expiry interval: ");
-            System.out.println(connAck.getSessionExpiryInterval().isPresent() ? connAck.getSessionExpiryInterval().getAsLong() + "s" : "Client-based");
-
-            System.out.print("\t\t> Server keep alive: ");
-            System.out.println(connAck.getServerKeepAlive().isPresent() ? connAck.getServerKeepAlive().getAsInt() + "s" : "Client-based");
-
-
-            if (force) {
-                //**************//
-                /* Force Tests */
-                //*************//
-
-                // Print max topic length
-                System.out.print("\t- Max. topic length: ");
-                final TopicLengthTestResults topicLengthTestResults = tester.testTopicLength();
-                final int maxTopicLength = topicLengthTestResults.getMaxTopicLength();
-                System.out.println(maxTopicLength + " bytes");
-                if (maxTopicLength != 65535) {
-                    tester.setMaxTopicLength(maxTopicLength);
-                }
-
-                // Test QoS 0
-                System.out.print("\t- Testing QoS 0: ");
-                final QosTestResult qos0TestResult = tester.testQos(MqttQos.AT_MOST_ONCE, qosTries);
-                final int qos0Publishes = qos0TestResult.getReceivedPublishes();
-                final float qos0Time = qos0TestResult.getTimeToReceivePublishes() / 1_000_000F;
-                System.out.printf("Received %d/%d publishes in %.2fms\n", qos0Publishes, qosTries, qos0Time);
-
-                // Test QoS 1
-                System.out.print("\t- Testing QoS 1: ");
-                final QosTestResult qos1TestResult = tester.testQos(MqttQos.AT_LEAST_ONCE, qosTries);
-                final int qos1Publishes = qos1TestResult.getReceivedPublishes();
-                final float qos1Time = qos1TestResult.getTimeToReceivePublishes() / 1_000_000F;
-                System.out.printf("Received %d/%d publishes in %.2fms\n", qos1Publishes, qosTries, qos1Time);
-
-                // Test QoS 2
-                System.out.print("\t- Testing QoS 2: ");
-                final QosTestResult qos2TestResult = tester.testQos(MqttQos.EXACTLY_ONCE, qosTries);
-                final int qos2Publishes = qos2TestResult.getReceivedPublishes();
-                final float qos2Time = qos2TestResult.getTimeToReceivePublishes() / 1_000_000F;
-                System.out.printf("Received %d/%d publishes in %.2fms\n", qos2Publishes, qosTries, qos2Time);
-
-                // Test retain
-                System.out.print("\t- Retain: ");
-                System.out.println(tester.testRetain());
-
-                // Test if wildcard subscriptions are allowed
-                System.out.print("\t- Wildcard subscriptions: ");
-                final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = tester.testWildcardSubscriptions();
-                if (wildcardSubscriptionsTestResult.isSuccess()) {
-                    System.out.println("OK");
-                } else {
-                    System.out.println("NO");
-                    System.out.print("\t\t> '+' Wildcard: ");
-                    System.out.println(wildcardSubscriptionsTestResult.getPlusWildcardTest());
-                    System.out.print("\t\t> '#' Wildcard: ");
-                    System.out.println(wildcardSubscriptionsTestResult.getHashWildcardTest());
-                }
-
-                // Test max payload size
-                System.out.print("\t- Payload size: ");
-                final PayloadTestResults payloadTestResults = tester.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
-                final int payloadSize = payloadTestResults.getPayloadSize();
-                if (payloadSize == MAX_PAYLOAD_TEST_SIZE) {
-                    System.out.println(">= " + payloadSize + " bytes");
-                } else {
-                    System.out.println(payloadSize + " bytes");
-                }
-
-                // Test max client id length
-                System.out.print("\t- Max. client id length: ");
-                final ClientIdLengthTestResults clientIdLengthTestResults = tester.testClientIdLength();
-                final int maxClientIdLength = clientIdLengthTestResults.getMaxClientIdLength();
-                System.out.println(maxClientIdLength + " bytes");
-            }
-
-        }
-    }
-
-    public void testMqtt3Features() {
-        final Mqtt3FeatureTester client = new Mqtt3FeatureTester(
-                host,
-                port,
-                authenticationOptions.getUser(),
-                authenticationOptions.getPassword(),
-                sslConfig,
-                timeOut
-        );
-
-        boolean mqtt3Support = false;
-
-        // Test if MQTT3 is supported
-        System.out.print("MQTT 3: ");
-        final Mqtt3ConnAck connAck = client.testConnect();
-        if (connAck == null) {
-            System.out.println("NO");
-        } else if (connAck.getReturnCode() == Mqtt3ConnAckReturnCode.SUCCESS) {
-            mqtt3Support = true;
-            System.out.println("OK");
         } else {
-            System.out.println(connAck.getReturnCode().toString());
+            System.out.println("OK");
         }
 
-        if (mqtt3Support) {
+        //*********************//
+        /* Connect Restrictions */
+        //*********************//
 
-            // Test max length of topic names & set length for next tests
-            System.out.print("\t- Max. topic length: ");
-            final TopicLengthTestResults topicLengthTestResults = client.testTopicLength();
+        final Mqtt5ConnAckRestrictions restrictions = connAck.getRestrictions();
+
+        System.out.println("\t- Connect restrictions: ");
+
+        System.out.print("\t\t> Retain: ");
+        System.out.println(restrictions.isRetainAvailable() ? "OK" : "NO");
+
+        System.out.print("\t\t> Wildcard subscriptions: ");
+        System.out.println(restrictions.isWildcardSubscriptionAvailable() ? "OK" : "NO");
+
+        System.out.print("\t\t> Shared subscriptions: ");
+        System.out.println(restrictions.isSharedSubscriptionAvailable() ? "OK" : "NO");
+
+        System.out.print("\t\t> Subscription identifiers: ");
+        System.out.println(restrictions.areSubscriptionIdentifiersAvailable() ? "OK" : "NO");
+
+        System.out.print("\t\t> Maximum QoS: ");
+        System.out.println(restrictions.getMaximumQos().getCode());
+
+        System.out.print("\t\t> Receive maximum: ");
+        System.out.println(restrictions.getReceiveMaximum());
+
+        System.out.print("\t\t> Maximum packet size: ");
+        System.out.println(restrictions.getMaximumPacketSize() + " bytes");
+
+        System.out.print("\t\t> Topic alias maximum: ");
+        System.out.println(restrictions.getTopicAliasMaximum());
+
+        System.out.print("\t\t> Session expiry interval: ");
+        System.out.println(connAck.getSessionExpiryInterval().isPresent() ? connAck.getSessionExpiryInterval().getAsLong() + "s" : "Client-based");
+
+        System.out.print("\t\t> Server keep alive: ");
+        System.out.println(connAck.getServerKeepAlive().isPresent() ? connAck.getServerKeepAlive().getAsInt() + "s" : "Client-based");
+
+
+        if (force) {
+            //**************//
+            /* Force Tests */
+            //*************//
+
+            // Print max topic length
+            System.out.print("\t- Maximum topic length: ");
+            final TopicLengthTestResults topicLengthTestResults = tester.testTopicLength();
             final int maxTopicLength = topicLengthTestResults.getMaxTopicLength();
             System.out.println(maxTopicLength + " bytes");
             if (maxTopicLength != 65535) {
-                client.setMaxTopicLength(maxTopicLength);
+                tester.setMaxTopicLength(maxTopicLength);
             }
 
             // Test QoS 0
-            System.out.print("\t- Testing QoS 0: ");
-            final QosTestResult qos0TestResult = client.testQos(MqttQos.AT_MOST_ONCE, qosTries);
+            System.out.print("\t- QoS 0: ");
+            final QosTestResult qos0TestResult = tester.testQos(MqttQos.AT_MOST_ONCE, qosTries);
             final int qos0Publishes = qos0TestResult.getReceivedPublishes();
             final float qos0Time = qos0TestResult.getTimeToReceivePublishes() / 1_000_000F;
             System.out.printf("Received %d/%d publishes in %.2fms\n", qos0Publishes, qosTries, qos0Time);
 
             // Test QoS 1
-            System.out.print("\t- Testing QoS 1: ");
-            final QosTestResult qos1TestResult = client.testQos(MqttQos.AT_LEAST_ONCE, qosTries);
+            System.out.print("\t- QoS 1: ");
+            final QosTestResult qos1TestResult = tester.testQos(MqttQos.AT_LEAST_ONCE, qosTries);
             final int qos1Publishes = qos1TestResult.getReceivedPublishes();
             final float qos1Time = qos1TestResult.getTimeToReceivePublishes() / 1_000_000F;
             System.out.printf("Received %d/%d publishes in %.2fms\n", qos1Publishes, qosTries, qos1Time);
 
             // Test QoS 2
-            System.out.print("\t- Testing QoS 2: ");
-            final QosTestResult qos2TestResult = client.testQos(MqttQos.EXACTLY_ONCE, qosTries);
+            System.out.print("\t- QoS 2: ");
+            final QosTestResult qos2TestResult = tester.testQos(MqttQos.EXACTLY_ONCE, qosTries);
             final int qos2Publishes = qos2TestResult.getReceivedPublishes();
             final float qos2Time = qos2TestResult.getTimeToReceivePublishes() / 1_000_000F;
             System.out.printf("Received %d/%d publishes in %.2fms\n", qos2Publishes, qosTries, qos2Time);
 
             // Test retain
             System.out.print("\t- Retain: ");
-            System.out.println(client.testRetain());
+            System.out.println(tester.testRetain());
 
             // Test if wildcard subscriptions are allowed
             System.out.print("\t- Wildcard subscriptions: ");
-            final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = client.testWildcardSubscriptions();
+            final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = tester.testWildcardSubscriptions();
             if (wildcardSubscriptionsTestResult.isSuccess()) {
                 System.out.println("OK");
             } else {
@@ -340,7 +243,7 @@ public class TestBrokerCommand implements Runnable {
 
             // Test max payload size
             System.out.print("\t- Payload size: ");
-            final PayloadTestResults payloadTestResults = client.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
+            final PayloadTestResults payloadTestResults = tester.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
             final int payloadSize = payloadTestResults.getPayloadSize();
             if (payloadSize == MAX_PAYLOAD_TEST_SIZE) {
                 System.out.println(">= " + payloadSize + " bytes");
@@ -349,22 +252,112 @@ public class TestBrokerCommand implements Runnable {
             }
 
             // Test max client id length
-            System.out.print("\t- Max. client id length: ");
-            final ClientIdLengthTestResults clientIdLengthTestResults = client.testClientIdLength();
+            System.out.print("\t- Maximum client id length: ");
+            final ClientIdLengthTestResults clientIdLengthTestResults = tester.testClientIdLength();
             final int maxClientIdLength = clientIdLengthTestResults.getMaxClientIdLength();
             System.out.println(maxClientIdLength + " bytes");
-
-            // Test supported Ascii chars
-            System.out.print("\t- Unsupported Ascii Chars: ");
-            final AsciiCharsInClientIdTestResults asciiTestResults = client.testAsciiCharsInClientId();
-            final List<Character> unsupportedChars = asciiTestResults.getUnsupportedChars();
-            if (unsupportedChars.isEmpty()) {
-                System.out.println("ALL SUPPORTED");
-            } else {
-                System.out.println("{'" + Joiner.on("', '").join(unsupportedChars) + "'}");
-            }
         }
 
+    }
+
+    public void testMqtt3Features() {
+        final Mqtt3FeatureTester client = new Mqtt3FeatureTester(
+                host,
+                port,
+                authenticationOptions.getUser(),
+                authenticationOptions.getPassword(),
+                sslConfig,
+                timeOut
+        );
+
+        // Test if MQTT3 is supported
+        System.out.print("MQTT 3: ");
+        final Mqtt3ConnAck connAck = client.testConnect();
+        if (connAck == null) {
+            System.out.println("NO");
+            return;
+        }
+        else if (connAck.getReturnCode() != Mqtt3ConnAckReturnCode.SUCCESS) {
+            System.out.println(connAck.getReturnCode().toString());
+            return;
+        }
+        else {
+            System.out.println("OK");
+        }
+
+
+        // Test max length of topic names & set length for next tests
+        System.out.print("\t- Maximum topic length: ");
+        final TopicLengthTestResults topicLengthTestResults = client.testTopicLength();
+        final int maxTopicLength = topicLengthTestResults.getMaxTopicLength();
+        System.out.println(maxTopicLength + " bytes");
+        if (maxTopicLength != 65535) {
+            client.setMaxTopicLength(maxTopicLength);
+        }
+
+        // Test QoS 0
+        System.out.print("\t- QoS 0: ");
+        final QosTestResult qos0TestResult = client.testQos(MqttQos.AT_MOST_ONCE, qosTries);
+        final int qos0Publishes = qos0TestResult.getReceivedPublishes();
+        final float qos0Time = qos0TestResult.getTimeToReceivePublishes() / 1_000_000F;
+        System.out.printf("Received %d/%d publishes in %.2fms\n", qos0Publishes, qosTries, qos0Time);
+
+        // Test QoS 1
+        System.out.print("\t- QoS 1: ");
+        final QosTestResult qos1TestResult = client.testQos(MqttQos.AT_LEAST_ONCE, qosTries);
+        final int qos1Publishes = qos1TestResult.getReceivedPublishes();
+        final float qos1Time = qos1TestResult.getTimeToReceivePublishes() / 1_000_000F;
+        System.out.printf("Received %d/%d publishes in %.2fms\n", qos1Publishes, qosTries, qos1Time);
+
+        // Test QoS 2
+        System.out.print("\t- QoS 2: ");
+        final QosTestResult qos2TestResult = client.testQos(MqttQos.EXACTLY_ONCE, qosTries);
+        final int qos2Publishes = qos2TestResult.getReceivedPublishes();
+        final float qos2Time = qos2TestResult.getTimeToReceivePublishes() / 1_000_000F;
+        System.out.printf("Received %d/%d publishes in %.2fms\n", qos2Publishes, qosTries, qos2Time);
+
+        // Test retain
+        System.out.print("\t- Retain: ");
+        System.out.println(client.testRetain());
+
+        // Test if wildcard subscriptions are allowed
+        System.out.print("\t- Wildcard subscriptions: ");
+        final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = client.testWildcardSubscriptions();
+        if (wildcardSubscriptionsTestResult.isSuccess()) {
+            System.out.println("OK");
+        } else {
+            System.out.println("NO");
+            System.out.print("\t\t> '+' Wildcard: ");
+            System.out.println(wildcardSubscriptionsTestResult.getPlusWildcardTest());
+            System.out.print("\t\t> '#' Wildcard: ");
+            System.out.println(wildcardSubscriptionsTestResult.getHashWildcardTest());
+        }
+
+        // Test max payload size
+        System.out.print("\t- Payload size: ");
+        final PayloadTestResults payloadTestResults = client.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
+        final int payloadSize = payloadTestResults.getPayloadSize();
+        if (payloadSize == MAX_PAYLOAD_TEST_SIZE) {
+            System.out.println(">= " + payloadSize + " bytes");
+        } else {
+            System.out.println(payloadSize + " bytes");
+        }
+
+        // Test max client id length
+        System.out.print("\t- Maximum client id length: ");
+        final ClientIdLengthTestResults clientIdLengthTestResults = client.testClientIdLength();
+        final int maxClientIdLength = clientIdLengthTestResults.getMaxClientIdLength();
+        System.out.println(maxClientIdLength + " bytes");
+
+        // Test supported Ascii chars
+        System.out.print("\t- Unsupported Ascii Chars: ");
+        final AsciiCharsInClientIdTestResults asciiTestResults = client.testAsciiCharsInClientId();
+        final List<Character> unsupportedChars = asciiTestResults.getUnsupportedChars();
+        if (unsupportedChars.isEmpty()) {
+            System.out.println("ALL SUPPORTED");
+        } else {
+            System.out.println("{'" + Joiner.on("', '").join(unsupportedChars) + "'}");
+        }
     }
 
 }
