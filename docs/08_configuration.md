@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Configuration
-nav_order: 7
+nav_order: 8
 has_children: false
 ---
 
