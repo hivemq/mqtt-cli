@@ -146,6 +146,7 @@ public class TestBrokerCommand implements Runnable {
             return;
         } else if (connAck.getReasonCode() != Mqtt5ConnAckReasonCode.SUCCESS) {
             System.out.println(connAck.getReasonCode().toString());
+            return;
         } else {
             System.out.println("OK");
         }
