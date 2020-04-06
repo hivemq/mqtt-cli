@@ -59,7 +59,7 @@ public class TestBrokerCommand implements Runnable {
     @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)", order = 1)
     private @Nullable Integer port;
 
-    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The mqtt version to test the broker on", order = 1)
+    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The mqtt version to test the broker on (default: test both versions)", order = 1)
     private @Nullable MqttVersion version;
 
     @CommandLine.Option(names = {"-f", "--force"}, defaultValue = "false", description = "Force test MQTT 5 features (even if MQTT3 features were already tested)", order = 1)
@@ -79,9 +79,9 @@ public class TestBrokerCommand implements Runnable {
 
     private @Nullable MqttClientSslConfig sslConfig;
 
-    //needed for pico cli - reflection code generation
     private final DefaultCLIProperties defaultCLIProperties;
 
+    //needed for pico cli - reflection code generation
     public TestBrokerCommand() {
         this(null);
     }

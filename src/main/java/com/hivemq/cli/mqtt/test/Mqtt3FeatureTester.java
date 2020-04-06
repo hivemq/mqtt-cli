@@ -499,11 +499,8 @@ public class Mqtt3FeatureTester {
         final Mqtt3ClientBuilder mqtt3ClientBuilder = Mqtt3Client.builder()
                 .serverHost(host)
                 .serverPort(port)
-                .simpleAuth(buildAuth());
-
-        if (sslConfig != null) {
-            mqtt3ClientBuilder.sslConfig(sslConfig);
-        }
+                .simpleAuth(buildAuth())
+                .sslConfig(sslConfig);
 
         return mqtt3ClientBuilder;
     }

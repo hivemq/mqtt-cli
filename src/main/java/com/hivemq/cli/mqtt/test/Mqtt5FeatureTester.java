@@ -498,11 +498,8 @@ public class Mqtt5FeatureTester {
         final Mqtt5ClientBuilder mqtt5ClientBuilder = Mqtt5Client.builder()
                 .serverHost(host)
                 .serverPort(port)
-                .simpleAuth(buildAuth());
-
-        if (sslConfig != null) {
-            mqtt5ClientBuilder.sslConfig(sslConfig);
-        }
+                .simpleAuth(buildAuth())
+                .sslConfig(sslConfig);
 
         return mqtt5ClientBuilder;
     }
