@@ -18,7 +18,7 @@ See also ``$ mqtt --help``.
 
 With this you get an output on how to use MQTT CLI:
 ```
-Usage:  mqtt [-hV] { pub | sub | shell }
+Usage:  mqtt [-hV] { pub | sub | shell | test }
 
 MQTT Command Line Interpreter.
 
@@ -30,7 +30,7 @@ Commands:
   pub, publish    Publish a message to a list of topics
   sub, subscribe  Subscribe an mqtt client to a list of topics
   shell, sh       Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.
-
+  test            Tests the specified broker on different MQTT feature support and prints the results
 ```
 
 ## Synopsis 
@@ -42,7 +42,8 @@ $ mqtt [flags] [METHOD] [OPTION [OPTION]]
 
 * [Publish](mqtt_commands/publish.md)
 * [Subscribe](mqtt_commands/subscribe.md)
-* [Shell](05_shell.md) 
+* [Shell](05_shell.md)
+* [Test](06_test.md) 
 
 ***
 
@@ -85,3 +86,12 @@ mqtt>
 
 The shell mode enables you to execute more complex MQTT behaviour - see [Shell](05_shell.md) 
 
+## Testing a MQTT broker
+
+``` 
+$ mqtt test
+...
+```
+
+This command runs a quick test suite against the broker running on the default host on the default port.
+The results are printed to the console.

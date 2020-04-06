@@ -8,6 +8,8 @@ has_children: true
 # Test
 ***
 Runs tests against the specified broker to find out its features and limitations.
+
+
 By default the test command will use MQTT 3 clients to test the broker first and will afterwards check the connect 
 restrictions returned by a connect of a MQTT 5 client. You can alter this behavior by specifying different 
 [options](#test-options) when using the command.
@@ -52,57 +54,25 @@ mqtt test --help
 ## Synopsis
 
 ``` 
-mqtt test   -t <topics> [-t <topics>]... 
-            -m <message> 
-            [-cdrsv] 
-            [-q <qos>]...
-            [-e <messageExpiryInterval>]          
-            [-ct <contentType>] 
-            [-cd <correlationData>] 
-            [-pf <payloadFormatIndicator>] 
-            [-rt <responseTopic>] 
-            [-up <userProperties>]...                   
-            [-h <host>]    
-            [-p <port>] 
-            [-V <version>]
-            [-i <identifier>] 
-            [-ip <identifierPrefix>] 
-            [-k <keepAlive>] 
-            [-se <sessionExpiryInterval>]
-            [-Cup <connectUserProperties>]... 
-            [-ws]
-            [-ws:path <webSocketPath>]
-            [-u <user>] 
-            [-pw [<password>]] 
-            [-pw:env [<environmentVariable>]]
-            [-pw:file FILE]
-            [--cert <clientCertificate>] 
-            [--key <clientPrivateKey>] 
-            [--cafile FILE]... 
-            [--capath DIR]... 
-            [--ciphers <cipherSuites>[: <cipherSuites>...]]...
-            [--tls-version <supportedTLSVersions>]...
-            [-Wd <willDelayInterval>]                                                                          
-            [-We <willMessageExpiryInterval>]                 
-            [-Wm <willMessage>] 
-            [-Wq <willQos>] 
-            [-Wr]
-            [-Wt <willTopic>] 
-            [-Wcd <willCorrelationData>]
-            [-Wct <willContentType>]                        
-            [-Wpf <willPayloadFormatIndicator>]
-            [-Wrt <willResponseTopic>]
-            [-Wup <willUserProperties>]...  
-            [--rcvMax <receiveMaximum>] 
-            [--sendMax <sendMaximum>] 
-            [--maxPacketSize <maximumPacketSize>]                                             
-            [--sendMaxPacketSize <sendMaximumPacketSize>]
-            [--topicAliasMax <topicAliasMaximum>]       
-            [--sendTopicAliasMax <sendTopicAliasMaximum>] 
-            [--[no-]reqProblemInfo] 
-            [--[no-]reqResponseInfo]  
-            [--help] 
-            [--version]         
+mqtt test   [--help]
+            [-V=<version>]
+            [-f]
+            [-t=<timeOut>]
+            [-q=<qosTries>]
+            [-s]
+            [-pw[=<password>]] 
+            [-pw:env[=<passwordFromEnv>]]
+            [--cert=<clientCertificate>] 
+            [-h=<host>] 
+            [--key=<clientPrivateKey>]
+            [-p=<port>] 
+            [-pw:file=<passwordFromFile>] 
+            [-t=<timeOut>] 
+            [-u=<user>] 
+            [--cafile=FILE]... 
+            [--capath=DIR]...
+            [--ciphers=<cipherSuites>[:<cipherSuites>...]]... 
+            [--tls-version=<supportedTLSVersions>]...
 ```
 
 ***
@@ -111,18 +81,10 @@ mqtt test   -t <topics> [-t <topics>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-t``   | ``--topic``| The MQTT topic to which the message will be published. |
-| ``-m``| ``--message`` | The message which will be published on the topic. |
-| ``-r``| ``--[no-]retain`` | Whether the message will be retained. | ``False``
-| ``-q`` | ``--qos`` | Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
-| ``-e`` | ``--messageExpiryInterval`` | The lifetime of the publish message in seconds. |
-| ``-ct`` | ``--contentType`` | A description of the content of the publish message. |
-| ``-cd`` | ``--correlationData`` | The correlation data of the publish message. |
-| ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
-| ``-rt`` | ``--responseTopic`` | The topic name for the response message of the publish message. |
-| ``-up`` | ``--userProperty``  | A user property of the publish message |
-| ``-d``    |   ``--debug``     | Print debug level messages to the console. | ``False``
-| ``-v``    |   ``--verbose``   | Print trace level messages to the console. | ``False``
+| ``-V``   | ``--mqttVersion``| The MQTT version to test the broker on. | Both versions will be tested
+| ``-f``| ``--force`` | Also use force tests to find out MQTT 5 features and limitations, even though connect restrictions should tell these already. | ``False``
+| ``-t``| ``--timeOut`` | The time to wait for the broker to respond (in seconds). | ``10s``
+| ``-q`` | ``--qosTries`` | The amount of messages to send and receive from the broker for each QoS level. | ``10``
 
 ***
 
@@ -132,15 +94,6 @@ mqtt test   -t <topics> [-t <topics>]...
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-h``   | ``--host``| The MQTT host. | ``localhost``
 | ``-p``  | ``--port``| The MQTT port. | ``1883``
-| ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``5``
-| ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
-| ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier is given. | ``mqttClient``
-| ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
-| ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60`` 
-| ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
-| ``-Cup``  | ``--connectUserProperty`` | A user property of the connect message. |
-| ``--ws``  |  | Use WebSocket transport protocol. | ``False``
-| ``--ws:path``  |  | The path to the WebSocket located at given broker host. | 
 
 ***
 
@@ -148,7 +101,7 @@ mqtt test   -t <topics> [-t <topics>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-s``    | ``--secure``  | Whether a custom SSL configuration is used. | ``False``
+| ``-s``    | ``--secure``  | Whether a default SSL configuration is used. | ``False``
 | ``-u``   | ``--user`` | Define the username for authentication. |
 | ``-pw``  | ``--password`` | Define the password for authentication directly. <br> If left blank the user will be prompted for the password in console. |
 | ``-pw:env``  |  | Define that the password for authentication is read in from an environment variable. | ``MQTT_CLI_PW`` if option is specified without value
@@ -162,53 +115,44 @@ mqtt test   -t <topics> [-t <topics>]...
 
 *** 
 
-## Will Options
-
-|Option   |Long Version    | Explanation                                         | Default|
-|---------|----------------|-----------------------------------------------------|---------|
-| ``-Wd`` | ``--willDelayInterval`` | Will delay interval in seconds. | ``0``
-| ``-We``   | ``--willMessageExpiryInterval``   | Lifetime of the will message in seconds. <br> Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
-| ``-Wm``  | ``--willPayload`` | Payload of the will message. |
-| ``-Wq``   | ``--willQualityOfService`` | QoS level of the will message. | ``0``
-| ``-Wr``   | ``--[no-]willRetain``  | Retain the will message. | ``False``
-| ``-Wt``  | ``--willTopic`` | Topic of the will message.  |
-| ``-Wcd``  | ``--willCorrelationData`` | Correlation data of the will message  |
-| ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
-| ``-Wpf``  | ``--willPayloadFormatIndicator`` | Payload format can be explicitly specified as ``UTF8`` else it may be ``UNSPECIFIED``. |
-| ``-Wrt``  | ``--willResponseTopic`` | Topic Name for a response message.   |
-| ``-Wup``   | ``--willUserProperties``  | A user property of the will message. |
-
-*** 
-
-## Connect Restrictions
-
-|Option   |Long Version    | Explanation                                         | Default|
-|---------|----------------|-----------------------------------------------------|---------|
-|   |  ``--rcvMax``  |  The maximum amount of not acknowledged publishes with QoS 1 or 2 the client accepts from the server concurrently.  | ``65535``
-|   |  ``--sendMax`` |  The maximum amount of not acknowledged publishes with QoS 1 or 2 the client send to the server concurrently.  | ``65535``
-|   |  ``--maxPacketSize`` | The maximum packet size the client accepts from the server. | ``268435460``
-|   | ``--sendMaxPacketSize`` |  The maximum packet size the client sends to the server. | ``268435460``
-|   |  ``--topicAliasMax``  |  The maximum amount of topic aliases the client accepts from the server.  | ``0``
-|   |  ``--sendTopicAliasMax``  |  The maximum amount of topic aliases the client sends to the server.  | ``16``
-|   |  `` --[no-]reqProblemInfo`` |  The client requests problem information from the server.  | ``true``
-|   |  ``--[no-]reqResponseInfo``  | The client requests response information from the server. | ``false``
-
-*** 
-
 ## Further Examples
 
-> Publish a message with default QoS set to ``Exactly Once``
-
-> **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
+> Force test MQTT 5 only (Uses MQTT 5 clients only for tests)
 
 ```
-$ mqtt pub -t topic1 -t topic2 -q 2
+$ mqtt test -h broker.hivemq.com -f -V 5
+MQTT 5: OK
+	- Connect restrictions: 
+		> Retain: OK
+		> Wildcard subscriptions: OK
+		> Shared subscriptions: OK
+		> Subscription identifiers: OK
+		> Maximum QoS: 2
+		> Receive maximum: 10
+		> Maximum packet size: 268435460 bytes
+		> Topic alias maximum: 5
+		> Session expiry interval: Client-based
+		> Server keep alive: Client-based
+	- Maximum topic length: 65535 bytes
+	- QoS 0: Received 10/10 publishes in 56,21ms
+	- QoS 1: Received 10/10 publishes in 71,38ms
+	- QoS 2: Received 10/10 publishes in 127,12ms
+	- Retain: OK
+	- Wildcard subscriptions: OK
+	- Payload size: >= 100000 bytes
+	- Maximum client id length: 65535 bytes
+	- Unsupported Ascii Chars: ALL SUPPORTED
 ```
 
 ***
 
-> Publish a message with a specific QoS for each topic. ``('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic3' QoS 2)``
+> Test receving of 100 publishes in 10s (for each qos level)
 
 ```
-$ mqtt pub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
+$ mqtt test -h broker.hivemq.com -q 100 
+...
+    - QoS 0: Received 100/100 publishes in 123,44ms
+    - QoS 1: Received 100/100 publishes in 223,78ms
+    - QoS 2: Received 100/100 publishes in 340,81ms
+...
 ```

@@ -33,7 +33,9 @@ mqtt sub --help
 mqtt sub    -t <topics> [-t <topics>]... 
             [-q <qos>]... 
             [-of <receivedMessagesFile>] 
-            [-b64] 
+            [-b64]
+            [-J]
+            [-T]
             [-up <userProperties>]... 
             [-cdsv]
             [-h <host>] 
@@ -89,6 +91,8 @@ mqtt sub    -t <topics> [-t <topics>]...
 | ``-q`` | ``--qos`` |  Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-b64``| ``--base64``| Whether the received publish messages will be base64 encoded. | ``False``
+| ``-J``  | ``--jsonOutput`` | Print the received publishes in pretty JSON format. | `False`
+| ``-T``  | ``--showTopics`` | Prepend the specific topic name to the received publish. | `False`
 | ``-up``  | ``--userProperty`` | A user property of the subscribe message. |
 
 ***
@@ -115,7 +119,7 @@ mqtt sub    -t <topics> [-t <topics>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-s``    | ``--secure``  | Whether a custom SSL configuration is used. | ``False``
+| ``-s``    | ``--secure``  | Whether a default SSL configuration is used. | ``False``
 | ``-u``   | ``--user`` | Define the username for authentication. |
 | ``-pw``  | ``--password`` | Define the password for authentication directly. <br> If left blank the user will be prompted for the password in console. |
 | ``-pw:env``  |  | Define that the password for authentication is read in from an environment variable. | ``MQTT_CLI_PW`` if option is specified without value

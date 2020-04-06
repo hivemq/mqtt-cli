@@ -126,7 +126,7 @@ mqtt pub    -t <topics> [-t <topics>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-s``    | ``--secure``  | Whether a custom SSL configuration is used. | ``False``
+| ``-s``    | ``--secure``  | Whether a default SSL configuration is used. | ``False``
 | ``-u``   | ``--user`` | Define the username for authentication. |
 | ``-pw``  | ``--password`` | Define the password for authentication directly. <br> If left blank the user will be prompted for the password in console. |
 | ``-pw:env``  |  | Define that the password for authentication is read in from an environment variable. | ``MQTT_CLI_PW`` if option is specified without value

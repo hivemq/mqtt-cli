@@ -21,7 +21,9 @@ client@host> sub    -t <topics> [-t <topics>]...
                     [-q <qos>]... 
                     [-oc] 
                     [-of <receivedMessagesFile>]
-                    [-b64]   
+                    [-b64]
+                    [-J]
+                    [-T] 
                     [-up <userProperties>]... 
                     [-s]   
                     [-h]                                           
@@ -38,6 +40,8 @@ client@host> sub    -t <topics> [-t <topics>]...
 | ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` 
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
 | ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
+| ``-J``  | ``--jsonOutput`` | Print the received publishes in pretty JSON format. | `False`
+| ``-T``  | ``--showTopics`` | Prepend the specific topic name to the received publish. | `False`
 | ``-up``  | ``--userProperty`` | A user property of the subscribe message. |
 | ``-s``    |   |   The subscribe emulates the same behavior as the subscribe command in non-shell mode. <br> **Note**: the subscriptions will be unsubscribed afterwards. <br> To cancel the command simply press *Enter*. |  
 
