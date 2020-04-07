@@ -20,11 +20,12 @@ restrictions returned by a connect of a MQTT 5 client. You can alter this behavi
 $ mqtt test -h broker.hivemq.com
 MQTT 3: OK
 	- Maximum topic length: 65535 bytes
-	- QoS 0: Received 10/10 publishes in 85,10ms
-	- QoS 1: Received 10/10 publishes in 84,66ms
-	- QoS 2: Received 10/10 publishes in 49,48ms
+	- QoS 0: Received 10/10 publishes in 47,59ms
+	- QoS 1: Received 10/10 publishes in 68,87ms
+	- QoS 2: Received 10/10 publishes in 43,18ms
 	- Retain: OK
 	- Wildcard subscriptions: OK
+	- Shared subscriptions: OK
 	- Payload size: >= 100000 bytes
 	- Maximum client id length: 65535 bytes
 	- Unsupported Ascii Chars: ALL SUPPORTED
@@ -56,7 +57,7 @@ mqtt test --help
 ``` 
 mqtt test   [--help]
             [-V=<version>]
-            [-f]
+            [-a]
             [-t=<timeOut>]
             [-q=<qosTries>]
             [-s]
@@ -134,11 +135,12 @@ MQTT 5: OK
 		> Session expiry interval: Client-based
 		> Server keep alive: Client-based
 	- Maximum topic length: 65535 bytes
-	- QoS 0: Received 10/10 publishes in 56,21ms
-	- QoS 1: Received 10/10 publishes in 71,38ms
-	- QoS 2: Received 10/10 publishes in 127,12ms
+	- QoS 0: Received 10/10 publishes in 52,70ms
+	- QoS 1: Received 10/10 publishes in 79,95ms
+	- QoS 2: Received 10/10 publishes in 125,65ms
 	- Retain: OK
 	- Wildcard subscriptions: OK
+	- Shared subscriptions: OK
 	- Payload size: >= 100000 bytes
 	- Maximum client id length: 65535 bytes
 	- Unsupported Ascii Chars: ALL SUPPORTED
