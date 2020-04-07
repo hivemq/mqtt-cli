@@ -14,21 +14,8 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.converters;
+package com.hivemq.cli.mqtt.test.results;
 
-import picocli.CommandLine;
-
-import java.io.File;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-
-public class FileToByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
-    @Override
-    public ByteBuffer convert(String value) throws Exception {
-        final FileConverter fileConverter = new FileConverter();
-
-        final File file = fileConverter.convert(value);
-
-        return ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
-    }
+public enum SharedSubscriptionTestResult {
+    OK, NOT_SHARED, TIME_OUT, INTERRUPTED, PUBLISH_FAILED;
 }

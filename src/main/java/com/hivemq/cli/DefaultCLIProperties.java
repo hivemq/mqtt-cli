@@ -18,7 +18,7 @@ package com.hivemq.cli;
 
 
 import com.hivemq.cli.converters.EnvVarToByteBufferConverter;
-import com.hivemq.cli.converters.FileToByteBufferConverter;
+import com.hivemq.cli.converters.PasswordFileToByteBufferConverter;
 import com.hivemq.cli.converters.FileToCertificateConverter;
 import com.hivemq.cli.converters.FileToPrivateKeyConverter;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -27,11 +27,18 @@ import org.jetbrains.annotations.Nullable;
 import org.tinylog.Level;
 
 import javax.inject.Singleton;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Represents the default properties which are used throughout the CLI.
@@ -232,7 +239,7 @@ public class DefaultCLIProperties {
         }
 
         if (passwordFile != null) {
-            password = new FileToByteBufferConverter().convert(passwordFile);
+            password = new PasswordFileToByteBufferConverter().convert(passwordFile);
         }
 
         if (passwordFromEnv != null) {

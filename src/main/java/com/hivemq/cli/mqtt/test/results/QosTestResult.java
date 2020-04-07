@@ -14,18 +14,22 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.converters;
+package com.hivemq.cli.mqtt.test.results;
 
-import org.jetbrains.annotations.NotNull;
-import picocli.CommandLine;
+public class QosTestResult {
+    private final int receivedPublishes;
+    private final long timeToReceivePublishes;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+    public QosTestResult(final int receivedPublishes, final long timeToReceivePublishes) {
+        this.receivedPublishes = receivedPublishes;
+        this.timeToReceivePublishes = timeToReceivePublishes;
+    }
 
-public class ByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
+    public int getReceivedPublishes() {
+        return receivedPublishes;
+    }
 
-    @Override
-    public ByteBuffer convert(final @NotNull String s) throws Exception {
-        return ByteBuffer.wrap(s.getBytes(StandardCharsets.UTF_8));
+    public long getTimeToReceivePublishes() {
+        return timeToReceivePublishes;
     }
 }

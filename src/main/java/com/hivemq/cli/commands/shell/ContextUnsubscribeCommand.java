@@ -20,7 +20,6 @@ import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;

@@ -20,7 +20,11 @@ package com.hivemq.cli.converters;
 import com.hivemq.cli.utils.PasswordUtils;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.*;
+import org.bouncycastle.openssl.PEMDecryptorProvider;
+import org.bouncycastle.openssl.PEMEncryptedKeyPair;
+import org.bouncycastle.openssl.PEMException;
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8DecryptorProviderBuilder;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
@@ -67,8 +71,7 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
             final PEMDecryptorProvider decryptorProvider = new JcePEMDecryptorProviderBuilder().build(password);
             final KeyPair keyPair = converter.getKeyPair(encryptedPrivateKey.decryptKeyPair(decryptorProvider));
             privateKey = keyPair.getPrivate();
-        }
-        else if (object instanceof PKCS8EncryptedPrivateKeyInfo) {
+        } else if (object instanceof PKCS8EncryptedPrivateKeyInfo) {
             final char[] password = PasswordUtils.readPassword("Enter private key password:");
             final PKCS8EncryptedPrivateKeyInfo encryptedPrivateKey = (PKCS8EncryptedPrivateKeyInfo) object;
             final InputDecryptorProvider decryptorProvider = new JceOpenSSLPKCS8DecryptorProviderBuilder().build(password);

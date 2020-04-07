@@ -17,16 +17,18 @@
 package com.hivemq.cli.mqtt;
 
 import com.google.common.base.Throwables;
-import com.hivemq.cli.commands.*;
+import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.commands.Disconnect;
+import com.hivemq.cli.commands.Publish;
+import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.Unsubscribe;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
-import com.hivemq.client.mqtt.mqtt3.message.disconnect.Mqtt3Disconnect;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3PublishBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3Subscribe;
@@ -44,13 +46,12 @@ import com.hivemq.client.mqtt.mqtt5.message.subscribe.Mqtt5SubscribeBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.unsubscribe.Mqtt5Unsubscribe;
 import com.hivemq.client.mqtt.mqtt5.message.unsubscribe.unsuback.Mqtt5UnsubAck;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-
-import org.tinylog.Logger;
 
 @Singleton
 public class MqttClientExecutor extends AbstractMqttClientExecutor {

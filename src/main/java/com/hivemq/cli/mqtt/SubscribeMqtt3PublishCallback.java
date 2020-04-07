@@ -17,51 +17,49 @@
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
-import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.cli.utils.LoggerUtils;
+import com.hivemq.cli.utils.MqttPublishUtils;
+import com.hivemq.cli.utils.json.JsonMqttPublish;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
-import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
 
-    @Nullable private final File publishFile;
+    private final @Nullable File publishFile;
+    private final @NotNull Mqtt3Client client;
     private final boolean printToStdout;
     private final boolean isBase64;
-    private final Mqtt3Client client;
+    private final boolean isJsonOutput;
+    private final boolean showTopics;
 
     SubscribeMqtt3PublishCallback(final @NotNull Subscribe subscribe, final @NotNull Mqtt3Client client) {
         printToStdout = subscribe.isPrintToSTDOUT();
         publishFile = subscribe.getPublishFile();
         isBase64 = subscribe.isBase64();
+        isJsonOutput = subscribe.isJsonOutput();
+        showTopics = subscribe.showTopics();
         this.client = client;
     }
 
     @Override
     public void accept(final @NotNull Mqtt3Publish mqtt3Publish) {
 
-        PrintWriter fileWriter = null;
-        byte[] payload = mqtt3Publish.getPayloadAsBytes();
-        String payloadMessage = new String(payload);
+        String message;
 
-        if (publishFile != null) { fileWriter = FileUtils.createFileAppender(publishFile); }
-        if (isBase64) { payloadMessage = Base64.toBase64String(payload); }
+        if (isJsonOutput) { message = new JsonMqttPublish(mqtt3Publish, isBase64).toString(); }
+        else { message = MqttPublishUtils.formatPayload(mqtt3Publish.getPayloadAsBytes(), isBase64); }
 
-        if (fileWriter != null) {
-            fileWriter.println(mqtt3Publish.getTopic() + ": " + payloadMessage);
-            fileWriter.flush();
-            fileWriter.close();
-        }
+        if (showTopics) { message = mqtt3Publish.getTopic().toString() + ": " + message; }
 
-        if (printToStdout) { System.out.println(payloadMessage); }
+        if (publishFile != null) { MqttPublishUtils.printToFile(publishFile, message); }
+        if (printToStdout) { System.out.println(message); }
 
         Logger.debug("{} received PUBLISH ('{}') {}",
                 LoggerUtils.getClientPrefix(client.getConfig()),

@@ -16,11 +16,17 @@
  */
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.*;
+import com.hivemq.cli.commands.Connect;
+import com.hivemq.cli.commands.ConnectRestrictions;
+import com.hivemq.cli.commands.Context;
+import com.hivemq.cli.commands.Disconnect;
+import com.hivemq.cli.commands.Publish;
+import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.Unsubscribe;
+import com.hivemq.cli.commands.Will;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
 import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.client.internal.mqtt.message.connect.MqttConnectRestrictions;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;

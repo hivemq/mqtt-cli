@@ -14,31 +14,28 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.commands;
+package com.hivemq.cli.mqtt.test.results;
 
-import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
+import com.hivemq.cli.utils.Tuple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
+import java.util.List;
 
-public interface Subscribe extends Context {
+public class ClientIdLengthTestResults {
+    private final int maxClientIdLength;
+    private final @NotNull List<@NotNull Tuple<Integer, String>> testResults;
 
-    @NotNull String[] getTopics();
+    public ClientIdLengthTestResults(final int maxClientIdLength, final @NotNull List<@NotNull Tuple<Integer, String>> testResults) {
+        this.maxClientIdLength = maxClientIdLength;
+        this.testResults = testResults;
+    }
 
-    @NotNull MqttQos[] getQos();
+    public int getMaxClientIdLength() {
+        return maxClientIdLength;
+    }
 
-    @Nullable File getPublishFile();
-
-    boolean isPrintToSTDOUT();
-
-    boolean isBase64();
-
-    boolean isJsonOutput();
-
-    boolean showTopics();
-
-    @Nullable Mqtt5UserProperties getUserProperties();
-
+    public @NotNull List<@NotNull Tuple<Integer, String>> getTestResults() {
+        return testResults;
+    }
 }
