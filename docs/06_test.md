@@ -82,7 +82,7 @@ mqtt test   [--help]
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-V``   | ``--mqttVersion``| The MQTT version to test the broker on. | Both versions will be tested
-| ``-f``| ``--force`` | Also use force tests to find out MQTT 5 features and limitations, even though connect restrictions should tell these already. | ``False``
+| ``-a``| ``--all`` | Perform all tests for all MQTT versions | ``False`` (Only test MQTT 3)
 | ``-t``| ``--timeOut`` | The time to wait for the broker to respond (in seconds). | ``10s``
 | ``-q`` | ``--qosTries`` | The amount of messages to send and receive from the broker for each QoS level. | ``10``
 
@@ -117,10 +117,10 @@ mqtt test   [--help]
 
 ## Further Examples
 
-> Force test MQTT 5 only (Uses MQTT 5 clients only for tests)
+> Perform tests for MQTT 5 only
 
 ```
-$ mqtt test -h broker.hivemq.com -f -V 5
+$ mqtt test -h broker.hivemq.com -a -V 5
 MQTT 5: OK
 	- Connect restrictions: 
 		> Retain: OK
