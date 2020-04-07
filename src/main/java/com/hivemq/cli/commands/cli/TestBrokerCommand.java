@@ -192,7 +192,7 @@ public class TestBrokerCommand implements Runnable {
 
         if (testAll) {
             //**************//
-            /* Force Tests */
+            /* Do all tests */
             //*************//
 
             // Print max topic length
@@ -238,6 +238,10 @@ public class TestBrokerCommand implements Runnable {
                 System.out.print("\t\t> '#' Wildcard: ");
                 System.out.println(wildcardSubscriptionsTestResult.getHashWildcardTest());
             }
+
+            System.out.print("\t- Shared subscriptions: ");
+            final SharedSubscriptionTestResult sharedSubscriptionTestResult = tester.testSharedSubscription();
+            System.out.println(sharedSubscriptionTestResult.toString());
 
             // Test max payload size
             System.out.print("\t- Payload size: ");
