@@ -62,8 +62,8 @@ public class TestBrokerCommand implements Runnable {
     @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The mqtt version to test the broker on (default: test both versions)", order = 1)
     private @Nullable MqttVersion version;
 
-    @CommandLine.Option(names = {"-f", "--force"}, defaultValue = "false", description = "Force test MQTT 5 features (even if MQTT3 features were already tested)", order = 1)
-    private boolean force;
+    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "Perform all tests for all MQTT versions (default: only MQTT 3)", order = 1)
+    private boolean testAll;
 
     @CommandLine.Option(names = {"-t", "--timeOut"}, defaultValue = "10", description = "The time to wait for the broker to respond", order = 1)
     private @NotNull Integer timeOut;
@@ -190,7 +190,7 @@ public class TestBrokerCommand implements Runnable {
         System.out.println(connAck.getServerKeepAlive().isPresent() ? connAck.getServerKeepAlive().getAsInt() + "s" : "Client-based");
 
 
-        if (force) {
+        if (testAll) {
             //**************//
             /* Force Tests */
             //*************//
