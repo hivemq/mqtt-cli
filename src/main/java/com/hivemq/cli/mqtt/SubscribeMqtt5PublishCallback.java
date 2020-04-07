@@ -17,19 +17,16 @@
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
-import com.hivemq.cli.utils.FileUtils;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttPublishUtils;
 import com.hivemq.cli.utils.json.JsonMqttPublish;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
-import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 

@@ -20,8 +20,6 @@ import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
-import java.text.ParseException;
-
 public class MqttVersionConverter implements CommandLine.ITypeConverter<MqttVersion> {
     static final String UNSUPPORTED_MQTT_VERSION = "The specified MQTT Version is not supported.";
     static final String BAD_NUMBER_FORMAT = "The given number can't be parsed to a valid MQTT Version";

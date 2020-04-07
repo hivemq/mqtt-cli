@@ -19,7 +19,11 @@ package com.hivemq.cli.utils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 
 public class FileUtils {
 

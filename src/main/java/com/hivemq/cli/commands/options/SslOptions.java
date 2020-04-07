@@ -14,29 +14,19 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.options;
 
-import com.google.common.base.Throwables;
-import com.hivemq.cli.DefaultCLIProperties;
-import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.converters.ByteBufferConverter;
 import com.hivemq.cli.converters.DirectoryToCertificateCollectionConverter;
-import com.hivemq.cli.converters.EnvVarToByteBufferConverter;
-import com.hivemq.cli.converters.PasswordFileToByteBufferConverter;
 import com.hivemq.cli.converters.FileToCertificateConverter;
 import com.hivemq.cli.converters.FileToPrivateKeyConverter;
-import com.hivemq.cli.converters.UnsignedShortConverter;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
-import com.hivemq.client.mqtt.MqttWebSocketConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -48,30 +38,9 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlags implements Connect {
+public class SslOptions {
 
     private static final String DEFAULT_TLS_VERSION = "TLSv1.2";
-
-    @CommandLine.Option(names = {"-u", "--user"}, description = "The username for authentication", order = 2)
-    @Nullable
-    private String user;
-
-    @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for authentication", order = 2)
-    @Nullable
-    private ByteBuffer password;
-
-    @CommandLine.Option(names = {"-pw:env"}, arity = "0..1", converter = EnvVarToByteBufferConverter.class, fallbackValue = "MQTT_CLI_PW", description = "The password for authentication read in from an environment variable", order = 2)
-    private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) { password = passwordEnvironmentVariable; }
-
-    @CommandLine.Option(names = {"-pw:file"}, converter = PasswordFileToByteBufferConverter.class, description = "The password for authentication read in from a file", order = 2)
-    private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) { password = passwordFromFile; }
-
-    @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, description = "A keep alive of the client (in seconds) (default: 60)", order = 2)
-    private @Nullable Integer keepAlive;
-
-    @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true, description = "Define a clean start for the connection (default: true)", order = 2)
-    @Nullable
-    private Boolean cleanStart;
 
     @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false", description = "Use default ssl configuration if no other ssl options are specified (default: false)", order = 2)
     private boolean useSsl;
@@ -100,78 +69,6 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @Nullable
     private PrivateKey clientPrivateKey;
 
-    @CommandLine.Option(names = {"-ws"}, description = "Use WebSocket transport protocol (default: false)", order = 2)
-    private boolean useWebSocket;
-
-    @CommandLine.Option(names = {"-ws:path"}, description = "The path of the WebSocket", order = 2)
-    @Nullable private String webSocketPath;
-
-    @Override
-    public void setDefaultOptions() {
-        super.setDefaultOptions();
-        final DefaultCLIProperties defaultCLIProperties = MqttCLIMain.MQTTCLI.defaultCLIProperties();
-
-        if (user == null) {
-            user = defaultCLIProperties.getUsername();
-        }
-
-        if (password == null) {
-            try {
-                password = defaultCLIProperties.getPassword();
-            } catch (Exception e) {
-                Logger.error(e,"Default password could not be loaded ({})", Throwables.getRootCause(e).getMessage());
-            }
-        }
-
-        if (clientCertificate == null) {
-            try {
-                clientCertificate = defaultCLIProperties.getClientCertificate();
-            } catch (Exception e) {
-                Logger.error(e,"Default client certificate could not be loaded ({})", Throwables.getRootCause(e).getMessage());
-            }
-        }
-
-        if (clientPrivateKey == null) {
-            try {
-                clientPrivateKey = defaultCLIProperties.getClientPrivateKey();
-            } catch (Exception e) {
-                Logger.error(e,"Default client private key could not be loaded ({})", Throwables.getRootCause(e).getMessage());
-            }
-        }
-
-        if (useWebSocket && webSocketPath == null) {
-            webSocketPath = defaultCLIProperties.getWebsocketPath();
-        }
-
-        try {
-            final X509Certificate defaultServerCertificate = defaultCLIProperties.getServerCertificate();
-            if (defaultServerCertificate != null) {
-                if(certificates == null){
-                    certificates = new ArrayList<>();
-                }
-                certificates.add(defaultServerCertificate);
-            }
-        } catch (Exception e) {
-            Logger.error(e,"Default server certificate could not be loaded ({})", Throwables.getRootCause(e).getMessage());
-        }
-
-    }
-
-
-    public @Nullable MqttClientSslConfig buildSslConfig() {
-
-        if (useBuiltSslConfig()) {
-            try {
-                return doBuildSslConfig();
-            }
-            catch (Exception e) {
-                Logger.error(e, Throwables.getRootCause(e).getMessage());
-            }
-        }
-
-        return null;
-    }
-
     private boolean useBuiltSslConfig() {
         return certificates != null ||
                 certificatesFromDir != null ||
@@ -182,7 +79,11 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
                 useSsl;
     }
 
-    private @NotNull MqttClientSslConfig doBuildSslConfig() throws Exception {
+    public @Nullable MqttClientSslConfig buildSslConfig() throws Exception {
+
+        if (!useBuiltSslConfig()) {
+            return null;
+        }
 
         if (certificatesFromDir != null) {
             if (certificates == null) {
@@ -263,62 +164,15 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         return useSsl;
     }
 
-    @Override
-    public String toString() {
+    public @Nullable Collection<X509Certificate> getCertificates() { return certificates; }
 
-        return "Connect{" +
-                "key=" + getKey() +
-                ", " + commonOptions() +
-                '}';
-    }
+    public @Nullable Collection<X509Certificate> getCertificatesFromDir() { return certificatesFromDir; }
 
+    public @Nullable Collection<String> getCipherSuites() { return cipherSuites; }
 
-    public String commonOptions() {
-        return super.toString() +
-                (user != null ? (", user=" + user) : "") +
-                (keepAlive != null ? (", keepAlive=" + keepAlive) : "") +
-                (cleanStart != null ? (", cleanStart=" + cleanStart) : "") +
-                ", useDefaultSsl=" + useSsl +
-                (getSslConfig() != null ? (", sslConfig=" + getSslConfig()) : "") +
-                ", useWebSocket=" + useWebSocket +
-                (webSocketPath != null ? (", webSocketPath=" + webSocketPath) : "") +
-                getWillOptions();
-    }
+    public @Nullable Collection<String> getSupportedTLSVersions() { return supportedTLSVersions; }
 
-    @Nullable
-    public String getUser() {
-        return user;
-    }
+    public @Nullable X509Certificate getClientCertificate() { return clientCertificate; }
 
-    public void setUser(final @Nullable String user) {
-        this.user = user;
-    }
-
-    @Nullable
-    public ByteBuffer getPassword() {
-        return password;
-    }
-
-    @Nullable
-    public Integer getKeepAlive() {
-        return keepAlive;
-    }
-
-    @Nullable
-    public Boolean getCleanStart() {
-        return cleanStart;
-    }
-
-    @Nullable
-    public MqttWebSocketConfig getWebSocketConfig() {
-        if (useWebSocket) {
-            return MqttWebSocketConfig.builder()
-                    .serverPath(webSocketPath)
-                    .build();
-        }
-        else {
-            return null;
-        }
-    }
-
+    public @Nullable PrivateKey getClientPrivateKey() { return clientPrivateKey; }
 }

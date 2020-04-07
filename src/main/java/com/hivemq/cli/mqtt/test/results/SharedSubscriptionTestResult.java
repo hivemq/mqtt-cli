@@ -14,18 +14,8 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.converters;
+package com.hivemq.cli.mqtt.test.results;
 
-import org.jetbrains.annotations.NotNull;
-import picocli.CommandLine;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-
-public class ByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
-
-    @Override
-    public ByteBuffer convert(final @NotNull String s) throws Exception {
-        return ByteBuffer.wrap(s.getBytes(StandardCharsets.UTF_8));
-    }
+public enum SharedSubscriptionTestResult {
+    OK, NOT_SHARED, TIME_OUT, INTERRUPTED, PUBLISH_FAILED;
 }

@@ -14,18 +14,21 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.converters;
+package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
-import picocli.CommandLine;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
-public class ByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
+public class TopicUtils {
 
-    @Override
-    public ByteBuffer convert(final @NotNull String s) throws Exception {
-        return ByteBuffer.wrap(s.getBytes(StandardCharsets.UTF_8));
+    public static @NotNull String generateTopicUUID() {
+        final String uuid = UUID.randomUUID().toString();
+        return uuid.replace("-", "");
+    }
+
+    public static @NotNull String generateTopicUUID(final int maxLength) {
+        if (maxLength == -1) return generateTopicUUID();
+        else return generateTopicUUID().substring(0, maxLength);
     }
 }

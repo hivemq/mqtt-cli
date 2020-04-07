@@ -14,18 +14,28 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.converters;
+package com.hivemq.cli.mqtt.test.results;
 
+import com.hivemq.cli.utils.Tuple;
 import org.jetbrains.annotations.NotNull;
-import picocli.CommandLine;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 
-public class ByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
+public class TopicLengthTestResults {
+    private final int maxTopicLength;
+    private final @NotNull List<@NotNull Tuple<Integer, TestResult>> testResults;
 
-    @Override
-    public ByteBuffer convert(final @NotNull String s) throws Exception {
-        return ByteBuffer.wrap(s.getBytes(StandardCharsets.UTF_8));
+    public TopicLengthTestResults(final int maxTopicLength, final @NotNull List<@NotNull Tuple<Integer, TestResult>> testResults) {
+        this.maxTopicLength = maxTopicLength;
+        this.testResults = testResults;
     }
+
+    public int getMaxTopicLength() {
+        return maxTopicLength;
+    }
+
+    public @NotNull List<@NotNull Tuple<Integer, TestResult>> getTestResults() {
+        return testResults;
+    }
+
 }

@@ -14,18 +14,33 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.converters;
+package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
-import picocli.CommandLine;
+import org.jetbrains.annotations.Nullable;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+public class Tuple<A, B> {
+    private @NotNull final A key;
+    private @Nullable final B value;
 
-public class ByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
+    public Tuple(final @NotNull A key, final @Nullable B value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public @NotNull A getKey() {
+        return key;
+    }
+
+    public @Nullable B getValue() {
+        return value;
+    }
 
     @Override
-    public ByteBuffer convert(final @NotNull String s) throws Exception {
-        return ByteBuffer.wrap(s.getBytes(StandardCharsets.UTF_8));
+    public String toString() {
+        return "Tuple{" +
+                "key=" + key +
+                ", value=" + value +
+                '}';
     }
 }
