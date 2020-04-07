@@ -42,8 +42,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -99,6 +101,96 @@ public class Mqtt3FeatureTester {
         final TestResult hashWildcardResult = testWildcard("#", "test/subtopic");
 
         return new WildcardSubscriptionsTestResult(plusWildcardResult, hashWildcardResult);
+    }
+
+    public @NotNull SharedSubscriptionTestResult testSharedSubscription() {
+        final String topic = (maxTopicLength == -1 ? TopicUtils.generateTopicUUID() : TopicUtils.generateTopicUUID(maxTopicLength));
+        final String sharedTopic = "$share/" + UUID.randomUUID().toString().replace("-", "") + "/" + topic;
+        final Mqtt3Client publisher = buildClient();
+        final Mqtt3Client sharedSubscriber1 = buildClient();
+        final Mqtt3Client sharedSubscriber2 = buildClient();
+        final Mqtt3Subscribe sharedSubscribe = Mqtt3Subscribe.builder()
+                .topicFilter(sharedTopic)
+                .qos(MqttQos.EXACTLY_ONCE)
+                .build();
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+
+        publisher.toBlocking().connect();
+        sharedSubscriber1.toBlocking().connect();
+        sharedSubscriber2.toBlocking().connect();
+
+        sharedSubscriber1.toBlocking().subscribe(sharedSubscribe);
+        sharedSubscriber2.toBlocking().subscribe(sharedSubscribe);
+
+        long startTime = 0;
+
+        sharedSubscriber1.toAsync().subscribeWith()
+                .topicFilter(sharedTopic)
+                .qos(MqttQos.AT_LEAST_ONCE)
+                .callback(publish -> {
+                    if (countDownLatch.getCount() != 0) {
+                        countDownLatch.countDown();
+                    } else {
+                        atomicBoolean.set(true);
+                    }
+                })
+                .send()
+                .join();
+
+        sharedSubscriber2.toAsync().subscribeWith()
+                .topicFilter(sharedTopic)
+                .qos(MqttQos.AT_LEAST_ONCE)
+                .callback(publish -> {
+                    if (countDownLatch.getCount() != 0) {
+                        countDownLatch.countDown();
+                    } else {
+                        atomicBoolean.set(true);
+                    }
+                })
+                .send()
+                .join();
+
+        try {
+            publisher.toBlocking().publishWith()
+                    .topic(topic)
+                    .payload("test".getBytes())
+                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .send();
+            startTime = System.currentTimeMillis();
+        } catch (Exception e) {
+            Logger.error("Could not publish to topic " + sharedTopic, e);
+            return SharedSubscriptionTestResult.PUBLISH_FAILED;
+        }
+
+        boolean timedOut;
+        long timeToReceive = 0;
+
+        try {
+            timedOut = !countDownLatch.await(timeOut, TimeUnit.SECONDS);
+            timeToReceive = System.currentTimeMillis() - startTime;
+        } catch (InterruptedException e) {
+            Logger.error("Waiting for subscribers to receive shared publishes interrupted", e);
+            return SharedSubscriptionTestResult.INTERRUPTED;
+        }
+
+        if (timedOut) {
+            return SharedSubscriptionTestResult.TIME_OUT;
+        }
+
+        try {
+            Thread.sleep(100 + timeToReceive);
+        } catch (InterruptedException e) {
+            Logger.error("Waiting additional time for second subscriber interrupted", e);
+            return SharedSubscriptionTestResult.INTERRUPTED;
+        }
+
+        if (atomicBoolean.get()) {
+            return SharedSubscriptionTestResult.NOT_SHARED;
+        } else {
+            return SharedSubscriptionTestResult.OK;
+        }
+
     }
 
     public @NotNull TestResult testRetain() {

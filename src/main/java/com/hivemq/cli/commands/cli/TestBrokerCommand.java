@@ -342,6 +342,10 @@ public class TestBrokerCommand implements Runnable {
             System.out.println(wildcardSubscriptionsTestResult.getHashWildcardTest());
         }
 
+        System.out.print("\t- Shared subscriptions: ");
+        final SharedSubscriptionTestResult sharedSubscriptionTestResult = client.testSharedSubscription();
+        System.out.println(sharedSubscriptionTestResult.toString());
+
         // Test max payload size
         System.out.print("\t- Payload size: ");
         final PayloadTestResults payloadTestResults = client.testPayloadSize(MAX_PAYLOAD_TEST_SIZE);
