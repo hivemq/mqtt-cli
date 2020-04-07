@@ -129,6 +129,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         }
         catch (final ConnectionFailedException cex) {
             Logger.error(cex, cex.getCause().getMessage());
+            return;
         }
         catch (final Exception ex) {
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());
