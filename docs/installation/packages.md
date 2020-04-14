@@ -12,10 +12,7 @@ nav_order: 1
 ## Homebrew
 For **Mac OS X** and **Linux** systems use **[Homebrew](https://brew.sh/)** to install MQTT CLI via the **[MQTT CLI Tap](https://github.com/hivemq/homebrew-mqtt-cli)**.
 ```
-$ brew tap hivemq/mqtt-cli
-```
-```
-$ brew install mqtt-cli
+$ brew install hivemq/mqtt-cli/mqtt-cli
 ```
 
 
