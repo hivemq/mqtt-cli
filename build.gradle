@@ -403,6 +403,7 @@ buildDeb {
 
 buildRpm {
     arch NOARCH
+    release '1'
     requires('jre', '1.8.0', GREATER | EQUAL)
 }
 
