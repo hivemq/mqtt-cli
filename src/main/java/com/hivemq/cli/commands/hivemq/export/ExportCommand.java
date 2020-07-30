@@ -25,6 +25,10 @@ import javax.inject.Inject;
 @CommandLine.Command(
         name = "export",
         description = "Exports the specified details from a HiveMQ API endpoint",
+        synopsisHeading = "%n@|bold Usage:|@  ",
+        descriptionHeading = "%n",
+        optionListHeading = "%n@|bold Options:|@%n",
+        commandListHeading = "%n@|bold Commands:|@%n",
         mixinStandardHelpOptions = true,
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class ExportCommand implements Runnable {
