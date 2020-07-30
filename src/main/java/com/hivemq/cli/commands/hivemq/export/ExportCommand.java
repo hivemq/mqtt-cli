@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.hivemq.export;
 
+import com.hivemq.cli.MqttCLIMain;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -23,7 +24,10 @@ import javax.inject.Inject;
 
 @CommandLine.Command(
         name = "export",
-        description = "Exports the specified details from a HiveMQ API endpoint")
+        description = "Exports the specified details from a HiveMQ API endpoint",
+        mixinStandardHelpOptions = true,
+        helpCommand = true,
+        versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class ExportCommand implements Runnable {
 
     @CommandLine.Spec
