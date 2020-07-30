@@ -27,6 +27,7 @@ import picocli.CommandLine;
 
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -58,7 +59,14 @@ public class MqttCLIMain {
 
         Runtime.getRuntime().addShutdownHook(new DisconnectAllClientsTask());
 
-        final int exitCode = commandLine.execute(args);
+        int exitCode = 0;
+
+        if (args.length > 1 && args[0].equals("hivemq")) {
+            exitCode = MQTTCLI.hivemqCli().execute(Arrays.copyOfRange(args, 1, args.length));
+        }
+        else {
+            exitCode = commandLine.execute(args);
+        }
 
         System.exit(exitCode);
 

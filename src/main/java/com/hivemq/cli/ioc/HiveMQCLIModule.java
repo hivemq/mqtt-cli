@@ -16,15 +16,11 @@
  */
 package com.hivemq.cli.ioc;
 
-import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commandline.CommandErrorMessageHandler;
 import com.hivemq.cli.commandline.CommandLineConfig;
-import com.hivemq.cli.commands.MqttCLICommand;
-import com.hivemq.cli.commands.cli.PublishCommand;
-import com.hivemq.cli.commands.cli.SubscribeCommand;
-import com.hivemq.cli.commands.cli.TestBrokerCommand;
+import com.hivemq.cli.commands.hivemq.export.ExportCommand;
 import com.hivemq.cli.commands.hivemq.HiveMQCLICommand;
-import com.hivemq.cli.commands.shell.ShellCommand;
+import com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommand;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
@@ -32,46 +28,25 @@ import picocli.CommandLine;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.io.File;
 
-/**
- * @author Georg Held
- */
 @Module
-class CLIModule {
-
-    private static final String PROPERTIES_FILE_PATH =
-            System.getProperty("user.home") + File.separator +
-                    ".mqtt-cli" + File.separator +
-                    "config.properties";
+public class HiveMQCLIModule {
 
     @Provides
     @Singleton
-    @Named("cli")
-    static @NotNull CommandLine provideCli(
-            final @NotNull MqttCLICommand main,
+    @Named("hivemq-cli")
+    static @NotNull CommandLine provideHiveMqCli(
             final @NotNull HiveMQCLICommand hivemqCliCommand,
-            final @NotNull PublishCommand publishCommand,
-            final @NotNull SubscribeCommand subscribeCommand,
-            final @NotNull ShellCommand shellCommand,
-            final @NotNull TestBrokerCommand testBrokerCommand,
+            final @NotNull ExportCommand exportCommand,
+            final @NotNull ExportClientsCommand exportClientsCommand,
             final @NotNull CommandLineConfig config,
             final @NotNull CommandErrorMessageHandler handler) {
 
-        return new CommandLine(main)
-                .addSubcommand(publishCommand)
-                .addSubcommand(subscribeCommand)
-                .addSubcommand(shellCommand)
-                .addSubcommand(testBrokerCommand)
-                .addSubcommand(hivemqCliCommand)
+        return new CommandLine(hivemqCliCommand)
+                .addSubcommand(new CommandLine(exportCommand)
+                        .addSubcommand(exportClientsCommand))
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
                 .setParameterExceptionHandler(handler);
-    }
-
-    @Provides
-    @Singleton
-    static @NotNull DefaultCLIProperties provideDefaultProperties() {
-        return new DefaultCLIProperties(PROPERTIES_FILE_PATH);
     }
 }
