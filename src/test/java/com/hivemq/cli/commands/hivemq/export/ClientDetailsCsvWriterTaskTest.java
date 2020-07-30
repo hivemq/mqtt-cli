@@ -16,6 +16,7 @@
  */
 package com.hivemq.cli.commands.hivemq.export;
 
+import com.google.common.util.concurrent.Futures;
 import com.hivemq.cli.commands.hivemq.export.clients.ClientDetailsCsvWriterTask;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.when;
 class ClientDetailsCsvWriterTaskTest {
 
     @Mock
-    private CompletableFuture<Void> clientDetailsFuture;
+    private Future<Void> clientDetailsFuture;
     private File csvFile;
     private Queue<ClientDetails> clientDetailsQueue;
     private ClientDetailsCsvWriterTask clientDetailsCsvWriterTask;
@@ -61,9 +62,9 @@ class ClientDetailsCsvWriterTaskTest {
     private CSVReader csvReader;
 
     @BeforeEach
+    @SuppressWarnings("unchecked")
     void setUp() throws IOException {
-
-        clientDetailsFuture = mock(CompletableFuture.class);
+        clientDetailsFuture = mock(Future.class);
         when(clientDetailsFuture.isDone()).thenReturn(false);
         csvFile = File.createTempFile("client_details", ".csv");
         clientDetailsQueue = new ConcurrentLinkedQueue<>();

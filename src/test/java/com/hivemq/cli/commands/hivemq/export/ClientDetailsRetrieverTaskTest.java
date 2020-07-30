@@ -40,18 +40,19 @@ import static org.mockito.Mockito.when;
 class ClientDetailsRetrieverTaskTest {
 
     HiveMQRestService hiveMQRestService;
-    CompletableFuture<Void> clientIdsFuture;
+    Future<Void> clientIdsFuture;
     MockWebServer server;
     Queue<String> clientIdsQueue;
     Queue<ClientDetails> clientDetailsQueue;
     ClientDetailsRetrieverTask clientDetailsRetrieverTask;
 
     @BeforeEach
+    @SuppressWarnings("unchecked")
     void setUp() throws IOException {
         server = new MockWebServer();
         server.start();
 
-        clientIdsFuture = mock(CompletableFuture.class);
+        clientIdsFuture = mock(Future.class);
         when(clientIdsFuture.isDone()).thenReturn(false);
 
         clientIdsQueue = new ConcurrentLinkedQueue<>();

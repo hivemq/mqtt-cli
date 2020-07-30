@@ -153,7 +153,6 @@ ext {
     gsonVersion = '2.8.6'
     substrateVmVersion = '19.2.0'
     junitJupiterVersion = '5.5.1'
-    retrofitVersion = '2.7.0'
     openCsvVersion = '5.2'
     swaggerVersion = '1.5.24'
     findBugsVersion = '3.0.2'
