@@ -17,6 +17,7 @@
 package com.hivemq.cli.mqtt.test;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.hivemq.cli.mqtt.test.results.*;
 import com.hivemq.cli.utils.TopicUtils;
 import com.hivemq.cli.utils.Tuple;
@@ -89,7 +90,7 @@ public class Mqtt3FeatureTester {
         } catch (final Mqtt3ConnAckException ex) {
             return ex.getMqttMessage();
         } catch (final Exception ex) {
-            Logger.error(ex, "Could not connect MQTT3 client");
+            Logger.error(ex, "Could not connect MQTT3 client - " + Throwables.getRootCause(ex).getMessage());
             return null;
         } finally {
             disconnectIfConnected(client);

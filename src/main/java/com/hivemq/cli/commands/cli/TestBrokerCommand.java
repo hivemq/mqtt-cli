@@ -97,7 +97,7 @@ public class TestBrokerCommand implements Runnable {
         // TinyLog configuration
         Map<String, String> configurationMap = new HashMap<String, String>() {{
             put("writer", "console");
-            put("writer.format", "{message}");
+            put("writer.format", "{message-only}");
             put("writer.level", "warn");
         }};
 
@@ -142,7 +142,6 @@ public class TestBrokerCommand implements Runnable {
         System.out.print("MQTT 5: ");
         final Mqtt5ConnAck connAck = mqtt5Tester.testConnect();
         if (connAck == null) {
-            System.out.println("NO");
             return;
         } else if (connAck.getReasonCode() != Mqtt5ConnAckReasonCode.SUCCESS) {
             System.out.println(connAck.getReasonCode().toString());
