@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.export.AbstractExportCommand;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.openapitools.client.ApiException;
@@ -50,7 +51,9 @@ import java.util.concurrent.TimeUnit;
 @CommandLine.Command(
         name = "clients",
         description = "Export HiveMQ client details",
-        sortOptions = false)
+        sortOptions = false,
+        mixinStandardHelpOptions = true,
+        versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class ExportClientsCommand extends AbstractExportCommand implements Callable<Integer> {
 
     private final static String DEFAULT_FILE_NAME = "hivemq_client_details";

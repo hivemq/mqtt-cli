@@ -53,7 +53,5 @@ public abstract class AbstractExportCommand {
     @CommandLine.Option(names = {"--csvLineEndChar"}, defaultValue = CSVWriter.DEFAULT_LINE_END, description = "An own defined line end character for the csv writing (default \\n)", order = 5)
     public @NotNull String csvLineEndCharacter;
 
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "Display this help message", order = 7)
-    protected boolean usageHelpRequested;
 
 }
