@@ -27,10 +27,12 @@ Options:
   -V, --version   Print version information and exit.
 
 Commands:
-  pub, publish    Publish a message to a list of topics
-  sub, subscribe  Subscribe an mqtt client to a list of topics
-  shell, sh       Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.
-  test            Tests the specified broker on different MQTT feature support and prints the results
+    pub, publish    Publish a message to a list of topics
+    sub, subscribe  Subscribe an mqtt client to a list of topics
+    shell, sh       Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.
+    test            Tests the specified broker on different MQTT feature support and prints the results
+    hivemq          HiveMQ Command Line Interpreter.
+
 ```
 
 ## Synopsis 
@@ -44,6 +46,7 @@ $ mqtt [flags] [METHOD] [OPTION [OPTION]]
 * [Subscribe](mqtt_commands/subscribe.md)
 * [Shell](05_shell.md)
 * [Test](06_test.md) 
+* [HiveMQ](07_hivemq.md)
 
 ***
 
