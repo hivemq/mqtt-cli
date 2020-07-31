@@ -17,7 +17,6 @@
 package com.hivemq.cli.ioc;
 
 import com.hivemq.cli.DefaultCLIProperties;
-import com.hivemq.cli.commands.hivemq.HiveMQCLICommand;
 import dagger.Component;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;

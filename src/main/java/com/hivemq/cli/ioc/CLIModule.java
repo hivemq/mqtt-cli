@@ -23,7 +23,6 @@ import com.hivemq.cli.commands.MqttCLICommand;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
 import com.hivemq.cli.commands.cli.TestBrokerCommand;
-import com.hivemq.cli.commands.hivemq.HiveMQCLICommand;
 import com.hivemq.cli.commands.shell.ShellCommand;
 import dagger.Module;
 import dagger.Provides;

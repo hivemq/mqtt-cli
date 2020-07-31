@@ -16,13 +16,12 @@
  */
 package com.hivemq.cli.rest;
 
-import java.io.IOException;
-
 import com.google.common.util.concurrent.RateLimiter;
-
 import okhttp3.Interceptor;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 @SuppressWarnings("UnstableApiUsage")
 public class RateLimitInterceptor implements Interceptor  {

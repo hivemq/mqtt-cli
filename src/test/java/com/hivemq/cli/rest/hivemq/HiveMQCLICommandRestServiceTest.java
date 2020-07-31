@@ -29,9 +29,20 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 
-import static java.net.HttpURLConnection.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.*;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_CURSOR_NOT_VALID_ANYMORE;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_EMPTY;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_INVALID_CURSOR;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_REPLICATION;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_SINGLE_RESULT;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_WITH_CURSOR;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_GONE;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HiveMQCLICommandRestServiceTest {
 

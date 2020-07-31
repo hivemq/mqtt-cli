@@ -18,8 +18,8 @@ package com.hivemq.cli.ioc;
 
 import com.hivemq.cli.commandline.CommandErrorMessageHandler;
 import com.hivemq.cli.commandline.CommandLineConfig;
-import com.hivemq.cli.commands.hivemq.export.ExportCommand;
 import com.hivemq.cli.commands.hivemq.HiveMQCLICommand;
+import com.hivemq.cli.commands.hivemq.export.ExportCommand;
 import com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommand;
 import dagger.Module;
 import dagger.Provides;
