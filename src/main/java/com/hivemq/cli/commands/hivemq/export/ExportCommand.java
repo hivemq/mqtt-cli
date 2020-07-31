@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 @CommandLine.Command(
         name = "export",
-        description = "Exports the specified details from a HiveMQ API endpoint",
+        description = "Exports the specified details from HiveMQ",
         synopsisHeading = "%n@|bold Usage:|@  ",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",
