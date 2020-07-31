@@ -130,15 +130,11 @@ class ClientIdsRetrieverTaskTest {
         final Future<Void> clientIdsRetrieverFuture = tasksCompletionService.submit(clientIdsRetrieverTask);
 
         final AtomicLong polledClientIds = new AtomicLong();
-        final AtomicLong blockedTimes = new AtomicLong();
         tasksCompletionService.submit(() -> {
             while (!clientIdsRetrieverFuture.isDone() || !clientIdsQueue.isEmpty()) {
                 final String clientId = clientIdsQueue.poll(10, TimeUnit.MILLISECONDS);
                 if (clientId != null) {
                     polledClientIds.incrementAndGet();
-                }
-                else {
-                    blockedTimes.incrementAndGet();
                 }
             }
             return null;
@@ -150,7 +146,6 @@ class ClientIdsRetrieverTaskTest {
 
         assertEquals(0, clientIdsQueue.size());
         assertEquals(11, polledClientIds.get());
-        assertTrue(blockedTimes.get() > 0);
     }
 
 }

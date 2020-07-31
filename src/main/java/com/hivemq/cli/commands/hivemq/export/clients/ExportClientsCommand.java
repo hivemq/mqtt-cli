@@ -25,6 +25,7 @@ import com.google.gson.JsonParser;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.export.AbstractExportCommand;
 import com.hivemq.cli.rest.HiveMQRestService;
+import okhttp3.HttpUrl;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.ClientDetails;
 import picocli.CommandLine;
@@ -68,6 +69,12 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
 
         // For now only CSV is supported as output format
         assert format == OutputFormat.csv;
+
+        final HttpUrl httpUrl = HttpUrl.parse(url);
+        if (httpUrl == null) {
+            System.err.println("URL is not in a valid format: " + url);
+            return -1;
+        }
 
         final String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
         if (file == null) {
