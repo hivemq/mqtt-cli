@@ -32,13 +32,15 @@ import java.util.concurrent.Callable;
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class HiveMQCLICommand implements Callable<Integer> {
 
+    @CommandLine.Spec
+    CommandLine.Model.CommandSpec spec;
 
     @Inject
     public HiveMQCLICommand() { }
 
     @Override
     public Integer call() {
-        System.out.println(MqttCLIMain.MQTTCLI.hivemqCli().getUsageMessage());
+        System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
         return 0;
     }
 }

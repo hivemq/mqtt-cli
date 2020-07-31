@@ -59,14 +59,7 @@ public class MqttCLIMain {
 
         Runtime.getRuntime().addShutdownHook(new DisconnectAllClientsTask());
 
-        int exitCode = 0;
-
-        if (args.length > 1 && args[0].equals("hivemq")) {
-            exitCode = MQTTCLI.hivemqCli().execute(Arrays.copyOfRange(args, 1, args.length));
-        }
-        else {
-            exitCode = commandLine.execute(args);
-        }
+        final int exitCode = commandLine.execute(args);
 
         System.exit(exitCode);
 

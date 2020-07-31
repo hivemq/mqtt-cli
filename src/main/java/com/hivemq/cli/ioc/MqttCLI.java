@@ -36,9 +36,6 @@ public interface MqttCLI {
     @Named("cli")
     @NotNull CommandLine cli();
 
-    @Named("hivemq-cli")
-    @NotNull CommandLine hivemqCli();
-
     @Named("shell")
     @NotNull CommandLine shell();
 

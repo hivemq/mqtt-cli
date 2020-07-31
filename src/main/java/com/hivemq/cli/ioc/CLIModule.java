@@ -37,7 +37,7 @@ import java.io.File;
 /**
  * @author Georg Held
  */
-@Module
+@Module(includes = HiveMQCLIModule.class)
 class CLIModule {
 
     private static final String PROPERTIES_FILE_PATH =
@@ -50,11 +50,11 @@ class CLIModule {
     @Named("cli")
     static @NotNull CommandLine provideCli(
             final @NotNull MqttCLICommand main,
-            final @NotNull HiveMQCLICommand hivemqCliCommand,
             final @NotNull PublishCommand publishCommand,
             final @NotNull SubscribeCommand subscribeCommand,
             final @NotNull ShellCommand shellCommand,
             final @NotNull TestBrokerCommand testBrokerCommand,
+            final @NotNull @Named("hivemq-cli") CommandLine hivemqCliCommandLine,
             final @NotNull CommandLineConfig config,
             final @NotNull CommandErrorMessageHandler handler) {
 
@@ -63,7 +63,7 @@ class CLIModule {
                 .addSubcommand(subscribeCommand)
                 .addSubcommand(shellCommand)
                 .addSubcommand(testBrokerCommand)
-                .addSubcommand(hivemqCliCommand)
+                .addSubcommand(hivemqCliCommandLine)
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
                 .setParameterExceptionHandler(handler);
