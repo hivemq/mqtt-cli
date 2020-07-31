@@ -38,7 +38,7 @@ apply plugin: 'com.palantir.graal'
 javadoc.options.encoding = 'UTF-8'
 
 group = 'com.hivemq'
-version = '1.2.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
+version = '4.4.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 description = 'MQTT CLI is a tool that provides a feature rich command line interface for connecting, ' +
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
@@ -66,7 +66,7 @@ repositories {
 
 openApiGenerate {
     generatorName = "java"
-    inputSpec = "$rootDir/specs/HiveMQ-4.4.0-SNAPSHOT-OpenAPI-spec.yaml".toString()
+    inputSpec = "$rootDir/specs/HiveMQ-$project.version-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
     apiPackage = "com.hivemq.cli.openapi.hivemq"
     modelPackage = "com.hivemq.cli.openapi.hivemq"

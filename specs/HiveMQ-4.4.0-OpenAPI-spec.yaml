@@ -48,6 +48,24 @@ info:
     To fetch the next page with more results, the URL `http://my-broker-host:8888/api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=100` is called.
     If the value for `_links.next` is not present, then this is the last page and no further pages are available.
 
+    **Note**: If a generated REST API client is used the cursor value must be extracted from the `next URL` and then
+    passed as the cursor in the API call for fetching the next page.
+
+    Steps to use pagination in a REST API client:
+    1. Returned next URL:
+    ```
+    http://my-broker-host:8888/api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=100
+    ```
+
+    2. Extract the cursor from the next URL:
+    ```
+    a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=
+    ```
+
+    3. Use the cursor in the REST API client to fetch the next page:
+    ```
+    restClient.mqttClientsGet(pageLimitForRequest, "a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=");
+    ```
 
     ## Errors
     Conventional HTTP response codes are used to indicate the success or failure of an API request. Codes in the 2xx range generally indicate success. Codes in the 4xx range indicate an error that failed given the information provided (e.g., a required parameter was omitted). Codes in the 5xx range indicate an error on the server side.
@@ -62,33 +80,33 @@ info:
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
-- name: Backup & Restore
-  description: |-
-    These endpoints can be used to create, download, inspect and restore backups created by HiveMQ.
+  - name: Backup & Restore
+    description: |-
+      These endpoints can be used to create, download, inspect and restore backups created by HiveMQ.
 
-    More information about the backup and restore capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/user-guide/backup-restore.html).
+      More information about the backup and restore capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/user-guide/backup-restore.html).
 
-    ### Backup Requirements
-    Some prerequisites are necessary to create a backup or restore from a backup:
+      ### Backup Requirements
+      Some prerequisites are necessary to create a backup or restore from a backup:
 
-    - All HiveMQ nodes have at least version 4.4.0
-    - Only one backup/restore can be executed at the same time
+      - All HiveMQ nodes have at least version 4.4.0
+      - Only one backup/restore can be executed at the same time
 
-    ### Export Requirements
-    The following requirements are necessary to successfully create a backup:
+      ### Export Requirements
+      The following requirements are necessary to successfully create a backup:
 
-    - All HiveMQ nodes have at least 1GB of free disk space
-    - No cluster topology changes occur during the export. The backup is aborted when the topology changes to avoid inconsistent data in the backup.
+      - All HiveMQ nodes have at least 1GB of free disk space
+      - No cluster topology changes occur during the export. The backup is aborted when the topology changes to avoid inconsistent data in the backup.
 
 
-    ### Restore Requirements
+      ### Restore Requirements
 
-    The requirements to successfully restore data from a backup are:
+      The requirements to successfully restore data from a backup are:
 
-    - A clean HiveMQ deployment. This means that no clients must be connected and no persistent data exists on every HiveMQ node. The import will not start if there is data available in your cluster.
-    - Message data used by Extensions are only restored if the corresponding extension is already started before the restore is started.
-- name: MQTT Clients
-  description: "These endpoints can be used to inspect the MQTT clients that are known\
+      - A clean HiveMQ deployment. This means that no clients must be connected and no persistent data exists on every HiveMQ node. The import will not start if there is data available in your cluster.
+      - Message data used by Extensions are only restored if the corresponding extension is already started before the restore is started.
+  - name: MQTT Clients
+    description: "These endpoints can be used to inspect the MQTT clients that are known\
     \ to HiveMQ.\n\nWith millions of connected clients, keeping track of specific\
     \ clients can become a challenge. The HiveMQ REST API provides endpoints to list\
     \ and view all the MQTT clients known to HiveMQ. \nInformation about subscriptions,\
@@ -97,7 +115,7 @@ paths:
   /api/v1/management/files/backups/{backupId}:
     get:
       tags:
-      - Backup & Restore
+        - Backup & Restore
       summary: Download a backup file
       description: "Download a specific backup file. \n\n This endpoint returns the\
         \ content of the backup file with the content-type `application/octet-stream`.\
@@ -106,12 +124,12 @@ paths:
         \ least HiveMQ version 4.4.0. on all cluster nodes."
       operationId: management.files.backups.backupId.get
       parameters:
-      - name: backupId
-        in: path
-        description: The id of the backup.
-        required: true
-        schema:
-          type: string
+        - name: backupId
+          in: path
+          description: The id of the backup.
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Success
@@ -137,8 +155,8 @@ paths:
                   description: Resource not found
                   value:
                     errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+                      - title: Resource not found
+                        detail: Resource with id 'my-resource-id' not found
         "400":
           description: Bad request
           content:
@@ -151,8 +169,8 @@ paths:
                   description: Bad request
                   value:
                     errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
+                      - title: Required parameter missing
+                        detail: Required URL parameter 'parameterName' is missing
         "503":
           description: Cluster node not reachable during download
           content:
@@ -165,13 +183,13 @@ paths:
                   description: The endpoint is temporarily not available
                   value:
                     errors:
-                    - title: The endpoint is temporarily not available
-                      detail: The endpoint is temporarily not available, please try
-                        again later
+                      - title: The endpoint is temporarily not available
+                        detail: The endpoint is temporarily not available, please try
+                          again later
   /api/v1/management/backups:
     get:
       tags:
-      - Backup & Restore
+        - Backup & Restore
       summary: List all available backups
       description: |-
         Lists all available backups with their current state.
@@ -196,17 +214,17 @@ paths:
                     that is currently in progress.
                   value:
                     items:
-                    - id: 20200506-081317
-                      createdAt: 2020-05-06T08:13:17Z
-                      bytes: 85550653
-                      state: COMPLETED
-                    - id: 20201006-1902318
-                      createdAt: 2020-05-06T08:13:17Z
-                      state: IN_PROGRESS
-                    - id: 20201006-1902318
-                      createdAt: 2020-05-06T08:13:17Z
-                      state: FAILED
-                      failReason: Another backup is already in progress.
+                      - id: 20200506-081317
+                        createdAt: 2020-05-06T08:13:17Z
+                        bytes: 85550653
+                        state: COMPLETED
+                      - id: 20201006-1902318
+                        createdAt: 2020-05-06T08:13:17Z
+                        state: IN_PROGRESS
+                      - id: 20201006-1902318
+                        createdAt: 2020-05-06T08:13:17Z
+                        state: FAILED
+                        failReason: Another backup is already in progress.
                 empty-results:
                   summary: Empty result if no backups are known
                   description: Empty result if no backups are known.
@@ -224,12 +242,12 @@ paths:
                   description: Version check failed
                   value:
                     errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
+                      - title: Endpoint not active yet
+                        detail: Not all cluster nodes support this endpoint yet, please
+                          try again later
     post:
       tags:
-      - Backup & Restore
+        - Backup & Restore
       summary: Create a new backup
       description: |-
         Triggers the creation of a new backup.
@@ -264,13 +282,13 @@ paths:
                   description: Version check failed
                   value:
                     errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
+                      - title: Endpoint not active yet
+                        detail: Not all cluster nodes support this endpoint yet, please
+                          try again later
   /api/v1/management/backups/{backupId}:
     get:
       tags:
-      - Backup & Restore
+        - Backup & Restore
       summary: Get backup information
       description: |-
         Returns the information for a specific backup with its current state.
@@ -282,12 +300,12 @@ paths:
          This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
       operationId: management.backups.backupId.get
       parameters:
-      - name: backupId
-        in: path
-        description: The id of the backup.
-        required: true
-        schema:
-          type: string
+        - name: backupId
+          in: path
+          description: The id of the backup.
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Success
@@ -317,8 +335,8 @@ paths:
                   description: Not found
                   value:
                     errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+                      - title: Resource not found
+                        detail: Resource with id 'my-resource-id' not found
         "400":
           description: Bad request
           content:
@@ -331,8 +349,8 @@ paths:
                   description: Bad request
                   value:
                     errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
+                      - title: Required parameter missing
+                        detail: Required URL parameter 'parameterName' is missing
         "503":
           description: Not all cluster nodes at minimum version
           content:
@@ -345,12 +363,12 @@ paths:
                   description: Version check failed
                   value:
                     errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
+                      - title: Endpoint not active yet
+                        detail: Not all cluster nodes support this endpoint yet, please
+                          try again later
     post:
       tags:
-      - Backup & Restore
+        - Backup & Restore
       summary: Restore a new backup
       description: |-
         Triggers the restore of a stored backup.
@@ -358,12 +376,12 @@ paths:
         This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
       operationId: management.backups.backupId.post
       parameters:
-      - name: backupId
-        in: path
-        description: The id of the backup.
-        required: true
-        schema:
-          type: string
+        - name: backupId
+          in: path
+          description: The id of the backup.
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Success
@@ -392,8 +410,8 @@ paths:
                   description: Example not found
                   value:
                     errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+                      - title: Resource not found
+                        detail: Resource with id 'my-resource-id' not found
         "400":
           description: Bad request
           content:
@@ -406,8 +424,8 @@ paths:
                   description: Bad request
                   value:
                     errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
+                      - title: Required parameter missing
+                        detail: Required URL parameter 'parameterName' is missing
         "503":
           description: Not all cluster nodes at minimum version
           content:
@@ -420,13 +438,13 @@ paths:
                   description: Version check failed
                   value:
                     errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
+                      - title: Endpoint not active yet
+                        detail: Not all cluster nodes support this endpoint yet, please
+                          try again later
   /api/v1/mqtt/clients/{clientId}/connection:
     get:
       tags:
-      - MQTT Clients
+        - MQTT Clients
       summary: Get a clients connection state
       description: |-
         Returns the information if a specific client is currently connected.
@@ -435,12 +453,12 @@ paths:
         If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: mqtt.clients.clientId.get
       parameters:
-      - name: clientId
-        in: path
-        description: The MQTT client identifier.
-        required: true
-        schema:
-          type: string
+        - name: clientId
+          in: path
+          description: The MQTT client identifier.
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Success
@@ -467,8 +485,8 @@ paths:
                   description: Not found
                   value:
                     errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+                      - title: Resource not found
+                        detail: Resource with id 'my-resource-id' not found
         "400":
           description: Bad request
           content:
@@ -481,12 +499,12 @@ paths:
                   description: Bad request
                   value:
                     errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
+                      - title: Required parameter missing
+                        detail: Required URL parameter 'parameterName' is missing
   /api/v1/mqtt/clients/{clientId}:
     get:
       tags:
-      - MQTT Clients
+        - MQTT Clients
       summary: Get detailed client information
       description: |-
         Returns detailed information for a specific client with its current state.
@@ -495,12 +513,12 @@ paths:
         If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: mqtt.clients.clientId.get_1
       parameters:
-      - name: clientId
-        in: path
-        description: The MQTT client identifier.
-        required: true
-        schema:
-          type: string
+        - name: clientId
+          in: path
+          description: The MQTT client identifier.
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Success
@@ -569,10 +587,10 @@ paths:
                           destinationIp: 127.0.0.3
                           destinationPort: 50123
                           tlvs:
-                          - key: PP2_TYPE_ALPN
-                            value: "1"
-                          - key: PP2_TYPE_AUTHORITY
-                            value: "2"
+                            - key: PP2_TYPE_ALPN
+                              value: "1"
+                            - key: PP2_TYPE_AUTHORITY
+                              value: "2"
                         tlsInformation:
                           cipherSuite: cipher_suite
                           tlsVersion: "1.2"
@@ -598,8 +616,8 @@ paths:
                   description: Bad request
                   value:
                     errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
+                      - title: Required parameter missing
+                        detail: Required URL parameter 'parameterName' is missing
         "404":
           description: Resource not found
           content:
@@ -612,12 +630,12 @@ paths:
                   description: Not found
                   value:
                     errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+                      - title: Resource not found
+                        detail: Resource with id 'my-resource-id' not found
   /api/v1/mqtt/clients:
     get:
       tags:
-      - MQTT Clients
+        - MQTT Clients
       summary: List all MQTT clients
       description: |-
         Lists all client sessions (online and offline) known to the whole HiveMQ cluster.
@@ -630,19 +648,19 @@ paths:
         This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
       operationId: mqtt.clients.get
       parameters:
-      - name: limit
-        in: query
-        description: Specifies the page size for the returned results. Has to be between
-          50 and 2500. Default page size is 150.
-        schema:
-          type: integer
-          format: int32
-      - name: cursor
-        in: query
-        description: The cursor that has been returned by the previous result page.
-          Do not pass this parameter if you want to fetch the first page.
-        schema:
-          type: string
+        - name: limit
+          in: query
+          description: Specifies the page size for the returned results. Has to be between
+            50 and 2500. Default page size is 500.
+          schema:
+            type: integer
+            format: int32
+        - name: cursor
+          in: query
+          description: The cursor that has been returned by the previous result page.
+            Do not pass this parameter if you want to fetch the first page.
+          schema:
+            type: string
       responses:
         "200":
           description: Success
@@ -656,29 +674,29 @@ paths:
                   description: Example response with one known client.
                   value:
                     items:
-                    - id: client-12
+                      - id: client-12
                 multiple-results-last-page:
                   summary: Multiple results, last page
                   description: Example response with multiple clients. No more pages
                     left.
                   value:
                     items:
-                    - id: client-12
-                    - id: client-5
-                    - id: client-32
-                    - id: my-client-id2
-                    - id: my-client-id
+                      - id: client-12
+                      - id: client-5
+                      - id: client-32
+                      - id: my-client-id2
+                      - id: my-client-id
                 multiple-results-pages-left:
                   summary: Multiple results, more pages left
                   description: Example response with multiple clients. More pages
                     left.
                   value:
                     items:
-                    - id: client-12
-                    - id: client-5
-                    - id: client-32
-                    - id: my-client-id2
-                    - id: my-client-id
+                      - id: client-12
+                      - id: client-5
+                      - id: client-32
+                      - id: my-client-id2
+                      - id: my-client-id
                     _links:
                       next: /api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=5
                 empty-results:
@@ -698,8 +716,8 @@ paths:
                   description: Bad request
                   value:
                     errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
+                      - title: Required parameter missing
+                        detail: Required URL parameter 'parameterName' is missing
         "410":
           description: Cursor not valid anymore
           content:
@@ -712,9 +730,9 @@ paths:
                   description: Cursor not valid anymore
                   value:
                     errors:
-                    - title: Cursor not valid anymore
-                      detail: The passed cursor is not valid anymore, you can request
-                        this resource without a cursor to start from the beginning
+                      - title: Cursor not valid anymore
+                        detail: The passed cursor is not valid anymore, you can request
+                          this resource without a cursor to start from the beginning
         "503":
           description: Not all cluster nodes at minimum version
           content:
@@ -727,13 +745,13 @@ paths:
                   description: Version check failed
                   value:
                     errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
+                      - title: Endpoint not active yet
+                        detail: Not all cluster nodes support this endpoint yet, please
+                          try again later
   /api/v1/mqtt/clients/{clientId}/subscriptions:
     get:
       tags:
-      - MQTT Clients
+        - MQTT Clients
       summary: List all subscriptions for MQTT client
       description: |-
         List all subscriptions for a specific client.
@@ -741,12 +759,12 @@ paths:
         This endpoint does not support pagination with cursor at the moment, but it might be added in future versions. Please make sure to check if a cursor is returned and another page is available to have a future-proof implementation.
       operationId: mqtt.clients.clientId.subscriptions.get
       parameters:
-      - name: clientId
-        in: path
-        description: The MQTT client identifier.
-        required: true
-        schema:
-          type: string
+        - name: clientId
+          in: path
+          description: The MQTT client identifier.
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Success
@@ -760,24 +778,24 @@ paths:
                   description: Example response with multiple results.
                   value:
                     items:
-                    - topicFilter: topic/0
-                      qos: AT_MOST_ONCE
-                      retainHandling: SEND
-                      retainAsPublished: true
-                      noLocal: false
-                      subscriptionIdentifier: 1
-                    - topicFilter: topic/2
-                      qos: EXACTLY_ONCE
-                      retainHandling: SEND
-                      retainAsPublished: false
-                      noLocal: true
-                      subscriptionIdentifier: 3
-                    - topicFilter: $share/sharename/topic/1
-                      qos: AT_LEAST_ONCE
-                      retainHandling: DO_NOT_SEND
-                      retainAsPublished: false
-                      noLocal: false
-                      subscriptionIdentifier: 2
+                      - topicFilter: topic/0
+                        qos: AT_MOST_ONCE
+                        retainHandling: SEND
+                        retainAsPublished: true
+                        noLocal: false
+                        subscriptionIdentifier: 1
+                      - topicFilter: topic/2
+                        qos: EXACTLY_ONCE
+                        retainHandling: SEND
+                        retainAsPublished: false
+                        noLocal: true
+                        subscriptionIdentifier: 3
+                      - topicFilter: $share/sharename/topic/1
+                        qos: AT_LEAST_ONCE
+                        retainHandling: DO_NOT_SEND
+                        retainAsPublished: false
+                        noLocal: false
+                        subscriptionIdentifier: 2
                 empty-result:
                   summary: Empty result if client has no subscriptions
                   description: Empty result if client has no subscriptions.
@@ -795,8 +813,8 @@ paths:
                   description: Bad request
                   value:
                     errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
+                      - title: Required parameter missing
+                        detail: Required URL parameter 'parameterName' is missing
         "404":
           description: Resource not found
           content:
@@ -809,8 +827,8 @@ paths:
                   description: Not found
                   value:
                     errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+                      - title: Resource not found
+                        detail: Resource with id 'my-resource-id' not found
 components:
   schemas:
     Error:
@@ -843,12 +861,12 @@ components:
           type: string
           description: The current state of the backup
           enum:
-          - COMPLETED
-          - RESTORE_COMPLETED
-          - IN_PROGRESS
-          - RESTORE_IN_PROGRESS
-          - FAILED
-          - RESTORE_FAILED
+            - COMPLETED
+            - RESTORE_COMPLETED
+            - IN_PROGRESS
+            - RESTORE_IN_PROGRESS
+            - FAILED
+            - RESTORE_FAILED
         failReason:
           type: string
           description: The reason why this backup failed, only present for failed
@@ -1096,16 +1114,16 @@ components:
           type: string
           description: The Quality of Service level
           enum:
-          - AT_MOST_ONCE
-          - AT_LEAST_ONCE
-          - EXACTLY_ONCE
+            - AT_MOST_ONCE
+            - AT_LEAST_ONCE
+            - EXACTLY_ONCE
         retainHandling:
           type: string
           description: Retain handling option
           enum:
-          - SEND
-          - SEND_IF_NEW_SUBSCRIPTION
-          - DO_NOT_SEND
+            - SEND
+            - SEND_IF_NEW_SUBSCRIPTION
+            - DO_NOT_SEND
         retainAsPublished:
           type: boolean
           description: The Retain As Published flag
