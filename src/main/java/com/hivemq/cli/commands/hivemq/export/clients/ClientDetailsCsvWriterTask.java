@@ -80,6 +80,7 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
     final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
     final @NotNull File file;
     final @NotNull CSVWriter csvWriter;
+    final @NotNull BufferedWriter bufferedFileWriter;
 
     long writtenClientDetails = 0;
 
@@ -93,8 +94,10 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
         this.clientDetailsFuture = clientDetailsFuture;
         this.clientDetailsQueue = clientDetailsQueue;
         this.file = file;
+        this.bufferedFileWriter = new BufferedWriter(new FileWriter(file, false));
+
         csvWriter = new CSVWriter(
-                new BufferedWriter(new FileWriter(file, false)),
+                bufferedFileWriter,
                 lineSeparator,
                 quoteCharacter,
                 escapeCharacter,
@@ -104,6 +107,14 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
 
     @Override
     public Void call() throws IOException, InterruptedException {
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                bufferedFileWriter.close();
+            } catch (IOException e) {
+                System.err.println("Interrupted before CSV could be written - CSV may be malformed");
+            }
+        }));
 
         writeHeader();
 
