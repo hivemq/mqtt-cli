@@ -17,6 +17,13 @@
 package com.hivemq.cli.commands.hivemq.export;
 
 import com.hivemq.cli.commands.hivemq.export.clients.ClientDetailsCsvWriterTask;
+import com.hivemq.cli.openapi.hivemq.CertificateInformation;
+import com.hivemq.cli.openapi.hivemq.ClientDetails;
+import com.hivemq.cli.openapi.hivemq.ClientRestrictions;
+import com.hivemq.cli.openapi.hivemq.ConnectionDetails;
+import com.hivemq.cli.openapi.hivemq.ProxyInformation;
+import com.hivemq.cli.openapi.hivemq.TLV;
+import com.hivemq.cli.openapi.hivemq.TlsInformation;
 import com.hivemq.cli.rest.hivemq.TestClientDetails;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -25,13 +32,6 @@ import com.opencsv.exceptions.CsvValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.openapitools.client.model.CertificateInformation;
-import org.openapitools.client.model.ClientDetails;
-import org.openapitools.client.model.ClientRestrictions;
-import org.openapitools.client.model.ConnectionDetails;
-import org.openapitools.client.model.ProxyInformation;
-import org.openapitools.client.model.TLV;
-import org.openapitools.client.model.TlsInformation;
 
 import java.io.File;
 import java.io.FileReader;

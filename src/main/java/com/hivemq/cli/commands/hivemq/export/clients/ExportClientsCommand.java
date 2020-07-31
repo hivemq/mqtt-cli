@@ -24,10 +24,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.export.AbstractExportCommand;
+import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.HttpUrl;
-import org.openapitools.client.ApiException;
-import org.openapitools.client.model.ClientDetails;
 import picocli.CommandLine;
 
 import javax.inject.Inject;

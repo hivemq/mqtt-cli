@@ -16,16 +16,16 @@
  */
 package com.hivemq.cli.commands.hivemq.export.clients;
 
+import com.hivemq.cli.openapi.hivemq.CertificateInformation;
+import com.hivemq.cli.openapi.hivemq.ClientDetails;
+import com.hivemq.cli.openapi.hivemq.ClientRestrictions;
+import com.hivemq.cli.openapi.hivemq.ConnectionDetails;
+import com.hivemq.cli.openapi.hivemq.ProxyInformation;
+import com.hivemq.cli.openapi.hivemq.TLV;
+import com.hivemq.cli.openapi.hivemq.TlsInformation;
 import com.opencsv.CSVWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.openapitools.client.model.CertificateInformation;
-import org.openapitools.client.model.ClientDetails;
-import org.openapitools.client.model.ClientRestrictions;
-import org.openapitools.client.model.ConnectionDetails;
-import org.openapitools.client.model.ProxyInformation;
-import org.openapitools.client.model.TLV;
-import org.openapitools.client.model.TlsInformation;
 
 import java.io.BufferedWriter;
 import java.io.File;

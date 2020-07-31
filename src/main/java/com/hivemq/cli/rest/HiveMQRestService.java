@@ -16,17 +16,17 @@
  */
 package com.hivemq.cli.rest;
 
+import com.hivemq.cli.openapi.ApiCallback;
+import com.hivemq.cli.openapi.ApiClient;
+import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.Configuration;
+import com.hivemq.cli.openapi.hivemq.ClientItem;
+import com.hivemq.cli.openapi.hivemq.ClientList;
+import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.openapitools.client.ApiCallback;
-import org.openapitools.client.ApiClient;
-import org.openapitools.client.ApiException;
-import org.openapitools.client.Configuration;
-import org.openapitools.client.api.MqttClientsApi;
-import org.openapitools.client.model.ClientItem;
-import org.openapitools.client.model.ClientList;
 
 import java.util.concurrent.TimeUnit;
 

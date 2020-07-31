@@ -68,6 +68,8 @@ openApiGenerate {
     generatorName = "java"
     inputSpec = "$rootDir/specs/HiveMQ-4.4.0-SNAPSHOT-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
+    apiPackage = "com.hivemq.cli.openapi.hivemq"
+    modelPackage = "com.hivemq.cli.openapi.hivemq"
     configOptions = [
             dateLibrary: "java8"
     ]
@@ -230,7 +232,7 @@ downloadLicenses {
 
 license {
     include "**/*.java"
-    exclude "**/org/openapitools/client/**"
+    exclude "**/com/hivemq/cli/openapi/**"
     header = file('HEADER')
 }
 

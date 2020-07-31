@@ -17,12 +17,12 @@
 package com.hivemq.cli.commands.hivemq.export;
 
 import com.hivemq.cli.commands.hivemq.export.clients.ClientDetailsRetrieverTask;
+import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openapitools.client.model.ClientDetails;
 
 import java.io.IOException;
 import java.util.Queue;

@@ -17,12 +17,12 @@
 package com.hivemq.cli.commands.hivemq.export;
 
 import com.hivemq.cli.commands.hivemq.export.clients.ClientIdsRetrieverTask;
+import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openapitools.client.ApiException;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -41,7 +41,6 @@ import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_SINGLE_RE
 import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_WITH_CURSOR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class ClientIdsRetrieverTaskTest {

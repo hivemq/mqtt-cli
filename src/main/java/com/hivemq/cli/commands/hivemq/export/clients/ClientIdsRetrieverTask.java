@@ -16,12 +16,12 @@
  */
 package com.hivemq.cli.commands.hivemq.export.clients;
 
+import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.Client;
+import com.hivemq.cli.openapi.hivemq.ClientList;
+import com.hivemq.cli.openapi.hivemq.PaginationCursor;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
-import org.openapitools.client.ApiException;
-import org.openapitools.client.model.Client;
-import org.openapitools.client.model.ClientList;
-import org.openapitools.client.model.PaginationCursor;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;

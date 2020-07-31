@@ -16,15 +16,15 @@
  */
 package com.hivemq.cli.rest.hivemq;
 
+import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.Client;
+import com.hivemq.cli.openapi.hivemq.ClientList;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openapitools.client.ApiException;
-import org.openapitools.client.model.Client;
-import org.openapitools.client.model.ClientList;
 
 import java.io.IOException;
 import java.util.List;

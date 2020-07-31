@@ -16,12 +16,12 @@
  */
 package com.hivemq.cli.commands.hivemq.export.clients;
 
+import com.hivemq.cli.openapi.ApiCallback;
+import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.ClientDetails;
+import com.hivemq.cli.openapi.hivemq.ClientItem;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
-import org.openapitools.client.ApiCallback;
-import org.openapitools.client.ApiException;
-import org.openapitools.client.model.ClientDetails;
-import org.openapitools.client.model.ClientItem;
 
 import java.util.List;
 import java.util.Map;
