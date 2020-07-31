@@ -29,8 +29,6 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.hivemq.cli.rest.ClientsApiResponses.HIVEMQ_IN_REPLICATION;
-
 public class ClientIdsRetrieverTask implements Callable<Void> {
 
     final @NotNull HiveMQRestService hivemqRestService;
@@ -38,7 +36,6 @@ public class ClientIdsRetrieverTask implements Callable<Void> {
 
     final static long QUEUE_LIMIT = 10_000;
 
-    int retryIntervalInSeconds = 10;
     long receivedClientIds = 0;
 
     private static final Pattern CURSOR_PATTERN = Pattern.compile("cursor=([^&]*)");
@@ -56,7 +53,6 @@ public class ClientIdsRetrieverTask implements Callable<Void> {
         boolean hasNextCursor = true;
         String nextCursor = null;
         while (hasNextCursor) {
-            try {
                 final ClientList clientList = hivemqRestService.getClientIds(nextCursor);
                 final List<Client> clients = clientList.getItems();
                 final PaginationCursor links = clientList.getLinks();
@@ -83,24 +79,10 @@ public class ClientIdsRetrieverTask implements Callable<Void> {
                     hasNextCursor = false;
                 }
 
-            } catch (final @NotNull ApiException apiException) {
-                final int code = apiException.getCode();
-
-                if (code == HIVEMQ_IN_REPLICATION) {
-                    Thread.sleep(retryIntervalInSeconds * 1_000);
-                }
-                else {
-                    throw apiException;
-                }
             }
-        }
         return null;
     }
 
     public long getReceivedClientIds() { return receivedClientIds; }
-
-    public void setRetryIntervalInSeconds(final int retryIntervalInSeconds) {
-        this.retryIntervalInSeconds = retryIntervalInSeconds;
-    }
 
 }
