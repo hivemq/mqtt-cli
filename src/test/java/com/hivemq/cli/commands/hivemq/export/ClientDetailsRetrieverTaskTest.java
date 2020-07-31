@@ -26,11 +26,19 @@ import org.openapitools.client.model.ClientDetails;
 
 import java.io.IOException;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hivemq.cli.rest.hivemq.TestResponseBodies.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,8 +50,8 @@ class ClientDetailsRetrieverTaskTest {
     HiveMQRestService hiveMQRestService;
     Future<Void> clientIdsFuture;
     MockWebServer server;
-    Queue<String> clientIdsQueue;
-    Queue<ClientDetails> clientDetailsQueue;
+    BlockingQueue<String> clientIdsQueue;
+    BlockingQueue<ClientDetails> clientDetailsQueue;
     ClientDetailsRetrieverTask clientDetailsRetrieverTask;
 
     @BeforeEach
@@ -55,8 +63,8 @@ class ClientDetailsRetrieverTaskTest {
         clientIdsFuture = mock(Future.class);
         when(clientIdsFuture.isDone()).thenReturn(false);
 
-        clientIdsQueue = new ConcurrentLinkedQueue<>();
-        clientDetailsQueue = new ConcurrentLinkedQueue<>();
+        clientIdsQueue = new LinkedBlockingQueue<>();
+        clientDetailsQueue = new LinkedBlockingQueue<>();
         hiveMQRestService = new HiveMQRestService(server.url("/").toString(), 500);
 
         clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
@@ -143,5 +151,78 @@ class ClientDetailsRetrieverTaskTest {
 
 
         assertEquals(50, clientDetailsQueue.size());
+    }
+
+    @Test
+    void test_blocking_client_ids_queue_success() throws InterruptedException {
+        clientIdsQueue = new LinkedBlockingQueue<>(1);
+        clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
+
+        final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+        final CompletionService<Void> tasksCompletionService = new ExecutorCompletionService<>(threadPool);
+
+        tasksCompletionService.submit(() -> {
+            for (int i = 0; i < 25; i++) {
+                Thread.sleep(50);
+                clientIdsQueue.put("client-" + i);
+                server.enqueue(new MockResponse()
+                        .setResponseCode(200)
+                        .setBody(CLIENT_DETAILS_ALL)
+                );
+            }
+            when(clientIdsFuture.isDone()).thenReturn(true);
+            return null;
+        });
+
+        tasksCompletionService.submit(clientDetailsRetrieverTask);
+
+
+        tasksCompletionService.take();
+        tasksCompletionService.take();
+
+        assertEquals(25, clientDetailsQueue.size());
+
+    }
+
+    @Test
+    void test_blocking_client_details_queue_success() throws InterruptedException {
+        clientDetailsQueue = new LinkedBlockingQueue<>(1);
+        clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
+
+        for (int i = 0; i < 25; i++) {
+            Thread.sleep(50);
+            clientIdsQueue.put("client-" + i);
+            server.enqueue(new MockResponse()
+                    .setResponseCode(200)
+                    .setBody(CLIENT_DETAILS_ALL)
+            );
+        }
+        when(clientIdsFuture.isDone()).thenReturn(true);
+
+        final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+        final CompletionService<Void> tasksCompletionService = new ExecutorCompletionService<>(threadPool);
+
+
+        final Future<Void> clientDetailsRetrieverFuture = tasksCompletionService.submit(clientDetailsRetrieverTask);
+
+
+        final AtomicInteger receivedClientDetails = new AtomicInteger(0);
+        tasksCompletionService.submit(() -> {
+            while (!clientDetailsRetrieverFuture.isDone() ||  !clientDetailsQueue.isEmpty()) {
+                final ClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
+                if (clientDetails != null) {
+                    receivedClientDetails.incrementAndGet();
+                }
+            }
+            return null;
+        });
+
+
+
+        tasksCompletionService.take();
+        tasksCompletionService.take();
+
+        assertEquals(25, receivedClientDetails.get());
+
     }
 }

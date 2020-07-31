@@ -25,12 +25,18 @@ import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiException;
 
 import java.io.IOException;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hivemq.cli.rest.ClientsApiResponses.*;
 import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_INVALID_CURSOR;
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_REPLICATION;
 import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_SINGLE_RESULT;
 import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_WITH_CURSOR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +48,7 @@ class ClientIdsRetrieverTaskTest {
 
     HiveMQRestService hiveMQRestService;
     MockWebServer server;
-    Queue<String> clientIdsQueue;
+    BlockingQueue<String> clientIdsQueue;
     ClientIdsRetrieverTask clientIdsRetrieverTask;
 
 
@@ -51,7 +57,7 @@ class ClientIdsRetrieverTaskTest {
         server = new MockWebServer();
         server.start();
 
-        clientIdsQueue = new ConcurrentLinkedQueue<>();
+        clientIdsQueue = new LinkedBlockingQueue<>();
         hiveMQRestService = new HiveMQRestService(server.url("/").toString(), 500);
 
         clientIdsRetrieverTask = new ClientIdsRetrieverTask(hiveMQRestService, clientIdsQueue);
@@ -93,35 +99,6 @@ class ClientIdsRetrieverTaskTest {
     }
 
     @Test
-    void test_retry_success() throws ApiException, InterruptedException {
-        clientIdsRetrieverTask.setRetryIntervalInSeconds(2);
-
-        final long startTime = System.nanoTime();
-
-        final MockResponse response = new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_IDS_WITH_CURSOR);
-
-        server.enqueue(response);
-
-        server.enqueue(new MockResponse()
-                .setResponseCode(HIVEMQ_IN_REPLICATION)
-                .setBody(CLIENT_IDS_REPLICATION));
-
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_IDS_SINGLE_RESULT));
-
-        clientIdsRetrieverTask.call();
-
-
-        final long stopTime = System.nanoTime();
-        assertEquals(11, clientIdsQueue.size());
-
-        assertTrue(stopTime >= startTime + 2_000_000);
-    }
-
-    @Test
     void test_unrecoverable_exception_success() {
         final MockResponse response = new MockResponse()
                 .setResponseCode(INVALID_CURSOR_VALUE)
@@ -132,4 +109,48 @@ class ClientIdsRetrieverTaskTest {
         assertThrows(ApiException.class, () -> clientIdsRetrieverTask.call());
         assertEquals(0, clientIdsQueue.size());
     }
+
+    @Test
+    void test_blocking_success() throws InterruptedException {
+        clientIdsQueue = new LinkedBlockingQueue<>(1);
+        clientIdsRetrieverTask = new ClientIdsRetrieverTask(hiveMQRestService, clientIdsQueue);
+
+        final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+        final CompletionService<Void> tasksCompletionService = new ExecutorCompletionService<>(threadPool);
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(CLIENT_IDS_WITH_CURSOR));
+
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setBody(CLIENT_IDS_SINGLE_RESULT));
+
+
+        final Future<Void> clientIdsRetrieverFuture = tasksCompletionService.submit(clientIdsRetrieverTask);
+
+        final AtomicLong polledClientIds = new AtomicLong();
+        final AtomicLong blockedTimes = new AtomicLong();
+        tasksCompletionService.submit(() -> {
+            while (!clientIdsRetrieverFuture.isDone() || !clientIdsQueue.isEmpty()) {
+                final String clientId = clientIdsQueue.poll(10, TimeUnit.MILLISECONDS);
+                if (clientId != null) {
+                    polledClientIds.incrementAndGet();
+                }
+                else {
+                    blockedTimes.incrementAndGet();
+                }
+            }
+            return null;
+        });
+
+
+        tasksCompletionService.take();
+        tasksCompletionService.take();
+
+        assertEquals(0, clientIdsQueue.size());
+        assertEquals(11, polledClientIds.get());
+        assertTrue(blockedTimes.get() > 0);
+    }
+
 }

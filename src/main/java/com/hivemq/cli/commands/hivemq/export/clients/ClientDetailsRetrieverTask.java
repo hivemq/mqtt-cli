@@ -25,33 +25,31 @@ import org.openapitools.client.model.ClientItem;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 public class ClientDetailsRetrieverTask implements Callable<Void> {
 
     final @NotNull HiveMQRestService hivemqRestService;
     final @NotNull Future<Void> clientIdsFuture;
-    final @NotNull Queue<String> clientIdsQueue;
-    final @NotNull Queue<ClientDetails> clientDetailsQueue;
-    final @NotNull AtomicLong clientDetailsInProgress;
+    final @NotNull BlockingQueue<String> clientIdsQueue;
+    final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+    final @NotNull Semaphore clientDetailsInProgress;
 
-    final static long IN_PROGRESS_LIMIT = 10_000;
-    final static long MAX_CONCURRENT_REQUESTS = 100;
-
-    final @NotNull AtomicLong processedClientDetails = new AtomicLong(0);
+    final static int MAX_CONCURRENT_REQUESTS = 100;
 
     public ClientDetailsRetrieverTask(final @NotNull HiveMQRestService hivemqRestService,
                                       final @NotNull Future<Void> clientIdsFuture,
-                                      final @NotNull Queue<String> clientIdsQueue,
-                                      final @NotNull Queue<ClientDetails> clientDetailsQueue) {
+                                      final @NotNull BlockingQueue<String> clientIdsQueue,
+                                      final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue) {
         this.hivemqRestService = hivemqRestService;
         this.clientIdsFuture = clientIdsFuture;
         this.clientIdsQueue = clientIdsQueue;
         this.clientDetailsQueue = clientDetailsQueue;
-        clientDetailsInProgress = new AtomicLong(0);
+        clientDetailsInProgress = new Semaphore(MAX_CONCURRENT_REQUESTS);
     }
 
     @Override
@@ -59,49 +57,47 @@ public class ClientDetailsRetrieverTask implements Callable<Void> {
 
         while (!clientIdsFuture.isDone() || !clientIdsQueue.isEmpty()) {
 
-            while (!clientIdsQueue.isEmpty()) {
-                final String clientId = clientIdsQueue.poll();
-                final ClientItemApiCallback clientItemApiCallback = new ClientItemApiCallback(clientDetailsQueue, clientDetailsInProgress, processedClientDetails);
+            final String clientId = clientIdsQueue.poll(50, TimeUnit.MILLISECONDS);
+            if (clientId != null) {
+                final ClientItemApiCallback clientItemApiCallback = new ClientItemApiCallback(clientDetailsQueue, clientDetailsInProgress);
 
-                clientDetailsInProgress.incrementAndGet();
+                clientDetailsInProgress.acquire();
                 hivemqRestService.getClientDetails(clientId, clientItemApiCallback);
-
-                while (clientDetailsInProgress.get() > MAX_CONCURRENT_REQUESTS && clientDetailsQueue.size() > IN_PROGRESS_LIMIT) {
-                    Thread.sleep(50);
-                }
             }
         }
 
-        while (clientDetailsInProgress.get() != 0) {
-            Thread.sleep(50);
-        }
+        // Block until all callbacks are finished
+        clientDetailsInProgress.acquire(MAX_CONCURRENT_REQUESTS);
+
         return null;
     }
 
 
     private static class ClientItemApiCallback implements ApiCallback<ClientItem> {
-        final @NotNull Queue<ClientDetails> clientDetailsQueue;
-        final @NotNull AtomicLong clientDetailsInProgress;
-        final @NotNull AtomicLong processedClientDetails;
+        final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+        final @NotNull Semaphore clientDetailsInProgress;
 
-        public ClientItemApiCallback(final @NotNull Queue<ClientDetails> clientDetailsQueue,
-                                     final @NotNull AtomicLong clientDetailsInProgress,
-                                     final @NotNull AtomicLong processedClientDetails) {
+        public ClientItemApiCallback(final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
+                                     final @NotNull Semaphore clientDetailsInProgress) {
             this.clientDetailsQueue = clientDetailsQueue;
             this.clientDetailsInProgress = clientDetailsInProgress;
-            this.processedClientDetails = processedClientDetails;
         }
 
         @Override
         public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-            clientDetailsInProgress.decrementAndGet();
+            clientDetailsInProgress.release();
         }
 
         @Override
         public void onSuccess(ClientItem result, int statusCode, Map<String, List<String>> responseHeaders) {
-            clientDetailsQueue.add(result.getClient());
-            clientDetailsInProgress.decrementAndGet();
-            processedClientDetails.incrementAndGet();
+            final ClientDetails clientDetails = result.getClient();
+            if (clientDetails != null) {
+                try {
+                    clientDetailsQueue.put(clientDetails);
+                } catch (InterruptedException ignored) {}
+            }
+
+            clientDetailsInProgress.release();
         }
 
         @Override

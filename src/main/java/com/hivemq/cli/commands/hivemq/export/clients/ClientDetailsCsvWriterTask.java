@@ -27,16 +27,17 @@ import org.openapitools.client.model.ProxyInformation;
 import org.openapitools.client.model.TLV;
 import org.openapitools.client.model.TlsInformation;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class ClientDetailsCsvWriterTask implements Callable<Void> {
 
@@ -76,14 +77,14 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
     };
 
     final @NotNull Future<Void> clientDetailsFuture;
-    final @NotNull Queue<ClientDetails> clientDetailsQueue;
+    final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
     final @NotNull File file;
     final @NotNull CSVWriter csvWriter;
 
     long writtenClientDetails = 0;
 
     public ClientDetailsCsvWriterTask(final @NotNull Future<Void> clientDetailsFuture,
-                                      final @NotNull Queue<ClientDetails> clientDetailsQueue,
+                                      final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
                                       final @NotNull File file,
                                       final char lineSeparator,
                                       final char quoteCharacter,
@@ -93,7 +94,7 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
         this.clientDetailsQueue = clientDetailsQueue;
         this.file = file;
         csvWriter = new CSVWriter(
-                new FileWriter(file, false),
+                new BufferedWriter(new FileWriter(file, false)),
                 lineSeparator,
                 quoteCharacter,
                 escapeCharacter,
@@ -108,16 +109,17 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
 
         while (!clientDetailsFuture.isDone() || !clientDetailsQueue.isEmpty()) {
 
-            while (!clientDetailsQueue.isEmpty()) {
-                final ClientDetails clientDetails = clientDetailsQueue.poll();
+            final ClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
+
+            if (clientDetails != null) {
                 writeRow(clientDetails);
                 writtenClientDetails += 1;
             }
 
-            csvWriter.flush();
-
-            Thread.sleep(50);
         }
+
+        csvWriter.close();
+
         return null;
     }
 

@@ -34,15 +34,15 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +57,8 @@ import java.util.concurrent.TimeUnit;
 public class ExportClientsCommand extends AbstractExportCommand implements Callable<Integer> {
 
     private final static String DEFAULT_FILE_NAME = "hivemq_client_details";
+    final static int CLIENT_IDS_QUEUE_LIMIT = 10_000;
+    final static int CLIENT_DETAILS_QUEUE_LIMIT = 10_000;
 
     @Inject
     public ExportClientsCommand() { }
@@ -76,8 +78,8 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         final HiveMQRestService hivemqRestService = new HiveMQRestService(url, rateLimit);
         final ExecutorService threadPool = Executors.newFixedThreadPool(3);
         final CompletionService<Void> tasksCompletionService = new ExecutorCompletionService<>(threadPool);
-        final Queue<String> clientIdsQueue = new ConcurrentLinkedQueue<>();
-        final Queue<ClientDetails> clientDetailsQueue = new ConcurrentLinkedQueue<>();
+        final BlockingQueue<String> clientIdsQueue = new LinkedBlockingQueue<>(CLIENT_IDS_QUEUE_LIMIT);
+        final BlockingQueue<ClientDetails> clientDetailsQueue = new LinkedBlockingQueue<>(CLIENT_DETAILS_QUEUE_LIMIT);
 
         // Start retrieving client ids
         final ClientIdsRetrieverTask clientIdsRetrieverTask = new ClientIdsRetrieverTask(hivemqRestService, clientIdsQueue);

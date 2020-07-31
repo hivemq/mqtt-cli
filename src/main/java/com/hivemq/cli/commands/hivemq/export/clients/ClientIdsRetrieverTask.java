@@ -24,24 +24,21 @@ import org.openapitools.client.model.ClientList;
 import org.openapitools.client.model.PaginationCursor;
 
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ClientIdsRetrieverTask implements Callable<Void> {
 
-    final @NotNull HiveMQRestService hivemqRestService;
-    final @NotNull Queue<String> clientIdsQueue;
-
-    final static long QUEUE_LIMIT = 10_000;
-
-    long receivedClientIds = 0;
+    private @NotNull HiveMQRestService hivemqRestService;
+    private final @NotNull BlockingQueue<String> clientIdsQueue;
+    private long receivedClientIds = 0;
 
     private static final Pattern CURSOR_PATTERN = Pattern.compile("cursor=([^&]*)");
 
     public ClientIdsRetrieverTask(final @NotNull HiveMQRestService hivemqRestService,
-                                  final @NotNull Queue<String> clientIdsQueue) {
+                                  final @NotNull BlockingQueue<String> clientIdsQueue) {
 
         this.hivemqRestService = hivemqRestService;
         this.clientIdsQueue = clientIdsQueue;
@@ -57,14 +54,13 @@ public class ClientIdsRetrieverTask implements Callable<Void> {
                 final List<Client> clients = clientList.getItems();
                 final PaginationCursor links = clientList.getLinks();
 
-
                 if (clients != null) {
                     receivedClientIds += clients.size();
-                    clients.forEach(client -> clientIdsQueue.add(client.getId()));
-                }
-
-                while (clientIdsQueue.size() > QUEUE_LIMIT) {
-                    Thread.sleep(50);
+                    for (final Client client : clients) {
+                        if (client.getId() != null) {
+                            clientIdsQueue.put(client.getId());
+                        }
+                    }
                 }
 
                 if (links != null && links.getNext() != null) {

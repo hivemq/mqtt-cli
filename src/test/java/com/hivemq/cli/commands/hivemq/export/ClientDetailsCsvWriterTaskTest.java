@@ -16,10 +16,11 @@
  */
 package com.hivemq.cli.commands.hivemq.export;
 
-import com.google.common.util.concurrent.Futures;
 import com.hivemq.cli.commands.hivemq.export.clients.ClientDetailsCsvWriterTask;
+import com.hivemq.cli.rest.hivemq.TestClientDetails;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,15 +39,18 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.hivemq.cli.commands.hivemq.export.clients.ClientDetailsCsvWriterTask.EXPORT_CSV_HEADER;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +60,7 @@ class ClientDetailsCsvWriterTaskTest {
     @Mock
     private Future<Void> clientDetailsFuture;
     private File csvFile;
-    private Queue<ClientDetails> clientDetailsQueue;
+    private BlockingQueue<ClientDetails> clientDetailsQueue;
     private ClientDetailsCsvWriterTask clientDetailsCsvWriterTask;
 
     private CSVReader csvReader;
@@ -67,7 +71,7 @@ class ClientDetailsCsvWriterTaskTest {
         clientDetailsFuture = mock(Future.class);
         when(clientDetailsFuture.isDone()).thenReturn(false);
         csvFile = File.createTempFile("client_details", ".csv");
-        clientDetailsQueue = new ConcurrentLinkedQueue<>();
+        clientDetailsQueue = new LinkedBlockingQueue<>();
         clientDetailsCsvWriterTask = new ClientDetailsCsvWriterTask(clientDetailsFuture, clientDetailsQueue, csvFile,
                 CSVWriter.DEFAULT_SEPARATOR, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
@@ -488,4 +492,36 @@ class ClientDetailsCsvWriterTaskTest {
         }
     }
 
+    
+    @Test
+    void test_wait_for_client_details() throws IOException, CsvException, InterruptedException {
+        final ClientDetails allClientDetails = TestClientDetails.getAllClientDetails();
+        clientDetailsQueue = new LinkedBlockingQueue<>(1);
+        clientDetailsCsvWriterTask = new ClientDetailsCsvWriterTask(clientDetailsFuture, clientDetailsQueue, csvFile,
+                CSVWriter.DEFAULT_SEPARATOR, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                CSVWriter.DEFAULT_LINE_END);
+
+
+        final ExecutorService threadPool = Executors.newFixedThreadPool(2);
+        final CompletionService<Void> tasksCompletionService = new ExecutorCompletionService<>(threadPool);
+
+        tasksCompletionService.submit(() -> {
+            for (int i = 0; i < 50; i++) {
+                Thread.sleep(10);
+                clientDetailsQueue.put(allClientDetails);
+            }
+            when(clientDetailsFuture.isDone()).thenReturn(true);
+            return null;
+        });
+
+        tasksCompletionService.submit(clientDetailsCsvWriterTask);
+
+        tasksCompletionService.take();
+        tasksCompletionService.take();
+
+        final int writtenCsvLines = csvReader.readAll().size();
+
+        assertEquals(51, writtenCsvLines);
+
+    }
 }
