@@ -29,7 +29,7 @@ public abstract class AbstractExportCommand {
         csv
     }
 
-    @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8888", description = "The url of the HiveMQ API endpoint (default http://localhost:8888)", order = 1)
+    @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8888", description = "The URL of the HiveMQ REST API endpoint (default http://localhost:8888)", order = 1)
     protected @NotNull String url;
 
     @CommandLine.Option(names = {"-f", "--file"}, description = "The file to write the output to (defaults to a timestamped file in the current working directory)", order = 2)
