@@ -41,8 +41,8 @@ import java.util.concurrent.Future;
 public class ClientDetailsCsvWriterTask implements Callable<Void> {
 
     public static final String[] EXPORT_CSV_HEADER = {
-            "ClientId",
-            "Connected",
+            "clientId",
+            "connected",
             "sessionExpiryInterval",
             "connectedAt",
             "messageQueueSize",
@@ -65,14 +65,14 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
             "cleanStart",
             "cipherSuite",
             "tlsVersion",
-            "cert-commonName",
-            "cert-organization",
-            "cert-organizationalUnit",
-            "cert-serial",
-            "cert-validFrom",
-            "cert-validUntil",
-            "cert-country",
-            "cert-state"
+            "certificateCommonName",
+            "certificateOrganization",
+            "certificateOrganizationalUnit",
+            "certificateSerial",
+            "certificateValidFrom",
+            "certificateValidUntil",
+            "certificateCountry",
+            "certificateState"
     };
 
     final @NotNull Future<Void> clientDetailsFuture;
