@@ -156,7 +156,7 @@ ext {
     substrateVmVersion = '19.2.0'
     junitJupiterVersion = '5.5.1'
     openCsvVersion = '5.2'
-    swaggerVersion = '1.5.24'
+    swaggerVersion = '1.6.2'
     findBugsVersion = '3.0.2'
     okHttpVersion = '3.14.7'
     gsonFireVersion = '1.8.4'
