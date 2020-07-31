@@ -67,7 +67,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         // For now only CSV is supported as output format
         assert format == OutputFormat.csv;
 
-        final String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date());
+        final String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
         if (file == null) {
             final String fileType = OutputFormat.csv.name();
             file = new File(DEFAULT_FILE_NAME + "_" + timestamp + "." + fileType);
