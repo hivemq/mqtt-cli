@@ -28,10 +28,14 @@ import org.openapitools.client.api.MqttClientsApi;
 import org.openapitools.client.model.ClientItem;
 import org.openapitools.client.model.ClientList;
 
+import java.util.concurrent.TimeUnit;
+
 public class HiveMQRestService {
 
     private final @NotNull ApiClient apiClient;
     private final @NotNull MqttClientsApi clientsApi;
+
+    private static final long CONNECT_TIMEOUT = 60;
 
     public HiveMQRestService(final @NotNull String host, final double requestPerSecondLimit) {
         final OkHttpClient okHttpClient = buildOkHttpClient(requestPerSecondLimit);
@@ -61,6 +65,7 @@ public class HiveMQRestService {
 
     private @NotNull OkHttpClient buildOkHttpClient(final double requestsPerSecondLimit) {
         return new OkHttpClient.Builder()
+                .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 .addInterceptor(new RateLimitInterceptor(requestsPerSecondLimit))
                 .build();
     }
