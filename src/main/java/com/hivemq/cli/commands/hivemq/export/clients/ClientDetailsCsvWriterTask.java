@@ -176,7 +176,7 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
             if (password != null) {
                 row.add(new String(password, StandardCharsets.UTF_8));
             } else {
-                row.add(null);
+                row.add(null); // password
             }
 
             row.add(toCsvString(connectionDetails.getCleanStart()));
@@ -185,15 +185,15 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
             addTlsInformation(row, tlsInformation);
         }
         else {
-            row.add(null);
+            row.add(null); // Ip
             addProxyInformation(row, null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
+            row.add(null); // mqttVersion
+            row.add(null); // connectedListenerId
+            row.add(null); // connectedNodeId
+            row.add(null); // keepAlive
+            row.add(null); // username
+            row.add(null); // password
+            row.add(null); // cleanStart
             addTlsInformation(row, null);
         }
     }
@@ -208,8 +208,8 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
             addCertificateInformation(row, certificateInformation);
         }
         else {
-            row.add(null);
-            row.add(null);
+            row.add(null); // cipherSuite
+            row.add(null); // tlsVersion
             addCertificateInformation(row, null);
         }
     }
@@ -226,14 +226,14 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
             row.add(toCsvString(certificateInformation.getState()));
         }
         else {
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
+            row.add(null); // certificateCommonName
+            row.add(null); // certificateOrganization
+            row.add(null); // certificateOrganizationalUnit
+            row.add(null); // certificateSerial
+            row.add(null); // certificateValidFrom
+            row.add(null); // certificateValidUntil
+            row.add(null); // certificateCountry
+            row.add(null); // certificateState
         }
     }
 
@@ -257,15 +257,15 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
                     }
                 row.add(sb.toString());
             } else {
-                row.add(null);
+                row.add(null); // tlvs
             }
         }
         else {
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
-            row.add(null);
+            row.add(null); // sourceIp
+            row.add(null); // sourcePort
+            row.add(null); // destinationIp
+            row.add(null); // destinationPort
+            row.add(null); // tlvs
         }
     }
 
@@ -275,9 +275,9 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
             row.add(toCsvString(restrictions.getMaxQueueSize()));
             row.add(toCsvString(restrictions.getQueuedMessageStrategy()));
         } else {
-            row.add(null);
-            row.add(null);
-            row.add(null);
+            row.add(null); // maxMessageSize
+            row.add(null); // maxQueueSize
+            row.add(null); // queuedMessageStrategy
         }
     }
 
