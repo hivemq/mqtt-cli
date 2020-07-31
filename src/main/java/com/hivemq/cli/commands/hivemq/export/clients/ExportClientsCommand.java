@@ -106,9 +106,9 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
 
         final Future<?> clientDetailsWriterFuture = tasksCompletionService.submit(clientDetailsCsvWriterTask);
 
-        ScheduledExecutorService es = Executors.newScheduledThreadPool(1);
+        ScheduledExecutorService printingScheduler = Executors.newScheduledThreadPool(1);
 
-        ScheduledFuture<?> f = es.scheduleWithFixedDelay(new Runnable() {
+        ScheduledFuture<?> f = printingScheduler.scheduleWithFixedDelay(new Runnable() {
             long lastReported = -1;
             public void run() {
                 long newValue = clientDetailsCsvWriterTask.getWrittenClientDetails();
@@ -133,7 +133,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
             }
             catch (InterruptedException | ExecutionException e) {
                 threadPool.shutdown();
-                es.shutdown();
+                printingScheduler.shutdown();
                 System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(e).getMessage());
                 if (e.getCause() instanceof ApiException) {
                     final ApiException apiException = (ApiException) e.getCause();
@@ -153,7 +153,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
                 return -1;
             }
         }
-        es.shutdown();
+        printingScheduler.shutdown();
 
         System.out.println("\rSuccessfully exported " + clientDetailsCsvWriterTask.getWrittenClientDetails() + " client details to " + file.getPath());
 
