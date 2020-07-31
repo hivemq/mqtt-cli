@@ -108,7 +108,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
                 clientDetailsRetrieverFuture,
                 clientDetailsQueue,
                 file,
-                csvLineSeparator,
+                csvSeparator,
                 csvQuoteCharacter,
                 csvEscapeChar,
                 csvLineEndCharacter);
