@@ -47,7 +47,7 @@ public abstract class AbstractExportCommand {
     @CommandLine.Option(names = {"--csvQuoteChar"}, defaultValue = "" + CSVWriter.DEFAULT_QUOTE_CHARACTER, description = "The quote character for CSV export (default " + CSVWriter.DEFAULT_QUOTE_CHARACTER + ")", order = 5)
     public char csvQuoteCharacter;
 
-    @CommandLine.Option(names = {"--csvEscChar"}, defaultValue = "" + CSVWriter.DEFAULT_ESCAPE_CHARACTER, description = "An own defined escape character for the csv writing (default " + CSVWriter.DEFAULT_ESCAPE_CHARACTER + ")", order = 5)
+    @CommandLine.Option(names = {"--csvEscChar"}, defaultValue = "" + CSVWriter.DEFAULT_ESCAPE_CHARACTER, description = "The escape character for CSV export (default " + CSVWriter.DEFAULT_ESCAPE_CHARACTER + ")", order = 5)
     public char csvEscapeChar;
 
     @CommandLine.Option(names = {"--csvLineEndChar"}, defaultValue = CSVWriter.DEFAULT_LINE_END, description = "An own defined line end character for the csv writing (default \\n)", order = 5)
