@@ -57,7 +57,7 @@ import java.util.concurrent.TimeUnit;
 public class ExportClientsCommand extends AbstractExportCommand implements Callable<Integer> {
 
     private final static String DEFAULT_FILE_NAME = "hivemq_client_details";
-    final static int CLIENT_IDS_QUEUE_LIMIT = 10_000;
+    final static int CLIENT_IDS_QUEUE_LIMIT = 100_000;
     final static int CLIENT_DETAILS_QUEUE_LIMIT = 10_000;
 
     @Inject
