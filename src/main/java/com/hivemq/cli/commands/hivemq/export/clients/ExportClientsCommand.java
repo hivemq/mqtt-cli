@@ -113,11 +113,11 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
                 csvEscapeChar,
                 csvLineEndCharacter);
 
-        final Future<?> clientDetailsWriterFuture = tasksCompletionService.submit(clientDetailsCsvWriterTask);
+        tasksCompletionService.submit(clientDetailsCsvWriterTask);
 
-        ScheduledExecutorService printingScheduler = Executors.newScheduledThreadPool(1);
+        final ScheduledExecutorService printingScheduler = Executors.newScheduledThreadPool(1);
 
-        ScheduledFuture<?> f = printingScheduler.scheduleWithFixedDelay(new Runnable() {
+        printingScheduler.scheduleWithFixedDelay(new Runnable() {
             long lastReported = -1;
             public void run() {
                 long newValue = clientDetailsCsvWriterTask.getWrittenClientDetails();
@@ -162,6 +162,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
                 return -1;
             }
         }
+        threadPool.shutdown();
         printingScheduler.shutdown();
 
         System.out.println("\rSuccessfully exported " + clientDetailsCsvWriterTask.getWrittenClientDetails() + " client details to " + file.getPath());
