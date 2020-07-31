@@ -34,7 +34,7 @@ class PasswordFileToByteBufferConverterTest {
     }
 
     @Test
-    void test_single_line() throws Exception {
+    void single_line() throws Exception {
         final File file = getFile("password_with_single_line.txt");
 
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();
@@ -45,7 +45,7 @@ class PasswordFileToByteBufferConverterTest {
     }
 
     @Test
-    void test_single_newLine() throws Exception {
+    void single_newLine() throws Exception {
         final File file = getFile("password_with_new_line.txt");
 
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();
@@ -56,7 +56,7 @@ class PasswordFileToByteBufferConverterTest {
     }
 
     @Test
-    void test_multi_newLine() throws Exception {
+    void multi_newLine() throws Exception {
         final File file = getFile("password_with_multi_new_line.txt");
 
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();

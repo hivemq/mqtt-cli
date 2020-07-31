@@ -70,7 +70,7 @@ class ClientDetailsRetrieverTaskTest {
 
 
     @Test
-    void test_one_detail_success() throws ExecutionException, InterruptedException {
+    void one_detail_success() throws ExecutionException, InterruptedException {
         clientIdsQueue.add("client-1");
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -88,7 +88,7 @@ class ClientDetailsRetrieverTaskTest {
     }
 
     @Test
-    void test_one_persistent_details_success() throws ExecutionException, InterruptedException {
+    void one_persistent_details_success() throws ExecutionException, InterruptedException {
         clientIdsQueue.add("client-1");
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -105,7 +105,7 @@ class ClientDetailsRetrieverTaskTest {
     }
 
     @Test
-    void test_one_connected_details_success() throws ExecutionException, InterruptedException {
+    void one_connected_details_success() throws ExecutionException, InterruptedException {
         clientIdsQueue.add("client-1");
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -124,7 +124,7 @@ class ClientDetailsRetrieverTaskTest {
 
 
     @Test
-    void test_50_details_success() throws ExecutionException, InterruptedException {
+    void details_50_success() throws ExecutionException, InterruptedException {
         for (int i = 0; i < 25; i++) {
             clientIdsQueue.add("client-" + i);
             server.enqueue(new MockResponse()
@@ -152,7 +152,7 @@ class ClientDetailsRetrieverTaskTest {
     }
 
     @Test
-    void test_blocking_client_ids_queue_success() throws InterruptedException {
+    void blocking_client_ids_queue_success() throws InterruptedException {
         clientIdsQueue = new LinkedBlockingQueue<>(1);
         clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
 
@@ -183,7 +183,7 @@ class ClientDetailsRetrieverTaskTest {
     }
 
     @Test
-    void test_blocking_client_details_queue_success() throws InterruptedException {
+    void blocking_client_details_queue_success() throws InterruptedException {
         clientDetailsQueue = new LinkedBlockingQueue<>(1);
         clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
 

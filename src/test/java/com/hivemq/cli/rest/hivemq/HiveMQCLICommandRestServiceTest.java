@@ -64,7 +64,7 @@ class HiveMQCLICommandRestServiceTest {
     }
 
     @Test
-    void test_get_client_ids_success() throws ApiException {
+    void get_client_ids_success() throws ApiException {
         final MockResponse response = new MockResponse()
                 .setResponseCode(HTTP_OK)
                 .setBody(CLIENT_IDS_WITH_CURSOR);
@@ -85,7 +85,7 @@ class HiveMQCLICommandRestServiceTest {
     }
 
     @Test
-    void test_get_client_ids_single_success() throws ApiException {
+    void get_client_ids_single_success() throws ApiException {
         final MockResponse response = new MockResponse()
                 .setResponseCode(HTTP_OK)
                 .setBody(CLIENT_IDS_SINGLE_RESULT);
@@ -100,7 +100,7 @@ class HiveMQCLICommandRestServiceTest {
     }
 
     @Test
-    void test_get_client_ids_empty_success() throws ApiException {
+    void get_client_ids_empty_success() throws ApiException {
         final MockResponse response = new MockResponse()
                 .setResponseCode(HTTP_OK)
                 .setBody(CLIENT_IDS_EMPTY);
@@ -115,7 +115,7 @@ class HiveMQCLICommandRestServiceTest {
     }
 
     @Test
-    void test_get_client_ids_invalid_cursor_failed() {
+    void get_client_ids_invalid_cursor_failed() {
         final MockResponse response = new MockResponse()
                 .setResponseCode(HTTP_BAD_REQUEST)
                 .setBody(CLIENT_IDS_INVALID_CURSOR);
@@ -128,7 +128,7 @@ class HiveMQCLICommandRestServiceTest {
 
 
     @Test
-    void test_get_client_ids_cursor_not_Valid_anymore_failed() {
+    void get_client_ids_cursor_not_Valid_anymore_failed() {
         final MockResponse response = new MockResponse()
                 .setResponseCode(HTTP_GONE)
                 .setBody(CLIENT_IDS_CURSOR_NOT_VALID_ANYMORE);
@@ -140,7 +140,7 @@ class HiveMQCLICommandRestServiceTest {
     }
 
     @Test
-    void test_get_client_ids_during_replication_failed() {
+    void get_client_ids_during_replication_failed() {
         final MockResponse response = new MockResponse()
                 .setResponseCode(HTTP_UNAVAILABLE)
                 .setBody(CLIENT_IDS_REPLICATION);
@@ -152,7 +152,7 @@ class HiveMQCLICommandRestServiceTest {
     }
 
     @Test
-    void test_get_client_ids_rate_limit_5_success() throws ApiException {
+    void get_client_ids_rate_limit_5_success() throws ApiException {
         hivemqRestService = new HiveMQRestService(server.url("/").toString(), 1);
 
         final MockResponse response = new MockResponse()

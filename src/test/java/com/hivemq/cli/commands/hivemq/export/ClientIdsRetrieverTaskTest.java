@@ -63,7 +63,7 @@ class ClientIdsRetrieverTaskTest {
     }
 
     @Test
-    void test_single_page_success() throws ApiException, InterruptedException {
+    void single_page_success() throws ApiException, InterruptedException {
         final MockResponse response = new MockResponse()
                 .setResponseCode(200)
                 .setBody(CLIENT_IDS_SINGLE_RESULT);
@@ -77,7 +77,7 @@ class ClientIdsRetrieverTaskTest {
     }
 
     @Test
-    void test_more_pages_success() throws ApiException, InterruptedException {
+    void more_pages_success() throws ApiException, InterruptedException {
         final MockResponse response = new MockResponse()
                 .setResponseCode(200)
                 .setBody(CLIENT_IDS_WITH_CURSOR);
@@ -98,7 +98,7 @@ class ClientIdsRetrieverTaskTest {
     }
 
     @Test
-    void test_unrecoverable_exception_success() {
+    void unrecoverable_exception_success() {
         final MockResponse response = new MockResponse()
                 .setResponseCode(INVALID_CURSOR_VALUE)
                 .setBody(CLIENT_IDS_INVALID_CURSOR);
@@ -110,7 +110,7 @@ class ClientIdsRetrieverTaskTest {
     }
 
     @Test
-    void test_blocking_success() throws InterruptedException {
+    void blocking_success() throws InterruptedException {
         clientIdsQueue = new LinkedBlockingQueue<>(1);
         clientIdsRetrieverTask = new ClientIdsRetrieverTask(hiveMQRestService, clientIdsQueue);
 

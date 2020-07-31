@@ -80,7 +80,7 @@ class ClientDetailsCsvWriterTaskTest {
     }
 
     @Test
-    void test_all_client_details_success() throws IOException, CsvValidationException, ExecutionException, InterruptedException {
+    void all_client_details_success() throws IOException, CsvValidationException, ExecutionException, InterruptedException {
         final ClientDetails clientDetails = new ClientDetails();
         clientDetails.setId("test");
         clientDetails.setConnected(true);
@@ -194,7 +194,7 @@ class ClientDetailsCsvWriterTaskTest {
     }
 
     @Test
-    void test_all_client_details_no_restrictions() throws IOException, CsvValidationException, ExecutionException, InterruptedException {
+    void all_client_details_no_restrictions() throws IOException, CsvValidationException, ExecutionException, InterruptedException {
         final ClientDetails clientDetails = new ClientDetails();
         clientDetails.setId("test");
         clientDetails.setConnected(true);
@@ -306,7 +306,7 @@ class ClientDetailsCsvWriterTaskTest {
 
 
     @Test
-    void test_all_client_details_no_connection_details() throws IOException, CsvValidationException, ExecutionException, InterruptedException {
+    void all_client_details_no_connection_details() throws IOException, CsvValidationException, ExecutionException, InterruptedException {
         final ClientDetails clientDetails = new ClientDetails();
         clientDetails.setId("test");
         clientDetails.setConnected(true);
@@ -371,7 +371,7 @@ class ClientDetailsCsvWriterTaskTest {
     }
 
     @Test
-    void test_all_client_details_50_times_success() throws IOException, CsvValidationException, InterruptedException, ExecutionException {
+    void all_client_details_50_times_success() throws IOException, CsvValidationException, InterruptedException, ExecutionException {
         final ClientDetails clientDetails = new ClientDetails();
         clientDetails.setId("test");
         clientDetails.setConnected(true);
@@ -494,7 +494,7 @@ class ClientDetailsCsvWriterTaskTest {
 
     
     @Test
-    void test_wait_for_client_details() throws IOException, CsvException, InterruptedException {
+    void wait_for_client_details() throws IOException, CsvException, InterruptedException {
         final ClientDetails allClientDetails = TestClientDetails.getAllClientDetails();
         clientDetailsQueue = new LinkedBlockingQueue<>(1);
         clientDetailsCsvWriterTask = new ClientDetailsCsvWriterTask(clientDetailsFuture, clientDetailsQueue, csvFile,
