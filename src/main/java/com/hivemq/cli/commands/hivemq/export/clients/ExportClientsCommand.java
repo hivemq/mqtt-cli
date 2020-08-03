@@ -83,7 +83,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
             file = new File(DEFAULT_FILE_NAME + "_" + timestamp + "." + fileType);
         }
 
-        //
+        // Setup rest service and queues
         final HiveMQRestService hivemqRestService = new HiveMQRestService(url, rateLimit);
         final BlockingQueue<String> clientIdsQueue = new LinkedBlockingQueue<>(CLIENT_IDS_QUEUE_LIMIT);
         final BlockingQueue<ClientDetails> clientDetailsQueue = new LinkedBlockingQueue<>(CLIENT_DETAILS_QUEUE_LIMIT);
@@ -121,7 +121,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
 
         // Handle completion of all futures
         final CompletableFuture<Void> exportFuture = CompletableFuture.allOf(clientIdsRetrieverFuture, clientDetailsRetrieverFuture, clientDetailsCsvWriterFuture);
-        final CompletableFuture<Integer> exportResultFuture = exportFuture.handle(new ExportCompletedHandler(clientDetailsCsvWriterTask, printingScheduler).invoke());
+        final CompletableFuture<Integer> exportResultFuture = exportFuture.handle(new ExportCompletedHandler(clientDetailsCsvWriterTask, printingScheduler));
 
         // Join all future
         return exportResultFuture.get();
@@ -158,7 +158,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
 
     }
 
-    private class ExportCompletedHandler {
+    private class ExportCompletedHandler implements BiFunction<Void, Throwable, Integer> {
         private final @NotNull ClientDetailsCsvWriterTask clientDetailsCsvWriterTask;
         private final @NotNull ScheduledExecutorService printingScheduler;
 
@@ -168,33 +168,33 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
             this.printingScheduler = printingScheduler;
         }
 
-        public BiFunction<Void, Throwable, Integer> invoke() {
-            return (v, exception) -> {
-                printingScheduler.shutdown();
-                if (exception != null) {
-                    System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(exception).getMessage());
-                    if (exception.getCause() instanceof ApiException) {
-                        final ApiException apiException = (ApiException) exception.getCause();
-                        if (apiException.getResponseBody() != null) {
-                            final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                            final JsonElement je = JsonParser.parseString(apiException.getResponseBody());
-                            final String jsonString = gson.toJson(je);
-                            System.err.println(jsonString);
-                        }
-                    }
 
-                    if (clientDetailsCsvWriterTask.getWrittenClientDetails() > 0) {
-                        System.out.println("Wrote " + clientDetailsCsvWriterTask.getWrittenClientDetails() + " client details to " + file.getPath());
-                    } else {
-                        file.delete();
+        @Override
+        public @NotNull Integer apply(Void o, Throwable throwable) {
+            printingScheduler.shutdown();
+            if (throwable != null) {
+                System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
+                if (throwable.getCause() instanceof ApiException) {
+                    final ApiException apiException = (ApiException) throwable.getCause();
+                    if (apiException.getResponseBody() != null) {
+                        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        final JsonElement je = JsonParser.parseString(apiException.getResponseBody());
+                        final String jsonString = gson.toJson(je);
+                        System.err.println(jsonString);
                     }
-
-                    return -1; // Export failed
-                } else {
-                    System.out.println("\rSuccessfully exported " + clientDetailsCsvWriterTask.getWrittenClientDetails() + " client details to " + file.getPath());
-                    return 0; // Export was successful
                 }
-            };
+
+                if (clientDetailsCsvWriterTask.getWrittenClientDetails() > 0) {
+                    System.out.println("Wrote " + clientDetailsCsvWriterTask.getWrittenClientDetails() + " client details to " + file.getPath());
+                } else {
+                    file.delete();
+                }
+
+                return -1; // Export failed
+            } else {
+                System.out.println("\rSuccessfully exported " + clientDetailsCsvWriterTask.getWrittenClientDetails() + " client details to " + file.getPath());
+                return 0; // Export was successful
+            }
         }
     }
 }
