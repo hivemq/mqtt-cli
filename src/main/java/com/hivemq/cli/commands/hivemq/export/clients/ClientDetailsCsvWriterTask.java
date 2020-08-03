@@ -38,6 +38,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ClientDetailsCsvWriterTask implements Runnable {
 
@@ -82,7 +83,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
     private final @NotNull CSVWriter csvWriter;
     private final @NotNull BufferedWriter bufferedFileWriter;
 
-    private long writtenClientDetails = 0;
+    private AtomicLong writtenClientDetails = new AtomicLong(0);
 
     public ClientDetailsCsvWriterTask(final @NotNull CompletableFuture<Void> clientDetailsFuture,
                                       final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
@@ -126,7 +127,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
 
                 if (clientDetails != null) {
                     writeRow(clientDetails);
-                    writtenClientDetails += 1;
+                    writtenClientDetails.incrementAndGet();
                 }
 
             }
@@ -139,7 +140,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
 
     }
 
-    public long getWrittenClientDetails() { return writtenClientDetails; }
+    public long getWrittenClientDetails() { return writtenClientDetails.get(); }
 
     private void writeHeader() {
         csvWriter.writeNext(EXPORT_CSV_HEADER);
