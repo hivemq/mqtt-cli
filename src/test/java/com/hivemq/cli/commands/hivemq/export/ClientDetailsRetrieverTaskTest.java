@@ -26,12 +26,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletionService;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,7 +43,7 @@ import static org.mockito.Mockito.when;
 class ClientDetailsRetrieverTaskTest {
 
     HiveMQRestService hiveMQRestService;
-    Future<Void> clientIdsFuture;
+    CompletableFuture<Void> clientIdsFuture;
     MockWebServer server;
     BlockingQueue<String> clientIdsQueue;
     BlockingQueue<ClientDetails> clientDetailsQueue;
@@ -58,7 +55,7 @@ class ClientDetailsRetrieverTaskTest {
         server = new MockWebServer();
         server.start();
 
-        clientIdsFuture = mock(Future.class);
+        clientIdsFuture = mock(CompletableFuture.class);
         when(clientIdsFuture.isDone()).thenReturn(false);
 
         clientIdsQueue = new LinkedBlockingQueue<>();
@@ -78,7 +75,7 @@ class ClientDetailsRetrieverTaskTest {
         );
 
 
-        final Future<Void> completableFuture = Executors.newSingleThreadExecutor().submit(clientDetailsRetrieverTask);
+        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
         when(clientIdsFuture.isDone()).thenReturn(true);
 
         completableFuture.get();
@@ -95,7 +92,7 @@ class ClientDetailsRetrieverTaskTest {
                 .setBody(CLIENT_DETAILS_PERSISTENT_OFFLINE)
         );
 
-        final Future<Void> completableFuture = Executors.newSingleThreadExecutor().submit(clientDetailsRetrieverTask);
+        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
         when(clientIdsFuture.isDone()).thenReturn(true);
 
         completableFuture.get();
@@ -112,7 +109,7 @@ class ClientDetailsRetrieverTaskTest {
                 .setBody(CLIENT_DETAILS_CONNECTED)
         );
 
-        final Future<Void> completableFuture = Executors.newSingleThreadExecutor().submit(clientDetailsRetrieverTask);
+        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
         when(clientIdsFuture.isDone()).thenReturn(true);
 
         completableFuture.get();
@@ -133,7 +130,7 @@ class ClientDetailsRetrieverTaskTest {
             );
         }
 
-        final Future<Void> completableFuture = Executors.newSingleThreadExecutor().submit(clientDetailsRetrieverTask);
+        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
 
         for (int i = 25; i < 50; i++) {
             clientIdsQueue.add("client-" + i);
@@ -152,31 +149,32 @@ class ClientDetailsRetrieverTaskTest {
     }
 
     @Test
-    void blocking_client_ids_queue_success() throws InterruptedException {
+    void blocking_client_ids_queue_success() {
         clientIdsQueue = new LinkedBlockingQueue<>(1);
         clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
 
-        final ExecutorService threadPool = Executors.newFixedThreadPool(2);
-        final CompletionService<Void> tasksCompletionService = new ExecutorCompletionService<>(threadPool);
 
-        tasksCompletionService.submit(() -> {
-            for (int i = 0; i < 25; i++) {
-                Thread.sleep(50);
-                clientIdsQueue.put("client-" + i);
-                server.enqueue(new MockResponse()
-                        .setResponseCode(200)
-                        .setBody(CLIENT_DETAILS_ALL)
-                );
+        final CompletableFuture<Void> clientIdsProducerFuture = CompletableFuture.runAsync(() -> {
+            try {
+                for (int i = 0; i < 25; i++) {
+                    Thread.sleep(50);
+                    clientIdsQueue.put("client-" + i);
+                    server.enqueue(new MockResponse()
+                            .setResponseCode(200)
+                            .setBody(CLIENT_DETAILS_ALL)
+                    );
+                }
+            } catch (final Exception ex) {
+                throw new CompletionException(ex);
             }
             when(clientIdsFuture.isDone()).thenReturn(true);
-            return null;
         });
 
-        tasksCompletionService.submit(clientDetailsRetrieverTask);
+        final CompletableFuture<Void> clientDetailsFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
 
+        clientIdsProducerFuture.join();
+        clientDetailsFuture.join();
 
-        tasksCompletionService.take();
-        tasksCompletionService.take();
 
         assertEquals(25, clientDetailsQueue.size());
 
@@ -197,28 +195,28 @@ class ClientDetailsRetrieverTaskTest {
         }
         when(clientIdsFuture.isDone()).thenReturn(true);
 
-        final ExecutorService threadPool = Executors.newFixedThreadPool(2);
-        final CompletionService<Void> tasksCompletionService = new ExecutorCompletionService<>(threadPool);
 
 
-        final Future<Void> clientDetailsRetrieverFuture = tasksCompletionService.submit(clientDetailsRetrieverTask);
+        final CompletableFuture<Void> clientDetailsRetrieverFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
 
 
         final AtomicInteger receivedClientDetails = new AtomicInteger(0);
-        tasksCompletionService.submit(() -> {
-            while (!clientDetailsRetrieverFuture.isDone() ||  !clientDetailsQueue.isEmpty()) {
-                final ClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
-                if (clientDetails != null) {
-                    receivedClientDetails.incrementAndGet();
+        final CompletableFuture<Void> receivedClientDetailsFuture = CompletableFuture.runAsync(() -> {
+            try {
+
+                while (!clientDetailsRetrieverFuture.isDone() || !clientDetailsQueue.isEmpty()) {
+                    final ClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
+                    if (clientDetails != null) {
+                        receivedClientDetails.incrementAndGet();
+                    }
                 }
+            } catch (final Exception ex) {
+                throw new CompletionException(ex);
             }
-            return null;
         });
 
-
-
-        tasksCompletionService.take();
-        tasksCompletionService.take();
+        clientDetailsRetrieverFuture.join();
+        receivedClientDetailsFuture.join();
 
         assertEquals(25, receivedClientDetails.get());
 

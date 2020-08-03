@@ -26,11 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -70,7 +67,7 @@ class ClientIdsRetrieverTaskTest {
 
         server.enqueue(response);
 
-        clientIdsRetrieverTask.call();
+        clientIdsRetrieverTask.run();
 
         assertEquals(1, clientIdsQueue.size());
         assertEquals("client-ݰ", clientIdsQueue.poll());
@@ -92,7 +89,7 @@ class ClientIdsRetrieverTaskTest {
                 .setResponseCode(200)
                 .setBody(CLIENT_IDS_SINGLE_RESULT));
 
-        clientIdsRetrieverTask.call();
+        clientIdsRetrieverTask.run();
 
         assertEquals(51, clientIdsQueue.size());
     }
@@ -105,17 +102,14 @@ class ClientIdsRetrieverTaskTest {
 
         server.enqueue(response);
 
-        assertThrows(ApiException.class, () -> clientIdsRetrieverTask.call());
+        assertThrows(CompletionException.class, () -> clientIdsRetrieverTask.run());
         assertEquals(0, clientIdsQueue.size());
     }
 
     @Test
-    void blocking_success() throws InterruptedException {
+    void blocking_success() {
         clientIdsQueue = new LinkedBlockingQueue<>(1);
         clientIdsRetrieverTask = new ClientIdsRetrieverTask(hiveMQRestService, clientIdsQueue);
-
-        final ExecutorService threadPool = Executors.newFixedThreadPool(2);
-        final CompletionService<Void> tasksCompletionService = new ExecutorCompletionService<>(threadPool);
 
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -126,22 +120,25 @@ class ClientIdsRetrieverTaskTest {
                 .setBody(CLIENT_IDS_SINGLE_RESULT));
 
 
-        final Future<Void> clientIdsRetrieverFuture = tasksCompletionService.submit(clientIdsRetrieverTask);
+        final CompletableFuture<Void> clientIdsRetrieverFuture = CompletableFuture.runAsync(clientIdsRetrieverTask);
 
         final AtomicLong polledClientIds = new AtomicLong();
-        tasksCompletionService.submit(() -> {
-            while (!clientIdsRetrieverFuture.isDone() || !clientIdsQueue.isEmpty()) {
-                final String clientId = clientIdsQueue.poll(10, TimeUnit.MILLISECONDS);
-                if (clientId != null) {
-                    polledClientIds.incrementAndGet();
+        final CompletableFuture<Void> clientIdsConsumerFuture = CompletableFuture.runAsync(() -> {
+            try {
+
+                while (!clientIdsRetrieverFuture.isDone() || !clientIdsQueue.isEmpty()) {
+                    final String clientId = clientIdsQueue.poll(10, TimeUnit.MILLISECONDS);
+                    if (clientId != null) {
+                        polledClientIds.incrementAndGet();
+                    }
                 }
+            } catch (final Exception ex) {
+                throw new CompletionException(ex);
             }
-            return null;
         });
 
-
-        tasksCompletionService.take();
-        tasksCompletionService.take();
+        clientIdsRetrieverFuture.join();
+        clientIdsConsumerFuture.join();
 
         assertEquals(0, clientIdsQueue.size());
         assertEquals(11, polledClientIds.get());

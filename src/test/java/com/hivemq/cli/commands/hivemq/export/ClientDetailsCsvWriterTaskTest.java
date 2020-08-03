@@ -29,6 +29,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
+import io.reactivex.Completable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -40,6 +41,8 @@ import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -58,7 +61,7 @@ import static org.mockito.Mockito.when;
 class ClientDetailsCsvWriterTaskTest {
 
     @Mock
-    private Future<Void> clientDetailsFuture;
+    private CompletableFuture<Void> clientDetailsFuture;
     private File csvFile;
     private BlockingQueue<ClientDetails> clientDetailsQueue;
     private ClientDetailsCsvWriterTask clientDetailsCsvWriterTask;
@@ -68,7 +71,7 @@ class ClientDetailsCsvWriterTaskTest {
     @BeforeEach
     @SuppressWarnings("unchecked")
     void setUp() throws IOException {
-        clientDetailsFuture = mock(Future.class);
+        clientDetailsFuture = mock(CompletableFuture.class);
         when(clientDetailsFuture.isDone()).thenReturn(false);
         csvFile = File.createTempFile("client_details", ".csv");
         clientDetailsQueue = new LinkedBlockingQueue<>();
@@ -146,7 +149,7 @@ class ClientDetailsCsvWriterTaskTest {
 
         clientDetailsQueue.add(clientDetails);
 
-        final Future<Void> completableFuture = Executors.newSingleThreadExecutor().submit(clientDetailsCsvWriterTask);
+        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsCsvWriterTask);
 
         when(clientDetailsFuture.isDone()).thenReturn(true);
 
@@ -256,7 +259,7 @@ class ClientDetailsCsvWriterTaskTest {
 
         clientDetailsQueue.add(clientDetails);
 
-        final Future<Void> completableFuture = Executors.newSingleThreadExecutor().submit(clientDetailsCsvWriterTask);
+        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsCsvWriterTask);
 
         when(clientDetailsFuture.isDone()).thenReturn(true);
 
@@ -322,7 +325,7 @@ class ClientDetailsCsvWriterTaskTest {
 
         clientDetailsQueue.add(clientDetails);
 
-        final Future<Void> completableFuture = Executors.newSingleThreadExecutor().submit(clientDetailsCsvWriterTask);
+        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsCsvWriterTask);
 
 
         when(clientDetailsFuture.isDone()).thenReturn(true);
@@ -439,7 +442,7 @@ class ClientDetailsCsvWriterTaskTest {
             clientDetailsQueue.add(clientDetails);
         }
 
-        final Future<Void> completableFuture = Executors.newSingleThreadExecutor().submit(clientDetailsCsvWriterTask);
+        final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsCsvWriterTask);
 
         Thread.sleep(1000);
         for (int i = 0; i < 25; i++) {
@@ -502,22 +505,23 @@ class ClientDetailsCsvWriterTaskTest {
                 CSVWriter.DEFAULT_LINE_END);
 
 
-        final ExecutorService threadPool = Executors.newFixedThreadPool(2);
-        final CompletionService<Void> tasksCompletionService = new ExecutorCompletionService<>(threadPool);
-
-        tasksCompletionService.submit(() -> {
-            for (int i = 0; i < 50; i++) {
-                Thread.sleep(10);
-                clientDetailsQueue.put(allClientDetails);
+        final CompletableFuture<Void> detailsProducerFuture = CompletableFuture.runAsync(() -> {
+            try {
+                for (int i = 0; i < 50; i++) {
+                    Thread.sleep(10);
+                    clientDetailsQueue.put(allClientDetails);
+                }
+            } catch (Exception e) {
+                throw new CompletionException(e);
             }
             when(clientDetailsFuture.isDone()).thenReturn(true);
-            return null;
         });
 
-        tasksCompletionService.submit(clientDetailsCsvWriterTask);
 
-        tasksCompletionService.take();
-        tasksCompletionService.take();
+        final CompletableFuture<Void> clientDetailsCsvWriterFuture = CompletableFuture.runAsync(clientDetailsCsvWriterTask);
+
+        detailsProducerFuture.join();
+        clientDetailsCsvWriterFuture.join();
 
         final int writtenCsvLines = csvReader.readAll().size();
 

@@ -25,11 +25,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ClientIdsRetrieverTask implements Callable<Void> {
+public class ClientIdsRetrieverTask implements Runnable {
 
     private @NotNull HiveMQRestService hivemqRestService;
     private final @NotNull BlockingQueue<String> clientIdsQueue;
@@ -45,40 +45,47 @@ public class ClientIdsRetrieverTask implements Callable<Void> {
     }
 
 
+    public long getReceivedClientIds() { return receivedClientIds; }
+
     @Override
-    public Void call() throws InterruptedException, ApiException {
+    public void run() {
         boolean hasNextCursor = true;
         String nextCursor = null;
         while (hasNextCursor) {
-                final ClientList clientList = hivemqRestService.getClientIds(nextCursor);
-                final List<Client> clients = clientList.getItems();
-                final PaginationCursor links = clientList.getLinks();
+            final ClientList clientList;
+            try {
+                clientList = hivemqRestService.getClientIds(nextCursor);
+            } catch (ApiException e) {
+                throw new CompletionException(e);
+            }
+            final List<Client> clients = clientList.getItems();
+            final PaginationCursor links = clientList.getLinks();
 
-                if (clients != null) {
-                    receivedClientIds += clients.size();
-                    for (final Client client : clients) {
-                        if (client.getId() != null) {
+            if (clients != null) {
+                receivedClientIds += clients.size();
+                for (final Client client : clients) {
+                    if (client.getId() != null) {
+                        try {
                             clientIdsQueue.put(client.getId());
+                        } catch (InterruptedException e) {
+                            throw new CompletionException(e);
                         }
                     }
                 }
+            }
 
-                if (links != null && links.getNext() != null) {
-                    final Matcher m = CURSOR_PATTERN.matcher(links.getNext());
-                    if (m.find()) {
-                        nextCursor = m.group(1);
-                    }
-                    else {
-                        hasNextCursor = false;
-                    }
-                } else {
+            if (links != null && links.getNext() != null) {
+                final Matcher m = CURSOR_PATTERN.matcher(links.getNext());
+                if (m.find()) {
+                    nextCursor = m.group(1);
+                }
+                else {
                     hasNextCursor = false;
                 }
-
+            } else {
+                hasNextCursor = false;
             }
-        return null;
+
+        }
     }
-
-    public long getReceivedClientIds() { return receivedClientIds; }
-
 }

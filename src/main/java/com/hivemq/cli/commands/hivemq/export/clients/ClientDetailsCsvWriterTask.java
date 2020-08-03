@@ -35,11 +35,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 
-public class ClientDetailsCsvWriterTask implements Callable<Void> {
+public class ClientDetailsCsvWriterTask implements Runnable {
 
     public static final String[] EXPORT_CSV_HEADER = {
             "clientId",
@@ -76,15 +76,15 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
             "certificateState"
     };
 
-    final @NotNull Future<Void> clientDetailsFuture;
-    final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
-    final @NotNull File file;
-    final @NotNull CSVWriter csvWriter;
-    final @NotNull BufferedWriter bufferedFileWriter;
+    private final @NotNull CompletableFuture<Void> clientDetailsFuture;
+    private final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+    private final @NotNull File file;
+    private final @NotNull CSVWriter csvWriter;
+    private final @NotNull BufferedWriter bufferedFileWriter;
 
-    long writtenClientDetails = 0;
+    private long writtenClientDetails = 0;
 
-    public ClientDetailsCsvWriterTask(final @NotNull Future<Void> clientDetailsFuture,
+    public ClientDetailsCsvWriterTask(final @NotNull CompletableFuture<Void> clientDetailsFuture,
                                       final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
                                       final @NotNull File file,
                                       final char lineSeparator,
@@ -106,7 +106,7 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
     }
 
     @Override
-    public Void call() throws IOException, InterruptedException {
+    public void run() {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -116,22 +116,27 @@ public class ClientDetailsCsvWriterTask implements Callable<Void> {
             }
         }));
 
-        writeHeader();
+        try {
 
-        while (!clientDetailsFuture.isDone() || !clientDetailsQueue.isEmpty()) {
+            writeHeader();
 
-            final ClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
+            while (!clientDetailsFuture.isDone() || !clientDetailsQueue.isEmpty()) {
 
-            if (clientDetails != null) {
-                writeRow(clientDetails);
-                writtenClientDetails += 1;
+                final ClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
+
+                if (clientDetails != null) {
+                    writeRow(clientDetails);
+                    writtenClientDetails += 1;
+                }
+
             }
 
+            csvWriter.close();
+        }
+        catch (final Exception e) {
+            throw new CompletionException(e);
         }
 
-        csvWriter.close();
-
-        return null;
     }
 
     public long getWrittenClientDetails() { return writtenClientDetails; }

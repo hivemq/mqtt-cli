@@ -26,15 +26,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-public class ClientDetailsRetrieverTask implements Callable<Void> {
+public class ClientDetailsRetrieverTask implements Runnable {
 
     final @NotNull HiveMQRestService hivemqRestService;
-    final @NotNull Future<Void> clientIdsFuture;
+    final @NotNull CompletableFuture clientIdsFuture;
     final @NotNull BlockingQueue<String> clientIdsQueue;
     final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
     final @NotNull Semaphore clientDetailsInProgress;
@@ -42,7 +43,7 @@ public class ClientDetailsRetrieverTask implements Callable<Void> {
     final static int MAX_CONCURRENT_REQUESTS = 100;
 
     public ClientDetailsRetrieverTask(final @NotNull HiveMQRestService hivemqRestService,
-                                      final @NotNull Future<Void> clientIdsFuture,
+                                      final @NotNull CompletableFuture clientIdsFuture,
                                       final @NotNull BlockingQueue<String> clientIdsQueue,
                                       final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue) {
         this.hivemqRestService = hivemqRestService;
@@ -53,23 +54,25 @@ public class ClientDetailsRetrieverTask implements Callable<Void> {
     }
 
     @Override
-    public Void call() throws InterruptedException, ApiException {
+    public void run() {
+        try {
+            while (!clientIdsFuture.isDone() || !clientIdsQueue.isEmpty()) {
 
-        while (!clientIdsFuture.isDone() || !clientIdsQueue.isEmpty()) {
+                final String clientId = clientIdsQueue.poll(50, TimeUnit.MILLISECONDS);
+                if (clientId != null) {
+                    final ClientItemApiCallback clientItemApiCallback = new ClientItemApiCallback(clientDetailsQueue, clientDetailsInProgress);
 
-            final String clientId = clientIdsQueue.poll(50, TimeUnit.MILLISECONDS);
-            if (clientId != null) {
-                final ClientItemApiCallback clientItemApiCallback = new ClientItemApiCallback(clientDetailsQueue, clientDetailsInProgress);
-
-                clientDetailsInProgress.acquire();
-                hivemqRestService.getClientDetails(clientId, clientItemApiCallback);
+                    clientDetailsInProgress.acquire();
+                    hivemqRestService.getClientDetails(clientId, clientItemApiCallback);
+                }
             }
+
+            // Block until all callbacks are finished
+            clientDetailsInProgress.acquire(MAX_CONCURRENT_REQUESTS);
         }
-
-        // Block until all callbacks are finished
-        clientDetailsInProgress.acquire(MAX_CONCURRENT_REQUESTS);
-
-        return null;
+        catch (final Exception e) {
+            throw new CompletionException(e);
+        }
     }
 
 
