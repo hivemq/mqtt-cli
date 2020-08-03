@@ -20,6 +20,7 @@ import com.hivemq.cli.MqttCLIMain;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.concurrent.Callable;
 
 
 @CommandLine.Command(
@@ -31,7 +32,7 @@ import javax.inject.Inject;
         commandListHeading = "%n@|bold Commands:|@%n",
         mixinStandardHelpOptions = true,
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
-public class ExportCommand implements Runnable {
+public class ExportCommand implements Callable<Integer> {
 
     @CommandLine.Spec
     CommandLine.Model.CommandSpec spec;
@@ -40,7 +41,8 @@ public class ExportCommand implements Runnable {
     public ExportCommand() { }
 
     @Override
-    public void run() {
+    public Integer call() {
         System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
+        return 0;
     }
 }
