@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.commands.hivemq.export;
+package com.hivemq.cli.commands.hivemq.export.clients;
 
 import com.hivemq.cli.commands.hivemq.export.clients.ClientIdsRetrieverTask;
 import com.hivemq.cli.openapi.ApiException;

@@ -23,6 +23,7 @@ import com.hivemq.cli.openapi.hivemq.PaginationCursor;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletionException;
@@ -31,11 +32,10 @@ import java.util.regex.Pattern;
 
 public class ClientIdsRetrieverTask implements Runnable {
 
-    private @NotNull HiveMQRestService hivemqRestService;
-    private final @NotNull BlockingQueue<String> clientIdsQueue;
-    private long receivedClientIds = 0;
-
     private static final Pattern CURSOR_PATTERN = Pattern.compile("cursor=([^&]*)");
+    private final @NotNull BlockingQueue<String> clientIdsQueue;
+    private @NotNull HiveMQRestService hivemqRestService;
+    private long receivedClientIds = 0;
 
     public ClientIdsRetrieverTask(final @NotNull HiveMQRestService hivemqRestService,
                                   final @NotNull BlockingQueue<String> clientIdsQueue) {
@@ -45,47 +45,52 @@ public class ClientIdsRetrieverTask implements Runnable {
     }
 
 
-    public long getReceivedClientIds() { return receivedClientIds; }
+    public long getReceivedClientIds() {
+        return receivedClientIds;
+    }
 
     @Override
     public void run() {
         boolean hasNextCursor = true;
         String nextCursor = null;
-        while (hasNextCursor) {
-            final ClientList clientList;
-            try {
-                clientList = hivemqRestService.getClientIds(nextCursor);
-            } catch (ApiException e) {
-                throw new CompletionException(e);
-            }
-            final List<Client> clients = clientList.getItems();
-            final PaginationCursor links = clientList.getLinks();
+        try {
+            while (hasNextCursor) {
+                final ClientList clientList;
+                try {
+                    clientList = hivemqRestService.getClientIds(nextCursor);
+                } catch (ApiException e) {
+                    throw new CompletionException(e);
+                }
+                final List<Client> clients = clientList.getItems();
+                final PaginationCursor links = clientList.getLinks();
 
-            if (clients != null) {
-                receivedClientIds += clients.size();
-                for (final Client client : clients) {
-                    if (client.getId() != null) {
-                        try {
-                            clientIdsQueue.put(client.getId());
-                        } catch (InterruptedException e) {
-                            throw new CompletionException(e);
+                if (clients != null) {
+                    receivedClientIds += clients.size();
+                    for (final Client client : clients) {
+                        if (client.getId() != null) {
+                            try {
+                                clientIdsQueue.put(client.getId());
+                            } catch (InterruptedException e) {
+                                throw new CompletionException(e);
+                            }
                         }
                     }
                 }
-            }
 
-            if (links != null && links.getNext() != null) {
-                final Matcher m = CURSOR_PATTERN.matcher(links.getNext());
-                if (m.find()) {
-                    nextCursor = m.group(1);
-                }
-                else {
+                if (links != null && links.getNext() != null) {
+                    final Matcher m = CURSOR_PATTERN.matcher(links.getNext());
+                    if (m.find()) {
+                        nextCursor = m.group(1);
+                    } else {
+                        hasNextCursor = false;
+                    }
+                } else {
                     hasNextCursor = false;
                 }
-            } else {
-                hasNextCursor = false;
             }
-
+        }
+        catch(final Exception ex) {
+            throw new CompletionException(ex);
         }
     }
 }

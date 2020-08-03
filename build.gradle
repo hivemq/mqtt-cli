@@ -206,6 +206,7 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
     testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.8.0'
+    testImplementation group: 'com.hivemq', name: 'hivemq-testcontainer-junit5', version: '1.1.1'
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
 
 }
