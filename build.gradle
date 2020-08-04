@@ -129,6 +129,7 @@ ext {
     gsonVersion = '2.8.6'
     substrateVmVersion = '19.2.0'
     junitJupiterVersion = '5.5.1'
+    hivemqTestcontainerVersion = '1.1.1'
 }
 
 
@@ -162,6 +163,7 @@ dependencies {
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
+    testImplementation group: 'com.hivemq', name: 'hivemq-testcontainer-junit5', version: hivemqTestcontainerVersion
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
 
 }
