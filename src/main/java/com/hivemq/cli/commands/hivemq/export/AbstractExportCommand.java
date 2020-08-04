@@ -48,13 +48,13 @@ public abstract class AbstractExportCommand {
     @CommandLine.Option(names = {"--csvSeparator"}, defaultValue = "" + CSVWriter.DEFAULT_SEPARATOR, description = "The separator for csv export (default " + CSVWriter.DEFAULT_SEPARATOR + ")", order = 5)
     public char csvSeparator;
 
-    @CommandLine.Option(names = {"--csvQuoteChar"}, defaultValue = "" + CSVWriter.DEFAULT_QUOTE_CHARACTER, description = "The quote character for CSV export (default " + CSVWriter.DEFAULT_QUOTE_CHARACTER + ")", order = 6)
+    @CommandLine.Option(names = {"--csvQuoteChar"}, defaultValue = "" + CSVWriter.DEFAULT_QUOTE_CHARACTER, description = "The quote character for csv export (default " + CSVWriter.DEFAULT_QUOTE_CHARACTER + ")", order = 6)
     public char csvQuoteCharacter;
 
-    @CommandLine.Option(names = {"--csvEscChar"}, defaultValue = "" + CSVWriter.DEFAULT_ESCAPE_CHARACTER, description = "The escape character for CSV export (default " + CSVWriter.DEFAULT_ESCAPE_CHARACTER + ")", order = 7)
+    @CommandLine.Option(names = {"--csvEscChar"}, defaultValue = "" + CSVWriter.DEFAULT_ESCAPE_CHARACTER, description = "The escape character for csv export (default " + CSVWriter.DEFAULT_ESCAPE_CHARACTER + ")", order = 7)
     public char csvEscapeChar;
 
-    @CommandLine.Option(names = {"--csvLineEndChar"}, defaultValue = CSVWriter.DEFAULT_LINE_END, description = "The line-end character for CSV export (default \\n)", order = 8)
+    @CommandLine.Option(names = {"--csvLineEndChar"}, defaultValue = CSVWriter.DEFAULT_LINE_END, description = "The line-end character for csv export (default \\n)", order = 8)
     public @NotNull String csvLineEndCharacter;
 
     @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 9)
