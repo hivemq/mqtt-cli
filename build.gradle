@@ -140,17 +140,17 @@ ext {
 
     // Dependency versions
 
-    picoclishell3Version = '4.0.4'
-    picocliVersion = '4.0.4'
-    jline3Version = '3.12.1'
-    jline3JansiVersion = '3.12.1'
+    picoclishell3Version = '4.5.0'
+    picocliVersion = '4.5.0'
+    jline3Version = '3.16.0'
+    jline3JansiVersion = '3.16.0'
     daggerVersion = '2.21'
     guavaVersion ='27.0.1-jre'
-    hivemqclientVersion = '1.1.3'
-    tinylogVersion = '2.0.1'
+    hivemqclientVersion = '1.2.0'
+    tinylogVersion = '2.1.2'
     jcToolsVersion = '2.1.2'
     jetbrainsAnnotationsVersion = '17.0.0'
-    bouncycastleVersion='1.62'
+    bouncycastleVersion='1.66'
     nettyVersion = '4.1.37.Final'
     gsonVersion = '2.8.6'
     substrateVmVersion = '19.2.0'
@@ -162,6 +162,10 @@ ext {
     gsonFireVersion = '1.8.4'
     javaxVersion = '1.3.2'
     commonsLangVersion = '3.10'
+    mockitoVersion = '2.23.4'
+    hivemqTestcontainerVersion = '1.1.1'
+    mockWebserverVersion = '4.8.0'
+    systemExitVersion = '1.0.0'
 }
 
 
@@ -202,12 +206,12 @@ dependencies {
     implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
     implementation group: 'com.opencsv', name: 'opencsv', version: openCsvVersion
 
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
-    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.8.0'
-    testImplementation group: 'com.hivemq', name: 'hivemq-testcontainer-junit5', version: '1.1.1'
-    testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: '1.0.0'
+    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: mockWebserverVersion
+    testImplementation group: 'com.hivemq', name: 'hivemq-testcontainer-junit5', version: hivemqTestcontainerVersion
+    testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: systemExitVersion
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
 
 }
