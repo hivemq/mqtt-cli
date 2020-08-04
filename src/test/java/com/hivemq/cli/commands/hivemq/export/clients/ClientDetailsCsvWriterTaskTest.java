@@ -16,7 +16,6 @@
  */
 package com.hivemq.cli.commands.hivemq.export.clients;
 
-import com.hivemq.cli.commands.hivemq.export.clients.ClientDetailsCsvWriterTask;
 import com.hivemq.cli.openapi.hivemq.CertificateInformation;
 import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.openapi.hivemq.ClientRestrictions;
@@ -29,7 +28,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
-import io.reactivex.Completable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -43,12 +41,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.hivemq.cli.commands.hivemq.export.clients.ClientDetailsCsvWriterTask.EXPORT_CSV_HEADER;
