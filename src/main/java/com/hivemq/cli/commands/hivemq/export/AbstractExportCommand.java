@@ -16,12 +16,20 @@
  */
 package com.hivemq.cli.commands.hivemq.export;
 
+import com.hivemq.cli.utils.LoggerUtils;
 import com.opencsv.CSVWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tinylog.configuration.Configuration;
+import org.tinylog.core.TinylogLoggingProvider;
+import org.tinylog.provider.LoggingProvider;
 import picocli.CommandLine;
+import sun.util.logging.internal.LoggingProviderImpl;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AbstractExportCommand {
 
@@ -53,5 +61,30 @@ public abstract class AbstractExportCommand {
     @CommandLine.Option(names = {"--csvLineEndChar"}, defaultValue = CSVWriter.DEFAULT_LINE_END, description = "The line-end character for CSV export (default \\n)", order = 8)
     public @NotNull String csvLineEndCharacter;
 
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 9)
+    private void initLogging(final boolean logToLogfile) {
+        if (logToLogfile) {
+            LoggerUtils.useDefaultLogging();
+        }
+        else {
+            final Map<String, String> configurationMap = new HashMap<String, String>() {{
+                put("writer.level", "off");
+            }};
+            Configuration.replace(configurationMap);
+        }
+    }
 
+    @Override
+    public String toString() {
+        return "AbstractExportCommand{" +
+                "url='" + url + '\'' +
+                ", file=" + file +
+                ", rateLimit=" + rateLimit +
+                ", format=" + format +
+                ", csvSeparator=" + csvSeparator +
+                ", csvQuoteCharacter=" + csvQuoteCharacter +
+                ", csvEscapeChar=" + csvEscapeChar +
+                ", csvLineEndCharacter='\\n" + '\'' +
+                '}';
+    }
 }

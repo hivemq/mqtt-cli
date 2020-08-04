@@ -22,6 +22,7 @@ import com.hivemq.cli.openapi.hivemq.ClientList;
 import com.hivemq.cli.openapi.hivemq.PaginationCursor;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -56,11 +57,7 @@ public class ClientIdsRetrieverTask implements Runnable {
         try {
             while (hasNextCursor) {
                 final ClientList clientList;
-                try {
-                    clientList = hivemqRestService.getClientIds(nextCursor);
-                } catch (ApiException e) {
-                    throw new CompletionException(e);
-                }
+                clientList = hivemqRestService.getClientIds(nextCursor);
                 final List<Client> clients = clientList.getItems();
                 final PaginationCursor links = clientList.getLinks();
 
@@ -68,11 +65,7 @@ public class ClientIdsRetrieverTask implements Runnable {
                     receivedClientIds += clients.size();
                     for (final Client client : clients) {
                         if (client.getId() != null) {
-                            try {
-                                clientIdsQueue.put(client.getId());
-                            } catch (InterruptedException e) {
-                                throw new CompletionException(e);
-                            }
+                            clientIdsQueue.put(client.getId());
                         }
                     }
                 }
@@ -90,7 +83,9 @@ public class ClientIdsRetrieverTask implements Runnable {
             }
         }
         catch(final Exception ex) {
+            Logger.error("Retrieval of client ids failed", ex);
             throw new CompletionException(ex);
         }
+        Logger.debug("Finished retrieving {} client ids", receivedClientIds);
     }
 }

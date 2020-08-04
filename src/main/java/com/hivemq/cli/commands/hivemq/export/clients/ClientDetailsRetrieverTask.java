@@ -22,6 +22,7 @@ import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.openapi.hivemq.ClientItem;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class ClientDetailsRetrieverTask implements Runnable {
 
     final @NotNull HiveMQRestService hivemqRestService;
-    final @NotNull CompletableFuture clientIdsFuture;
+    final @NotNull CompletableFuture<Void> clientIdsFuture;
     final @NotNull BlockingQueue<String> clientIdsQueue;
     final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
     final @NotNull Semaphore clientDetailsInProgress;
@@ -43,7 +44,7 @@ public class ClientDetailsRetrieverTask implements Runnable {
     final static int MAX_CONCURRENT_REQUESTS = 100;
 
     public ClientDetailsRetrieverTask(final @NotNull HiveMQRestService hivemqRestService,
-                                      final @NotNull CompletableFuture clientIdsFuture,
+                                      final @NotNull CompletableFuture<Void> clientIdsFuture,
                                       final @NotNull BlockingQueue<String> clientIdsQueue,
                                       final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue) {
         this.hivemqRestService = hivemqRestService;
@@ -61,7 +62,6 @@ public class ClientDetailsRetrieverTask implements Runnable {
                 final String clientId = clientIdsQueue.poll(50, TimeUnit.MILLISECONDS);
                 if (clientId != null) {
                     final ClientItemApiCallback clientItemApiCallback = new ClientItemApiCallback(clientDetailsQueue, clientDetailsInProgress);
-
                     clientDetailsInProgress.acquire();
                     hivemqRestService.getClientDetails(clientId, clientItemApiCallback);
                 }
@@ -71,8 +71,10 @@ public class ClientDetailsRetrieverTask implements Runnable {
             clientDetailsInProgress.acquire(MAX_CONCURRENT_REQUESTS);
         }
         catch (final Exception e) {
+            Logger.error("Retrieval of client details failed", e);
             throw new CompletionException(e);
         }
+        Logger.debug("Finished retrieving client details");
     }
 
 
@@ -88,6 +90,7 @@ public class ClientDetailsRetrieverTask implements Runnable {
 
         @Override
         public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
+            Logger.trace("Failed to retrieve client details", e);
             clientDetailsInProgress.release();
         }
 

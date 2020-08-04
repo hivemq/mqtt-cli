@@ -29,6 +29,7 @@ import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -65,6 +66,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
 
     @Override
     public Integer call() throws IOException, InterruptedException, ExecutionException {
+        Logger.trace("Command {}", this);
 
         // For now only CSV is supported as output format
         assert format == OutputFormat.csv;
@@ -72,6 +74,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         // Check if given URL is valid
         final HttpUrl httpUrl = HttpUrl.parse(url);
         if (httpUrl == null) {
+            Logger.error("URL is not in a valid format: {}", url);
             System.err.println("URL is not in a valid format: " + url);
             return -1;
         }
@@ -87,6 +90,8 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         final HiveMQRestService hivemqRestService = new HiveMQRestService(url, rateLimit);
         final BlockingQueue<String> clientIdsQueue = new LinkedBlockingQueue<>(CLIENT_IDS_QUEUE_LIMIT);
         final BlockingQueue<ClientDetails> clientDetailsQueue = new LinkedBlockingQueue<>(CLIENT_DETAILS_QUEUE_LIMIT);
+
+        Logger.info("Starting export of client details of HiveMQ endpoint {} with rate limit {} rps", url, rateLimit);
 
         // Start retrieving client ids
         final ClientIdsRetrieverTask clientIdsRetrieverTask = new ClientIdsRetrieverTask(hivemqRestService, clientIdsQueue);
@@ -124,7 +129,11 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         final CompletableFuture<Integer> exportResultFuture = exportFuture.handle(new ExportCompletedHandler(clientDetailsCsvWriterTask, printingScheduler));
 
         // Join all future
-        return exportResultFuture.get();
+        final Integer exitCode = exportResultFuture.get();
+
+        Logger.info("Finished export of client details");
+
+        return exitCode;
     }
 
 

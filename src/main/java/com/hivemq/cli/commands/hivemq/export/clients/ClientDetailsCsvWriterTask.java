@@ -26,6 +26,7 @@ import com.hivemq.cli.openapi.hivemq.TlsInformation;
 import com.opencsv.CSVWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tinylog.Logger;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -113,6 +114,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
             try {
                 bufferedFileWriter.close();
             } catch (IOException e) {
+                Logger.error("Interrupted before CSV could be written - CSV may be malformed", e);
                 System.err.println("Interrupted before CSV could be written - CSV may be malformed");
             }
         }));
@@ -135,9 +137,10 @@ public class ClientDetailsCsvWriterTask implements Runnable {
             csvWriter.close();
         }
         catch (final Exception e) {
+            Logger.error("Writing of CSV file failed", e);
             throw new CompletionException(e);
         }
-
+        Logger.debug("Finished writing {} client details to CSV file {}", writtenClientDetails, file.getAbsolutePath());
     }
 
     public long getWrittenClientDetails() { return writtenClientDetails.get(); }
