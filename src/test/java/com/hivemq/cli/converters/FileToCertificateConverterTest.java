@@ -57,7 +57,6 @@ class FileToCertificateConverterTest {
     @Test
     void convertSuccess() throws Exception {
         X509Certificate cert = fileToCertificateConverter.convert(pathToValidCertificate);
-        cert.checkValidity();
     }
 
     @Test

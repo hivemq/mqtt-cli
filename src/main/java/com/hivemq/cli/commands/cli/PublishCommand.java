@@ -38,6 +38,7 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -103,6 +104,9 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the publish message", order = 1)
     @Nullable private Mqtt5UserProperty[] userProperties;
 
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 1)
+    private boolean logToLogfile;
+
     @Override
     public void run() {
 
@@ -115,7 +119,13 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
             if (isVerbose()) put("writer1.level", "trace");
         }};
 
-        LoggerUtils.useDefaultLogging(configurationMap);
+        if (logToLogfile) {
+            LoggerUtils.useDefaultLogging(configurationMap);
+        }
+        else {
+            Configuration.replace(configurationMap);
+        }
+
 
         setDefaultOptions();
         sslConfig = buildSslConfig();

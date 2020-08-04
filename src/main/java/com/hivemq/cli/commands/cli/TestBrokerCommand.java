@@ -24,6 +24,7 @@ import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
 import com.hivemq.cli.mqtt.test.results.*;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -71,6 +72,9 @@ public class TestBrokerCommand implements Runnable {
     @CommandLine.Option(names = {"-q", "--qosTries"}, defaultValue = "10", description = "The amount of publishes to send to the broker on every qos level", order = 1)
     private @NotNull Integer qosTries;
 
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 1)
+    private boolean logToLogfile;
+
     @CommandLine.Mixin
     private AuthenticationOptions authenticationOptions = new AuthenticationOptions();
 
@@ -100,6 +104,13 @@ public class TestBrokerCommand implements Runnable {
             put("writer.format", "{message}");
             put("writer.level", "warn");
         }};
+
+        if (logToLogfile) {
+            LoggerUtils.useDefaultLogging(configurationMap);
+        }
+        else {
+            Configuration.replace(configurationMap);
+        }
 
         Configuration.replace(configurationMap);
 
