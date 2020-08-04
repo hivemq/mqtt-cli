@@ -45,6 +45,6 @@ Therefore you have to specify the values to the following keys if you want to ov
 | ``auth.client.key`` | The path to the default client key corresponding to the certificate  |
 | ``auth.server.cafile`` | The path to the default server certificate  |
 | ``client.subscribe.output``| The default filepath to which all the received publishes of a subscribed client will be written to. See `sub -of` option |
-| ``logfile.level``| The default debug level for the logfile which may be one of the following values: ``{INFO | DEBUG | TRACE}`` | ``DEBUG‚``
+| ``logfile.level``| The default debug level for the logfile which may be one of the following values: ``{INFO | DEBUG | TRACE}`` | ``DEBUG``
 | ``logfile.path`` | The default path to the logfile directory to which all the logs will be written | `~/.mqtt-cli/logs`
 
