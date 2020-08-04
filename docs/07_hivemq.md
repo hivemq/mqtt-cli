@@ -57,10 +57,11 @@ Commands:
 | ``-f``| ``--file`` | The file to write the output to. | If no file is specified a new file is created in the current directory.
 | ``-r``| ``--rate`` | The rate limit of the rest calls to the HiveMQ API endpoint in requests per second. | ``1500`` 
 |  | ``--format`` | The export output format. (Currently supported formats [``csv``]) | ``csv``
-| | `` --csvLineSeparator`` | An own defined line separator for the csv writing. | ``,``
-| | `` --csvQuoteChar`` | An own defined quote character for the csv writing. | ``"``
-| | `` --csvEscChar`` | An own defined escape character for the csv writing. | ``"``
-| | `` --csvLineEndChar`` | An own defined line end character for the csv writing. | ``\n``
+| | `` --csvSeparator=`` | The separator for csv export. | ``,``
+| | `` --csvQuoteChar`` | The quote character for csv export. | ``"``
+| | `` --csvEscChar`` | The escape character for csv export. | ``"``
+| | `` --csvLineEndChar`` | The line-end character for csv export. | ``\n``
+| ``-l`` | | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties) | ``false``
 
 ### Export client details
 

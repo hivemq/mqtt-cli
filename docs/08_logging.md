@@ -7,24 +7,11 @@ nav_order: 8
 {:.main-header-color-yellow}
 # Logging
 ***
+* All non-shell commands offer an ``-l`` option by which logging to a logfile under ``~/.mqtt-cli/logs`` can be activated
+* The logfile and loglevel can be configured in the [MQTT-CLI configuration](09_configuration.md)
+* By specifying the ``-l`` option for the ``shell`` command the whole shell-session will be logged to a logfile shown at start
 
-* By starting MQTT CLI in Shell-Mode a log file will be created and all trace level information will be logged to the file.
-* Verbose mode allows you to get more information about each MQTT message and the parameters.
-* By default the Shell-Mode logs all commands in verbose mode to a uniquely named logfile which is placed in ``~.mqtt-cli/logs`` which is printed out at the start of the shell.
-
-```
-$ mqtt shell 
-
-....
-Press Ctl-C to exit.
-
-Writing Logfile to /~/.mqtt-cli/logs/hmq-cli.<Year-Month-Day>.log
-mqtt>
-```
-
-
-
-## Usage Example
+## Direct logging for publish & subscribe
 > If you require debug logging for direct access add the `-d` and `-v` options are available for the basic publish and subscribe command
 
 

@@ -86,6 +86,8 @@ mqtt test   [--help]
 | ``-a``| ``--all`` | Perform all tests for all MQTT versions | ``False`` (Only test MQTT 3)
 | ``-t``| ``--timeOut`` | The time to wait for the broker to respond (in seconds). | ``10s``
 | ``-q`` | ``--qosTries`` | The amount of messages to send and receive from the broker for each QoS level. | ``10``
+| ``-l`` | | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties) | ``false``
+
 
 ***
 

@@ -112,6 +112,7 @@ mqtt sub    -t <topics> [-t <topics>]...
 | ``-Cup``  | ``--connectUserProperty`` | A user property of the subscribe message. |
 | ``--ws``  |  | Use WebSocket transport protocol. | ``False``
 | ``--ws:path``  |  | The path to the WebSocket located at given broker host. | 
+| ``-l`` | | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties) | ``false``
 
 ***
 
