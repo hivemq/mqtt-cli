@@ -21,13 +21,9 @@ import com.opencsv.CSVWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.configuration.Configuration;
-import org.tinylog.core.TinylogLoggingProvider;
-import org.tinylog.provider.LoggingProvider;
 import picocli.CommandLine;
-import sun.util.logging.internal.LoggingProviderImpl;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
