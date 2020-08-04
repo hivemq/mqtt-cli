@@ -18,7 +18,7 @@ See also ``$ mqtt --help``.
 
 With this you get an output on how to use MQTT CLI:
 ```
-Usage:  mqtt [-hV] { pub | sub | shell | test }
+Usage:  mqtt [-hV] { pub | sub | shell | test | hivemq }
 
 MQTT Command Line Interpreter.
 
@@ -42,8 +42,8 @@ $ mqtt [flags] [METHOD] [OPTION [OPTION]]
 
 ## Supported commands at start
 
-* [Publish](mqtt_commands/publish.md)
-* [Subscribe](mqtt_commands/subscribe.md)
+* [Publish](03_publish.md)
+* [Subscribe](04_subscribe.md)
 * [Shell](05_shell.md)
 * [Test](06_test.md) 
 * [HiveMQ](07_hivemq.md)
@@ -98,3 +98,21 @@ $ mqtt test
 
 This command runs a quick test suite against the broker running on the default host on the default port.
 The results are printed to the console.
+
+## HiveMQ command line
+```
+$ mqtt hivemq
+
+Usage:  mqtt hivemq [-hV] [COMMAND]
+
+HiveMQ Command Line Interpreter.
+
+Options:
+  -h, --help      Show this help message and exit.
+  -V, --version   Print version information and exit.
+
+Commands:
+  export  Exports the specified details from HiveMQ
+```
+
+This command gives access to the HiveMQ command line which offers commands to interact with a  running HiveMQ instance.

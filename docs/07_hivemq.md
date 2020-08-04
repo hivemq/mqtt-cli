@@ -48,6 +48,24 @@ Options:
 Commands:
   clients  Export HiveMQ client details
 ```
+### Synopis
+
+``` 
+mqtt hivemq export [COMMAND]    [-hlV]
+                                [-f=<file>]
+                                [--format=<format>]
+                                [-r=<rateLimit>]
+                                [-url=<url>] 
+                                [--csvEscChar=<csvEscapeChar>] 
+                                [--csvLineEndChar=<csvLineEndCharacter>] 
+                                [--csvQuoteChar=<csvQuoteCharacter>]
+                                [--csvSeparator=<csvSeparator>] 
+
+Commands:
+  clients  Export HiveMQ client details
+```
+
+***
 
 ### Options
 

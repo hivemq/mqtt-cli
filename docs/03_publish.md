@@ -32,7 +32,7 @@ mqtt pub --help
 ``` 
 mqtt pub    -t <topics> [-t <topics>]... 
             -m <message> 
-            [-cdrsv] 
+            [-cdrsvl] 
             [-q <qos>]...
             [-e <messageExpiryInterval>]          
             [-ct <contentType>] 

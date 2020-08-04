@@ -37,7 +37,7 @@ mqtt sub    -t <topics> [-t <topics>]...
             [-J]
             [-T]
             [-up <userProperties>]... 
-            [-cdsv]
+            [-cdsvl]
             [-h <host>] 
             [-p <port>]                                         
             [-V <version>] 
