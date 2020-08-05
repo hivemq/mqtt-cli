@@ -160,6 +160,19 @@ public class SslOptions {
         return keyManagerFactory;
     }
 
+    @Override
+    public String toString() {
+        return "SslOptions{" +
+                "useSsl=" + useSsl +
+                ", certificates=" + certificates +
+                ", certificatesFromDir=" + certificatesFromDir +
+                ", cipherSuites=" + cipherSuites +
+                ", supportedTLSVersions=" + supportedTLSVersions +
+                ", clientCertificate=" + clientCertificate +
+                ", clientPrivateKey=" + clientPrivateKey +
+                '}';
+    }
+
     public boolean isUseSsl() {
         return useSsl;
     }

@@ -26,38 +26,61 @@ import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
 import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
 import com.hivemq.cli.utils.Tuple;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode;
+import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckReasonCode;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static com.hivemq.cli.mqtt.test.results.TestResult.OK;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class Mqtt5FeatureTesterTest {
+public class Mqtt5FeatureTesterDefaultTest {
 
-    @RegisterExtension
-    final public @NotNull HiveMQTestContainerExtension hivemq =
+
+    final static public @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension("hivemq/hivemq4", "latest");
 
-    Mqtt5FeatureTester mqtt5FeatureTester;
+     static Mqtt5FeatureTester mqtt5FeatureTester;
+
+    @BeforeAll
+    static void beforeAll() {
+        hivemq.start();
+        mqtt5FeatureTester = new Mqtt5FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
+    }
 
     @BeforeEach
     void setUp() {
-        mqtt5FeatureTester = new Mqtt5FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 30);
+        if (!hivemq.isRunning()) {
+            hivemq.start();
+        }
+    }
+
+    @AfterAll
+    static void afterAll() {
+        hivemq.stop();
     }
 
     @Test
-    void connect_success() {
+    void connect_success() throws Exception {
         final Mqtt5ConnAck connAck = mqtt5FeatureTester.testConnect();
         assertNotNull(connAck);
         assertEquals(Mqtt5ConnAckReasonCode.SUCCESS, connAck.getReasonCode());
     }
 
+    @Test
+    void connect_failed() {
+        final Mqtt5FeatureTester featureTester = new Mqtt5FeatureTester("localhost", 1883, null, null, null, 30);
+        featureTester.setMaxTopicLength(30);
+        assertThrows(ConnectionFailedException.class, featureTester::testConnect);
+    }
 
     @Test
     void wildcard_subscriptions_success() {
@@ -66,6 +89,7 @@ class Mqtt5FeatureTesterTest {
         assertEquals(OK, wildcardSubscriptionsTestResult.getPlusWildcardTest());
         assertTrue(wildcardSubscriptionsTestResult.isSuccess());
     }
+
 
     @Test
     void shared_subscriptions_success() {
@@ -120,7 +144,7 @@ class Mqtt5FeatureTesterTest {
         final ClientIdLengthTestResults clientIdLengthTestResults = mqtt5FeatureTester.testClientIdLength();
         assertEquals(65535, clientIdLengthTestResults.getMaxClientIdLength());
         for (Tuple<Integer, String> testResult : clientIdLengthTestResults.getTestResults()) {
-            assertEquals(Mqtt3ConnAckReturnCode.SUCCESS.toString(), testResult.getValue());
+            assertEquals(Mqtt5ConnAckReasonCode.SUCCESS.toString(), testResult.getValue());
         }
     }
 
@@ -128,9 +152,10 @@ class Mqtt5FeatureTesterTest {
     void asciiChars_success() {
         final AsciiCharsInClientIdTestResults asciiCharsInClientIdTestResults = mqtt5FeatureTester.testAsciiCharsInClientId();
         for (Tuple<Character, String> testResult : asciiCharsInClientIdTestResults.getTestResults()) {
-            assertEquals(Mqtt3ConnAckReturnCode.SUCCESS.toString(), testResult.getValue());
+            assertEquals(Mqtt5ConnAckReasonCode.SUCCESS.toString(), testResult.getValue());
         }
         assertTrue(asciiCharsInClientIdTestResults.getUnsupportedChars().isEmpty());
 
     }
+
 }

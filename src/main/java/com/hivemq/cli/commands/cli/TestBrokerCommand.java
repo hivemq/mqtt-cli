@@ -17,6 +17,7 @@
 package com.hivemq.cli.commands.cli;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.options.AuthenticationOptions;
 import com.hivemq.cli.commands.options.SslOptions;
@@ -24,6 +25,7 @@ import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
 import com.hivemq.cli.mqtt.test.results.*;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -45,7 +47,8 @@ import java.util.Map;
 
 @CommandLine.Command(
         name = "test",
-        description = "Tests the specified broker on different MQTT feature support and prints the results")
+        description = "Tests the specified broker on different MQTT feature support and prints the results",
+        sortOptions = false)
 public class TestBrokerCommand implements Runnable {
 
     final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
@@ -71,6 +74,9 @@ public class TestBrokerCommand implements Runnable {
     @CommandLine.Option(names = {"-q", "--qosTries"}, defaultValue = "10", description = "The amount of publishes to send to the broker on every qos level", order = 1)
     private @NotNull Integer qosTries;
 
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 1)
+    private boolean logToLogfile;
+
     @CommandLine.Mixin
     private AuthenticationOptions authenticationOptions = new AuthenticationOptions();
 
@@ -94,14 +100,17 @@ public class TestBrokerCommand implements Runnable {
     @Override
     public void run() {
 
-        // TinyLog configuration
-        Map<String, String> configurationMap = new HashMap<String, String>() {{
-            put("writer", "console");
-            put("writer.format", "{message-only}");
-            put("writer.level", "warn");
-        }};
+        if (logToLogfile) {
+            LoggerUtils.useDefaultLogging(null);
+        }
+        else {
+            Map<String, String> configurationMap = new HashMap<String, String>() {{
+                put("writer.level", "off");
+            }};
+            Configuration.replace(configurationMap);
+        }
 
-        Configuration.replace(configurationMap);
+        Logger.trace("Command {}", this);
 
         if (host == null) {
             host = defaultCLIProperties.getHost();
@@ -140,8 +149,18 @@ public class TestBrokerCommand implements Runnable {
 
         // Test if MQTT5 is supported
         System.out.print("MQTT 5: ");
-        final Mqtt5ConnAck connAck = mqtt5Tester.testConnect();
+
+        Mqtt5ConnAck connAck;
+        try {
+            connAck = mqtt5Tester.testConnect();
+        } catch (final Exception e) {
+            Logger.error(e, "Could not connect MQTT 5 client");
+            System.out.println("Could not connect MQTT 5 client - " + Throwables.getRootCause(e).getMessage());
+            return;
+        }
+
         if (connAck == null) {
+            System.out.println("NO");
             return;
         } else if (connAck.getReasonCode() != Mqtt5ConnAckReasonCode.SUCCESS) {
             System.out.println(connAck.getReasonCode().toString());
@@ -283,7 +302,15 @@ public class TestBrokerCommand implements Runnable {
 
         // Test if MQTT3 is supported
         System.out.print("MQTT 3: ");
-        final Mqtt3ConnAck connAck = mqtt3Tester.testConnect();
+
+        Mqtt3ConnAck connAck;
+        try {
+            connAck = mqtt3Tester.testConnect();
+        } catch (Exception e) {
+            Logger.error(e, "Could not connect MQTT 3 client");
+            System.out.println("Could not connect MQTT 3 client - " + Throwables.getRootCause(e).getMessage());
+            return;
+        }
         if (connAck == null) {
             System.out.println("NO");
             return;
@@ -295,7 +322,6 @@ public class TestBrokerCommand implements Runnable {
         else {
             System.out.println("OK");
         }
-
 
         // Test max length of topic names & set length for next tests
         System.out.print("\t- Maximum topic length: ");
@@ -372,4 +398,21 @@ public class TestBrokerCommand implements Runnable {
         }
     }
 
+    @Override
+    public String toString() {
+        return "TestBrokerCommand{" +
+                "MAX_PAYLOAD_TEST_SIZE=" + MAX_PAYLOAD_TEST_SIZE +
+                ", host='" + host + '\'' +
+                ", usageHelpRequested=" + usageHelpRequested +
+                ", port=" + port +
+                ", version=" + version +
+                ", testAll=" + testAll +
+                ", timeOut=" + timeOut +
+                ", qosTries=" + qosTries +
+                ", logToLogfile=" + logToLogfile +
+                ", authenticationOptions=" + authenticationOptions +
+                ", sslOptions=" + sslOptions +
+                ", sslConfig=" + sslConfig +
+                '}';
+    }
 }

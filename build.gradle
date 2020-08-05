@@ -130,6 +130,7 @@ ext {
     substrateVmVersion = '19.2.0'
     junitJupiterVersion = '5.5.1'
     hivemqTestcontainerVersion = '1.1.1'
+    systemExitVersion = '1.0.0'
 }
 
 
@@ -164,6 +165,7 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
     testImplementation group: 'com.hivemq', name: 'hivemq-testcontainer-junit5', version: hivemqTestcontainerVersion
+    testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: systemExitVersion
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
 
 }
