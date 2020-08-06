@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+import static com.hivemq.cli.mqtt.test.results.TestResult.PUBLISH_FAILED;
 import static com.hivemq.cli.mqtt.test.results.TestResult.SUBSCRIBE_FAILED;
 import static com.hivemq.cli.mqtt.test.results.TestResult.TIME_OUT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -86,7 +87,7 @@ public class Mqtt3FeatureTesterRestrictedTest {
     void retain_failed() {
         mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final TestResult testResult = mqtt3FeatureTester.testRetain();
-        assertEquals(TIME_OUT, testResult);
+        assertEquals(PUBLISH_FAILED, testResult);
     }
 
     @Test
