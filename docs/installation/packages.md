@@ -41,8 +41,8 @@ and install the package with `sudo dpkg -i`  or `sudo apt install`:
 
 
 ``` 
-wget https://github.com/hivemq/mqtt-cli/releases/download/v4.4.0/mqtt-cli_4.4.0_all.deb
-sudo apt install ./mqtt-cli_4.4.0_all.deb
+wget https://github.com/hivemq/mqtt-cli/releases/download/v4.4.0/mqtt-cli-4.4.0.deb
+sudo apt install ./mqtt-cli-4.4.0.deb
 ``` 
 
 ***
@@ -53,6 +53,6 @@ For Red Hat, Fedora, Mandriva, OpenSuse, CentOS distributions you can use the rp
 The preferred way is to install the package via the `yum` package manager. To install the package simply execute:
 
 ``` 
-sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v4.4.0/mqtt-cli-4.4.0.noarch.rpm
+sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v4.4.0/mqtt-cli-4.4.0.rpm
 ```
 
