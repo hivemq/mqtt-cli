@@ -91,7 +91,7 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         final BlockingQueue<String> clientIdsQueue = new LinkedBlockingQueue<>(CLIENT_IDS_QUEUE_LIMIT);
         final BlockingQueue<ClientDetails> clientDetailsQueue = new LinkedBlockingQueue<>(CLIENT_DETAILS_QUEUE_LIMIT);
 
-        Logger.info("Starting export of client details of HiveMQ endpoint {} with rate limit {} rps", url, rateLimit);
+        Logger.info("Starting export of client details for HiveMQ at {} ", url);
 
         // Start retrieving client ids
         final ClientIdsRetrieverTask clientIdsRetrieverTask = new ClientIdsRetrieverTask(hivemqRestService, clientIdsQueue);
@@ -207,4 +207,3 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         }
     }
 }
-
