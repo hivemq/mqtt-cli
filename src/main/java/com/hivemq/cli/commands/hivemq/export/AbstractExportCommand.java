@@ -45,7 +45,7 @@ public abstract class AbstractExportCommand {
     @CommandLine.Option(names = {"--format"}, defaultValue = "csv", description = "The export output format (default csv)", order = 4)
     protected @NotNull OutputFormat format;
 
-    @CommandLine.Option(names = {"--csvSeparator"}, defaultValue = "" + CSVWriter.DEFAULT_SEPARATOR, description = "The separator for csv export (default " + CSVWriter.DEFAULT_SEPARATOR + ")", order = 5)
+    @CommandLine.Option(names = {"--csvSeparator"}, defaultValue = "" + CSVWriter.DEFAULT_SEPARATOR, description = "The separator for CSV export (default " + CSVWriter.DEFAULT_SEPARATOR + ")", order = 5)
     public char csvSeparator;
 
     @CommandLine.Option(names = {"--csvQuoteChar"}, defaultValue = "" + CSVWriter.DEFAULT_QUOTE_CHARACTER, description = "The quote character for csv export (default " + CSVWriter.DEFAULT_QUOTE_CHARACTER + ")", order = 6)
