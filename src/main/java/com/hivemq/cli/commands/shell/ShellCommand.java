@@ -95,21 +95,8 @@ public class ShellCommand implements Runnable {
 
     @Override
     public void run() {
-
-        Map<String, String> configurationMap = new HashMap<String, String>() {{
-            put("writer1", "console");
-            put("writer1.format", "{message-only}");
-            put("writer1.level", "warn");
-        }};
-
-        if (logToLogfile) {
-            LoggerUtils.useDefaultLogging(configurationMap);
-            logfilePath = Configuration.get("writer.file");
-        }
-        else {
-            Configuration.replace(configurationMap);
-        }
-
+        LoggerUtils.setupConsoleLogging(logToLogfile, "warn");
+        logfilePath = Configuration.get("writer.file");
 
         interact();
     }
