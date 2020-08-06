@@ -62,6 +62,14 @@ public class AuthenticationOptions {
         }
     }
 
+    @Override
+    public String toString() {
+        return "AuthenticationOptions{" +
+                "user='" + user + '\'' +
+                ", password=" + password +
+                '}';
+    }
+
     public @Nullable String getUser() { return user; }
 
     public @Nullable ByteBuffer getPassword() { return password; }
