@@ -114,7 +114,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
             try {
                 bufferedFileWriter.close();
             } catch (IOException e) {
-                Logger.error("Interrupted before CSV could be written - CSV may be malformed", e);
+                Logger.error(e, "Interrupted before CSV could be written - CSV may be malformed");
                 System.err.println("Interrupted before all content was written, output file may be incomplete");
             }
         }));
@@ -137,7 +137,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
             csvWriter.close();
         }
         catch (final Exception e) {
-            Logger.error("Writing of CSV file failed", e);
+            Logger.error(e, "Writing of CSV file failed");
             throw new CompletionException(e);
         }
         Logger.debug("Finished writing {} client details to CSV file {}", writtenClientDetails, file.getAbsolutePath());

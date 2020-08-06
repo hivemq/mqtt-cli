@@ -81,7 +81,7 @@ public class ClientIdsRetrieverTask implements Runnable {
             }
         }
         catch(final Exception ex) {
-            Logger.error("Retrieval of client ids failed", ex);
+            Logger.error(ex, "Retrieval of client ids failed");
             throw new CompletionException(ex);
         }
         Logger.debug("Finished retrieving {} client ids", receivedClientIds);

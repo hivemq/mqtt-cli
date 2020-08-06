@@ -70,7 +70,7 @@ public class ClientDetailsRetrieverTask implements Runnable {
             clientDetailsInProgress.acquire(MAX_CONCURRENT_REQUESTS);
         }
         catch (final Exception e) {
-            Logger.error("Retrieval of client details failed", e);
+            Logger.error(e, "Retrieval of client details failed");
             throw new CompletionException(e);
         }
         Logger.debug("Finished retrieving client details");
@@ -89,7 +89,7 @@ public class ClientDetailsRetrieverTask implements Runnable {
 
         @Override
         public void onFailure(ApiException e, int statusCode, Map<String, List<String>> responseHeaders) {
-            Logger.trace("Failed to retrieve client details", e);
+            Logger.trace(e,"Failed to retrieve client details");
             clientDetailsInProgress.release();
         }
 

@@ -51,7 +51,7 @@ import java.util.Map;
 
 @CommandLine.Command(
         name = "test",
-        description = "Tests the specified broker on different MQTT feature support and prints the results")
+        description = "Tests the specified broker on different MQTT feature support and prints the results.")
 public class TestBrokerCommand implements Runnable {
 
     final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
