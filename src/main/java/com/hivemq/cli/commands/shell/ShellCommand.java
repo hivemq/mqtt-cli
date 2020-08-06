@@ -90,7 +90,7 @@ public class ShellCommand implements Runnable {
     @CommandLine.Option(names = {"--help", "-h"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 1)
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 1)
     private boolean logToLogfile;
 
     @Override

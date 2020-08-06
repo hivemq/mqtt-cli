@@ -72,7 +72,7 @@ public class TestBrokerCommand implements Runnable {
     @CommandLine.Option(names = {"-q", "--qosTries"}, defaultValue = "10", description = "The amount of publishes to send to the broker on every qos level", order = 1)
     private @NotNull Integer qosTries;
 
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 1)
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 1)
     private boolean logToLogfile;
 
     @CommandLine.Mixin

@@ -104,7 +104,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the publish message", order = 1)
     @Nullable private Mqtt5UserProperty[] userProperties;
 
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 1)
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 1)
     private boolean logToLogfile;
 
     @Override
