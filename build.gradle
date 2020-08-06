@@ -21,14 +21,19 @@ plugins {
     id 'de.thetaphi.forbiddenapis' version '2.6' apply false
     id "com.github.breadmoirai.github-release" version "2.2.9"
     id 'org.ajoberstar.git-publish' version '2.1.1'
+    id 'org.owasp.dependencycheck' version '5.3.2.1' apply false
+    id "com.github.ben-manes.versions" version "0.29.0"
+    id "org.openapi.generator" version "4.3.1"
 }
 
+apply plugin: "com.github.ben-manes.versions"
 apply plugin: 'de.thetaphi.forbiddenapis'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 apply plugin: 'com.palantir.graal'
 
+apply plugin: 'org.owasp.dependencycheck'
 
 /****************
  * Project Settings *
@@ -37,10 +42,12 @@ apply plugin: 'com.palantir.graal'
 javadoc.options.encoding = 'UTF-8'
 
 group = 'com.hivemq'
-version = '1.2.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
+version = '4.4.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 description = 'MQTT CLI is a tool that provides a feature rich command line interface for connecting, ' +
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
+
+def hivemqApiVersion = '4.4.0'
 
 application {
     mainClassName = 'com.hivemq.cli.MqttCLIMain'
@@ -58,6 +65,31 @@ repositories {
     mavenCentral()
     jcenter()
 }
+
+/****************
+ * OpenAPI HiveMQ Rest API dependency *
+ ***************/
+
+openApiGenerate {
+    generatorName = "java"
+    inputSpec = "$rootDir/specs/HiveMQ-$hivemqApiVersion-OpenAPI-spec.yaml".toString()
+    outputDir = "$buildDir/generated/openapi".toString()
+    apiPackage = "com.hivemq.cli.openapi.hivemq"
+    modelPackage = "com.hivemq.cli.openapi.hivemq"
+    configOptions = [
+            dateLibrary: "java8"
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$rootDir/build/generated/openapi/src/main/java"
+        }
+    }
+}
+
+compileJava.dependsOn tasks.openApiGenerate
 
 
 /****************
@@ -101,6 +133,12 @@ ext {
     buildRpmDir = "${buildPkgDir}/rpm"
     buildWinDir = "${buildPkgDir}/windows"
 
+    packagePreamble = "${project.readableName}-${project.version}"
+    rpmPackageName = "${packagePreamble}.rpm"
+    debPackageName = "${packagePreamble}.deb"
+    brewZipName = "${packagePreamble}-brew.zip"
+    windowsZipName = "${packagePreamble}-win.zip"
+
     // Icons
     hmqIco = "${iconsDir}/05-mqtt-cli-icon.ico"
     hmqLogo = "${iconsDir}/05-mqtt-cli-icon.png"
@@ -114,21 +152,32 @@ ext {
 
     // Dependency versions
 
-    picoclishell3Version = '4.0.4'
-    picocliVersion = '4.0.4'
-    jline3Version = '3.12.1'
-    jline3JansiVersion = '3.12.1'
-    daggerVersion = '2.21'
-    guavaVersion ='27.0.1-jre'
-    hivemqclientVersion = '1.1.3'
+    picoclishell3Version = '4.5.0'
+    picocliVersion = '4.5.0'
+    jline3Version = '3.16.0'
+    jline3JansiVersion = '3.16.0'
+    daggerVersion = '2.28.3'
+    guavaVersion ='29.0-jre'
+    hivemqclientVersion = '1.2.0'
     tinylogVersion = '2.0.1'
     jcToolsVersion = '2.1.2'
-    jetbrainsAnnotationsVersion = '17.0.0'
-    bouncycastleVersion='1.62'
-    nettyVersion = '4.1.37.Final'
+    jetbrainsAnnotationsVersion = '19.0.0'
+    bouncycastleVersion='1.66'
+    nettyVersion = '4.1.51.Final'
     gsonVersion = '2.8.6'
     substrateVmVersion = '19.2.0'
     junitJupiterVersion = '5.5.1'
+    openCsvVersion = '5.2'
+    swaggerVersion = '1.6.2'
+    findBugsVersion = '3.0.2'
+    okHttpVersion = '3.14.7'
+    gsonFireVersion = '1.8.4'
+    javaxVersion = '1.3.2'
+    commonsLangVersion = '3.10'
+    mockitoVersion = '2.23.4'
+    hivemqTestcontainerVersion = '1.1.1'
+    mockWebserverVersion = '4.8.0'
+    systemExitVersion = '1.0.0'
 }
 
 
@@ -138,9 +187,18 @@ ext {
 
 dependencies {
 
-    compile group: 'org.jline', name: 'jline', version: jline3Version
-    compile group: 'org.jline', name: 'jline-terminal-jansi', version: jline3JansiVersion
-    compile group: 'com.google.dagger', name: 'dagger', version: daggerVersion
+    // hivemq client api dependencies
+    implementation group: 'io.swagger', name: 'swagger-annotations', version: swaggerVersion
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: findBugsVersion
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: okHttpVersion
+    implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: okHttpVersion
+    implementation group: 'io.gsonfire', name: 'gson-fire', version: gsonFireVersion
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: commonsLangVersion
+    implementation group: 'javax.annotation', name: 'javax.annotation-api', version: javaxVersion
+
+    implementation group: 'org.jline', name: 'jline', version: jline3Version
+    implementation group: 'org.jline', name: 'jline-terminal-jansi', version: jline3JansiVersion
+    implementation group: 'com.google.dagger', name: 'dagger', version: daggerVersion
     compileOnly group: 'com.oracle.substratevm', name: "svm", version: substrateVmVersion
     annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
 
@@ -158,10 +216,14 @@ dependencies {
     implementation group: 'io.netty', name: 'netty-handler', version: nettyVersion
     implementation group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
     implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
+    implementation group: 'com.opencsv', name: 'opencsv', version: openCsvVersion
 
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.4.6'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
+    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: mockWebserverVersion
+    testImplementation group: 'com.hivemq', name: 'hivemq-testcontainer-junit5', version: hivemqTestcontainerVersion
+    testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: systemExitVersion
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
 
 }
@@ -188,6 +250,7 @@ downloadLicenses {
 
 license {
     include "**/*.java"
+    exclude "**/com/hivemq/cli/openapi/**"
     header = file('HEADER')
 }
 
@@ -263,6 +326,10 @@ jar {
     finalizedBy shadowJar
 }
 
+shadowJar {
+    archiveClassifier = ''
+}
+
 
 /****************
  * Tests *
@@ -282,7 +349,7 @@ test {
  ***************/
 
 graal {
-    graalVersion '19.2.0'
+    graalVersion '19.2.1'
     outputName "${rootProject.name}"
     mainClass application.mainClassName
     option '-H:+PrintClassInitialization'
@@ -319,7 +386,7 @@ graal {
 task buildPackageBrew(type: Zip) {
     dependsOn shadowJar
 
-    archiveFileName = project.readableName + '-' + project.version + '-brew.zip'
+    archiveFileName = brewZipName
     destinationDirectory = file(project.buildBrewDir)
 
     into('brew') {
@@ -411,12 +478,18 @@ task buildDebianPackage(type: Copy) {
     from buildDeb
     into project.buildDebDir
     include "*.deb"
+    rename { String filename ->
+        filename = debPackageName
+    }
 }
 
 task buildRpmPackage(type: Copy) {
     from buildRpm
     into project.buildRpmDir
     include "*.rpm"
+    rename { String filename ->
+        filename = rpmPackageName
+    }
 }
 
 /****************
@@ -442,7 +515,7 @@ launch4j {
 task buildWindowsZip(type: Zip) {
     dependsOn createExe
 
-    archiveFileName = "${project.readableName}-${project.version}-win.zip"
+    archiveFileName = windowsZipName
     destinationDirectory = file(project.buildWinDir)
 
     from ("${project.winDir}") {
@@ -475,9 +548,9 @@ githubRelease {
     draft true
     prerelease false
     releaseAssets jar.archiveFile,
-            file("${project.buildRpmDir}/${project.readableName}-${project.version}.noarch.rpm"),
-            file("${project.buildDebDir}/${project.readableName}_${project.version}_all.deb"),
-            file("${project.buildBrewDir}/${project.readableName}-${project.version}-brew.zip"),
+            file("${project.buildRpmDir}/$rpmPackageName"),
+            file("${project.buildDebDir}/$debPackageName"),
+            file("${project.buildBrewDir}/$brewZipName"),
             buildWindowsZip
     overwrite false
 }
@@ -512,11 +585,11 @@ tasks.githubRelease.dependsOn tasks.buildPackageAll
 import java.security.DigestInputStream
 import java.security.MessageDigest
 static def checkSum(File file) {
-        file.withInputStream {
-            new DigestInputStream(it, MessageDigest.getInstance('SHA-256')).withStream {
-                it.eachByte {}
-                it.messageDigest.digest().encodeHex() as String
-            }
+    file.withInputStream {
+        new DigestInputStream(it, MessageDigest.getInstance('SHA-256')).withStream {
+            it.eachByte {}
+            it.messageDigest.digest().encodeHex() as String
         }
+    }
 }
 
