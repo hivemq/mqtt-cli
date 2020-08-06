@@ -170,7 +170,7 @@ ext {
     openCsvVersion = '5.2'
     swaggerVersion = '1.6.2'
     findBugsVersion = '3.0.2'
-    okHttpVersion = '4.8.1'
+    okHttpVersion = '3.14.7'
     gsonFireVersion = '1.8.4'
     javaxVersion = '1.3.2'
     commonsLangVersion = '3.10'
