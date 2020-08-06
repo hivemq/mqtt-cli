@@ -103,7 +103,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @CommandLine.Option(names = {"-T", "--showTopics"}, defaultValue = "false", description = "Prepend the specific topic name to the received publish", order = 1)
     private boolean showTopics;
 
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 1)
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 1)
     private boolean logToLogfile;
 
     @Override
