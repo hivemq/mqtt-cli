@@ -24,10 +24,12 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
+@Disabled("Tests are only used to check output")
 public class TestBrokerCommandQos0Test {
 
     final static public @NotNull HiveMQTestContainerExtension hivemq =
