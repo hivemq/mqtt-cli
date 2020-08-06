@@ -123,6 +123,8 @@ public class TestBrokerCommand implements Runnable {
             sslConfig = sslOptions.buildSslConfig();
         } catch (Exception e) {
             Logger.error(e, "Could not build SSL configuration");
+            System.err.println("Could not build SSL config - " + Throwables.getRootCause(e).getMessage());
+            return;
         }
 
         if (version != null) {
@@ -146,6 +148,8 @@ public class TestBrokerCommand implements Runnable {
                 sslConfig,
                 timeOut
         );
+
+        Logger.info("Testing MQTT 5");
 
         // Test if MQTT5 is supported
         System.out.print("MQTT 5: ");
@@ -288,6 +292,7 @@ public class TestBrokerCommand implements Runnable {
             }
         }
 
+        Logger.info("Finished testing MQTT 5");
     }
 
     public void testMqtt3Features() {
@@ -299,6 +304,8 @@ public class TestBrokerCommand implements Runnable {
                 sslConfig,
                 timeOut
         );
+
+        Logger.info("Testing MQTT 3");
 
         // Test if MQTT3 is supported
         System.out.print("MQTT 3: ");
@@ -396,6 +403,8 @@ public class TestBrokerCommand implements Runnable {
         } else {
             System.out.println("{'" + Joiner.on("', '").join(unsupportedChars) + "'}");
         }
+
+        Logger.info("Finished testing MQTT 3");
     }
 
     @Override
