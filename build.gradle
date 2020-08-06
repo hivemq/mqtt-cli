@@ -543,7 +543,7 @@ task buildPackageAll {
  ***************/
 
 githubRelease {
-    token "19973d1a3369f5eac46c6d5b42cd12989893a90c"
+    token "" + System.getenv("GITHUB_API_TOKEN")
     owner = project.githubOrg
     targetCommitish "develop"
     body ""
