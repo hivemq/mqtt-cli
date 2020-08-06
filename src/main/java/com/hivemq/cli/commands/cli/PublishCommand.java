@@ -110,22 +110,10 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @Override
     public void run() {
 
-        // TinyLog configuration
-        Map<String, String> configurationMap = new HashMap<String, String>() {{
-            put("writer1", "console");
-            put("writer1.format", "{message-only}");
-            put("writer1.level", "warn");
-            if (isDebug()) put("writer1.level", "debug");
-            if (isVerbose()) put("writer1.level", "trace");
-        }};
-
-        if (logToLogfile) {
-            LoggerUtils.useDefaultLogging(configurationMap);
-        }
-        else {
-            Configuration.replace(configurationMap);
-        }
-
+        String logLevel = "warn";
+        if (isDebug()) logLevel = "debug";
+        else if (isVerbose()) logLevel = "trace";
+        LoggerUtils.setupConsoleLogging(logToLogfile, logLevel);
 
         setDefaultOptions();
         sslConfig = buildSslConfig();

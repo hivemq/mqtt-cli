@@ -104,21 +104,7 @@ public class TestBrokerCommand implements Runnable {
     @Override
     public void run() {
 
-        // TinyLog configuration
-        Map<String, String> configurationMap = new HashMap<String, String>() {{
-            put("writer", "console");
-            put("writer.format", "{message}");
-            put("writer.level", "warn");
-        }};
-
-        if (logToLogfile) {
-            LoggerUtils.useDefaultLogging(configurationMap);
-        }
-        else {
-            Configuration.replace(configurationMap);
-        }
-
-        Configuration.replace(configurationMap);
+        LoggerUtils.turnOffConsoleLogging(logToLogfile);
 
         if (host == null) {
             host = defaultCLIProperties.getHost();
