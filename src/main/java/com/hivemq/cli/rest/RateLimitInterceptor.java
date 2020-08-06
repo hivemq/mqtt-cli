@@ -14,27 +14,27 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.mqtt.test.results;
+package com.hivemq.cli.rest;
 
-import com.hivemq.cli.utils.Tuple;
+import com.google.common.util.concurrent.RateLimiter;
+import okhttp3.Interceptor;
+import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.io.IOException;
 
-public class ClientIdLengthTestResults {
-    private final int maxClientIdLength;
-    private final @NotNull List<@NotNull Tuple<Integer, String>> testResults;
+@SuppressWarnings("UnstableApiUsage")
+public class RateLimitInterceptor implements Interceptor  {
 
-    public ClientIdLengthTestResults(final int maxClientIdLength, final @NotNull List<@NotNull Tuple<Integer, String>> testResults) {
-        this.maxClientIdLength = maxClientIdLength;
-        this.testResults = testResults;
+    private final @NotNull RateLimiter rateLimiter;
+
+    public RateLimitInterceptor(final double requestsPerSecond) {
+        this.rateLimiter = RateLimiter.create(requestsPerSecond);
     }
 
-    public int getMaxClientIdLength() {
-        return maxClientIdLength;
-    }
-
-    public @NotNull List<@NotNull Tuple<Integer, String>> getTestResults() {
-        return testResults;
+    @Override
+    public @NotNull Response intercept(Chain chain) throws IOException {
+        rateLimiter.acquire(1);
+        return chain.proceed(chain.request());
     }
 }

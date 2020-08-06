@@ -23,7 +23,13 @@ import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
-import com.hivemq.cli.mqtt.test.results.*;
+import com.hivemq.cli.mqtt.test.results.AsciiCharsInClientIdTestResults;
+import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
+import com.hivemq.cli.mqtt.test.results.QosTestResult;
+import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
+import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -46,7 +52,7 @@ import java.util.Map;
 
 @CommandLine.Command(
         name = "test",
-        description = "Tests the specified broker on different MQTT feature support and prints the results")
+        description = "Tests the specified broker on different MQTT feature support and prints the results.")
 public class TestBrokerCommand implements Runnable {
 
     final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB

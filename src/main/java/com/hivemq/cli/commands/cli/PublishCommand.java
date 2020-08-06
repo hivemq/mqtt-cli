@@ -51,7 +51,7 @@ import java.util.Map;
 @CommandLine.Command(name = "pub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
         aliases = "publish",
-        description = "Publish a message to a list of topics",
+        description = "Publish a message to a list of topics.",
         abbreviateSynopsis = false)
 
 public class PublishCommand extends AbstractConnectFlags implements MqttAction, Publish {

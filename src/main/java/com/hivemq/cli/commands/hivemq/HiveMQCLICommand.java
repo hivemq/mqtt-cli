@@ -14,29 +14,33 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.commands;
+package com.hivemq.cli.commands.hivemq;
 
 import com.hivemq.cli.MqttCLIMain;
-import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "mqtt",
-        description = "MQTT Command Line Interpreter.",
+@CommandLine.Command(name = "hivemq",
+        description = "HiveMQ Command Line Interpreter.",
         synopsisHeading = "%n@|bold Usage:|@  ",
-        synopsisSubcommandLabel = "{ pub | sub | shell | test | hivemq }",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",
         commandListHeading = "%n@|bold Commands:|@%n",
         mixinStandardHelpOptions = true,
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
+public class HiveMQCLICommand implements Callable<Integer> {
 
-public class MqttCLICommand {
-
-    public static final @NotNull String VERSION_STRING = "1.0";
+    @CommandLine.Spec
+    CommandLine.Model.CommandSpec spec;
 
     @Inject
-    MqttCLICommand() { }
+    public HiveMQCLICommand() { }
 
+    @Override
+    public Integer call() {
+        System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
+        return 0;
+    }
 }

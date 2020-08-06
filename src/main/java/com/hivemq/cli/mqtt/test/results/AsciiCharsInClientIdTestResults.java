@@ -18,7 +18,6 @@ package com.hivemq.cli.mqtt.test.results;
 
 import com.hivemq.cli.utils.Tuple;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
