@@ -742,6 +742,8 @@ public class Mqtt3FeatureTester {
         maxTopicLength = topicLength;
     }
 
+    public void setMaxQos(final @NotNull MqttQos qos) {maxQos = qos; }
+
     // Helpers
 
     private @NotNull Mqtt3Client buildClient() {

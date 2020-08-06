@@ -22,6 +22,7 @@ import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
 import com.hivemq.cli.mqtt.test.results.TestResult;
 import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
 import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -81,12 +82,14 @@ public class Mqtt5FeatureTesterRestrictedTest {
 
     @Test
     void retain_failed() {
+        mqtt5FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final TestResult testResult = mqtt5FeatureTester.testRetain();
         assertEquals(TIME_OUT, testResult);
     }
 
     @Test
     void payload_size_1MB_failed_max_500KB() {
+        mqtt5FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final PayloadTestResults payloadTestResults = mqtt5FeatureTester.testPayloadSize(100_000);
         assertTrue(payloadTestResults.getPayloadSize() < 100_000);
     }

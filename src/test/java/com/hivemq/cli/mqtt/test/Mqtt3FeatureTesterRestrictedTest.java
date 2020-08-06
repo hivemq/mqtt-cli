@@ -22,6 +22,7 @@ import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
 import com.hivemq.cli.mqtt.test.results.TestResult;
 import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
 import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -62,11 +63,12 @@ public class Mqtt3FeatureTesterRestrictedTest {
     @AfterAll
     static void afterAll() {
         hivemq.stop();
-    }
+    }x
 
 
     @Test
     void wildcard_subscriptions_failed() {
+        mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = mqtt3FeatureTester.testWildcardSubscriptions();
         assertEquals(SUBSCRIBE_FAILED, wildcardSubscriptionsTestResult.getHashWildcardTest());
         assertEquals(SUBSCRIBE_FAILED, wildcardSubscriptionsTestResult.getPlusWildcardTest());
@@ -75,18 +77,21 @@ public class Mqtt3FeatureTesterRestrictedTest {
 
     @Test
     void shared_subscriptions_failed() {
+        mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final SharedSubscriptionTestResult sharedSubscriptionTestResult = mqtt3FeatureTester.testSharedSubscription();
         assertEquals(SharedSubscriptionTestResult.SUBSCRIBE_FAILED, sharedSubscriptionTestResult);
     }
 
     @Test
     void retain_failed() {
+        mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final TestResult testResult = mqtt3FeatureTester.testRetain();
         assertEquals(TIME_OUT, testResult);
     }
 
     @Test
     void payload_size_1MB_failed_max_500KB() {
+        mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final PayloadTestResults payloadTestResults = mqtt3FeatureTester.testPayloadSize(100_000);
         assertTrue(payloadTestResults.getPayloadSize() < 100_000);
     }

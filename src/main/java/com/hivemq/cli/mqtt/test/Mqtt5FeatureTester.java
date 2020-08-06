@@ -745,6 +745,9 @@ public class Mqtt5FeatureTester {
         this.maxTopicLength = maxTopicLength;
     }
 
+    public void setMaxQos(final @NotNull MqttQos qos) {maxQos = qos; }
+
+
     private @NotNull Mqtt5Client buildClient() {
         return getClientBuilder()
                 .build();
