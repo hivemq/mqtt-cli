@@ -182,19 +182,23 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         public @NotNull Integer apply(Void o, Throwable throwable) {
             printingScheduler.shutdown();
             if (throwable != null) {
-                if (throwable.getCause() instanceof JsonParseException) {
-                    System.err.println("\rFailed to retrieve client details. Please check the URL for the HiveMQ REST-API");
-                } else {
-                    System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
-                    if (throwable.getCause() instanceof ApiException) {
-                        final ApiException apiException = (ApiException) throwable.getCause();
-                        if (apiException.getResponseBody() != null) {
-                            final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                if (throwable.getCause() instanceof ApiException) {
+                    final ApiException apiException = (ApiException) throwable.getCause();
+                    if (apiException.getResponseBody() != null) {
+                        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        try {
                             final JsonElement je = JsonParser.parseString(apiException.getResponseBody());
                             final String jsonString = gson.toJson(je);
+                            System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
                             System.err.println(jsonString);
+                        } catch (final JsonParseException jsonEx) {
+                            System.err.println("\rFailed to retrieve client details. Please check the URL for the HiveMQ REST-API");
                         }
+                    } else {
+                        System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
                     }
+                } else {
+                    System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
                 }
 
                 if (clientDetailsCsvWriterTask.getWrittenClientDetails() > 0) {
