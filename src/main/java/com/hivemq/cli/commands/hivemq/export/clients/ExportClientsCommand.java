@@ -18,10 +18,7 @@ package com.hivemq.cli.commands.hivemq.export.clients;
 
 
 import com.google.common.base.Throwables;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.export.AbstractExportCommand;
 import com.hivemq.cli.openapi.ApiException;
@@ -37,14 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.BiFunction;
 
 
@@ -105,6 +95,16 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
                 clientDetailsQueue
         );
         final CompletableFuture<Void> clientDetailsRetrieverFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
+
+        //Fix line end character if "\n" or "\r" are passed
+        switch (csvLineEndCharacter) {
+            case "\\n":
+                csvLineEndCharacter = "\n";
+                break;
+            case "\\r":
+                csvLineEndCharacter = "\r";
+                break;
+        }
 
         // Start writing client details
         final ClientDetailsCsvWriterTask clientDetailsCsvWriterTask = new ClientDetailsCsvWriterTask(
@@ -182,14 +182,18 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         public @NotNull Integer apply(Void o, Throwable throwable) {
             printingScheduler.shutdown();
             if (throwable != null) {
-                System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
-                if (throwable.getCause() instanceof ApiException) {
-                    final ApiException apiException = (ApiException) throwable.getCause();
-                    if (apiException.getResponseBody() != null) {
-                        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        final JsonElement je = JsonParser.parseString(apiException.getResponseBody());
-                        final String jsonString = gson.toJson(je);
-                        System.err.println(jsonString);
+                if (throwable.getCause() instanceof JsonParseException) {
+                    System.err.println("\rFailed to retrieve client details. Please check the URL for the HiveMQ REST-API");
+                } else {
+                    System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
+                    if (throwable.getCause() instanceof ApiException) {
+                        final ApiException apiException = (ApiException) throwable.getCause();
+                        if (apiException.getResponseBody() != null) {
+                            final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                            final JsonElement je = JsonParser.parseString(apiException.getResponseBody());
+                            final String jsonString = gson.toJson(je);
+                            System.err.println(jsonString);
+                        }
                     }
                 }
 
