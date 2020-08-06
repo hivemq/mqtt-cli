@@ -84,7 +84,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
     private final @NotNull CSVWriter csvWriter;
     private final @NotNull BufferedWriter bufferedFileWriter;
 
-    private AtomicLong writtenClientDetails = new AtomicLong(0);
+    private final @NotNull AtomicLong writtenClientDetails = new AtomicLong(0);
 
     public ClientDetailsCsvWriterTask(final @NotNull CompletableFuture<Void> clientDetailsFuture,
                                       final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
