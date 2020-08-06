@@ -65,6 +65,34 @@ public class LoggerUtils {
         Configuration.replace(configurationMap);
     }
 
+    public static void setupConsoleLogging(final boolean logToLogfile, final @NotNull String logLevel) {
+        // TinyLog configuration
+        Map<String, String> configurationMap = new HashMap<String, String>() {{
+            put("writer1", "console");
+            put("writer1.format", "{message-only}");
+            put("writer1.level", logLevel);
+        }};
+
+        if (logToLogfile) {
+            LoggerUtils.useDefaultLogging(configurationMap);
+        }
+        else {
+            Configuration.replace(configurationMap);
+        }
+    }
+
+    public static void turnOffConsoleLogging(final boolean logToLogfile) {
+        if (logToLogfile) {
+            LoggerUtils.useDefaultLogging();
+        } else {
+            Map<String, String> configurationMap = new HashMap<String, String>() {{
+                put("writer.level", "off");
+            }};
+            Configuration.replace(configurationMap);
+        }
+
+    }
+
     public static void useDefaultLogging() {
         useDefaultLogging(null);
     }

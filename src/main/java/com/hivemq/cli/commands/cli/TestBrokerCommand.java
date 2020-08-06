@@ -24,7 +24,13 @@ import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
-import com.hivemq.cli.mqtt.test.results.*;
+import com.hivemq.cli.mqtt.test.results.AsciiCharsInClientIdTestResults;
+import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
+import com.hivemq.cli.mqtt.test.results.QosTestResult;
+import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
+import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -100,15 +106,7 @@ public class TestBrokerCommand implements Runnable {
     @Override
     public void run() {
 
-        if (logToLogfile) {
-            LoggerUtils.useDefaultLogging(null);
-        }
-        else {
-            Map<String, String> configurationMap = new HashMap<String, String>() {{
-                put("writer.level", "off");
-            }};
-            Configuration.replace(configurationMap);
-        }
+        LoggerUtils.turnOffConsoleLogging(logToLogfile);
 
         Logger.trace("Command {}", this);
 

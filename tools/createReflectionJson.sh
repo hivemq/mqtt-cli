@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-java -cp ././../build/libs/mqtt-cli-1.2.0.jar picocli.codegen.aot.graalvm.ReflectionConfigGenerator \
+java -cp ././../build/libs/mqtt-cli-4.4.0.jar picocli.codegen.aot.graalvm.ReflectionConfigGenerator \
 com.hivemq.cli.commands.shell.ContextPublishCommand \
 com.hivemq.cli.commands.shell.ClearScreenCommand \
 com.hivemq.cli.commands.shell.ContextDisconnectCommand \

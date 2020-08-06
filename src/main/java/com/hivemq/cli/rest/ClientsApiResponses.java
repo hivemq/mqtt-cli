@@ -14,32 +14,10 @@
  * limitations under the License.
  *
  */
-package com.hivemq.cli.ioc;
+package com.hivemq.cli.rest;
 
-import com.hivemq.cli.DefaultCLIProperties;
-import dagger.Component;
-import org.jetbrains.annotations.NotNull;
-import picocli.CommandLine;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-@Singleton
-@Component(modules = {
-        CLIModule.class,
-        HiveMQCLIModule.class,
-        ShellModule.class
-})
-public interface MqttCLI {
-
-    @Named("cli")
-    @NotNull CommandLine cli();
-
-    @Named("shell")
-    @NotNull CommandLine shell();
-
-    @Named("shell-context")
-    @NotNull CommandLine shellContext();
-
-    @NotNull DefaultCLIProperties defaultCLIProperties();
+public class ClientsApiResponses {
+    public static final int INVALID_CURSOR_VALUE = 400;
+    public static final int CURSOR_NOT_VALID_ANYMORE = 410;
+    public static final int HIVEMQ_IN_REPLICATION = 503;
 }
