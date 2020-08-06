@@ -63,7 +63,7 @@ public class Mqtt3FeatureTesterRestrictedTest {
     @AfterAll
     static void afterAll() {
         hivemq.stop();
-    }x
+    }
 
 
     @Test
