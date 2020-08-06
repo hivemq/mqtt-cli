@@ -21,15 +21,19 @@ plugins {
     id 'de.thetaphi.forbiddenapis' version '2.6' apply false
     id "com.github.breadmoirai.github-release" version "2.2.9"
     id 'org.ajoberstar.git-publish' version '2.1.1'
+    id 'org.owasp.dependencycheck' version '5.3.2.1' apply false
+    id "com.github.ben-manes.versions" version "0.29.0"
     id "org.openapi.generator" version "4.3.1"
 }
 
+apply plugin: "com.github.ben-manes.versions"
 apply plugin: 'de.thetaphi.forbiddenapis'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 apply plugin: 'com.palantir.graal'
 
+apply plugin: 'org.owasp.dependencycheck'
 
 /****************
  * Project Settings *
@@ -110,7 +114,7 @@ ext {
     appExe = "${readableName}.exe"
 
     // Directories
-
+    
     iconsDir = "${projectDir}/icons"
 
     resDir = "${projectDir}/res"
@@ -152,14 +156,14 @@ ext {
     picocliVersion = '4.5.0'
     jline3Version = '3.16.0'
     jline3JansiVersion = '3.16.0'
-    daggerVersion = '2.21'
-    guavaVersion ='27.0.1-jre'
+    daggerVersion = '2.28.3'
+    guavaVersion ='29.0-jre'
     hivemqclientVersion = '1.2.0'
-    tinylogVersion = '2.1.2'
+    tinylogVersion = '2.0.1'
     jcToolsVersion = '2.1.2'
-    jetbrainsAnnotationsVersion = '17.0.0'
+    jetbrainsAnnotationsVersion = '19.0.0'
     bouncycastleVersion='1.66'
-    nettyVersion = '4.1.37.Final'
+    nettyVersion = '4.1.51.Final'
     gsonVersion = '2.8.6'
     substrateVmVersion = '19.2.0'
     junitJupiterVersion = '5.5.1'
@@ -278,13 +282,11 @@ forbiddenApis {
 //disable
 forbiddenApisTest.enabled = false
 
-
 /****************
  * Jar *
  ***************/
 
 compileJava {
-
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
     options.encoding = 'UTF-8'
@@ -347,7 +349,7 @@ test {
  ***************/
 
 graal {
-    graalVersion '19.2.0'
+    graalVersion '19.2.1'
     outputName "${rootProject.name}"
     mainClass application.mainClassName
     option '-H:+PrintClassInitialization'

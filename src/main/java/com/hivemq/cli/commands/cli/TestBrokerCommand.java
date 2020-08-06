@@ -30,6 +30,7 @@ import com.hivemq.cli.mqtt.test.results.QosTestResult;
 import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
 import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
 import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -77,6 +78,9 @@ public class TestBrokerCommand implements Runnable {
     @CommandLine.Option(names = {"-q", "--qosTries"}, defaultValue = "10", description = "The amount of publishes to send to the broker on every qos level", order = 1)
     private @NotNull Integer qosTries;
 
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 1)
+    private boolean logToLogfile;
+
     @CommandLine.Mixin
     private AuthenticationOptions authenticationOptions = new AuthenticationOptions();
 
@@ -100,14 +104,7 @@ public class TestBrokerCommand implements Runnable {
     @Override
     public void run() {
 
-        // TinyLog configuration
-        Map<String, String> configurationMap = new HashMap<String, String>() {{
-            put("writer", "console");
-            put("writer.format", "{message}");
-            put("writer.level", "warn");
-        }};
-
-        Configuration.replace(configurationMap);
+        LoggerUtils.turnOffConsoleLogging(logToLogfile);
 
         if (host == null) {
             host = defaultCLIProperties.getHost();

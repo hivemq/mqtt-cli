@@ -59,15 +59,7 @@ public abstract class AbstractExportCommand {
 
     @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 9)
     private void initLogging(final boolean logToLogfile) {
-        if (logToLogfile) {
-            LoggerUtils.useDefaultLogging();
-        }
-        else {
-            final Map<String, String> configurationMap = new HashMap<String, String>() {{
-                put("writer.level", "off");
-            }};
-            Configuration.replace(configurationMap);
-        }
+        LoggerUtils.turnOffConsoleLogging(logToLogfile);
     }
 
     @Override
