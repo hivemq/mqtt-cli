@@ -43,6 +43,8 @@ description = 'MQTT CLI is a tool that provides a feature rich command line inte
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
 
+def hivemqApiVersion = '4.4.0'
+
 application {
     mainClassName = 'com.hivemq.cli.MqttCLIMain'
 }
@@ -66,7 +68,7 @@ repositories {
 
 openApiGenerate {
     generatorName = "java"
-    inputSpec = "$rootDir/specs/HiveMQ-$project.version-OpenAPI-spec.yaml".toString()
+    inputSpec = "$rootDir/specs/HiveMQ-$hivemqApiVersion-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
     apiPackage = "com.hivemq.cli.openapi.hivemq"
     modelPackage = "com.hivemq.cli.openapi.hivemq"
