@@ -47,7 +47,7 @@ import java.util.Map;
 @CommandLine.Command(name = "sub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
         aliases = "subscribe",
-        description = "Subscribe an mqtt client to a list of topics",
+        description = "Subscribe an mqtt client to a list of topics.",
         abbreviateSynopsis = false)
 
 public class SubscribeCommand extends AbstractConnectFlags implements MqttAction, Subscribe {

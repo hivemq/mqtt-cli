@@ -21,11 +21,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class PasswordFileToByteBufferConverterTest {
 
@@ -37,7 +34,7 @@ class PasswordFileToByteBufferConverterTest {
     }
 
     @Test
-    void test_single_line() throws Exception {
+    void single_line() throws Exception {
         final File file = getFile("password_with_single_line.txt");
 
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();
@@ -48,7 +45,7 @@ class PasswordFileToByteBufferConverterTest {
     }
 
     @Test
-    void test_single_newLine() throws Exception {
+    void single_newLine() throws Exception {
         final File file = getFile("password_with_new_line.txt");
 
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();
@@ -59,7 +56,7 @@ class PasswordFileToByteBufferConverterTest {
     }
 
     @Test
-    void test_multi_newLine() throws Exception {
+    void multi_newLine() throws Exception {
         final File file = getFile("password_with_multi_new_line.txt");
 
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();
