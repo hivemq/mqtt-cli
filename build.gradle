@@ -318,6 +318,10 @@ jar {
     finalizedBy shadowJar
 }
 
+shadowJar {
+    archiveClassifier = ''
+}
+
 
 /****************
  * Tests *
