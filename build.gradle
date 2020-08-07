@@ -667,7 +667,7 @@ static def checkSum(File file) {
 
 distributions {
     shadow {
-        distributionBaseName = 'mqtt'
+        distributionBaseName = 'mqtt-cli'
         contents {
             from 'README.md'
             from 'build/packaging'
