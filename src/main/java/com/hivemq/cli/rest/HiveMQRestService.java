@@ -49,13 +49,13 @@ public class HiveMQRestService {
 
 
     public ClientList getClientIds(final @Nullable String cursor) throws ApiException {
-        return clientsApi.mqttClientsGet(2500, cursor);
+        return clientsApi.getAllMqttClients(2500, cursor);
     }
 
     public Call getClientDetails(final @NotNull String clientId,
                                  final @NotNull ApiCallback<ClientItem> callback) throws ApiException {
 
-        return clientsApi.mqttClientsClientIdGet1Async(clientId, callback);
+        return clientsApi.getMqttClientDetailsAsync(clientId, callback);
     }
 
 
