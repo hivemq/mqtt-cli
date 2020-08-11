@@ -8,7 +8,7 @@ nav_order: 8
 # Logging
 ***
 * All non-shell commands offer an ``-l`` option by which logging to a logfile under ``~/.mqtt-cli/logs`` can be activated
-* The logfile and loglevel can be configured in the [MQTT-CLI configuration](09_configuration.md)
+* The logfile and loglevel can be configured in the [MQTT-CLI configuration](configuration)
 * By specifying the ``-l`` option for the ``shell`` command the whole shell-session will be logged to a logfile shown at start
 
 ## Direct logging for publish & subscribe

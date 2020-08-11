@@ -1,6 +1,6 @@
 ---
 title: Further Examples
-permalink: /docs/03_publish#further-examples
+permalink: /docs/publish#further-examples
 parent: Publish
 nav_order: 7
 ---

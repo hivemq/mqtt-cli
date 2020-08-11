@@ -10,7 +10,7 @@ has_children: false
 ***
 
 MQTT CLI uses some default values which can be overwritten.
-MQTT CLI stores the default values in a properties file which is located under the user home directory of your OS under `~/.mqtt-cli/config.properties`.
+MQTT CLI stores the default values in a properties file which is located under the user home directory of your OS under `$HOME/.mqtt-cli/config.properties`.
 
 On the first successful execution of the CLI this file will be generated and will look like the following example:
 
