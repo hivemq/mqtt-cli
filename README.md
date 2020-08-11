@@ -33,22 +33,26 @@ A detailed documentation can be found [here](https://hivemq.github.io/mqtt-cli)
 - Export information from HiveMQ API endpoints
 - Various distributions available
 
-### Prerequisites
+## Prerequisites
 At least Java 8 is required to run MqttCLI.
 
-### Quickstart
+## Quickstart
 The simplest way to start the MQTT CLI is typing:
-``` $ mqtt ```
-See also ``mqtt --help``.
 
-#### Download latest MQTT CLI package
+``` $ mqtt ```
+
+See also:
+ 
+ ``mqtt --help``.
+
+### Download latest MQTT CLI package
 
 Packages 
  for **Linux, Mac OS and Windows**
 can be found here: 
 [Installation/Packages](https://hivemq.github.io/mqtt-cli/docs/installation/packages.html)!
 
-### Building from source
+## Building from source
 To do a clean build, issue the following command:
 
 `$ ./gradlew clean build
@@ -76,7 +80,7 @@ For the Windows installer:
 `$ ./gradlew buildWindowsZip
 `
 
-#### Subscribe example
+## Subscribe
 
 |Command                                         |Explanation                                                              |
 |------------------------------------------------|-------------------------------------------------------------------------|
@@ -87,7 +91,7 @@ For the Windows installer:
 
 See also ``mqtt sub --help``
 
-#### Publish example
+## Publish
 |Command                                                |Explanation                                                              |
 |-------------------------------------------------------|-------------------------------------------------------------------------|
 | ``mqtt pub -t test -m "Hello" `` | Publish the message "Hello" to the test topics with the default settings
@@ -96,7 +100,7 @@ See also ``mqtt sub --help``
 
 See also ``mqtt pub --help``
 
-### Shell example
+## Shell
 
 * If interacting with several clients, using different contexts and publishing and subscribing with them in various ways, 
 the shell mode with further sub commands is useful.
@@ -140,7 +144,7 @@ The following Commands are available **with** an active context:
 *  exit                Exit the current context
 
   
-### Test example
+## Test
 
 The test command runs various tests against the specified broker to find out its features and limitations.
 By default the test command will use MQTT 3 clients to test the broker first
@@ -176,7 +180,7 @@ MQTT 5: OK
 
 ```
 
-### HiveMQ example
+## HiveMQ
 
 The HiveMQ command line argument offers various HiveMQ specific commands.
 

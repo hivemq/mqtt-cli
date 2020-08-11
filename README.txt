@@ -38,8 +38,8 @@ $ mqtt
 See also:
 $ mqtt --help
 
-Subscribe example
------------------
+Subscribe
+---------
 
 Subscribe to a topic on default settings and block the console for output of incoming publishes:
 $ mqtt sub -t topic
@@ -54,8 +54,8 @@ See also:
 $ mqtt sub --help
 
 
-Publish example
----------------
+Publish
+-------
 
 Publish the message "Hello" to the topic test:
 $ mqtt pub -t test -m "Hello"
@@ -70,8 +70,8 @@ See also:
 $ mqtt pub --help
 
 
-Shell example
--------------
+Shell
+-----
 
 The shell mode allows connecting various mqtt clients.
 
@@ -122,8 +122,8 @@ Commands:
 -  exit                Exit the current context
 
 
-Test example
-------------
+Test
+----
 
 The test command runs various tests against the specified broker to find out its features and limitations.
 By default the test command will use MQTT 3 clients to test the broker first
@@ -134,8 +134,8 @@ Test the public HiveMQ broker:
 $ mqtt test -h broker.hivemq.com
 
 
-HiveMQ example
---------------
+HiveMQ
+------
 
 The HiveMQ command line argument offers various HiveMQ specific commands.
 Show all available commands:
