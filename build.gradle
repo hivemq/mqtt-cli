@@ -669,7 +669,7 @@ distributions {
     shadow {
         distributionBaseName = 'mqtt-cli'
         contents {
-            from 'README.md'
+            from 'README.txt'
             from 'build/packaging'
         }
     }
