@@ -32,7 +32,7 @@ mqtt pub --help
 ``` 
 mqtt pub    -t <topics> [-t <topics>]... 
             -m <message> 
-            [-cdrsv] 
+            [-cdrsvl] 
             [-q <qos>]...
             [-e <messageExpiryInterval>]          
             [-ct <contentType>] 
@@ -101,6 +101,7 @@ mqtt pub    -t <topics> [-t <topics>]...
 | ``-up`` | ``--userProperty``  | A user property of the publish message |
 | ``-d``    |   ``--debug``     | Print debug level messages to the console. | ``False``
 | ``-v``    |   ``--verbose``   | Print trace level messages to the console. | ``False``
+| ``-l`` | | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties) | ``false``
 
 ***
 

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Configuration
-nav_order: 8
+nav_order: 9
 has_children: false
 ---
 
@@ -10,7 +10,7 @@ has_children: false
 ***
 
 MQTT CLI uses some default values which can be overwritten.
-MQTT CLI stores the default values in a properties file which is located under the user home directory of your OS under `~/.mqtt-cli/config.properties`.
+MQTT CLI stores the default values in a properties file which is located under the user home directory of your OS under `$HOME/.mqtt-cli/config.properties`.
 
 On the first successful execution of the CLI this file will be generated and will look like the following example:
 
@@ -45,6 +45,6 @@ Therefore you have to specify the values to the following keys if you want to ov
 | ``auth.client.key`` | The path to the default client key corresponding to the certificate  |
 | ``auth.server.cafile`` | The path to the default server certificate  |
 | ``client.subscribe.output``| The default filepath to which all the received publishes of a subscribed client will be written to. See `sub -of` option |
-| ``logfile.level``| The default debug level for the logfile which may be one of the following values: ``{INFO | DEBUG | TRACE}`` | ``TRACE‚``
+| ``logfile.level``| The default debug level for the logfile which may be one of the following values: ``{INFO | DEBUG | TRACE}`` | ``DEBUG``
 | ``logfile.path`` | The default path to the logfile directory to which all the logs will be written | `~/.mqtt-cli/logs`
 

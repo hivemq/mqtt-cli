@@ -12,14 +12,19 @@ has_children: true
 
 Open MQTT CLI in an interactive shell session.
 The shell uses **[JLine](https://github.com/jline/jline3)** for handling console input.
-Therefore **tab-completion**, **command-history**, **password-masking** and other familiar shell features are available.
+Therefore, **tab-completion**, **command-history**, **password-masking** and other familiar shell features are available.
 
 The Shell-Mode is based around a client context driven use case.
-Therefore methods like Connect and Disconnect switch the current context of the shell and commands like Publish and Subscribe always relate to the currently active client context.
+Therefore, methods like Connect and Disconnect switch the current context of the shell and commands like Publish and Subscribe always relate to the currently active client context.
 
 Start the interactive shell with:
 ```
 $ mqtt shell
+```
+
+To start the interactive shell with default logging to ``~/.mqtt-cli/logs`` use:
+```
+$ mqtt shell -l
 ```
 
 ## Example

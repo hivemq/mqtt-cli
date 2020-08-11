@@ -1,6 +1,6 @@
 ---
 title: Synopsis
-permalink: /docs/04_subscribe#synopsis
+permalink: /docs/subscribe#synopsis
 parent: Subscribe
 nav_order: 1
 ---

@@ -1,6 +1,6 @@
 ---
 title: Test Options
-permalink: /docs/06_test#test-options
+permalink: /docs/test#test-options
 parent: Test
 nav_order: 2
 ---
