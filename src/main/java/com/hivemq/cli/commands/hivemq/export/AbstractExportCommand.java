@@ -57,7 +57,7 @@ public abstract class AbstractExportCommand {
     @CommandLine.Option(names = {"--csvLineEndChar"}, defaultValue = CSVWriter.DEFAULT_LINE_END, description = "The line-end character for csv export (default \\n)", order = 8)
     public @NotNull String csvLineEndCharacter;
 
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)", order = 9)
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 9)
     private void initLogging(final boolean logToLogfile) {
         LoggerUtils.turnOffConsoleLogging(logToLogfile);
     }
