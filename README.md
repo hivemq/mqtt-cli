@@ -76,11 +76,7 @@ For the Windows installer:
 `$ ./gradlew buildWindowsZip
 `
 
-
-#### Basic Examples
-
-
-##### Subscribe example
+#### Subscribe example
 
 |Command                                         |Explanation                                                              |
 |------------------------------------------------|-------------------------------------------------------------------------|
@@ -91,7 +87,7 @@ For the Windows installer:
 
 See also ``mqtt sub --help``
 
-##### Publish example
+#### Publish example
 |Command                                                |Explanation                                                              |
 |-------------------------------------------------------|-------------------------------------------------------------------------|
 | ``mqtt pub -t test -m "Hello" `` | Publish the message "Hello" to the test topics with the default settings
@@ -100,17 +96,15 @@ See also ``mqtt sub --help``
 
 See also ``mqtt pub --help``
 
-#### Shell example
+### Shell example
 
 * If interacting with several clients, using different contexts and publishing and subscribing with them in various ways, 
 the shell mode with further sub commands is useful.
 
-``$>mqtt shell``
+``$ mqtt shell``
 
 The Shell-Mode is based around a client context driven use case.
 Therefore methods like Connect and Disconnect switch the current context of the shell and commands like Publish and Subscribe always relate to the currently active client context.
-
-**Example:**
 
 ```
 mqtt shell                # starts the shell
@@ -146,7 +140,7 @@ The following Commands are available **with** an active context:
 *  exit                Exit the current context
 
   
-#### Test example
+### Test example
 
 The test command runs various tests against the specified broker to find out its features and limitations.
 By default the test command will use MQTT 3 clients to test the broker first
@@ -182,7 +176,7 @@ MQTT 5: OK
 
 ```
 
-#### HiveMQ example
+### HiveMQ example
 
 The HiveMQ command line argument offers various HiveMQ specific commands.
 
@@ -197,6 +191,7 @@ The export command of the HiveMQ command line offers a set of commands to export
 Export client details from a HiveMQ node via the export clients command.
 
 ``$ mqtt hivemq export clients``
+
 
 
 Please refer to the detailed documentation [MQTT CLI Documentation](https://hivemq.github.io/mqtt-cli)
