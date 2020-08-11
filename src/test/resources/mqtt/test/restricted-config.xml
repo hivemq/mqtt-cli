@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<hivemq xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <listeners>
+        <tcp-listener>
+            <port>1883</port>
+            <bind-address>0.0.0.0</bind-address>
+        </tcp-listener>
+    </listeners>
+
+    <restrictions>
+
+        <max-client-id-length>30</max-client-id-length>
+
+    </restrictions>
+
+    <mqtt>
+
+        <packets>
+            <max-packet-size>80000</max-packet-size>
+        </packets>
+
+        <wildcard-subscriptions>
+            <enabled>false</enabled>
+        </wildcard-subscriptions>
+
+        <shared-subscriptions>
+            <enabled>false</enabled>
+        </shared-subscriptions>
+
+        <retained-messages>
+            <enabled>false</enabled>
+        </retained-messages>
+    </mqtt>
+
+</hivemq>

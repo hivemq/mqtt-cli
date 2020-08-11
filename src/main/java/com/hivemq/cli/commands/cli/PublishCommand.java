@@ -38,6 +38,7 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -50,7 +51,7 @@ import java.util.Map;
 @CommandLine.Command(name = "pub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
         aliases = "publish",
-        description = "Publish a message to a list of topics",
+        description = "Publish a message to a list of topics.",
         abbreviateSynopsis = false)
 
 public class PublishCommand extends AbstractConnectFlags implements MqttAction, Publish {
@@ -103,19 +104,16 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the publish message", order = 1)
     @Nullable private Mqtt5UserProperty[] userProperties;
 
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 1)
+    private boolean logToLogfile;
+
     @Override
     public void run() {
 
-        // TinyLog configuration
-        Map<String, String> configurationMap = new HashMap<String, String>() {{
-            put("writer1", "console");
-            put("writer1.format", "{message-only}");
-            put("writer1.level", "warn");
-            if (isDebug()) put("writer1.level", "debug");
-            if (isVerbose()) put("writer1.level", "trace");
-        }};
-
-        LoggerUtils.useDefaultLogging(configurationMap);
+        String logLevel = "warn";
+        if (isDebug()) logLevel = "debug";
+        else if (isVerbose()) logLevel = "trace";
+        LoggerUtils.setupConsoleLogging(logToLogfile, logLevel);
 
         setDefaultOptions();
         sslConfig = buildSslConfig();

@@ -8,10 +8,11 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/hivemq/mqtt-cli)](https://github.com/hivemq/mqtt-cli/releases) 
 [![Build Status](https://travis-ci.com/hivemq/mqtt-cli.svg?branch=develop)](https://travis-ci.com/hivemq/mqtt-cli) 
-[![picocli](https://img.shields.io/github/downloads/hivemq/mqtt-cli/total)](https://github.com/hivemq/mqtt-cli/releases)
-[![picocli](https://img.shields.io/github/license/hivemq/mqtt-cli)](https://github.com/hivemq/mqtt-cli/blob/develop/LICENSE)
-[![picocli](https://img.shields.io/badge/hivemq--mqtt--client-1.1.3-green)](https://github.com/hivemq/hivemq-mqtt-client)
-[![picocli](https://img.shields.io/badge/picocli-4.0.4-green.svg)](https://github.com/remkop/picocli)
+[![CLI Downloads](https://img.shields.io/github/downloads/hivemq/mqtt-cli/total)](https://github.com/hivemq/mqtt-cli/releases)
+[![CLI License](https://img.shields.io/github/license/hivemq/mqtt-cli)](https://github.com/hivemq/mqtt-cli/blob/develop/LICENSE)
+[![MQTT Client](https://img.shields.io/badge/hivemq--mqtt--client-1.2.0-green)](https://github.com/hivemq/hivemq-mqtt-client)
+[![HiveMQ Testcontainer](https://img.shields.io/badge/testcontainer-1.1.1-green.svg)](https://github.com/hivemq/hivemq-testcontainer)
+[![picocli](https://img.shields.io/badge/picocli-4.5.0-green.svg)](https://github.com/remkop/picocli)
 
 MQTT 5.0 and 3.1.1 compatible and feature-rich MQTT Command Line Interface
 
@@ -26,27 +27,32 @@ A detailed documentation can be found [here](https://hivemq.github.io/mqtt-cli)
 - **All MQTT 3.1.1 and MQTT 5.0 features** are supported
 - **interactive**, direct and verbose Mode for all MQTT Commands
 - Shell behavior with Syntax Highlighting, Command completion and history
-- configurable default settings
-- Ability to connect simultaneously various MQTT Clients to different Broker
+- Configurable default settings
+- Ability to connect various MQTT Clients to different broker simultaneously
+- Quick broker tests
+- Export information from HiveMQ API endpoints
 - Various distributions available
-- Graal support coming soon
 
-### Prerequisites
+## Prerequisites
 At least Java 8 is required to run MqttCLI.
 
-### Quickstart
+## Quickstart
 The simplest way to start the MQTT CLI is typing:
-``` $ mqtt ```
-See also ``mqtt --help``.
 
-#### Download latest MQTT CLI package
+``` $ mqtt ```
+
+See also:
+ 
+ ``mqtt --help``.
+
+### Download latest MQTT CLI package
 
 Packages 
  for **Linux, Mac OS and Windows**
 can be found here: 
 [Installation/Packages](https://hivemq.github.io/mqtt-cli/docs/installation/packages.html)!
 
-### Building from source
+## Building from source
 To do a clean build, issue the following command:
 
 `$ ./gradlew clean build
@@ -74,11 +80,7 @@ For the Windows installer:
 `$ ./gradlew buildWindowsZip
 `
 
-
-#### Basic Examples
-
-
-##### Subscribe example
+## Subscribe
 
 |Command                                         |Explanation                                                              |
 |------------------------------------------------|-------------------------------------------------------------------------|
@@ -89,7 +91,7 @@ For the Windows installer:
 
 See also ``mqtt sub --help``
 
-##### Publish example
+## Publish
 |Command                                                |Explanation                                                              |
 |-------------------------------------------------------|-------------------------------------------------------------------------|
 | ``mqtt pub -t test -m "Hello" `` | Publish the message "Hello" to the test topics with the default settings
@@ -98,17 +100,15 @@ See also ``mqtt sub --help``
 
 See also ``mqtt pub --help``
 
-#### Shell Mode
+## Shell
 
 * If interacting with several clients, using different contexts and publishing and subscribing with them in various ways, 
 the shell mode with further sub commands is useful.
 
-``$>mqtt shell``
+``$ mqtt shell``
 
 The Shell-Mode is based around a client context driven use case.
 Therefore methods like Connect and Disconnect switch the current context of the shell and commands like Publish and Subscribe always relate to the currently active client context.
-
-**Example:**
 
 ```
 mqtt shell                # starts the shell
@@ -142,10 +142,63 @@ The following Commands are available **with** an active context:
 *  ls, list            List all connected clients with their respective identifieres
 *  cls, clear          Clears the screen
 *  exit                Exit the current context
+
   
+## Test
+
+The test command runs various tests against the specified broker to find out its features and limitations.
+By default the test command will use MQTT 3 clients to test the broker first
+and will afterwards check the connect restrictions returned by a connect of a MQTT 5 client.
+You can alter this behavior by specifying different options when using the command.
+
+Test the public HiveMQ broker:
+``` 
+$ mqtt test -h broker.hivemq.com
+MQTT 3: OK
+        - Maximum topic length: 65535 bytes
+        - QoS 0: Received 10/10 publishes in 25,74ms
+        - QoS 1: Received 10/10 publishes in 26,27ms
+        - QoS 2: Received 10/10 publishes in 70,01ms
+        - Retain: OK
+        - Wildcard subscriptions: OK
+        - Shared subscriptions: OK
+        - Payload size: >= 100000 bytes
+        - Maximum client id length: 65535 bytes
+        - Unsupported Ascii Chars: ALL SUPPORTED
+MQTT 5: OK
+        - Connect restrictions: 
+                > Retain: OK
+                > Wildcard subscriptions: OK
+                > Shared subscriptions: OK
+                > Subscription identifiers: OK
+                > Maximum QoS: 2
+                > Receive maximum: 10
+                > Maximum packet size: 268435460 bytes
+                > Topic alias maximum: 5
+                > Session expiry interval: Client-based
+                > Server keep alive: Client-based
+
+```
+
+## HiveMQ
+
+The HiveMQ command line argument offers various HiveMQ specific commands.
+
+Show all available commands:
+
+``$ mqtt hivemq``
+
+The export command of the HiveMQ command line offers a set of commands to export various resources from a HiveMQ API endpoint.
+
+``$ mqtt hivemq export``
+
+Export client details from a HiveMQ node via the export clients command.
+
+``$ mqtt hivemq export clients``
 
 
-Pls. refer to the detailed documentation [MQTT CLI Documentation](https://hivemq.github.io/mqtt-cli)
+
+Please refer to the detailed documentation [MQTT CLI Documentation](https://hivemq.github.io/mqtt-cli)
 for more examples and complete command descriptions.
 
 

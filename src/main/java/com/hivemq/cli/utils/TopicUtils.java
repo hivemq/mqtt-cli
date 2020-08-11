@@ -28,7 +28,7 @@ public class TopicUtils {
     }
 
     public static @NotNull String generateTopicUUID(final int maxLength) {
-        if (maxLength == -1) return generateTopicUUID();
+        if (maxLength == -1 || maxLength > 32) return generateTopicUUID();
         else return generateTopicUUID().substring(0, maxLength);
     }
 }

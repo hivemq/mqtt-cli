@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 @Singleton
 @Component(modules = {
         CLIModule.class,
+        HiveMQCLIModule.class,
         ShellModule.class
 })
 public interface MqttCLI {

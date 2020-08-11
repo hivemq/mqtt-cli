@@ -90,17 +90,12 @@ public class ShellCommand implements Runnable {
     @CommandLine.Option(names = {"--help", "-h"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 1)
+    private boolean logToLogfile;
+
     @Override
     public void run() {
-
-        Map<String, String> configurationMap = new HashMap<String, String>() {{
-            put("writer1", "console");
-            put("writer1.format", "{message-only}");
-            put("writer1.level", "warn");
-        }};
-
-        LoggerUtils.useDefaultLogging(configurationMap);
-
+        LoggerUtils.setupConsoleLogging(logToLogfile, "warn");
         logfilePath = Configuration.get("writer.file");
 
         interact();
@@ -142,7 +137,12 @@ public class ShellCommand implements Runnable {
                     defaultCLIProperties.getPort(),
                     defaultCLIProperties.getMqttVersion(),
                     defaultCLIProperties.getLogfileDebugLevel());
-            TERMINAL_WRITER.printf("Writing Logfile to %s\n", logfilePath);
+            if (logfilePath != null) {
+                TERMINAL_WRITER.printf("Writing Logfile to %s\n", logfilePath);
+            }
+            else {
+                TERMINAL_WRITER.printf("No Logfile used - Activate logging with the 'mqtt sh -l' option\n");
+            }
 
             Logger.info("--- Shell-Mode started ---");
 

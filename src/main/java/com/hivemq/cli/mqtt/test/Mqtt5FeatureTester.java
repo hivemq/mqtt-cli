@@ -17,7 +17,14 @@
 package com.hivemq.cli.mqtt.test;
 
 import com.google.common.base.Strings;
-import com.hivemq.cli.mqtt.test.results.*;
+import com.hivemq.cli.mqtt.test.results.AsciiCharsInClientIdTestResults;
+import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
+import com.hivemq.cli.mqtt.test.results.QosTestResult;
+import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
+import com.hivemq.cli.mqtt.test.results.TestResult;
+import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
 import com.hivemq.cli.utils.TopicUtils;
 import com.hivemq.cli.utils.Tuple;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
@@ -39,6 +46,7 @@ import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,14 +63,15 @@ public class Mqtt5FeatureTester {
     private static final String ONE_BYTE = "a";
     private static final int MAX_TOPIC_LENGTH = 65535;
     private static final int MAX_CLIENT_ID_LENGTH = 65535;
-
-    private int maxTopicLength = -1;
     private final String host;
     private final int port;
     private final String username;
     private final ByteBuffer password;
     private final MqttClientSslConfig sslConfig;
     private final int timeOut;
+    private int maxTopicLength = -1;
+    private int maxClientIdLength = -1;
+    private MqttQos maxQos = MqttQos.AT_MOST_ONCE;
 
     public Mqtt5FeatureTester(final @NotNull String host,
                               final @NotNull Integer port,
@@ -80,22 +89,26 @@ public class Mqtt5FeatureTester {
 
     // Tests
 
-    public @Nullable Mqtt5ConnAck testConnect() {
+    public @Nullable Mqtt5ConnAck testConnect() throws Exception {
+        Logger.debug("Testing connect");
+
         final Mqtt5Client mqtt5Client = buildClient();
 
         try {
-            return mqtt5Client.toBlocking().connect();
-        } catch (final Mqtt5ConnAckException connAckEx) {
-            return connAckEx.getMqttMessage();
-        } catch (final Exception ex) {
-            Logger.error(ex, "Could not connect MQTT5 client");
-            return null;
-        } finally {
+            final Mqtt5ConnAck connAck = mqtt5Client.toBlocking().connect();
+            Logger.debug("Received {}", connAck);
             disconnectIfConnected(mqtt5Client);
+            return connAck;
+        } catch (final Mqtt5ConnAckException connAckEx) {
+            Logger.debug(connAckEx, "Failed to connect MQTT 5 client");
+            disconnectIfConnected(mqtt5Client);
+            return connAckEx.getMqttMessage();
         }
     }
 
     public @NotNull SharedSubscriptionTestResult testSharedSubscription() {
+        Logger.debug("Testing shared subscriptions");
+
         final String topic = (maxTopicLength == -1 ? TopicUtils.generateTopicUUID() : TopicUtils.generateTopicUUID(maxTopicLength));
         final String sharedTopic = "$share/" + UUID.randomUUID().toString().replace("-", "") + "/" + topic;
         final Mqtt5Client publisher = buildClient();
@@ -103,7 +116,7 @@ public class Mqtt5FeatureTester {
         final Mqtt5Client sharedSubscriber2 = buildClient();
         final Mqtt5Subscribe sharedSubscribe = Mqtt5Subscribe.builder()
                 .topicFilter(sharedTopic)
-                .qos(MqttQos.EXACTLY_ONCE)
+                .qos(maxQos)
                 .build();
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
@@ -112,14 +125,23 @@ public class Mqtt5FeatureTester {
         sharedSubscriber1.toBlocking().connect();
         sharedSubscriber2.toBlocking().connect();
 
-        sharedSubscriber1.toBlocking().subscribe(sharedSubscribe);
-        sharedSubscriber2.toBlocking().subscribe(sharedSubscribe);
+
+        try {
+            sharedSubscriber1.toBlocking().subscribe(sharedSubscribe);
+            sharedSubscriber2.toBlocking().subscribe(sharedSubscribe);
+        } catch (final Mqtt5SubAckException ex) {
+            Logger.error(ex, "Could not subscribe to topic {} with qos {}", sharedTopic, maxQos);
+            disconnectIfConnected(sharedSubscriber1, sharedSubscriber2);
+            return SharedSubscriptionTestResult.SUBSCRIBE_FAILED;
+        }
+
 
         long startTime = 0;
 
+        Logger.trace("Subscribing first subscriber to shared topic {} with qos {}", sharedTopic, maxQos);
         sharedSubscriber1.toAsync().subscribeWith()
                 .topicFilter(sharedTopic)
-                .qos(MqttQos.AT_LEAST_ONCE)
+                .qos(maxQos)
                 .callback(publish -> {
                     if (countDownLatch.getCount() != 0) {
                         countDownLatch.countDown();
@@ -130,9 +152,10 @@ public class Mqtt5FeatureTester {
                 .send()
                 .join();
 
+        Logger.trace("Subscribing second subscriber to shared topic {} with qos {}", sharedTopic, maxQos);
         sharedSubscriber2.toAsync().subscribeWith()
                 .topicFilter(sharedTopic)
-                .qos(MqttQos.AT_LEAST_ONCE)
+                .qos(maxQos)
                 .callback(publish -> {
                     if (countDownLatch.getCount() != 0) {
                         countDownLatch.countDown();
@@ -144,14 +167,16 @@ public class Mqtt5FeatureTester {
                 .join();
 
         try {
+            Logger.trace("Publishing to shared topic {} with qos {}", sharedTopic, maxQos);
             publisher.toBlocking().publishWith()
                     .topic(topic)
                     .payload("test".getBytes())
-                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .qos(maxQos)
                     .send();
             startTime = System.currentTimeMillis();
         } catch (Exception e) {
-            Logger.error("Could not publish to topic " + sharedTopic, e);
+            Logger.error(e, "Could not publish to topic " + sharedTopic);
+            disconnectIfConnected(publisher, sharedSubscriber1, sharedSubscriber1);
             return SharedSubscriptionTestResult.PUBLISH_FAILED;
         }
 
@@ -162,30 +187,40 @@ public class Mqtt5FeatureTester {
             timedOut = !countDownLatch.await(timeOut, TimeUnit.SECONDS);
             timeToReceive = System.currentTimeMillis() - startTime;
         } catch (InterruptedException e) {
-            Logger.error("Waiting for subscribers to receive shared publishes interrupted", e);
+            Logger.error(e, "Waiting for subscribers to receive shared publishes interrupted");
+            disconnectIfConnected(publisher, sharedSubscriber1, sharedSubscriber1);
             return SharedSubscriptionTestResult.INTERRUPTED;
         }
 
         if (timedOut) {
+            Logger.debug("Timed out while waiting for shared subscription publish");
+            disconnectIfConnected(publisher, sharedSubscriber1, sharedSubscriber1);
             return SharedSubscriptionTestResult.TIME_OUT;
         }
 
         try {
             Thread.sleep(100 + timeToReceive);
         } catch (InterruptedException e) {
-            Logger.error("Waiting additional time for second subscriber interrupted", e);
+            Logger.error(e, "Waiting additional time for second subscriber interrupted");
+            disconnectIfConnected(publisher, sharedSubscriber1, sharedSubscriber1);
             return SharedSubscriptionTestResult.INTERRUPTED;
         }
 
-        if (atomicBoolean.get()) {
-            return SharedSubscriptionTestResult.NOT_SHARED;
-        } else {
-            return SharedSubscriptionTestResult.OK;
-        }
+        disconnectIfConnected(publisher, sharedSubscriber1, sharedSubscriber1);
+
+        final boolean result = atomicBoolean.get();
+
+        final SharedSubscriptionTestResult testResult = result ? SharedSubscriptionTestResult.NOT_SHARED : SharedSubscriptionTestResult.OK;
+
+        Logger.debug("Result of testing shared subscriptions: {}", testResult);
+
+        return testResult;
 
     }
 
     public @NotNull QosTestResult testQos(final @NotNull MqttQos qos, final int tries) {
+        Logger.debug("Testing qos {} with {} tries", qos, tries);
+
         final Mqtt5Client publisher = buildClient();
         final Mqtt5Client subscriber = buildClient();
         final String topic = TopicUtils.generateTopicUUID(maxTopicLength);
@@ -198,10 +233,12 @@ public class Mqtt5FeatureTester {
         final AtomicInteger totalReceived = new AtomicInteger(0);
 
         try {
+            Logger.trace("Subscribing to topic {} with qos {}", topic, qos);
             subscriber.toAsync().subscribeWith()
                     .topicFilter(topic)
                     .qos(qos)
                     .callback(publish -> {
+                        Logger.trace("Subscriber received {}", publish);
                         if (publish.getQos() == qos
                                 && Arrays.equals(publish.getPayloadAsBytes(), payload)) {
                             totalReceived.incrementAndGet();
@@ -218,12 +255,17 @@ public class Mqtt5FeatureTester {
 
         for (int i = 0; i < tries; i++) {
             try {
+                Logger.trace("Publishing message {} to topic {} with qos {}",
+                        new String(payload, StandardCharsets.UTF_8),
+                        topic,
+                        qos);
                 publisher.toAsync().publishWith()
                         .topic(topic)
                         .qos(qos)
                         .payload(payload)
                         .send();
             } catch (final Exception ex) {
+                countDownLatch.countDown();
                 Logger.error("Could not publish with QoS {}", qos.ordinal());
             }
         }
@@ -239,10 +281,19 @@ public class Mqtt5FeatureTester {
 
         disconnectIfConnected(publisher, subscriber);
 
+        if (totalReceived.get() > 0 && qos.ordinal() > maxQos.ordinal()) {
+            Logger.trace("Setting maxQos from {} to {} for the next tests", maxQos, qos);
+            maxQos = qos;
+        }
+
+        Logger.debug("Result of testing qos {}: Received {} / {} publishes", qos, totalReceived, tries);
+
         return new QosTestResult(totalReceived.get(), timeToComplete);
     }
 
     public @NotNull TestResult testRetain() {
+        Logger.debug("Testing retained messages");
+
         final Mqtt5Client publisher = buildClient();
         final Mqtt5Client subscriber = buildClient();
         final String topic = (maxTopicLength == -1 ? TopicUtils.generateTopicUUID() : TopicUtils.generateTopicUUID(maxTopicLength));
@@ -251,26 +302,28 @@ public class Mqtt5FeatureTester {
         publisher.toBlocking().connect();
 
         try {
+            Logger.trace("Publishing retained message '{}' to topic {} with qos {}", "RETAIN", topic, maxQos);
             publisher.toBlocking().publishWith()
                     .topic(topic)
-                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .qos(maxQos)
                     .retain(true)
                     .payload("RETAIN".getBytes())
                     .send();
         } catch (final Exception ex) {
-            if (!(ex instanceof Mqtt5PubAckException)) {
-                Logger.error(ex, "Retained publish failed");
-            }
+            Logger.error(ex, "Retained publish failed");
+            disconnectIfConnected(publisher);
             return TestResult.PUBLISH_FAILED;
         }
 
         subscriber.toBlocking().connect();
 
         try {
+            Logger.trace("Subscribing to topic {} with qos {}", topic, maxQos);
             subscriber.toAsync().subscribeWith()
                     .topicFilter(topic)
-                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .qos(maxQos)
                     .callback(publish -> {
+                        Logger.trace("Subscriber received {}", publish);
                         if (publish.isRetain()) {
                             countDownLatch.countDown();
                         }
@@ -278,9 +331,8 @@ public class Mqtt5FeatureTester {
                     .send()
                     .join();
         } catch (final Exception ex) {
-            if (!(ex instanceof Mqtt5SubAckException)) {
-                Logger.error(ex, "Retained subscribe failed");
-            }
+            Logger.error(ex, "Retained subscribe failed");
+            disconnectIfConnected(publisher, subscriber);
             return TestResult.SUBSCRIBE_FAILED;
         }
 
@@ -292,7 +344,11 @@ public class Mqtt5FeatureTester {
 
         disconnectIfConnected(publisher, subscriber);
 
-        return countDownLatch.getCount() == 0 ? TestResult.OK : TestResult.TIME_OUT;
+        final TestResult testResult = countDownLatch.getCount() == 0 ? TestResult.OK : TestResult.TIME_OUT;
+
+        Logger.debug("Result of testing retained messages: {}", testResult);
+
+        return testResult;
     }
 
     public @NotNull WildcardSubscriptionsTestResult testWildcardSubscriptions() {
@@ -303,6 +359,8 @@ public class Mqtt5FeatureTester {
     }
 
     private @NotNull TestResult testWildcard(final String subscribeWildcardTopic, final String publishTopic) {
+        Logger.debug("Testing wildcard {} on topic {}", subscribeWildcardTopic, publishTopic);
+
         final Mqtt5Client subscriber = buildClient();
         final Mqtt5Client publisher = buildClient();
         final String topic = (maxTopicLength == -1 ? TopicUtils.generateTopicUUID() : TopicUtils.generateTopicUUID(maxTopicLength));
@@ -322,29 +380,29 @@ public class Mqtt5FeatureTester {
         publisher.toBlocking().connect();
 
         try {
+            Logger.trace("Subscribing to wildcard topic {} with qos {}", subscribeToTopic, maxQos);
             subscriber.toAsync().subscribeWith()
                     .topicFilter(subscribeToTopic)
-                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .qos(maxQos)
                     .callback(publishCallback)
                     .send()
                     .join();
         } catch (final Exception ex) {
-            if (!(ex instanceof Mqtt5SubAckException)) {
-                Logger.error(ex, "Subscribe to wildcard topic '{}' failed", subscribeToTopic);
-            }
+            Logger.error(ex, "Subscribe to wildcard topic '{}' failed", subscribeToTopic);
+            disconnectIfConnected(subscriber, publisher);
             return TestResult.SUBSCRIBE_FAILED;
         }
 
         try {
+            Logger.trace("Publishing to wildcard topic {} with qos {}", publishTopic, maxQos);
             publisher.toBlocking().publishWith()
                     .topic(publishToTopic)
-                    .qos(MqttQos.AT_LEAST_ONCE)
+                    .qos(maxQos)
                     .payload(payload)
                     .send();
         } catch (final Exception ex) {
-            if (!(ex instanceof Mqtt5PubAckException)) {
-                Logger.error(ex, "Publish to topic '{}' failed", publishToTopic);
-            }
+            Logger.error(ex, "Publish to topic '{}' failed", publishToTopic);
+            disconnectIfConnected(subscriber, publisher);
             return TestResult.PUBLISH_FAILED;
         }
 
@@ -363,15 +421,15 @@ public class Mqtt5FeatureTester {
     }
 
     public @NotNull PayloadTestResults testPayloadSize(final int maxSize) {
-        final Mqtt5Client publisher = buildClient();
+        Logger.debug("Testing payload size until max. payload size of {} bytes", maxSize);
+
         final List<Tuple<Integer, TestResult>> testResults = new LinkedList<>();
         final String topic = (maxTopicLength == -1 ? TopicUtils.generateTopicUUID() : TopicUtils.generateTopicUUID(maxTopicLength));
 
 
-        publisher.toBlocking().connect();
-
-        final boolean maxTestSuccess = testPayload(publisher, topic, testResults, maxSize);
+        final boolean maxTestSuccess = testPayload(topic, testResults, maxSize);
         if (maxTestSuccess) {
+            Logger.debug("Result of testing max. payload size: {} bytes", maxSize);
             return new PayloadTestResults(maxSize, testResults);
         } else { // Binary search the payload size
             int top = maxSize;
@@ -379,7 +437,7 @@ public class Mqtt5FeatureTester {
             int mid = -1;
             while (bottom <= top) {
                 mid = (bottom + top) / 2;
-                final boolean success = testPayload(publisher, topic, testResults, mid);
+                final boolean success = testPayload(topic, testResults, mid);
                 if (success) {
                     bottom = mid + 1;
                 } else {
@@ -387,40 +445,43 @@ public class Mqtt5FeatureTester {
                 }
             }
 
-            disconnectIfConnected(publisher);
-
+            Logger.debug("Result of testing max. payload size: {} bytes", mid);
             return new PayloadTestResults(mid, testResults);
         }
     }
 
-    private boolean testPayload(final @NotNull Mqtt5Client publisher,
-                                final @NotNull String topic,
+    private boolean testPayload(final @NotNull String topic,
                                 final @NotNull List<Tuple<Integer, TestResult>> testResults,
                                 final int payloadSize) {
+        Logger.debug("Testing payload with {} bytes", payloadSize);
+
+        final Mqtt5Client publisher = buildClient();
         final Mqtt5Client subscriber = buildClient();
         final String currentPayload = Strings.repeat(ONE_BYTE, payloadSize);
         final Mqtt5Publish publish = Mqtt5Publish.builder()
                 .topic(topic)
-                .qos(MqttQos.AT_LEAST_ONCE)
+                .qos(maxQos)
                 .payload(currentPayload.getBytes())
                 .build();
 
         subscriber.toBlocking().connect();
+
+        Logger.trace("Subscribing to topic {} with qos {}", topic, maxQos);
         subscriber.toBlocking().subscribeWith()
                 .topicFilter(topic)
-                .qos(MqttQos.AT_LEAST_ONCE)
+                .qos(maxQos)
                 .send();
         final Mqtt5BlockingClient.Mqtt5Publishes publishes = subscriber.toBlocking().publishes(MqttGlobalPublishFilter.SUBSCRIBED);
 
         try {
-            if (!publisher.getState().isConnectedOrReconnect()) {
-                publisher.toBlocking().connect();
-            }
+            publisher.toBlocking().connect();
+            Logger.trace("Publishing payload with {} bytes to topic {} with qos {}", payloadSize, topic, maxQos);
             publisher.toBlocking().publish(publish);
         } catch (final Exception ex) {
             if (!(ex instanceof Mqtt5PubAckException)) {
                 Logger.error(ex, "Publish with payload of size {} bytes failed", currentPayload.getBytes().length);
             }
+            disconnectIfConnected(subscriber, publisher);
             testResults.add(new Tuple<>(payloadSize, TestResult.PUBLISH_FAILED));
             return false;
         }
@@ -428,19 +489,24 @@ public class Mqtt5FeatureTester {
         try {
             final Optional<Mqtt5Publish> receive = publishes.receive(timeOut, TimeUnit.SECONDS);
             if (!receive.isPresent()) {
+                disconnectIfConnected(publisher, subscriber);
+                Logger.debug("Timed out while waiting for publish with {} bytes", currentPayload.getBytes().length);
                 testResults.add(new Tuple<>(payloadSize, TestResult.TIME_OUT));
                 return false;
             } else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentPayload.getBytes())) {
+                disconnectIfConnected(publisher, subscriber);
+                Logger.debug("Received wrong payload for publish with {} bytes", currentPayload.getBytes().length);
                 testResults.add(new Tuple<>(payloadSize, TestResult.WRONG_PAYLOAD));
                 return false;
             }
         } catch (InterruptedException e) {
             Logger.error(e, "Interrupted while waiting for subscriber to receive payload with length {} bytes", currentPayload.getBytes().length);
             testResults.add(new Tuple<>(payloadSize, TestResult.INTERRUPTED));
+            disconnectIfConnected(subscriber, publisher);
             return false;
-        } finally {
-            disconnectIfConnected(subscriber);
         }
+
+        disconnectIfConnected(subscriber, publisher);
 
         testResults.add(new Tuple<>(payloadSize, TestResult.OK));
         return true;
@@ -448,13 +514,13 @@ public class Mqtt5FeatureTester {
 
 
     public @NotNull TopicLengthTestResults testTopicLength() {
-        final Mqtt5Client publisher = buildClient();
+        Logger.debug("Testing topic length");
+
         final List<Tuple<Integer, TestResult>> testResults = new LinkedList<>();
 
-        publisher.toBlocking().connect();
-
-        final boolean maxTopicLengthSuccess = testTopic(publisher, testResults, MAX_TOPIC_LENGTH);
+        final boolean maxTopicLengthSuccess = testTopic(testResults, MAX_TOPIC_LENGTH);
         if (maxTopicLengthSuccess) {
+            Logger.debug("Result of testing max. topic length: {} bytes", MAX_TOPIC_LENGTH);
             return new TopicLengthTestResults(MAX_TOPIC_LENGTH, testResults);
         } else { // Binary search the right topic length
             int top = MAX_TOPIC_LENGTH;
@@ -463,7 +529,7 @@ public class Mqtt5FeatureTester {
 
             while (bottom <= top) {
                 mid = (bottom + top) / 2;
-                final boolean success = testTopic(publisher, testResults, mid);
+                final boolean success = testTopic(testResults, mid);
                 if (success) {
                     bottom = mid + 1;
                 } else {
@@ -471,26 +537,29 @@ public class Mqtt5FeatureTester {
                 }
             }
 
+            Logger.debug("Result of testing max. topic length: {} bytes", mid);
+            Logger.trace("Setting max. topic length to {} for the next tests", mid);
             setMaxTopicLength(mid);
-            disconnectIfConnected(publisher);
 
             return new TopicLengthTestResults(mid, testResults);
         }
     }
 
-    private boolean testTopic(final @NotNull Mqtt5Client publisher,
-                              final @NotNull List<Tuple<Integer, TestResult>> testResults,
+    private boolean testTopic(final @NotNull List<Tuple<Integer, TestResult>> testResults,
                               final int topicSize) {
+        Logger.debug("Testing topic with length of {} bytes", topicSize);
+
+        final Mqtt5Client publisher = buildClient();
         final Mqtt5Client subscriber = buildClient();
         final String currentTopicName = Strings.repeat(ONE_BYTE, topicSize);
         final Mqtt5Publish publish = Mqtt5Publish.builder()
                 .topic(currentTopicName)
-                .qos(MqttQos.AT_LEAST_ONCE)
+                .qos(maxQos)
                 .payload(currentTopicName.getBytes())
                 .build();
         final Mqtt5Subscribe subscribe = Mqtt5Subscribe.builder()
                 .topicFilter(currentTopicName)
-                .qos(MqttQos.AT_LEAST_ONCE)
+                .qos(maxQos)
                 .build();
 
         subscriber.toBlocking().connect();
@@ -498,26 +567,24 @@ public class Mqtt5FeatureTester {
 
         // Test subscribe to topic
         try {
+            Logger.trace("Subscribing to topic with {} bytes with qos {}", topicSize, maxQos);
             subscriber.toBlocking().subscribe(subscribe);
         } catch (final Exception ex) {
-            if (!(ex instanceof Mqtt5SubAckException)) {
-                Logger.error(ex, "Subscribe to topic of length {} bytes failed", currentTopicName.getBytes().length);
-            }
+            Logger.error(ex, "Subscribe to topic of length {} bytes failed", currentTopicName.getBytes().length);
             testResults.add(new Tuple<>(topicSize, TestResult.SUBSCRIBE_FAILED));
+            disconnectIfConnected(subscriber);
             return false;
         }
 
         // Test publish to topic
         try {
-            if (!publisher.getState().isConnectedOrReconnect()) {
-                publisher.toBlocking().connect();
-            }
+            publisher.toBlocking().connect();
+            Logger.trace("Publishing to topic with {} bytes with qos {}", topicSize, maxQos);
             publisher.toBlocking().publish(publish);
         } catch (final Exception ex) {
-            if (!(ex instanceof Mqtt5PubAckException)) {
-                Logger.error(ex, "Publish to topic of length {}", currentTopicName.getBytes().length);
-            }
+            Logger.error(ex, "Publish to topic of length {} failed", currentTopicName.getBytes().length);
             testResults.add(new Tuple<>(topicSize, TestResult.PUBLISH_FAILED));
+            disconnectIfConnected(publisher, subscriber);
             return false;
         }
 
@@ -525,19 +592,24 @@ public class Mqtt5FeatureTester {
         try {
             final Optional<Mqtt5Publish> receive = publishes.receive(timeOut, TimeUnit.SECONDS);
             if (!receive.isPresent()) {
+                Logger.debug("Timed out while waiting to receive a publish from topic {}", currentTopicName);
                 testResults.add(new Tuple<>(topicSize, TestResult.TIME_OUT));
+                disconnectIfConnected(subscriber, publisher);
                 return false;
             } else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentTopicName.getBytes())) {
+                Logger.debug("Received wrong payload for publish to topic {}", currentTopicName);
                 testResults.add(new Tuple<>(topicSize, TestResult.WRONG_PAYLOAD));
+                disconnectIfConnected(subscriber, publisher);
                 return false;
             }
         } catch (InterruptedException e) {
             Logger.error(e, "Interrupted while waiting to receive publish to topic with {} bytes", currentTopicName.getBytes().length);
             testResults.add(new Tuple<>(topicSize, TestResult.INTERRUPTED));
+            disconnectIfConnected(subscriber, publisher);
             return false;
-        } finally {
-            disconnectIfConnected(subscriber);
         }
+
+        disconnectIfConnected(subscriber, publisher);
 
         // Everything successful
         testResults.add(new Tuple<>(topicSize, TestResult.OK));
@@ -545,10 +617,14 @@ public class Mqtt5FeatureTester {
     }
 
     public @NotNull ClientIdLengthTestResults testClientIdLength() {
+        Logger.debug("Testing max. client identifier length");
+
         final List<Tuple<Integer, String>> connectResults = new LinkedList<>();
 
         final boolean maxClientIdSuccess = testClientIdLength(connectResults, MAX_CLIENT_ID_LENGTH);
         if (maxClientIdSuccess) {
+            maxClientIdLength = MAX_CLIENT_ID_LENGTH;
+            Logger.debug("Result of testing max. client identifier length: {} bytes", MAX_CLIENT_ID_LENGTH);
             return new ClientIdLengthTestResults(MAX_CLIENT_ID_LENGTH, connectResults);
         } else { // Binary search the right client id length
             int top = MAX_CLIENT_ID_LENGTH;
@@ -564,12 +640,17 @@ public class Mqtt5FeatureTester {
                 }
             }
 
+            Logger.debug("Result of testing max. client identifier length: {} bytes", mid);
+            Logger.trace("Setting max. client identifier length to {} bytes for further tests", mid);
+            maxClientIdLength = mid;
             return new ClientIdLengthTestResults(mid, connectResults);
         }
     }
 
     private boolean testClientIdLength(final @NotNull List<Tuple<Integer, String>> connectResults,
                                        final int clientIdLength) {
+        Logger.debug("Testing client identifier with a length of {} bytes", clientIdLength);
+
         final String currentIdentifier = Strings.repeat(ONE_BYTE, clientIdLength);
         final Mqtt5Client currClient = getClientBuilder()
                 .identifier(currentIdentifier)
@@ -579,26 +660,31 @@ public class Mqtt5FeatureTester {
             final Mqtt5ConnAck connAck = currClient.toBlocking().connect();
             connectResults.add(new Tuple<>(clientIdLength, connAck.getReasonCode().toString()));
             if (connAck.getReasonCode() != Mqtt5ConnAckReasonCode.SUCCESS) {
+                Logger.debug("Received non-successful reason code {}", connAck.getReasonCode());
                 return false;
             }
         } catch (final Mqtt5ConnAckException connAckEx) {
             connectResults.add(new Tuple<>(clientIdLength, connAckEx.getMqttMessage().getReasonCode().toString()));
+            disconnectIfConnected(currClient);
             return false;
         } catch (final Exception ex) {
             Logger.error(ex, "Connect with client id length {} bytes",
                     currClient.getConfig().getClientIdentifier()
                             .map(id -> id.toString().getBytes().length).orElse(0));
             connectResults.add(new Tuple<>(clientIdLength, "UNDEFINED_FAILURE"));
-            return false;
-        } finally {
             disconnectIfConnected(currClient);
+            return false;
         }
+
+        disconnectIfConnected(currClient);
 
         return true;
 
     }
 
     public @NotNull AsciiCharsInClientIdTestResults testAsciiCharsInClientId() {
+        Logger.debug("Testing ascii characters in client identifier");
+
         final String ASCII = " !\"#$%&\\'()*+,-./:;<=>?@[\\\\]^_`{|}~";
         final List<Tuple<Character, String>> connectResults = new LinkedList<>();
 
@@ -606,27 +692,35 @@ public class Mqtt5FeatureTester {
         final Mqtt5Client client = getClientBuilder()
                 .identifier(ASCII)
                 .build();
-        try {
-            client.toBlocking().connect();
-            allSuccess = true;
-        } catch (Exception ex) {
-            Logger.error("Could not connect with Client ID '" + ASCII + "'", ex);
-        } finally {
+
+        if (ASCII.length() <= maxClientIdLength) {
+            try {
+                Logger.trace("Testing client identifier '{}'", ASCII);
+                client.toBlocking().connect();
+                allSuccess = true;
+            } catch (Exception ex) {
+                Logger.error(ex, "Could not connect with Client ID '" + ASCII + "'");
+            }
+
             disconnectIfConnected(client);
         }
 
         if (allSuccess) {
+            Logger.trace("Result of testing ascii characters: All supported");
             return new AsciiCharsInClientIdTestResults(connectResults);
         } else {
             for (int i = 0; i < ASCII.length(); i++) {
                 testAsciiChar(connectResults, ASCII.charAt(i));
             }
+            Logger.debug("Result of testing ascii character in client identifier: Unsupported characters {}", connectResults.toString());
+
             return new AsciiCharsInClientIdTestResults(connectResults);
         }
     }
 
     private void testAsciiChar(final @NotNull List<Tuple<Character, String>> connectResults,
                                final char asciiChar) {
+        Logger.debug("Testing ascii character '{}'", asciiChar);
         final Mqtt5Client client = getClientBuilder()
                 .identifier(String.valueOf(asciiChar))
                 .build();
@@ -634,6 +728,7 @@ public class Mqtt5FeatureTester {
         try {
             client.toBlocking().connect();
         } catch (final Mqtt5ConnAckException ex) {
+            Logger.debug(ex, "Could not connect client identifier with ascii char '{}'", asciiChar);
             connectResults.add(new Tuple<>(asciiChar, ex.getMqttMessage().getReasonCode().toString()));
         } catch (final Exception ex) {
             Logger.error("Connect with Ascii char '{}' failed", asciiChar);
@@ -649,6 +744,9 @@ public class Mqtt5FeatureTester {
     public void setMaxTopicLength(final int maxTopicLength) {
         this.maxTopicLength = maxTopicLength;
     }
+
+    public void setMaxQos(final @NotNull MqttQos qos) {maxQos = qos; }
+
 
     private @NotNull Mqtt5Client buildClient() {
         return getClientBuilder()

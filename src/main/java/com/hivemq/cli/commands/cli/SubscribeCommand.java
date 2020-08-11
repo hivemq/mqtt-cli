@@ -36,6 +36,7 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -47,7 +48,7 @@ import java.util.Map;
 @CommandLine.Command(name = "sub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
         aliases = "subscribe",
-        description = "Subscribe an mqtt client to a list of topics",
+        description = "Subscribe an mqtt client to a list of topics.",
         abbreviateSynopsis = false)
 
 public class SubscribeCommand extends AbstractConnectFlags implements MqttAction, Subscribe {
@@ -102,19 +103,16 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @CommandLine.Option(names = {"-T", "--showTopics"}, defaultValue = "false", description = "Prepend the specific topic name to the received publish", order = 1)
     private boolean showTopics;
 
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 1)
+    private boolean logToLogfile;
+
     @Override
     public void run() {
 
-        // TinyLog configuration
-        Map<String, String> configurationMap = new HashMap<String, String>() {{
-            put("writer1", "console");
-            put("writer1.format", "{message-only}");
-            put("writer1.level", "warn");
-            if (isDebug()) put("writer1.level", "debug");
-            if (isVerbose()) put("writer1.level", "trace");
-        }};
-
-        LoggerUtils.useDefaultLogging(configurationMap);
+        String logLevel = "warn";
+        if (isDebug()) logLevel = "debug";
+        else if (isVerbose()) logLevel = "trace";
+        LoggerUtils.setupConsoleLogging(logToLogfile, logLevel);
 
         setDefaultOptions();
         sslConfig = buildSslConfig();

@@ -25,7 +25,7 @@ import javax.inject.Inject;
 @CommandLine.Command(name = "mqtt",
         description = "MQTT Command Line Interpreter.",
         synopsisHeading = "%n@|bold Usage:|@  ",
-        synopsisSubcommandLabel = "{ pub | sub | shell | test }",
+        synopsisSubcommandLabel = "{ pub | sub | shell | test | hivemq }",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",
         commandListHeading = "%n@|bold Commands:|@%n",
