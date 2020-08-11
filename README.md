@@ -27,10 +27,11 @@ A detailed documentation can be found [here](https://hivemq.github.io/mqtt-cli)
 - **All MQTT 3.1.1 and MQTT 5.0 features** are supported
 - **interactive**, direct and verbose Mode for all MQTT Commands
 - Shell behavior with Syntax Highlighting, Command completion and history
-- configurable default settings
-- Ability to connect simultaneously various MQTT Clients to different Broker
+- Configurable default settings
+- Ability to connect various MQTT Clients to different broker simultaneously
+- Quick broker tests
+- Export information from HiveMQ API endpoints
 - Various distributions available
-- Graal support coming soon
 
 ### Prerequisites
 At least Java 8 is required to run MqttCLI.
@@ -99,7 +100,7 @@ See also ``mqtt sub --help``
 
 See also ``mqtt pub --help``
 
-#### Shell Mode
+#### Shell example
 
 * If interacting with several clients, using different contexts and publishing and subscribing with them in various ways, 
 the shell mode with further sub commands is useful.
@@ -143,10 +144,62 @@ The following Commands are available **with** an active context:
 *  ls, list            List all connected clients with their respective identifieres
 *  cls, clear          Clears the screen
 *  exit                Exit the current context
+
   
+#### Test example
+
+The test command runs various tests against the specified broker to find out its features and limitations.
+By default the test command will use MQTT 3 clients to test the broker first
+and will afterwards check the connect restrictions returned by a connect of a MQTT 5 client.
+You can alter this behavior by specifying different options when using the command.
+
+Test the public HiveMQ broker:
+``` 
+$ mqtt test -h broker.hivemq.com
+MQTT 3: OK
+        - Maximum topic length: 65535 bytes
+        - QoS 0: Received 10/10 publishes in 25,74ms
+        - QoS 1: Received 10/10 publishes in 26,27ms
+        - QoS 2: Received 10/10 publishes in 70,01ms
+        - Retain: OK
+        - Wildcard subscriptions: OK
+        - Shared subscriptions: OK
+        - Payload size: >= 100000 bytes
+        - Maximum client id length: 65535 bytes
+        - Unsupported Ascii Chars: ALL SUPPORTED
+MQTT 5: OK
+        - Connect restrictions: 
+                > Retain: OK
+                > Wildcard subscriptions: OK
+                > Shared subscriptions: OK
+                > Subscription identifiers: OK
+                > Maximum QoS: 2
+                > Receive maximum: 10
+                > Maximum packet size: 268435460 bytes
+                > Topic alias maximum: 5
+                > Session expiry interval: Client-based
+                > Server keep alive: Client-based
+
+```
+
+#### HiveMQ example
+
+The HiveMQ command line argument offers various HiveMQ specific commands.
+
+Show all available commands:
+
+``$ mqtt hivemq``
+
+The export command of the HiveMQ command line offers a set of commands to export various resources from a HiveMQ API endpoint.
+
+``$ mqtt hivemq export``
+
+Export client details from a HiveMQ node via the export clients command.
+
+``$ mqtt hivemq export clients``
 
 
-Pls. refer to the detailed documentation [MQTT CLI Documentation](https://hivemq.github.io/mqtt-cli)
+Please refer to the detailed documentation [MQTT CLI Documentation](https://hivemq.github.io/mqtt-cli)
 for more examples and complete command descriptions.
 
 
