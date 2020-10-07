@@ -49,7 +49,7 @@ description = 'MQTT CLI is a tool that provides a feature rich command line inte
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
 
-def hivemqApiVersion = '4.4.1'
+def hivemqApiVersion = '4.4.2'
 
 application {
     mainClassName = 'com.hivemq.cli.MqttCLIMain'
