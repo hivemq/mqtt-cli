@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class Mqtt5FeatureTesterQos0Test {
 
     final static public @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension("hivemq/hivemq4", "latest");
+            new HiveMQTestContainerExtension("hivemq/hivemq4", "4.4.0");
 
     static Mqtt5FeatureTester mqtt5FeatureTester;
 

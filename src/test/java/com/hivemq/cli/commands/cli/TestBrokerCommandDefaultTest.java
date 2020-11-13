@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 @Disabled("Tests are only used to check output")
 public class TestBrokerCommandDefaultTest {
     final static public @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension("hivemq/hivemq4", "latest");
+            new HiveMQTestContainerExtension("hivemq/hivemq4", "4.4.0");
 
     @BeforeAll
     static void beforeAll() {
