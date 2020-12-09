@@ -5,8 +5,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:5.1.2'
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.29.0"
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:5.2.0'
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.36.0"
     }
 }
 
@@ -14,17 +14,17 @@ plugins {
     id 'java'
     id 'idea'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '6.0.0' apply false
-    id "com.github.hierynomus.license" version "0.14.0"
+    id 'com.github.johnrengelman.shadow' version '6.1.0' apply false
+    id "com.github.hierynomus.license" version "0.15.0"
     id 'org.gradle.crypto.checksum' version '1.2.0'
     id "nebula.ospackage" version "8.4.1"
     id 'edu.sc.seis.launch4j' version '2.4.6'
-    id 'com.palantir.graal' version '0.6.0'
+    id 'com.palantir.graal' version '0.7.2'
     id 'de.thetaphi.forbiddenapis' version '3.0.1' apply false
     id "com.github.breadmoirai.github-release" version "2.2.12"
-    id 'org.ajoberstar.git-publish' version '2.1.1'
-    id 'org.owasp.dependencycheck' version '5.3.2.1' apply false
-    id "com.github.ben-manes.versions" version "0.29.0"
+    id 'org.ajoberstar.git-publish' version '3.0.0'
+    id 'org.owasp.dependencycheck' version '6.0.3' apply false
+    id "com.github.ben-manes.versions" version "0.36.0"
     id "org.openapi.generator" version "4.3.1"
 }
 
@@ -158,8 +158,8 @@ ext {
     picocliVersion = '4.5.0'
     jline3Version = '3.16.0'
     jline3JansiVersion = '3.16.0'
-    daggerVersion = '2.28.3'
-    guavaVersion = '29.0-jre'
+    daggerVersion = '2.30.1'
+    guavaVersion = '30.0-jre'
     hivemqclientVersion = '1.2.0'
     tinylogVersion = '2.0.1'
     jcToolsVersion = '2.1.2'
@@ -168,7 +168,7 @@ ext {
     nettyVersion = '4.1.51.Final'
     gsonVersion = '2.8.6'
     substrateVmVersion = '19.2.1'
-    junitJupiterVersion = '5.5.1'
+    junitJupiterVersion = '5.7.0'
     openCsvVersion = '5.2'
     swaggerVersion = '1.6.2'
     findBugsVersion = '3.0.2'
@@ -177,9 +177,10 @@ ext {
     javaxVersion = '1.3.2'
     commonsLangVersion = '3.10'
     mockitoVersion = '3.4.6'
-    hivemqTestcontainerVersion = '1.1.1'
+    hivemqTestcontainerVersion = '1.2.0'
     mockWebserverVersion = '4.8.0'
     systemExitVersion = '1.0.0'
+    testcontainersVersion = '1.15.0'
 }
 
 
@@ -226,6 +227,7 @@ dependencies {
     testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: mockWebserverVersion
     testImplementation group: 'com.hivemq', name: 'hivemq-testcontainer-junit5', version: hivemqTestcontainerVersion
     testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: systemExitVersion
+    testImplementation group: 'org.testcontainers', name: 'testcontainers', version: testcontainersVersion
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
 
 }
