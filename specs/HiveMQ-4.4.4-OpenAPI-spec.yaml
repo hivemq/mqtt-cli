@@ -78,7 +78,7 @@ info:
     HiveMQ's REST API provides an OpenAPI 3.0 schema definition that can imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   contact:
     url: https://www.hivemq.com
-  version: 4.4.3
+  version: 4.4.4
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
@@ -198,105 +198,6 @@ paths:
                     - title: The endpoint is temporarily not available
                       detail: The endpoint is temporarily not available, please try
                         again later
-  /api/v1/management/backups:
-    get:
-      tags:
-      - Backup & Restore
-      summary: List all available backups
-      description: |-
-        Lists all available backups with their current state.
-
-        This endpoint can be used to get an overview over all backups that are in progress or can be restored.
-
-        Canceled or failed backups are included in the results for up to 1 hour after they have been requested.
-
-        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
-      operationId: getAllBackups
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BackupList'
-              examples:
-                multiple-results:
-                  summary: Multiple results in different states
-                  description: Example response with one stored backup and one backup
-                    that is currently in progress.
-                  value:
-                    items:
-                    - id: 20200506-081317
-                      createdAt: 2020-05-06T08:13:17Z
-                      bytes: 85550653
-                      state: COMPLETED
-                    - id: 20201006-1902318
-                      createdAt: 2020-05-06T08:13:17Z
-                      state: IN_PROGRESS
-                    - id: 20201006-1902318
-                      createdAt: 2020-05-06T08:13:17Z
-                      state: FAILED
-                      failReason: Another backup is already in progress.
-                empty-results:
-                  summary: Empty result if no backups are known
-                  description: Empty result if no backups are known.
-                  value:
-                    items: []
-        "503":
-          description: Not all cluster nodes at minimum version
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                version-check-failed:
-                  summary: Version check failed
-                  description: Version check failed
-                  value:
-                    errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
-    post:
-      tags:
-      - Backup & Restore
-      summary: Create a new backup
-      description: |-
-        Triggers the creation of a new backup.
-
-        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
-      operationId: createBackup
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BackupItem'
-              examples:
-                example:
-                  summary: Created backup that is currently in progress
-                  description: Example response with in-progress backup.
-                  value:
-                    backup:
-                      id: 20201006-1902318
-                      createdAt: 2020-05-06T08:13:17Z
-                      state: IN_PROGRESS
-        "503":
-          description: Not all cluster nodes at minimum version
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                version-check-failed:
-                  summary: Version check failed
-                  description: Version check failed
-                  value:
-                    errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
   /api/v1/management/backups/{backupId}:
     get:
       tags:
@@ -438,6 +339,105 @@ paths:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
+        "503":
+          description: Not all cluster nodes at minimum version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                version-check-failed:
+                  summary: Version check failed
+                  description: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: Not all cluster nodes support this endpoint yet, please
+                        try again later
+  /api/v1/management/backups:
+    get:
+      tags:
+      - Backup & Restore
+      summary: List all available backups
+      description: |-
+        Lists all available backups with their current state.
+
+        This endpoint can be used to get an overview over all backups that are in progress or can be restored.
+
+        Canceled or failed backups are included in the results for up to 1 hour after they have been requested.
+
+        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
+      operationId: getAllBackups
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupList'
+              examples:
+                multiple-results:
+                  summary: Multiple results in different states
+                  description: Example response with one stored backup and one backup
+                    that is currently in progress.
+                  value:
+                    items:
+                    - id: 20200506-081317
+                      createdAt: 2020-05-06T08:13:17Z
+                      bytes: 85550653
+                      state: COMPLETED
+                    - id: 20201006-1902318
+                      createdAt: 2020-05-06T08:13:17Z
+                      state: IN_PROGRESS
+                    - id: 20201006-1902318
+                      createdAt: 2020-05-06T08:13:17Z
+                      state: FAILED
+                      failReason: Another backup is already in progress.
+                empty-results:
+                  summary: Empty result if no backups are known
+                  description: Empty result if no backups are known.
+                  value:
+                    items: []
+        "503":
+          description: Not all cluster nodes at minimum version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                version-check-failed:
+                  summary: Version check failed
+                  description: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: Not all cluster nodes support this endpoint yet, please
+                        try again later
+    post:
+      tags:
+      - Backup & Restore
+      summary: Create a new backup
+      description: |-
+        Triggers the creation of a new backup.
+
+        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
+      operationId: createBackup
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupItem'
+              examples:
+                example:
+                  summary: Created backup that is currently in progress
+                  description: Example response with in-progress backup.
+                  value:
+                    backup:
+                      id: 20201006-1902318
+                      createdAt: 2020-05-06T08:13:17Z
+                      state: IN_PROGRESS
         "503":
           description: Not all cluster nodes at minimum version
           content:
@@ -774,122 +774,6 @@ paths:
                     errors:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
-  /api/v1/mqtt/clients:
-    get:
-      tags:
-      - MQTT Clients
-      summary: List all MQTT clients
-      description: |-
-        Lists all client sessions (online and offline) known to the whole HiveMQ cluster.
-
-        The result contains each client's client identifier. For more details about each client you can call the endpoints that have a clientId in their URL.
-
-        This endpoint uses pagination with a cursor.
-        The results are not sorted in any way, no ordering of any kind is guaranteed.
-
-        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
-      operationId: getAllMqttClients
-      parameters:
-      - name: limit
-        in: query
-        description: Specifies the page size for the returned results. Has to be between
-          50 and 2500. Default page size is 500.
-        schema:
-          type: integer
-          format: int32
-      - name: cursor
-        in: query
-        description: The cursor that has been returned by the previous result page.
-          Do not pass this parameter if you want to fetch the first page.
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientList'
-              examples:
-                single-result:
-                  summary: Single result
-                  description: Example response with one known client.
-                  value:
-                    items:
-                    - id: client-12
-                multiple-results-last-page:
-                  summary: Multiple results, last page
-                  description: Example response with multiple clients. No more pages
-                    left.
-                  value:
-                    items:
-                    - id: client-12
-                    - id: client-5
-                    - id: client-32
-                    - id: my-client-id2
-                    - id: my-client-id
-                multiple-results-pages-left:
-                  summary: Multiple results, more pages left
-                  description: Example response with multiple clients. More pages
-                    left.
-                  value:
-                    items:
-                    - id: client-12
-                    - id: client-5
-                    - id: client-32
-                    - id: my-client-id2
-                    - id: my-client-id
-                    _links:
-                      next: /api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=5
-                empty-results:
-                  summary: Empty result if no clients are known
-                  description: Empty result if no clients are known.
-                  value:
-                    items: []
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                param-missing:
-                  summary: Required URL parameter missing
-                  description: Bad request
-                  value:
-                    errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
-        "410":
-          description: Cursor not valid anymore
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                cursor-invalid:
-                  summary: The passed cursor is not valid anymore
-                  description: Cursor not valid anymore
-                  value:
-                    errors:
-                    - title: Cursor not valid anymore
-                      detail: The passed cursor is not valid anymore, you can request
-                        this resource without a cursor to start from the beginning
-        "503":
-          description: Not all cluster nodes at minimum version
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                version-check-failed:
-                  summary: Version check failed
-                  description: Version check failed
-                  value:
-                    errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
   /api/v1/mqtt/clients/{clientId}:
     get:
       tags:
@@ -1081,6 +965,122 @@ paths:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
+  /api/v1/mqtt/clients:
+    get:
+      tags:
+      - MQTT Clients
+      summary: List all MQTT clients
+      description: |-
+        Lists all client sessions (online and offline) known to the whole HiveMQ cluster.
+
+        The result contains each client's client identifier. For more details about each client you can call the endpoints that have a clientId in their URL.
+
+        This endpoint uses pagination with a cursor.
+        The results are not sorted in any way, no ordering of any kind is guaranteed.
+
+        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
+      operationId: getAllMqttClients
+      parameters:
+      - name: limit
+        in: query
+        description: Specifies the page size for the returned results. Has to be between
+          50 and 2500. Default page size is 500.
+        schema:
+          type: integer
+          format: int32
+      - name: cursor
+        in: query
+        description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientList'
+              examples:
+                single-result:
+                  summary: Single result
+                  description: Example response with one known client.
+                  value:
+                    items:
+                    - id: client-12
+                multiple-results-last-page:
+                  summary: Multiple results, last page
+                  description: Example response with multiple clients. No more pages
+                    left.
+                  value:
+                    items:
+                    - id: client-12
+                    - id: client-5
+                    - id: client-32
+                    - id: my-client-id2
+                    - id: my-client-id
+                multiple-results-pages-left:
+                  summary: Multiple results, more pages left
+                  description: Example response with multiple clients. More pages
+                    left.
+                  value:
+                    items:
+                    - id: client-12
+                    - id: client-5
+                    - id: client-32
+                    - id: my-client-id2
+                    - id: my-client-id
+                    _links:
+                      next: /api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=5
+                empty-results:
+                  summary: Empty result if no clients are known
+                  description: Empty result if no clients are known.
+                  value:
+                    items: []
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                param-missing:
+                  summary: Required URL parameter missing
+                  description: Bad request
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+        "410":
+          description: Cursor not valid anymore
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                cursor-invalid:
+                  summary: The passed cursor is not valid anymore
+                  description: Cursor not valid anymore
+                  value:
+                    errors:
+                    - title: Cursor not valid anymore
+                      detail: The passed cursor is not valid anymore, you can request
+                        this resource without a cursor to start from the beginning
+        "503":
+          description: Not all cluster nodes at minimum version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                version-check-failed:
+                  summary: Version check failed
+                  description: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: Not all cluster nodes support this endpoint yet, please
+                        try again later
   /api/v1/mqtt/clients/{clientId}/subscriptions:
     get:
       tags:
@@ -1210,6 +1210,11 @@ components:
           description: The size of this backup file in bytes.
           format: int64
           nullable: true
+    BackupItem:
+      type: object
+      properties:
+        backup:
+          $ref: '#/components/schemas/Backup'
     BackupList:
       type: object
       properties:
@@ -1218,11 +1223,6 @@ components:
           description: List of result items that are returned by this endpoint
           items:
             $ref: '#/components/schemas/Backup'
-    BackupItem:
-      type: object
-      properties:
-        backup:
-          $ref: '#/components/schemas/Backup'
     TraceFilter:
       type: object
       properties:
@@ -1308,29 +1308,6 @@ components:
       properties:
         traceRecording:
           $ref: '#/components/schemas/TraceRecording'
-    Client:
-      type: object
-      properties:
-        id:
-          type: string
-      description: List of result items that are returned by this endpoint
-    ClientList:
-      type: object
-      properties:
-        items:
-          type: array
-          description: List of result items that are returned by this endpoint
-          items:
-            $ref: '#/components/schemas/Client'
-        _links:
-          $ref: '#/components/schemas/PaginationCursor'
-    PaginationCursor:
-      type: object
-      properties:
-        next:
-          type: string
-      description: Links for pagination
-      nullable: true
     CertificateInformation:
       type: object
       properties:
@@ -1522,6 +1499,29 @@ components:
       properties:
         connection:
           $ref: '#/components/schemas/Connection'
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+      description: List of result items that are returned by this endpoint
+    ClientList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of result items that are returned by this endpoint
+          items:
+            $ref: '#/components/schemas/Client'
+        _links:
+          $ref: '#/components/schemas/PaginationCursor'
+    PaginationCursor:
+      type: object
+      properties:
+        next:
+          type: string
+      description: Links for pagination
+      nullable: true
     ClientSubscription:
       type: object
       properties:
