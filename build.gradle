@@ -164,7 +164,7 @@ ext {
     tinylogVersion = '2.0.1'
     jcToolsVersion = '2.1.2'
     jetbrainsAnnotationsVersion = '19.0.0'
-    bouncycastleVersion = '1.66'
+    bouncycastleVersion = '1.68'
     nettyVersion = '4.1.51.Final'
     gsonVersion = '2.8.6'
     substrateVmVersion = '19.2.1'
