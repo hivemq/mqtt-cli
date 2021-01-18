@@ -194,7 +194,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     private void logUnusedOptions() {
         if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
             if (userProperties != null) {
-                Logger.warn("Subscribe user properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Subscribe user properties were set but are unused in MQTT version {}", MqttVersion.MQTT_3_1_1);
             }
         }
     }
