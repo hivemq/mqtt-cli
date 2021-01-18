@@ -68,7 +68,7 @@ public class TestBrokerCommand implements Runnable {
     @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)", order = 1)
     private @Nullable Integer port;
 
-    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The mqtt version to test the broker on (default: test both versions)", order = 1)
+    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The MQTT version to test the broker on (default: test both versions)", order = 1)
     private @Nullable MqttVersion version;
 
     @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "Perform all tests for all MQTT versions (default: only MQTT 3)", order = 1)

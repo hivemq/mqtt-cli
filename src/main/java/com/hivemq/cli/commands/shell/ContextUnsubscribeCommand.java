@@ -34,7 +34,7 @@ import java.util.Arrays;
 
 @CommandLine.Command(name = "unsub",
         aliases = "unsubscribe",
-        description = "Unsubscribes this mqtt client from a list of topics")
+        description = "Unsubscribe this MQTT client from a list of topics")
 
 public class ContextUnsubscribeCommand extends ShellContextCommand implements Runnable, Unsubscribe {
 

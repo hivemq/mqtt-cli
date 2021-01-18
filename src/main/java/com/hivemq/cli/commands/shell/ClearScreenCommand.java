@@ -30,7 +30,7 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(
         name = "cls",
         aliases = "clear",
-        description = "Clears the screen")
+        description = "Clear the screen")
 
 public class ClearScreenCommand implements CliCommand, Callable<Void> {
 

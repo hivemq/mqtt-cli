@@ -73,7 +73,7 @@ $ mqtt pub --help
 Shell
 -----
 
-The shell mode allows connecting various mqtt clients.
+The shell mode allows connecting various MQTTclients.
 
 $ mqtt shell
 
@@ -99,23 +99,23 @@ $ mqtt> ...
 In Shell-Mode the following Commands are available without an active context:
 
 Commands:
-- con, connect     Connects an mqtt client
-- dis, disconnect  Disconnects an mqtt client
+- con, connect     Connects an MQTTclient
+- dis, disconnect  Disconnects an MQTTclient
 - switch           Switch the current context
 - ls               List all connected clients with their respective identifieres
 - cls, clear       Clears the screen
 - exit
 
 When connected you are switched to the context mode.
-In context mode all mqtt commands relate to the currently active client.
+In context mode all MQTTcommands relate to the currently active client.
 
 The following Commands are available with an active context:
 
 Commands:
 -  pub, publish        Publish a message to a list of topics
--  sub, subscribe      Subscribe this mqtt client to a list of topics
--  unsub, unsubscribe  Unsubscribes this mqtt client from a list of topics
--  dis, disconnect     Disconnects this mqtt client
+-  sub, subscribe      Subscribe this MQTTclient to a list of topics
+-  unsub, unsubscribe  Unsubscribes this MQTTclient from a list of topics
+-  dis, disconnect     Disconnects this MQTTclient
 -  switch              Switch the current context
 -  ls, list            List all connected clients with their respective identifieres
 -  cls, clear          Clears the screen

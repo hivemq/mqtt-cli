@@ -43,7 +43,7 @@ import java.util.concurrent.Executors;
 
 @CommandLine.Command(name = "sub",
         aliases = "subscribe",
-        description = "Subscribe this mqtt client to a list of topics")
+        description = "Subscribe this MQTT client to a list of topics")
 public class ContextSubscribeCommand extends ShellContextCommand implements Runnable, Subscribe, Unsubscribe {
 
     public static final int IDLE_TIME = 1000;
