@@ -48,7 +48,7 @@ import java.util.Map;
 @CommandLine.Command(name = "sub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
         aliases = "subscribe",
-        description = "Subscribe an mqtt client to a list of topics.",
+        description = "Subscribe an MQTT client to a list of topics.",
         abbreviateSynopsis = false)
 
 public class SubscribeCommand extends AbstractConnectFlags implements MqttAction, Subscribe {
@@ -149,7 +149,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         super.logUnusedOptions();
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
             if (userProperties != null) {
-                Logger.warn("Subscribe user properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Subscribe user properties were set but are unused in MQTT version {}", MqttVersion.MQTT_3_1_1);
             }
         }
     }

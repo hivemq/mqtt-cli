@@ -35,7 +35,7 @@ import java.util.Arrays;
 
 @CommandLine.Command(name = "dis",
         aliases = "disconnect",
-        description = "Disconnects this mqtt client")
+        description = "Disconnects this MQTT client")
 
 public class ContextDisconnectCommand extends ShellContextCommand implements Runnable, Disconnect {
 
