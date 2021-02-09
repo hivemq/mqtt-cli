@@ -39,7 +39,7 @@ import java.util.Arrays;
 
 @CommandLine.Command(name = "con",
         aliases = "connect",
-        description = "Connects an mqtt client",
+        description = "Connect an MQTT client",
         abbreviateSynopsis = true)
 
 public class ShellConnectCommand extends AbstractCommonFlags implements Runnable, Connect {
