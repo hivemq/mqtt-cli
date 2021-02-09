@@ -28,7 +28,7 @@ A detailed documentation can be found [here](https://hivemq.github.io/mqtt-cli)
 - **interactive**, direct and verbose Mode for all MQTT Commands
 - Shell behavior with Syntax Highlighting, Command completion and history
 - Configurable default settings
-- Ability to connect various MQTT Clients to different broker simultaneously
+- Ability to connect various MQTT Clients to different brokers simultaneously
 - Quick broker tests
 - Export information from HiveMQ API endpoints
 - Various distributions available
@@ -121,11 +121,11 @@ mqtt> ...
 In Shell-Mode the following Commands are available **without** an active context:
 
 **Commands** 
-* con, connect     Connects an MQTT client
-* dis, disconnect  Disconnects an MQTT client
+* con, connect     Connect an MQTT client
+* dis, disconnect  Disconnect an MQTT client
 * switch           Switch the current context
-* ls               List all connected clients with their respective identifieres
-* cls, clear       Clears the screen
+* ls               List all connected clients with their respective identifiers
+* cls, clear       Clear the screen
 * exit  
 
 When connected you are switched to the context mode.
@@ -136,11 +136,11 @@ The following Commands are available **with** an active context:
 **Commands:**
 *  pub, publish        Publish a message to a list of topics
 *  sub, subscribe      Subscribe this MQTT client to a list of topics
-*  unsub, unsubscribe  Unsubscribes this MQTT client from a list of topics
-*  dis, disconnect     Disconnects this MQTT client
+*  unsub, unsubscribe  Unsubscribe this MQTT client from a list of topics
+*  dis, disconnect     Disconnect this MQTT client
 *  switch              Switch the current context
 *  ls, list            List all connected clients with their respective identifieres
-*  cls, clear          Clears the screen
+*  cls, clear          Clear the screen
 *  exit                Exit the current context
 
   
