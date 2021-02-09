@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 @CommandLine.Command(sortOptions = false,
         name = "> ",
-        description = "In context mode all mqtt commands relate to the currently active client.",
+        description = "In context mode all MQTT commands relate to the currently active client.",
         synopsisHeading = "%n@|bold Usage|@:  ",
         synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch | ls | cls | exit }",
         descriptionHeading = "%n",
