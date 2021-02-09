@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 @CommandLine.Command(name = "dis",
         aliases = "disconnect",
-        description = "Disconnects an mqtt client")
+        description = "Disconnect an MQTT client")
 
 public class ShellDisconnectCommand implements MqttAction, Disconnect {
 

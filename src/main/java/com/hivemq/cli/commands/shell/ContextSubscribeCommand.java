@@ -43,7 +43,7 @@ import java.util.concurrent.Executors;
 
 @CommandLine.Command(name = "sub",
         aliases = "subscribe",
-        description = "Subscribe this mqtt client to a list of topics")
+        description = "Subscribe this MQTT client to a list of topics")
 public class ContextSubscribeCommand extends ShellContextCommand implements Runnable, Subscribe, Unsubscribe {
 
     public static final int IDLE_TIME = 1000;
@@ -194,7 +194,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     private void logUnusedOptions() {
         if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
             if (userProperties != null) {
-                Logger.warn("Subscribe user properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Subscribe user properties were set but are unused in MQTT version {}", MqttVersion.MQTT_3_1_1);
             }
         }
     }

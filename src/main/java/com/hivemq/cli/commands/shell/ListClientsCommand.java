@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "ls",
         aliases = "list",
-        description = "List all connected clients with their respective identifieres"
+        description = "List all connected clients with their respective identifiers"
 )
 
 public class ListClientsCommand implements Runnable, CliCommand {
