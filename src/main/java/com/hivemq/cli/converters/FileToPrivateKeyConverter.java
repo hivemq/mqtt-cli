@@ -79,7 +79,10 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
             privateKey = converter.getPrivateKey(privateKeyInfo);
         } else if (object instanceof PEMKeyPair) {
             privateKey = converter.getPrivateKey(((PEMKeyPair) object).getPrivateKeyInfo());
-        } else {
+        } else if (object instanceof PrivateKeyInfo) {
+            privateKey = converter.getPrivateKey((PrivateKeyInfo) object);
+        }
+        else {
             throw new IllegalArgumentException(UNRECOGNIZED_KEY);
         }
 
