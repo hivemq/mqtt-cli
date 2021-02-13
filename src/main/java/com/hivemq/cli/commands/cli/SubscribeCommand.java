@@ -111,11 +111,16 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
         String logLevel = "warn";
         if (isDebug()) logLevel = "debug";
-        else if (isVerbose()) logLevel = "trace";
+        if (isVerbose()) logLevel = "trace";
         LoggerUtils.setupConsoleLogging(logToLogfile, logLevel);
 
         setDefaultOptions();
-        sslConfig = buildSslConfig();
+        try {
+            sslConfig = buildSslConfig();
+        } catch (Exception e) {
+            Logger.error(e, "Could not build SSL configuration");
+            return;
+        }
 
         Logger.trace("Command {} ", this);
 

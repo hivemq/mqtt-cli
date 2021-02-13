@@ -26,12 +26,13 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class DirectoryToCertificateCollectionConverter implements CommandLine.ITypeConverter<Collection<X509Certificate>> {
+public class DirectoryToCertificatesConverter implements CommandLine.ITypeConverter<Collection<X509Certificate>> {
     static final String DIRECTORY_NOT_FOUND = "The given directory was not found.";
     static final String NOT_A_DIRECTORY = "The given path is not a valid directory";
     static final String NO_CERTIFICATES_FOUND_IN_DIRECTORY = "The given directory does not contain any valid certificates";
 
     @Override
+    @NotNull
     public Collection<X509Certificate> convert(final @NotNull String s) throws Exception {
 
         final File directory = new File(s);
@@ -50,7 +51,7 @@ public class DirectoryToCertificateCollectionConverter implements CommandLine.IT
         final Collection<X509Certificate> certificates = new ArrayList<>();
 
         for (final File validFile : validFiles) {
-            certificates.add(CertificateConverterUtils.generateX509Certificate(validFile));
+            certificates.addAll(CertificateConverterUtils.generateX509Certificates(validFile));
         }
 
         return certificates;

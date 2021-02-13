@@ -21,18 +21,29 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 
 public class CertificateConverterUtils {
     public static final String[] FILE_EXTENSIONS = {".pem", ".cer", ".crt"};
     public static final String NO_VALID_CERTIFICATE = "The given file contains no valid or supported certficate,";
 
-    public static X509Certificate generateX509Certificate(final @NotNull File keyFile) throws Exception {
+    @NotNull
+    public static Collection<X509Certificate> generateX509Certificates(final @NotNull File keyFile) throws Exception {
+
+        // Instantiate X509 certificate factory
         final CertificateFactory cf = CertificateFactory.getInstance("X.509");
         try {
-            return (X509Certificate) cf.generateCertificate(new FileInputStream(keyFile));
+
+            // Parse X509 certificate chain
+            final Collection<? extends Certificate> certificateChainCollection = cf.generateCertificates(new FileInputStream(keyFile));
+
+            // Cast to X509Certificate collection and return it
+            return (Collection<X509Certificate>) certificateChainCollection;
+
         } catch (CertificateException | FileNotFoundException ce) {
             throw new CertificateException(NO_VALID_CERTIFICATE);
         }

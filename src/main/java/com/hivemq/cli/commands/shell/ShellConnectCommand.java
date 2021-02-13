@@ -68,9 +68,17 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
     public void run() {
         setDefaultOptions();
-        sslConfig = buildSslConfig();
+
+        try {
+            sslConfig = buildSslConfig();
+        } catch (Exception e) {
+            Logger.error(e, "Could not build SSL configuration");
+            return;
+        }
+
         logUnusedOptions();
         final MqttClient client = connect();
+
         sslConfig = null;
         ShellContextCommand.updateContext(client);
     }
