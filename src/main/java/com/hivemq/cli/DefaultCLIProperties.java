@@ -18,7 +18,7 @@ package com.hivemq.cli;
 
 
 import com.hivemq.cli.converters.EnvVarToByteBufferConverter;
-import com.hivemq.cli.converters.FileToCertificateConverter;
+import com.hivemq.cli.converters.FileToCertificatesConverter;
 import com.hivemq.cli.converters.FileToPrivateKeyConverter;
 import com.hivemq.cli.converters.PasswordFileToByteBufferConverter;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -250,12 +251,12 @@ public class DefaultCLIProperties {
     }
 
     @Nullable
-    public X509Certificate getClientCertificate() throws Exception {
+    public Collection<X509Certificate> getClientCertificateChain() throws Exception {
         final String clientCertificate = propertyToValue.get(CLIENT_CERTIFICATE);
         if (clientCertificate == null) {
             return null;
         }
-        return new FileToCertificateConverter().convert(clientCertificate);
+        return new FileToCertificatesConverter().convert(clientCertificate);
     }
 
     @Nullable
@@ -268,12 +269,12 @@ public class DefaultCLIProperties {
     }
 
     @Nullable
-    public X509Certificate getServerCertificate() throws Exception {
+    public Collection<X509Certificate> getServerCertificateChain() throws Exception {
         final String serverCertificate = propertyToValue.get(SERVER_CERTIFICATE);
         if (serverCertificate == null) {
             return null;
         }
-        return new FileToCertificateConverter().convert(serverCertificate);
+        return new FileToCertificatesConverter().convert(serverCertificate);
     }
 
     @NotNull
