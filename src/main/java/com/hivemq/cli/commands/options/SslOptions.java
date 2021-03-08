@@ -182,15 +182,16 @@ public class SslOptions {
 
     private KeyManagerFactory buildKeyManagerFactory(final @NotNull X509Certificate[] certs, final @NotNull PrivateKey key) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
 
+        final String password = "PA$$WORD";
         final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
 
         ks.load(null, null);
 
-        ks.setKeyEntry("mykey", key, null, certs);
+        ks.setKeyEntry("mykey", key, password.toCharArray(), certs);
 
         final KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 
-        keyManagerFactory.init(ks, null);
+        keyManagerFactory.init(ks, password.toCharArray());
 
         return keyManagerFactory;
     }
