@@ -133,7 +133,7 @@ public class SslOptions {
         if (clientCertificateChain == null) {
             try {
                 clientCertificateChain = defaultCLIProperties.getClientCertificateChain();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Logger.error(e,"Default client certificate chain could not be loaded ({})", Throwables.getRootCause(e).getMessage());
             }
         }
@@ -141,7 +141,7 @@ public class SslOptions {
         if (clientPrivateKey == null) {
             try {
                 clientPrivateKey = defaultCLIProperties.getClientPrivateKey();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Logger.error(e,"Default client private key could not be loaded ({})", Throwables.getRootCause(e).getMessage());
             }
         }
@@ -154,7 +154,7 @@ public class SslOptions {
                 }
                 serverCertificateChain.addAll(defaultServerCertificate);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e,"Default server certificate could not be loaded ({})", Throwables.getRootCause(e).getMessage());
         }
     }

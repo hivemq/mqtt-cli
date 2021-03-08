@@ -32,8 +32,7 @@ public class DirectoryToCertificatesConverter implements CommandLine.ITypeConver
     static final String NO_CERTIFICATES_FOUND_IN_DIRECTORY = "The given directory does not contain any valid certificates";
 
     @Override
-    @NotNull
-    public Collection<X509Certificate> convert(final @NotNull String s) throws Exception {
+    public @NotNull Collection<X509Certificate> convert(final @NotNull String s) throws Exception {
 
         final File directory = new File(s);
 

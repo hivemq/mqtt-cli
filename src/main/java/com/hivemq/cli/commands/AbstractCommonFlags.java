@@ -36,12 +36,10 @@ import java.nio.ByteBuffer;
 public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlags implements Connect {
 
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for authentication", order = 2)
-    @Nullable
-    private String user;
+    private @Nullable String user;
 
     @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for authentication", order = 2)
-    @Nullable
-    private ByteBuffer password;
+    private @Nullable ByteBuffer password;
 
     @CommandLine.Option(names = {"-pw:env"}, arity = "0..1", converter = EnvVarToByteBufferConverter.class, fallbackValue = "MQTT_CLI_PW", description = "The password for authentication read in from an environment variable", order = 2)
     private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) { password = passwordEnvironmentVariable; }
@@ -53,8 +51,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     private @Nullable Integer keepAlive;
 
     @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true, description = "Define a clean start for the connection (default: true)", order = 2)
-    @Nullable
-    private Boolean cleanStart;
+    private @Nullable Boolean cleanStart;
 
     @CommandLine.Mixin
     private final SslOptions sslOptions = new SslOptions();
@@ -63,8 +60,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     private boolean useWebSocket;
 
     @CommandLine.Option(names = {"-ws:path"}, description = "The path of the WebSocket", order = 2)
-    @Nullable
-    private String webSocketPath;
+    private @Nullable String webSocketPath;
 
     @Override
     public void setDefaultOptions() {
@@ -78,7 +74,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         if (password == null) {
             try {
                 password = defaultCLIProperties.getPassword();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Logger.error(e, "Default password could not be loaded ({})", Throwables.getRootCause(e).getMessage());
             }
         }

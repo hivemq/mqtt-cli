@@ -118,7 +118,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         setDefaultOptions();
         try {
             sslConfig = buildSslConfig();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e, "Could not build SSL configuration");
             return;
         }

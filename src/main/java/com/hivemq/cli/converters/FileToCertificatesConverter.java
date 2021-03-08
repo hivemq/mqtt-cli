@@ -31,8 +31,7 @@ public class FileToCertificatesConverter implements CommandLine.ITypeConverter<C
     static final String NO_VALID_FILE_EXTENSION = "The given file does not conform to a valid Certificate File Extension as " + Arrays.toString(CertificateConverterUtils.FILE_EXTENSIONS);
 
     @Override
-    @NotNull
-    public Collection<X509Certificate> convert(final @NotNull String s) throws Exception {
+    public @NotNull Collection<X509Certificate> convert(final @NotNull String s) throws Exception {
 
         FileConverter fileConverter = new FileConverter();
         final File keyFile = fileConverter.convert(s);

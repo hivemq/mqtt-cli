@@ -71,7 +71,7 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
 
         try {
             sslConfig = buildSslConfig();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e, "Could not build SSL configuration");
             return;
         }

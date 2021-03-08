@@ -31,8 +31,7 @@ public class CertificateConverterUtils {
     public static final String[] FILE_EXTENSIONS = {".pem", ".cer", ".crt"};
     public static final String NO_VALID_CERTIFICATE = "The given file contains no valid or supported certficate,";
 
-    @NotNull
-    public static Collection<X509Certificate> generateX509Certificates(final @NotNull File keyFile) throws Exception {
+    public static @NotNull Collection<X509Certificate> generateX509Certificates(final @NotNull File keyFile) throws Exception {
 
         // Instantiate X509 certificate factory
         final CertificateFactory cf = CertificateFactory.getInstance("X.509");
