@@ -77,8 +77,8 @@ class DefaultCLIPropertiesTest {
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertNull(defaultCLIProperties.getUsername());
         assertNull(defaultCLIProperties.getPassword());
-        assertNull(defaultCLIProperties.getClientCertificate());
-        assertNull(defaultCLIProperties.getServerCertificate());
+        assertNull(defaultCLIProperties.getClientCertificateChain());
+        assertNull(defaultCLIProperties.getServerCertificateChain());
         assertNull(defaultCLIProperties.getClientPrivateKey());
     }
 
@@ -96,8 +96,8 @@ class DefaultCLIPropertiesTest {
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertNull(defaultCLIProperties.getUsername());
         assertNull(defaultCLIProperties.getPassword());
-        assertNull(defaultCLIProperties.getClientCertificate());
-        assertNull(defaultCLIProperties.getServerCertificate());
+        assertNull(defaultCLIProperties.getClientCertificateChain());
+        assertNull(defaultCLIProperties.getServerCertificateChain());
         assertNull(defaultCLIProperties.getClientPrivateKey());
     }
 
@@ -115,8 +115,8 @@ class DefaultCLIPropertiesTest {
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertEquals("mqtt" , defaultCLIProperties.getUsername());
         assertEquals(ByteBuffer.wrap("password".getBytes()), defaultCLIProperties.getPassword());
-        assertNull(defaultCLIProperties.getClientCertificate());
-        assertNull(defaultCLIProperties.getServerCertificate());
+        assertNull(defaultCLIProperties.getClientCertificateChain());
+        assertNull(defaultCLIProperties.getServerCertificateChain());
         assertNull(defaultCLIProperties.getClientPrivateKey());
     }
 

@@ -27,10 +27,10 @@ import java.io.File;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,13 +53,14 @@ class CertificateConverterUtilsTest {
 
     @Test
     void generateX509Certificate_Success() throws Exception {
-        X509Certificate cert = CertificateConverterUtils.generateX509Certificate(new File(pathToValidCertficate));
-        assertNotNull(cert);
+        final Collection<X509Certificate> x509Certificates = CertificateConverterUtils.generateX509Certificates(new File(pathToValidCertficate));
+
+        assertEquals(1, x509Certificates.size());
     }
 
     @Test
     void generateX509Certificate_Failure() {
-        Exception e = assertThrows(CertificateException.class, () -> CertificateConverterUtils.generateX509Certificate(new File(pathToInvalidCertificate)));
+        Exception e = assertThrows(CertificateException.class, () -> CertificateConverterUtils.generateX509Certificates(new File(pathToInvalidCertificate)));
         assertEquals(CertificateConverterUtils.NO_VALID_CERTIFICATE, e.getMessage());
     }
 

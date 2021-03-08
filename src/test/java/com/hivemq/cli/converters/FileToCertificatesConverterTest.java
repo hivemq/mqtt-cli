@@ -23,13 +23,14 @@ import org.junit.jupiter.api.Test;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class FileToCertificateConverterTest {
+class FileToCertificatesConverterTest {
 
-    private FileToCertificateConverter fileToCertificateConverter;
+    private FileToCertificatesConverter fileToCertificatesConverter;
     private String pathToValidCertificate;
     private String pathToInvalidFileExtensionCertificate;
     private String pathToNoFileExtensionCertificate;
@@ -37,7 +38,7 @@ class FileToCertificateConverterTest {
 
     @BeforeEach
     void setUp() {
-        fileToCertificateConverter = new FileToCertificateConverter();
+        fileToCertificatesConverter = new FileToCertificatesConverter();
         final URL validCertificateResource = getClass().getClassLoader().getResource("FileToCertificateConverter/validCertificate.pem");
         final URL invalidFileExtensionResource = getClass().getClassLoader().getResource("FileToCertificateConverter/invalidFileExtensionCertificate.der");
         final URL noFileExtensionCertificate = getClass().getClassLoader().getResource("FileToCertificateConverter/noFileExtensionCertificate");
@@ -56,30 +57,32 @@ class FileToCertificateConverterTest {
 
     @Test
     void convertSuccess() throws Exception {
-        X509Certificate cert = fileToCertificateConverter.convert(pathToValidCertificate);
+        final Collection<X509Certificate> x509Certificates = fileToCertificatesConverter.convert(pathToValidCertificate);
+
+        assertEquals(1, x509Certificates.size());
     }
 
     @Test
     void convert_FileNotFound() {
-        Exception e = assertThrows(FileNotFoundException.class, () -> fileToCertificateConverter.convert("wrongPathXYZ.pem"));
+        Exception e = assertThrows(FileNotFoundException.class, () -> fileToCertificatesConverter.convert("wrongPathXYZ.pem"));
         assertEquals(FileConverter.FILE_NOT_FOUND, e.getMessage());
     }
 
     @Test
     void convert_InvalidFileExtensionCertificate() {
-        Exception e = assertThrows(Exception.class, () -> fileToCertificateConverter.convert(pathToInvalidFileExtensionCertificate));
-        assertEquals(FileToCertificateConverter.NO_VALID_FILE_EXTENSION, e.getMessage());
+        Exception e = assertThrows(Exception.class, () -> fileToCertificatesConverter.convert(pathToInvalidFileExtensionCertificate));
+        assertEquals(FileToCertificatesConverter.NO_VALID_FILE_EXTENSION, e.getMessage());
     }
 
     @Test
     void convert_NoFileExtensionCertificate() {
-        Exception e = assertThrows(Exception.class, () -> fileToCertificateConverter.convert(pathToNoFileExtensionCertificate));
-        assertEquals(FileToCertificateConverter.NO_VALID_FILE_EXTENSION, e.getMessage());
+        Exception e = assertThrows(Exception.class, () -> fileToCertificatesConverter.convert(pathToNoFileExtensionCertificate));
+        assertEquals(FileToCertificatesConverter.NO_VALID_FILE_EXTENSION, e.getMessage());
     }
 
     @Test
     void convert_InvalidCertificate() {
-        Exception e = assertThrows(Exception.class, () -> fileToCertificateConverter.convert(pathToInvalidCertificate));
+        Exception e = assertThrows(Exception.class, () -> fileToCertificatesConverter.convert(pathToInvalidCertificate));
         assertEquals(CertificateConverterUtils.NO_VALID_CERTIFICATE, e.getMessage());
     }
 }
