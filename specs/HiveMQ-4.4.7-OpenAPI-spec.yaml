@@ -78,7 +78,7 @@ info:
     HiveMQ's REST API provides an OpenAPI 3.0 schema definition that can imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   contact:
     url: https://www.hivemq.com
-  version: 4.4.6
+  version: 4.4.7
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
@@ -1291,8 +1291,14 @@ components:
           - IN_PROGRESS
           - ABORTED
           - STOPPED
-      description: 'Trace recording item describing the desired (and optionally, when
-        receiving from the server: current) state of a trace recording'
+      description: List of result items that are returned by this endpoint
+    TraceRecordingItem:
+      required:
+      - traceRecording
+      type: object
+      properties:
+        traceRecording:
+          $ref: '#/components/schemas/TraceRecording'
     TraceRecordingList:
       type: object
       properties:
@@ -1301,13 +1307,6 @@ components:
           description: List of result items that are returned by this endpoint
           items:
             $ref: '#/components/schemas/TraceRecording'
-    TraceRecordingItem:
-      required:
-      - traceRecording
-      type: object
-      properties:
-        traceRecording:
-          $ref: '#/components/schemas/TraceRecording'
     Connection:
       type: object
       properties:
