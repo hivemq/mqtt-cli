@@ -78,7 +78,7 @@ info:
     HiveMQ's REST API provides an OpenAPI 3.0 schema definition that can imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   contact:
     url: https://www.hivemq.com
-  version: 4.5.1
+  version: 4.6.0
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
@@ -511,6 +511,127 @@ paths:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
+  /api/v1/management/trace-recordings:
+    get:
+      tags:
+      - Trace Recordings
+      summary: Get all trace recordings
+      description: "Lists all known trace recordings. \n\nTrace recordings can be\
+        \ in different states. These states are:\n- `SCHEDULED` if the start date\
+        \ for a trace recording is in the future\n- `STOPPED` if a trace recording\
+        \ has reached its end date or was stopped manually\n- `IN_PROGRESS` when the\
+        \ trace recording is currently ongoing\n- `ABORTED` if the trace recording\
+        \ was aborted by the server\n"
+      operationId: getAllTraceRecordings
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TraceRecordingList'
+              examples:
+                single-result:
+                  summary: Single result
+                  description: Example response with one recording that is in progress.
+                  value:
+                    items:
+                    - name: test
+                      startAt: 2020-07-23T12:07:30.000Z
+                      endAt: 2020-07-23T13:07:30.000Z
+                      clientIdFilters:
+                      - regex: client-[0-9]
+                      topicFilters:
+                      - regex: topic/.*
+                      events:
+                      - MQTT_MESSAGE_CONNECT
+                      - MQTT_MESSAGE_DISCONNECT
+                      state: IN_PROGRESS
+    post:
+      tags:
+      - Trace Recordings
+      summary: Create a trace recording
+      description: "Creates a new trace recording. \n\n To create a trace recording\
+        \ you must specify a name, start date, end date, a set of filters and the\
+        \ desired packets that should be traced.\n\nAt least one client or topic filter\
+        \ and at least one packet is required to create a trace recording.\n\nThe\
+        \ client and topic filters can be [regular expressions](https://www.hivemq.com/docs/hivemq/4.3/control-center/analytic.html#regular-expressions)."
+      operationId: createTraceRecording
+      requestBody:
+        description: The trace recording to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TraceRecordingItem'
+            examples:
+              simple-query:
+                summary: Simple query
+                description: A sample trace recording with a duration of 1 hour, tracing
+                  one client, topic filter and CONNECT events.
+                value:
+                  traceRecording:
+                    name: test
+                    startAt: 2020-07-23T12:07:30.000Z
+                    endAt: 2020-07-23T13:07:30.000Z
+                    clientIdFilters:
+                    - regex: client-[0-9]
+                    topicFilters:
+                    - regex: topic/.*
+                    events:
+                    - MQTT_MESSAGE_CONNECT
+      responses:
+        "201":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TraceRecordingItem'
+              examples:
+                simple-query-result:
+                  summary: Simple query - result
+                  description: Response from the server after it created the trace
+                    recording. Includes the resulting current state of the recording.
+                  value:
+                    traceRecording:
+                      name: test
+                      startAt: 2020-07-23T12:07:30.000Z
+                      endAt: 2020-07-23T13:07:30.000Z
+                      clientIdFilters:
+                      - regex: test
+                      topicFilters:
+                      - regex: test-topic
+                      events:
+                      - MQTT_MESSAGE_CONNECT
+                      state: IN_PROGRESS
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                param-missing:
+                  summary: Required URL parameter missing
+                  description: Bad request
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+                body-param-missing:
+                  summary: Required body entity parameter missing
+                  description: Bad request
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required body entity parameter is missing
+                invalid-resource:
+                  summary: Invalid resource
+                  description: Bad request
+                  value:
+                    errors:
+                    - title: Invalid resource
+                      detail: The fields {name, events, startAt, endAt} must be specified
+                        at creation
   /api/v1/management/trace-recordings/{traceRecordingId}:
     delete:
       tags:
@@ -653,98 +774,78 @@ paths:
                     errors:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
-  /api/v1/management/trace-recordings:
+  /api/v1/mqtt/clients:
     get:
       tags:
-      - Trace Recordings
-      summary: Get all trace recordings
-      description: "Lists all known trace recordings. \n\nTrace recordings can be\
-        \ in different states. These states are:\n- `SCHEDULED` if the start date\
-        \ for a trace recording is in the future\n- `STOPPED` if a trace recording\
-        \ has reached its end date or was stopped manually\n- `IN_PROGRESS` when the\
-        \ trace recording is currently ongoing\n- `ABORTED` if the trace recording\
-        \ was aborted by the server\n"
-      operationId: getAllTraceRecordings
+      - MQTT Clients
+      summary: List all MQTT clients
+      description: |-
+        Lists all client sessions (online and offline) known to the whole HiveMQ cluster.
+
+        The result contains each client's client identifier. For more details about each client you can call the endpoints that have a clientId in their URL.
+
+        This endpoint uses pagination with a cursor.
+        The results are not sorted in any way, no ordering of any kind is guaranteed.
+
+        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
+      operationId: getAllMqttClients
+      parameters:
+      - name: limit
+        in: query
+        description: Specifies the page size for the returned results. Has to be between
+          50 and 2500. Default page size is 500.
+        schema:
+          type: integer
+          format: int32
+      - name: cursor
+        in: query
+        description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        schema:
+          type: string
       responses:
         "200":
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TraceRecordingList'
+                $ref: '#/components/schemas/ClientList'
               examples:
                 single-result:
                   summary: Single result
-                  description: Example response with one recording that is in progress.
+                  description: Example response with one known client.
                   value:
                     items:
-                    - name: test
-                      startAt: 2020-07-23T12:07:30.000Z
-                      endAt: 2020-07-23T13:07:30.000Z
-                      clientIdFilters:
-                      - regex: client-[0-9]
-                      topicFilters:
-                      - regex: topic/.*
-                      events:
-                      - MQTT_MESSAGE_CONNECT
-                      - MQTT_MESSAGE_DISCONNECT
-                      state: IN_PROGRESS
-    post:
-      tags:
-      - Trace Recordings
-      summary: Create a trace recording
-      description: "Creates a new trace recording. \n\n To create a trace recording\
-        \ you must specify a name, start date, end date, a set of filters and the\
-        \ desired packets that should be traced.\n\nAt least one client or topic filter\
-        \ and at least one packet is required to create a trace recording.\n\nThe\
-        \ client and topic filters can be [regular expressions](https://www.hivemq.com/docs/hivemq/4.3/control-center/analytic.html#regular-expressions)."
-      operationId: createTraceRecording
-      requestBody:
-        description: The trace recording to create
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TraceRecordingItem'
-            examples:
-              simple-query:
-                summary: Simple query
-                description: A sample trace recording with a duration of 1 hour, tracing
-                  one client, topic filter and CONNECT events.
-                value:
-                  traceRecording:
-                    name: test
-                    startAt: 2020-07-23T12:07:30.000Z
-                    endAt: 2020-07-23T13:07:30.000Z
-                    clientIdFilters:
-                    - regex: client-[0-9]
-                    topicFilters:
-                    - regex: topic/.*
-                    events:
-                    - MQTT_MESSAGE_CONNECT
-      responses:
-        "201":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TraceRecordingItem'
-              examples:
-                simple-query-result:
-                  summary: Simple query - result
-                  description: Response from the server after it created the trace
-                    recording. Includes the resulting current state of the recording.
+                    - id: client-12
+                multiple-results-last-page:
+                  summary: Multiple results, last page
+                  description: Example response with multiple clients. No more pages
+                    left.
                   value:
-                    traceRecording:
-                      name: test
-                      startAt: 2020-07-23T12:07:30.000Z
-                      endAt: 2020-07-23T13:07:30.000Z
-                      clientIdFilters:
-                      - regex: test
-                      topicFilters:
-                      - regex: test-topic
-                      events:
-                      - MQTT_MESSAGE_CONNECT
-                      state: IN_PROGRESS
+                    items:
+                    - id: client-12
+                    - id: client-5
+                    - id: client-32
+                    - id: my-client-id2
+                    - id: my-client-id
+                multiple-results-pages-left:
+                  summary: Multiple results, more pages left
+                  description: Example response with multiple clients. More pages
+                    left.
+                  value:
+                    items:
+                    - id: client-12
+                    - id: client-5
+                    - id: client-32
+                    - id: my-client-id2
+                    - id: my-client-id
+                    _links:
+                      next: /api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=5
+                empty-results:
+                  summary: Empty result if no clients are known
+                  description: Empty result if no clients are known.
+                  value:
+                    items: []
         "400":
           description: Bad request
           content:
@@ -759,21 +860,96 @@ paths:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-                body-param-missing:
-                  summary: Required body entity parameter missing
+        "410":
+          description: Cursor not valid anymore
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                cursor-invalid:
+                  summary: The passed cursor is not valid anymore
+                  description: Cursor not valid anymore
+                  value:
+                    errors:
+                    - title: Cursor not valid anymore
+                      detail: The passed cursor is not valid anymore, you can request
+                        this resource without a cursor to start from the beginning
+        "503":
+          description: Not all cluster nodes at minimum version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                version-check-failed:
+                  summary: Version check failed
+                  description: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: Not all cluster nodes support this endpoint yet, please
+                        try again later
+  /api/v1/mqtt/clients/{clientId}/connection:
+    get:
+      tags:
+      - MQTT Clients
+      summary: Get a clients connection state
+      description: |-
+        Returns the information if a specific client is currently connected.
+
+         If you are only interested in the connection status of a client prefer this endpoint over the the full client detail.
+        If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
+      operationId: getMqttClientConnectionState
+      parameters:
+      - name: clientId
+        in: path
+        description: The MQTT client identifier.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionItem'
+              examples:
+                online-client:
+                  summary: online-client
+                  description: Online client
+                  value:
+                    connection:
+                      connected: false
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                not-found:
+                  summary: Not found
+                  description: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                param-missing:
+                  summary: Required URL parameter missing
                   description: Bad request
                   value:
                     errors:
                     - title: Required parameter missing
-                      detail: Required body entity parameter is missing
-                invalid-resource:
-                  summary: Invalid resource
-                  description: Bad request
-                  value:
-                    errors:
-                    - title: Invalid resource
-                      detail: The fields {name, events, startAt, endAt} must be specified
-                        at creation
+                      detail: Required URL parameter 'parameterName' is missing
   /api/v1/mqtt/clients/{clientId}:
     get:
       tags:
@@ -905,182 +1081,6 @@ paths:
                     errors:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
-  /api/v1/mqtt/clients/{clientId}/connection:
-    get:
-      tags:
-      - MQTT Clients
-      summary: Get a clients connection state
-      description: |-
-        Returns the information if a specific client is currently connected.
-
-         If you are only interested in the connection status of a client prefer this endpoint over the the full client detail.
-        If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
-      operationId: getMqttClientConnectionState
-      parameters:
-      - name: clientId
-        in: path
-        description: The MQTT client identifier.
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConnectionItem'
-              examples:
-                online-client:
-                  summary: online-client
-                  description: Online client
-                  value:
-                    connection:
-                      connected: false
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                param-missing:
-                  summary: Required URL parameter missing
-                  description: Bad request
-                  value:
-                    errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
-  /api/v1/mqtt/clients:
-    get:
-      tags:
-      - MQTT Clients
-      summary: List all MQTT clients
-      description: |-
-        Lists all client sessions (online and offline) known to the whole HiveMQ cluster.
-
-        The result contains each client's client identifier. For more details about each client you can call the endpoints that have a clientId in their URL.
-
-        This endpoint uses pagination with a cursor.
-        The results are not sorted in any way, no ordering of any kind is guaranteed.
-
-        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
-      operationId: getAllMqttClients
-      parameters:
-      - name: limit
-        in: query
-        description: Specifies the page size for the returned results. Has to be between
-          50 and 2500. Default page size is 500.
-        schema:
-          type: integer
-          format: int32
-      - name: cursor
-        in: query
-        description: The cursor that has been returned by the previous result page.
-          Do not pass this parameter if you want to fetch the first page.
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ClientList'
-              examples:
-                single-result:
-                  summary: Single result
-                  description: Example response with one known client.
-                  value:
-                    items:
-                    - id: client-12
-                multiple-results-last-page:
-                  summary: Multiple results, last page
-                  description: Example response with multiple clients. No more pages
-                    left.
-                  value:
-                    items:
-                    - id: client-12
-                    - id: client-5
-                    - id: client-32
-                    - id: my-client-id2
-                    - id: my-client-id
-                multiple-results-pages-left:
-                  summary: Multiple results, more pages left
-                  description: Example response with multiple clients. More pages
-                    left.
-                  value:
-                    items:
-                    - id: client-12
-                    - id: client-5
-                    - id: client-32
-                    - id: my-client-id2
-                    - id: my-client-id
-                    _links:
-                      next: /api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=5
-                empty-results:
-                  summary: Empty result if no clients are known
-                  description: Empty result if no clients are known.
-                  value:
-                    items: []
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                param-missing:
-                  summary: Required URL parameter missing
-                  description: Bad request
-                  value:
-                    errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
-        "410":
-          description: Cursor not valid anymore
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                cursor-invalid:
-                  summary: The passed cursor is not valid anymore
-                  description: Cursor not valid anymore
-                  value:
-                    errors:
-                    - title: Cursor not valid anymore
-                      detail: The passed cursor is not valid anymore, you can request
-                        this resource without a cursor to start from the beginning
-        "503":
-          description: Not all cluster nodes at minimum version
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                version-check-failed:
-                  summary: Version check failed
-                  description: Version check failed
-                  value:
-                    errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
   /api/v1/mqtt/clients/{clientId}/subscriptions:
     get:
       tags:
@@ -1293,13 +1293,6 @@ components:
           - STOPPED
       description: 'Trace recording item describing the desired (and optionally, when
         receiving from the server: current) state of a trace recording'
-    TraceRecordingItem:
-      required:
-      - traceRecording
-      type: object
-      properties:
-        traceRecording:
-          $ref: '#/components/schemas/TraceRecording'
     TraceRecordingList:
       type: object
       properties:
@@ -1308,6 +1301,48 @@ components:
           description: List of result items that are returned by this endpoint
           items:
             $ref: '#/components/schemas/TraceRecording'
+    TraceRecordingItem:
+      required:
+      - traceRecording
+      type: object
+      properties:
+        traceRecording:
+          $ref: '#/components/schemas/TraceRecording'
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+      description: List of result items that are returned by this endpoint
+    ClientList:
+      type: object
+      properties:
+        items:
+          type: array
+          description: List of result items that are returned by this endpoint
+          items:
+            $ref: '#/components/schemas/Client'
+        _links:
+          $ref: '#/components/schemas/PaginationCursor'
+    PaginationCursor:
+      type: object
+      properties:
+        next:
+          type: string
+      description: Links for pagination
+      nullable: true
+    Connection:
+      type: object
+      properties:
+        connected:
+          type: boolean
+          description: If this client is currently connected
+      description: Information about the client's connection state
+    ConnectionItem:
+      type: object
+      properties:
+        connection:
+          $ref: '#/components/schemas/Connection'
     CertificateInformation:
       type: object
       properties:
@@ -1486,41 +1521,6 @@ components:
         certificateInformation:
           $ref: '#/components/schemas/CertificateInformation'
       description: TLS information
-      nullable: true
-    Connection:
-      type: object
-      properties:
-        connected:
-          type: boolean
-          description: If this client is currently connected
-      description: Information about the client's connection state
-    ConnectionItem:
-      type: object
-      properties:
-        connection:
-          $ref: '#/components/schemas/Connection'
-    Client:
-      type: object
-      properties:
-        id:
-          type: string
-      description: List of result items that are returned by this endpoint
-    ClientList:
-      type: object
-      properties:
-        items:
-          type: array
-          description: List of result items that are returned by this endpoint
-          items:
-            $ref: '#/components/schemas/Client'
-        _links:
-          $ref: '#/components/schemas/PaginationCursor'
-    PaginationCursor:
-      type: object
-      properties:
-        next:
-          type: string
-      description: Links for pagination
       nullable: true
     ClientSubscription:
       type: object
