@@ -50,6 +50,7 @@ description = 'MQTT CLI is a tool that provides a feature rich command line inte
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
 
 def hivemqApiVersion = '4.5.1'
+def hivemqSwarmApiVersion = '2.0.0'
 
 application {
     mainClassName = 'com.hivemq.cli.MqttCLIMain'
@@ -72,12 +73,23 @@ repositories {
  * OpenAPI HiveMQ Rest API dependency *
  ***************/
 
-openApiGenerate {
+task generateHiveMqOpenApi(type: GenerateTask) {
     generatorName = "java"
     inputSpec = "$rootDir/specs/HiveMQ-$hivemqApiVersion-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
     apiPackage = "com.hivemq.cli.openapi.hivemq"
     modelPackage = "com.hivemq.cli.openapi.hivemq"
+    configOptions = [
+            dateLibrary: "java8"
+    ]
+}
+
+task generateSwarmOpenApi(type: GenerateTask) {
+    generatorName = "java"
+    inputSpec = "$rootDir/specs/HiveMQ-Swarm-$hivemqSwarmApiVersion-OpenAPI-spec.yaml".toString()
+    outputDir = "$buildDir/generated/openapi".toString()
+    apiPackage = "com.hivemq.cli.openapi.swarm"
+    modelPackage = "com.hivemq.cli.openapi.swarm"
     configOptions = [
             dateLibrary: "java8"
     ]
@@ -91,7 +103,8 @@ sourceSets {
     }
 }
 
-compileJava.dependsOn tasks.openApiGenerate
+compileJava.dependsOn tasks.generateHiveMqOpenApi
+compileJava.dependsOn tasks.generateSwarmOpenApi
 
 
 /****************
@@ -650,6 +663,8 @@ tasks.githubRelease.dependsOn tasks.buildPackageAll
 /****************
  * Helpers *
  ***************/
+
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 import java.security.DigestInputStream
 import java.security.MessageDigest
