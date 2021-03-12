@@ -2,6 +2,7 @@ package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.swarm.AbstractSwarmCommand;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
@@ -28,7 +29,8 @@ public class SwarmRunCommand extends AbstractSwarmCommand {
     public SwarmRunCommand() { }
 
     @Override
-    public Integer call() throws Exception {
+    public @NotNull Integer call() throws Exception {
+        System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
         return 0;
     }
 }

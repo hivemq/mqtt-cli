@@ -35,10 +35,6 @@ class SwarmStatusCommandTest {
     }
 
     @Test
-    void invalidUrl_error() {
-    }
-
-    @Test
     void statusNull_error() throws Exception {
         final CommanderStateResponse commanderStateResponse = mock(CommanderStateResponse.class);
         when(commanderStateResponse.getCommanderStatus()).thenReturn(null);
