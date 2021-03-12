@@ -53,7 +53,7 @@ paths:
       summary: Get a run.
       description: "Get a run. \n\n This endpoint returns the run and the associated\
         \ metadata."
-      operationId: getScenario
+      operationId: getRun
       parameters:
       - name: id
         in: path
@@ -113,7 +113,7 @@ paths:
       summary: Delete a run.
       description: "Delete a run. \n\n This endpoint deletes the run with the associated\
         \ id if it exists and is not running."
-      operationId: deleteScenario
+      operationId: deleteRun
       parameters:
       - name: id
         in: path
@@ -319,87 +319,6 @@ paths:
                     errors:
                     - title: Bad Request.
                       detail: Field 'scenario' is missing.
-  /scenarios/{id}:
-    get:
-      tags:
-      - Scenarios
-      summary: Download a scenario.
-      description: "Download a scenario. \n\n This endpoint returns the scenario as\
-        \ Base64 string and the associated metadata."
-      operationId: downloadScenario
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DownloadScenarioResponse'
-              examples:
-                download-upload-successful:
-                  summary: Download scenario successful
-                  description: Download scenario successful
-                  value:
-                    scenario-id: 1
-                    scenario-name: scenario
-                    scenario-description: null
-                    scenario-type: XML
-                    scenario: BASE64==
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                scenario-not-found:
-                  summary: Scenario was not found
-                  description: Not Found
-                  value:
-                    errors:
-                    - title: Not Found.
-                      detail: Scenario with id '4' was not found.
-    delete:
-      tags:
-      - Scenarios
-      summary: Delete a scenario.
-      description: "Delete a scenario. \n\n This endpoint deletes the scenario with\
-        \ the associated id."
-      operationId: deleteScenario_1
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        "204":
-          description: Success
-          content:
-            application/json:
-              examples:
-                delete-scenario:
-                  summary: Delete scenario
-                  description: Delete scenario successful
-        "404":
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                scenario-missing:
-                  summary: Scenario was not found
-                  description: Not Found
-                  value:
-                    errors:
-                    - title: Not Found.
-                      detail: Scenario with id '4' was not found.
   /scenarios:
     get:
       tags:
@@ -432,11 +351,11 @@ paths:
         \ strings and the respective metadata.Only valid scenarios can be uploaded."
       operationId: uploadScenario
       requestBody:
-        description: The scenario recording to upload
+        description: The scenario to upload
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UploadScenarioResponse'
+              $ref: '#/components/schemas/UploadScenarioRequest'
             examples:
               upload-scenario:
                 summary: Upload scenario
@@ -491,6 +410,87 @@ paths:
                     errors:
                     - title: Bad Request.
                       detail: Field 'scenario' is missing.
+  /scenarios/{id}:
+    get:
+      tags:
+      - Scenarios
+      summary: Download a scenario.
+      description: "Download a scenario. \n\n This endpoint returns the scenario as\
+        \ Base64 string and the associated metadata."
+      operationId: downloadScenario
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadScenarioResponse'
+              examples:
+                download-upload-successful:
+                  summary: Download scenario successful
+                  description: Download scenario successful
+                  value:
+                    scenario-id: 1
+                    scenario-name: scenario
+                    scenario-description: null
+                    scenario-type: XML
+                    scenario: BASE64==
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                scenario-not-found:
+                  summary: Scenario was not found
+                  description: Not Found
+                  value:
+                    errors:
+                    - title: Not Found.
+                      detail: Scenario with id '4' was not found.
+    delete:
+      tags:
+      - Scenarios
+      summary: Delete a scenario.
+      description: "Delete a scenario. \n\n This endpoint deletes the scenario with\
+        \ the associated id."
+      operationId: deleteScenario
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Success
+          content:
+            application/json:
+              examples:
+                delete-scenario:
+                  summary: Delete scenario
+                  description: Delete scenario successful
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                scenario-missing:
+                  summary: Scenario was not found
+                  description: Not Found
+                  value:
+                    errors:
+                    - title: Not Found.
+                      detail: Scenario with id '4' was not found.
 components:
   schemas:
     CommanderStateResponse:
@@ -500,7 +500,7 @@ components:
           type: string
         run-id:
           type: string
-    RunResponse:
+    StopRunResponse:
       type: object
       properties:
         run-id:
@@ -516,8 +516,6 @@ components:
         scenario-type:
           type: string
         run-status:
-          type: string
-        scenario-stage:
           type: string
     Errors:
       type: object
@@ -597,6 +595,11 @@ components:
             type: object
         source:
           type: string
+    StopRunRequest:
+      type: object
+      properties:
+        run-status:
+          type: string
     StartRunResponse:
       type: object
       properties:
@@ -638,7 +641,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ListScenarioResponseEntry'
-    StopRunResponse:
+    RunResponse:
       type: object
       properties:
         run-id:
@@ -655,10 +658,7 @@ components:
           type: string
         run-status:
           type: string
-    StopRunRequest:
-      type: object
-      properties:
-        run-status:
+        scenario-stage:
           type: string
     UploadScenarioResponse:
       type: object
