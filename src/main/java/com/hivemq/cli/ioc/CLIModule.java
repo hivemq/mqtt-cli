@@ -24,6 +24,7 @@ import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
 import com.hivemq.cli.commands.cli.TestBrokerCommand;
 import com.hivemq.cli.commands.shell.ShellCommand;
+import com.hivemq.cli.openapi.swarm.CommanderApi;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,7 @@ class CLIModule {
             final @NotNull ShellCommand shellCommand,
             final @NotNull TestBrokerCommand testBrokerCommand,
             final @NotNull @Named("hivemq-cli") CommandLine hivemqCliCommandLine,
+            final @NotNull @Named("swarm-cli") CommandLine swarmCLICommand,
             final @NotNull CommandLineConfig config,
             final @NotNull CommandErrorMessageHandler handler) {
 
@@ -63,6 +65,7 @@ class CLIModule {
                 .addSubcommand(shellCommand)
                 .addSubcommand(testBrokerCommand)
                 .addSubcommand(hivemqCliCommandLine)
+                .addSubcommand(swarmCLICommand)
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
                 .setParameterExceptionHandler(handler);

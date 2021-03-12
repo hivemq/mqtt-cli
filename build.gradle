@@ -74,6 +74,7 @@ repositories {
  ***************/
 
 task generateHiveMqOpenApi(type: GenerateTask) {
+    group = "hivemq"
     generatorName = "java"
     inputSpec = "$rootDir/specs/HiveMQ-$hivemqApiVersion-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
@@ -85,6 +86,7 @@ task generateHiveMqOpenApi(type: GenerateTask) {
 }
 
 task generateSwarmOpenApi(type: GenerateTask) {
+    group = "swarm"
     generatorName = "java"
     inputSpec = "$rootDir/specs/HiveMQ-Swarm-$hivemqSwarmApiVersion-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
