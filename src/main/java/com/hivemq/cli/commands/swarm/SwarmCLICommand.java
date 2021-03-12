@@ -1,6 +1,7 @@
 package com.hivemq.cli.commands.swarm;
 
 import com.hivemq.cli.MqttCLIMain;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
@@ -27,7 +28,7 @@ public class SwarmCLICommand implements Callable<Integer> {
     public SwarmCLICommand() { }
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
         return 0;
     }

@@ -1,13 +1,11 @@
 package com.hivemq.cli.commands.swarm.run;
 
 import com.google.common.io.Files;
-import com.google.gson.Gson;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.swarm.AbstractSwarmCommand;
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.ApiResponse;
 import com.hivemq.cli.openapi.swarm.*;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.NotNull;
@@ -34,9 +32,6 @@ import java.util.concurrent.TimeUnit;
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class SwarmRunStartCommand extends AbstractSwarmCommand {
 
-    @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8888", description = "The URL of the HiveMQ REST API endpoint (default http://localhost:8888)", order = 1)
-    private @NotNull String url;
-
     @CommandLine.Option(names = {"-f", "--file"}, description = "The scenario file", order = 2)
     private @Nullable File scenario;
 
@@ -58,14 +53,14 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
     }
 
     public SwarmRunStartCommand(
-            final @NotNull String url,
+            final @NotNull String commanderUrl,
             final @Nullable File scenario,
             final @NotNull Boolean detached,
             final @NotNull RunsApi runsApi,
             final @NotNull ScenariosApi scenariosApi,
             final @NotNull SwarmApiErrorTransformer errorTransformer) {
 
-        this.url = url;
+        this.commanderUrl = commanderUrl;
         this.scenario = scenario;
         this.detached = detached;
         this.runsApi = runsApi;
@@ -91,13 +86,13 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             return -1;
         }
 
-        if (scenario.canRead()) {
+        if (!scenario.canRead()) {
             Logger.error("File '{}' is not readable.", scenario.getAbsolutePath());
             System.err.println("File '" + scenario.getAbsolutePath() + "' is not readable.");
             return -1;
         }
 
-        if (scenario.exists()) {
+        if (!scenario.exists()) {
             Logger.error("File '{}' does not exist.", scenario.getAbsolutePath());
             System.err.println("File '" + scenario.getAbsolutePath() + "' does not exist.");
             return -1;
@@ -126,11 +121,9 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
         }
 
         System.out.println("Uploading scenario from file '" + scenario.getAbsolutePath() + "'.");
-        final ApiResponse<UploadScenarioResponse> uploadResponse;
-        final UploadScenarioResponse uploadScenarioResponse;
+        final UploadScenarioResponse uploadResponse;
         try {
-            uploadResponse = scenariosApi.uploadScenarioWithHttpInfo(uploadScenarioRequest);
-            uploadScenarioResponse = uploadResponse.getData();
+            uploadResponse = scenariosApi.uploadScenario(uploadScenarioRequest);
         } catch (final ApiException e) {
             final Error error = errorTransformer.transformError(e);
             Logger.error("Could not upload the scenario. {}", error.getDetail());
@@ -138,10 +131,10 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             return -1;
         }
 
-        final Integer scenarioId = uploadScenarioResponse.getScenarioId();
+        final Integer scenarioId = uploadResponse.getScenarioId();
         if (scenarioId == null) {
-            Logger.error("Upload scenario response did not contain a scenario-id:\n {}", uploadScenarioResponse.toString());
-            System.err.println("Upload scenario response did not contain a scenario-id:\n " + uploadScenarioResponse.toString());
+            Logger.error("Upload scenario response did not contain a scenario-id:\n {}", uploadResponse.toString());
+            System.err.println("Upload scenario response did not contain a scenario-id:\n " + uploadResponse.toString());
             return -1;
         }
         System.out.println("Successfully uploaded scenario. Scenario-id: " + scenarioId);
@@ -149,11 +142,9 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
         final StartRunRequest startRunRequest = new StartRunRequest();
         startRunRequest.setScenarioId(scenarioId.toString());
 
-        final ApiResponse<StartRunResponse> startResponse;
         final StartRunResponse startRunResponse;
         try {
-            startResponse = runsApi.startRunWithHttpInfo(startRunRequest);
-            startRunResponse = startResponse.getData();
+            startRunResponse = runsApi.startRun(startRunRequest);
         } catch (final ApiException e) {
             final Error error = errorTransformer.transformError(e);
             Logger.error("Could not execute the scenario. {}.", error.getDetail());
@@ -176,38 +167,46 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
                     final StopRunRequest stopRunRequest = new StopRunRequest();
                     stopRunRequest.runStatus("STOPPED");
                     runsApi.stopRun(runId.toString(), stopRunRequest);
+
                 } catch (final ApiException e) {
                     final Error error = errorTransformer.transformError(e);
                     Logger.error("Failed to stop run '{}'. {}.", runId, error.getDetail());
                     System.err.println("Failed to stop run '" + runId + "'. " + error.getDetail());
                 }
+                try {
+                    scenariosApi.deleteScenario(scenarioId.toString());
+                } catch (final ApiException e) {
+                    final Error error = errorTransformer.transformError(e);
+                    Logger.error("Failed to delete scenario. {}.", error.getDetail());
+                    System.err.println("Failed to delete scenario. '" + error.getDetail());
+                }
             }));
 
-            pollUntilFinished(runId);
+            try {
+                pollUntilFinished(runId);
+            } catch (final ApiException apiException) {
+                final Error error = errorTransformer.transformError(apiException);
+                Logger.error("Failed to obtain run status {}.", error.getDetail());
+                System.err.println("Failed to obtain run status " + error.getDetail());
+                apiException.printStackTrace();
+                return -1;
+            }
         }
         return 0;
     }
 
-    private void pollUntilFinished(final int runId) {
+    private void pollUntilFinished(final int runId) throws ApiException {
         boolean finished = false;
         while (!finished) {
             try {
-                TimeUnit.SECONDS.sleep(10);
+                TimeUnit.SECONDS.sleep(5);
             } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
-            try {
-                final RunResponse run = runsApi.getRun(Integer.toString(runId));
-                System.out.println("Run status: " + run.getRunStatus());
-                System.out.println("Scenario Stage: " + run.getScenarioStage());
-                finished = "FINISHED".equals(run.getRunStatus());
-            } catch (final ApiException e) {
-                final Error error = errorTransformer.transformError(e);
-                Logger.error("Failed to obtain run status {}.", error.getDetail());
-                System.err.println("Failed to obtain run status " + error.getDetail());
-                // we do not exit here, maybe the obtaining of the status works again in the next iteration
-                // the user can still exit the command manually
-            }
+            final RunResponse run = runsApi.getRun(Integer.toString(runId));
+            System.out.println("Run status: " + run.getRunStatus());
+            System.out.println("Scenario Stage: " + run.getScenarioStage());
+            finished = "FINISHED".equals(run.getRunStatus());
         }
     }
 
