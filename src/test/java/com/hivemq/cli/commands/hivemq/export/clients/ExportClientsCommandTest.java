@@ -42,7 +42,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Disabled("Disabled until HiveMQ 4.4 is released")
 class ExportClientsCommandTest {
 
     public static final int HTTP_PORT = 8888;

@@ -16,7 +16,6 @@
 package com.hivemq.cli.commands.swarm;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.hivemq.cli.commands.swarm.run.SwarmRunStartCommand;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -28,7 +27,7 @@ import java.util.concurrent.Callable;
 public abstract class AbstractSwarmCommand implements Callable<Integer> {
 
     public enum OutputFormat {
-        JSON, PRETTY
+        json, pretty
     }
 
     @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8080", description = "The URL of the HiveMQ Swarm REST API endpoint (default http://localhost:8888)", order = 1)
@@ -36,7 +35,7 @@ public abstract class AbstractSwarmCommand implements Callable<Integer> {
     public @NotNull String commanderUrl = "http://localhost:8080";
 
     @CommandLine.Option(names = {"--format"}, defaultValue = "pretty", description = "The export output format (default pretty)", order = 4)
-    protected @NotNull OutputFormat format = OutputFormat.PRETTY;
+    protected @NotNull OutputFormat format = OutputFormat.pretty;
 
     @Override
     public @NotNull String toString() {

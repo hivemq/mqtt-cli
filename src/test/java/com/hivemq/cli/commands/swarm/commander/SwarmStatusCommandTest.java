@@ -18,6 +18,7 @@ package com.hivemq.cli.commands.swarm.commander;
 import com.google.gson.Gson;
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
+import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.swarm.CommanderApi;
 import com.hivemq.cli.openapi.swarm.CommanderStateResponse;
@@ -39,6 +40,7 @@ class SwarmStatusCommandTest {
     private @NotNull CommanderApi commanderApi;
     private @NotNull SwarmStatusCommand swarmStatusCommand;
     private @NotNull SwarmApiErrorTransformer errorTransformer;
+    private @NotNull ApiClient apiClient;
 
     @BeforeEach
     void setUp() {
@@ -46,7 +48,11 @@ class SwarmStatusCommandTest {
         runsApi = mock(RunsApi.class);
         commanderApi = mock(CommanderApi.class);
         errorTransformer = mock(SwarmApiErrorTransformer.class);
-        swarmStatusCommand = new SwarmStatusCommand(gson, runsApi, commanderApi, errorTransformer);
+        swarmStatusCommand = new SwarmStatusCommand(gson, () -> runsApi, () -> commanderApi, errorTransformer, System.out);
+
+        apiClient = mock(ApiClient.class);
+        when(runsApi.getApiClient()).thenReturn(apiClient);
+        when(commanderApi.getApiClient()).thenReturn(apiClient);
     }
 
     @Test
@@ -56,6 +62,7 @@ class SwarmStatusCommandTest {
         when(commanderApi.getCommanderStatus()).thenReturn(commanderStateResponse);
         assertEquals(-1, swarmStatusCommand.call());
         verify(commanderApi).getCommanderStatus();
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
     }
 
     @Test
@@ -71,7 +78,7 @@ class SwarmStatusCommandTest {
         when(runsApi.getRun("1")).thenReturn(runResponse);
 
         assertEquals(0, swarmStatusCommand.call());
-
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
         verify(commanderApi).getCommanderStatus();
         verify(runsApi).getRun("1");
 
@@ -92,7 +99,7 @@ class SwarmStatusCommandTest {
         when(runsApi.getRun("1")).thenThrow(exception);
 
         assertEquals(-1, swarmStatusCommand.call());
-
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
         verify(commanderApi).getCommanderStatus();
         verify(runsApi).getRun("1");
     }
@@ -107,7 +114,7 @@ class SwarmStatusCommandTest {
         when(commanderApi.getCommanderStatus()).thenReturn(commanderStateResponse);
 
         assertEquals(0, swarmStatusCommand.call());
-
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
         verify(commanderApi).getCommanderStatus();
         verify(runsApi, times(0)).getRun("1");
 
@@ -120,5 +127,6 @@ class SwarmStatusCommandTest {
         when(errorTransformer.transformError(any())).thenReturn(new Error(""));
         when(commanderApi.getCommanderStatus()).thenThrow(exception);
         assertEquals(-1, swarmStatusCommand.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
     }
 }

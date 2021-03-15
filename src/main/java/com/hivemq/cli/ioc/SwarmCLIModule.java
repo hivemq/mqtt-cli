@@ -36,6 +36,7 @@ import picocli.CommandLine;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -66,6 +67,11 @@ public class SwarmCLIModule {
 
     @Provides
     @Singleton
+    public @NotNull PrintStream provideOutStream() {
+        return System.out;
+    }
+
+    @Provides
     @Named("swarm-cli")
     public @NotNull ApiClient provideApiClient() {
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
@@ -74,31 +80,26 @@ public class SwarmCLIModule {
 
         final ApiClient apiClient = Configuration.getDefaultApiClient();
         apiClient.setHttpClient(okHttpClient);
-        apiClient.setBasePath("/");
 
         return apiClient;
     }
 
     @Provides
-    @Singleton
     public @NotNull Gson provideGson() {
         return new GsonBuilder().setPrettyPrinting().create();
     }
 
     @Provides
-    @Singleton
     public @NotNull RunsApi provideRunsApi(final @NotNull @Named("swarm-cli") ApiClient apiClient) {
         return new RunsApi(apiClient);
     }
 
     @Provides
-    @Singleton
     public @NotNull CommanderApi provideCommanderApi(final @NotNull @Named("swarm-cli") ApiClient apiClient) {
         return new CommanderApi(apiClient);
     }
 
     @Provides
-    @Singleton
     public @NotNull ScenariosApi provideScenariosApi(final @NotNull @Named("swarm-cli") ApiClient apiClient) {
         return new ScenariosApi(apiClient);
     }
