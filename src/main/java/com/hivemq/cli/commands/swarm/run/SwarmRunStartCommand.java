@@ -15,6 +15,7 @@
  */
 package com.hivemq.cli.commands.swarm.run;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Files;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.swarm.AbstractSwarmCommand;
@@ -56,7 +57,7 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
     @CommandLine.Option(names = {"-d", "--detach"}, defaultValue = "false", description = "Run the command in detached mode. " +
             "In detached mode the command uploads and executes the scenario and does not wait until the scenario is finished. " +
             "The scenario is not deleted afterwards.", order = 4)
-    private @NotNull Boolean detached;
+    private @NotNull Boolean detached = false;
 
     private final @NotNull RunsApi runsApi;
     private final @NotNull ScenariosApi scenariosApi;
@@ -75,6 +76,7 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
         this.out = out;
     }
 
+    @VisibleForTesting
     public SwarmRunStartCommand(
             final @NotNull String commanderUrl,
             final @Nullable File scenario,
@@ -83,13 +85,10 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             final @NotNull ScenariosApi scenariosApi,
             final @NotNull SwarmApiErrorTransformer errorTransformer,
             final @NotNull PrintStream out) {
+        this(() -> runsApi, () -> scenariosApi, errorTransformer, out);
         this.commanderUrl = commanderUrl;
         this.scenario = scenario;
         this.detached = detached;
-        this.runsApi = runsApi;
-        this.scenariosApi = scenariosApi;
-        this.errorTransformer = errorTransformer;
-        this.out = out;
     }
 
     @Override

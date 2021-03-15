@@ -15,11 +15,14 @@
  */
 package com.hivemq.cli.commands.swarm.run;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.swarm.AbstractSwarmCommand;
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.swarm.CommanderApi;
+import com.hivemq.cli.openapi.swarm.CommanderStateResponse;
 import com.hivemq.cli.openapi.swarm.RunsApi;
 import com.hivemq.cli.openapi.swarm.StopRunRequest;
 import okhttp3.HttpUrl;
@@ -27,9 +30,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
+import sun.jvm.hotspot.types.CIntegerField;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import java.io.PrintStream;
 
 /**
  * @author Yannick Weber
@@ -44,29 +49,38 @@ import javax.inject.Provider;
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class SwarmRunStopCommand extends AbstractSwarmCommand {
 
-    @CommandLine.Option(names = {"-r", "--run-id"}, description = "The id of the run to stop.", order = 3)
-    private @NotNull Integer runId;
+    @CommandLine.Option(names = {"-r", "--run-id"}, description = "The id of the run to stop. If none given the current run is stopped.", order = 3)
+    private @Nullable Integer runId;
 
     private final @NotNull RunsApi runsApi;
+    private final @NotNull CommanderApi commanderApi;
     private final @NotNull SwarmApiErrorTransformer errorTransformer;
+    private final @NotNull PrintStream out;
 
     @Inject
     public SwarmRunStopCommand(
             final @NotNull Provider<RunsApi> runsApi,
-            final @NotNull SwarmApiErrorTransformer errorTransformer) {
+            final @NotNull Provider<CommanderApi> commanderApi,
+            final @NotNull SwarmApiErrorTransformer errorTransformer,
+            final @NotNull PrintStream out) {
         this.runsApi = runsApi.get();
+        this.commanderApi = commanderApi.get();
         this.errorTransformer = errorTransformer;
+        this.out = out;
     }
 
+    @VisibleForTesting
     public SwarmRunStopCommand(
             final @NotNull String commanderUrl,
-            final int runId,
+            final @Nullable Integer runId,
             final @NotNull RunsApi runsApi,
-            final @NotNull SwarmApiErrorTransformer errorTransformer) {
+            final @NotNull CommanderApi commanderApi,
+            final @NotNull SwarmApiErrorTransformer errorTransformer,
+            final @NotNull PrintStream out) {
+
+        this(() -> runsApi, () -> commanderApi, errorTransformer, out);
         this.commanderUrl = commanderUrl;
         this.runId = runId;
-        this.runsApi = runsApi;
-        this.errorTransformer = errorTransformer;
     }
 
     @Override
@@ -83,15 +97,36 @@ public class SwarmRunStopCommand extends AbstractSwarmCommand {
 
         runsApi.getApiClient().setBasePath(commanderUrl);
 
+        final int usedRunID;
+        if (runId == null) {
+            final CommanderStateResponse commanderStatus;
+            try {
+                commanderStatus = commanderApi.getCommanderStatus();
+            } catch (final ApiException apiException) {
+                final Error error = errorTransformer.transformError(apiException);
+                Logger.error("Could not obtain current run. {}", error.getDetail());
+                System.err.println("Could not obtain current run. " + error.getDetail());
+                return -1;
+            }
+            if (commanderStatus.getRunId() == null) {
+                out.println("No run in progress.");
+                return 0;
+            } else {
+                usedRunID = Integer.parseInt(commanderStatus.getRunId());
+            }
+        } else {
+            usedRunID = runId;
+        }
+
         try {
             final StopRunRequest stopRunRequest = new StopRunRequest();
             stopRunRequest.runStatus("STOPPING");
-            runsApi.stopRun(runId.toString(), stopRunRequest);
+            runsApi.stopRun(Integer.toString(usedRunID), stopRunRequest);
             return 0;
         } catch (final ApiException e) {
             final Error error = errorTransformer.transformError(e);
-            Logger.error("Failed to stop run '{}'. {}.", runId, error.getDetail());
-            System.err.println("Failed to stop run '" + runId + "'. " + error.getDetail());
+            Logger.error("Failed to stop run '{}'. {}.", usedRunID, error.getDetail());
+            System.err.println("Failed to stop run '" + usedRunID + "'. " + error.getDetail());
             return -1;
         }
     }

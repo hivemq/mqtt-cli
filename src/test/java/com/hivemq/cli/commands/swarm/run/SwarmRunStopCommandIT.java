@@ -35,6 +35,7 @@ import org.testcontainers.utility.MountableFile;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
@@ -43,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Yannick Weber
@@ -78,6 +80,7 @@ public class SwarmRunStopCommandIT {
     private @NotNull CommanderApi commanderApi;
     private @NotNull String scenarioBase64;
     private @NotNull ScenariosApi scenariosApi;
+    private @NotNull PrintStream out;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -86,6 +89,8 @@ public class SwarmRunStopCommandIT {
         final CompletableFuture<Void> hivemqStartFuture = CompletableFuture.runAsync(hivemq::start);
         swarmStartFuture.get();
         hivemqStartFuture.get();
+
+        out = mock(PrintStream.class);
 
         final byte[] bytes = Files.toByteArray(new File("src/test/resources/SwarmRunStopCommandIT/blockScenario.xml"));
         final String scenarioString =
@@ -101,12 +106,13 @@ public class SwarmRunStopCommandIT {
         apiClient.setHttpClient(okHttpClient);
 
         runsApi = new RunsApi(apiClient);
+        scenariosApi = new ScenariosApi(apiClient);
+        commanderApi = new CommanderApi(apiClient);
+
         final Gson gson = new Gson();
         final SwarmApiErrorTransformer errorTransformer = new SwarmApiErrorTransformer(gson);
-        commandLine = new CommandLine(new SwarmRunStopCommand(() -> runsApi, errorTransformer));
+        commandLine = new CommandLine(new SwarmRunStopCommand(() -> runsApi, () -> commanderApi, errorTransformer, out));
 
-        commanderApi = new CommanderApi(apiClient);
-        scenariosApi = new ScenariosApi(apiClient);
     }
 
     @AfterEach
@@ -118,6 +124,13 @@ public class SwarmRunStopCommandIT {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void stopRun() throws Exception {
+
+        // no current run
+        final int execute0 = commandLine.execute(
+                "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT)
+        );
+        assertEquals(0, execute0);
+        verify(out, times(1)).println("No run in progress.");
 
 
         final Mqtt5BlockingClient client = Mqtt5Client.builder().serverPort(hivemq.getMqttPort()).buildBlocking();
