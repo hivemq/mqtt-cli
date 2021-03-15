@@ -175,6 +175,7 @@ ext {
     jline3JansiVersion = '3.16.0'
     daggerVersion = '2.30.1'
     guavaVersion = '30.0-jre'
+    commonsIoVersion = '2.8.0'
     hivemqclientVersion = '1.2.0'
     tinylogVersion = '2.0.1'
     jcToolsVersion = '2.1.2'
@@ -225,6 +226,7 @@ dependencies {
     implementation group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
     implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
+    implementation group: 'commons-io', name: 'commons-io', version: commonsIoVersion
     implementation group: 'org.tinylog', name: 'tinylog-api', version: tinylogVersion
     implementation group: 'org.tinylog', name: 'tinylog-impl', version: tinylogVersion
     implementation group: 'org.jetbrains', name: 'annotations', version: jetbrainsAnnotationsVersion
