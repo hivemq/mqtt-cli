@@ -29,8 +29,10 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
@@ -56,15 +58,18 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
     private final @NotNull RunsApi runsApi;
     private final @NotNull ScenariosApi scenariosApi;
     private final @NotNull SwarmApiErrorTransformer errorTransformer;
+    private final @NotNull PrintStream out;
 
     @Inject
     public SwarmRunStartCommand(
-            final @NotNull RunsApi runsApi,
-            final @NotNull ScenariosApi scenariosApi,
-            final @NotNull SwarmApiErrorTransformer errorTransformer) {
-        this.runsApi = runsApi;
-        this.scenariosApi = scenariosApi;
+            final @NotNull Provider<RunsApi> runsApi,
+            final @NotNull Provider<ScenariosApi> scenariosApi,
+            final @NotNull SwarmApiErrorTransformer errorTransformer,
+            final @NotNull PrintStream out) {
+        this.runsApi = runsApi.get();
+        this.scenariosApi = scenariosApi.get();
         this.errorTransformer = errorTransformer;
+        this.out = out;
     }
 
     public SwarmRunStartCommand(
@@ -73,14 +78,15 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             final @NotNull Boolean detached,
             final @NotNull RunsApi runsApi,
             final @NotNull ScenariosApi scenariosApi,
-            final @NotNull SwarmApiErrorTransformer errorTransformer) {
-
+            final @NotNull SwarmApiErrorTransformer errorTransformer,
+            final @NotNull PrintStream out) {
         this.commanderUrl = commanderUrl;
         this.scenario = scenario;
         this.detached = detached;
         this.runsApi = runsApi;
         this.scenariosApi = scenariosApi;
         this.errorTransformer = errorTransformer;
+        this.out = out;
     }
 
     @Override
@@ -94,6 +100,9 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             System.err.println("URL is not in a valid format: " + commanderUrl);
             return -1;
         }
+
+        runsApi.getApiClient().setBasePath(commanderUrl);
+        scenariosApi.getApiClient().setBasePath(commanderUrl);
 
         if (scenario == null) {
             Logger.error("Scenario file is missing. Option '-f' is not set");
@@ -135,7 +144,7 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             return -1;
         }
 
-        System.out.println("Uploading scenario from file '" + scenario.getAbsolutePath() + "'.");
+        out.println("Uploading scenario from file '" + scenario.getAbsolutePath() + "'.");
         final UploadScenarioResponse uploadResponse;
         try {
             uploadResponse = scenariosApi.uploadScenario(uploadScenarioRequest);
@@ -152,7 +161,7 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             System.err.println("Upload scenario response did not contain a scenario-id:\n " + uploadResponse.toString());
             return -1;
         }
-        System.out.println("Successfully uploaded scenario. Scenario-id: " + scenarioId);
+        out.println("Successfully uploaded scenario. Scenario-id: " + scenarioId);
 
         final StartRunRequest startRunRequest = new StartRunRequest();
         startRunRequest.setScenarioId(scenarioId.toString());
@@ -173,8 +182,8 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             System.err.println("Start run response did not contain a run-id:\n " + startRunResponse.toString());
             return -1;
         }
-        System.out.println("Run id: " + runId);
-        System.out.println("Run status: " + startRunResponse.getRunStatus());
+        out.println("Run id: " + runId);
+        out.println("Run status: " + startRunResponse.getRunStatus());
 
         if (!detached) {
             Runtime.getRuntime().addShutdownHook(
@@ -201,8 +210,8 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
                 e.printStackTrace();
             }
             final RunResponse run = runsApi.getRun(Integer.toString(runId));
-            System.out.println("Run status: " + run.getRunStatus());
-            System.out.println("Scenario Stage: " + run.getScenarioStage());
+            out.println("Run status: " + run.getRunStatus());
+            out.println("Scenario Stage: " + run.getScenarioStage());
             finished = "FINISHED".equals(run.getRunStatus());
         }
     }

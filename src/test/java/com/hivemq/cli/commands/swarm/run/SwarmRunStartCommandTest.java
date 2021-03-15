@@ -17,6 +17,7 @@ package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
+import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.swarm.*;
 import org.apache.commons.io.FileUtils;
@@ -44,6 +45,7 @@ class SwarmRunStartCommandTest {
     private @NotNull ScenariosApi scenariosApi;
     private @NotNull SwarmApiErrorTransformer swarmApiErrorTransformer;
     private @NotNull File tempDir;
+    private @NotNull ApiClient apiClient;
 
     @BeforeEach
     void setUp() {
@@ -51,6 +53,10 @@ class SwarmRunStartCommandTest {
         scenariosApi = mock(ScenariosApi.class);
         swarmApiErrorTransformer = mock(SwarmApiErrorTransformer.class);
         tempDir = Files.createTempDir();
+
+        apiClient = mock(ApiClient.class);
+        when(runsApi.getApiClient()).thenReturn(apiClient);
+        when(scenariosApi.getApiClient()).thenReturn(apiClient);
     }
 
     @Test
@@ -62,9 +68,11 @@ class SwarmRunStartCommandTest {
                 true,
                 runsApi,
                 scenariosApi,
-                swarmApiErrorTransformer);
+                swarmApiErrorTransformer,
+                System.out);
 
         assertEquals(-1, command.call());
+        verify(apiClient, times(0)).setBasePath(any());
     }
 
     @Test
@@ -75,9 +83,11 @@ class SwarmRunStartCommandTest {
                 true,
                 runsApi,
                 scenariosApi,
-                swarmApiErrorTransformer);
+                swarmApiErrorTransformer,
+                System.out);
 
         assertEquals(-1, command.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
     }
 
     @Test
@@ -90,9 +100,11 @@ class SwarmRunStartCommandTest {
                 true,
                 runsApi,
                 scenariosApi,
-                swarmApiErrorTransformer);
+                swarmApiErrorTransformer,
+                System.out);
 
         assertEquals(-1, command.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
     }
 
     @Test
@@ -106,9 +118,11 @@ class SwarmRunStartCommandTest {
                 true,
                 runsApi,
                 scenariosApi,
-                swarmApiErrorTransformer);
+                swarmApiErrorTransformer,
+                System.out);
 
         assertEquals(-1, command.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
     }
 
     @Test
@@ -122,7 +136,8 @@ class SwarmRunStartCommandTest {
                 true,
                 runsApi,
                 scenariosApi,
-                swarmApiErrorTransformer);
+                swarmApiErrorTransformer,
+                System.out);
 
         final ArgumentCaptor<UploadScenarioRequest> upload = ArgumentCaptor.forClass(UploadScenarioRequest.class);
 
@@ -131,6 +146,7 @@ class SwarmRunStartCommandTest {
         when(scenariosApi.uploadScenario(upload.capture())).thenThrow(exception);
 
         assertEquals(-1, command.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
         verify(scenariosApi).uploadScenario(any());
         verify(swarmApiErrorTransformer).transformError(any());
 
@@ -139,6 +155,7 @@ class SwarmRunStartCommandTest {
         assertEquals("XML", value.getScenarioType());
         assertNull(value.getScenarioDescription());
         assertEquals("c2NlbmFyaW8tY29udGVudA==", value.getScenario());
+
     }
 
     @Test
@@ -152,7 +169,8 @@ class SwarmRunStartCommandTest {
                 true,
                 runsApi,
                 scenariosApi,
-                swarmApiErrorTransformer);
+                swarmApiErrorTransformer,
+                System.out);
 
         final ArgumentCaptor<UploadScenarioRequest> upload = ArgumentCaptor.forClass(UploadScenarioRequest.class);
 
@@ -161,6 +179,7 @@ class SwarmRunStartCommandTest {
         when(scenariosApi.uploadScenario(upload.capture())).thenThrow(exception);
 
         assertEquals(-1, command.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
         verify(scenariosApi).uploadScenario(any());
         verify(swarmApiErrorTransformer).transformError(any());
 
@@ -182,7 +201,8 @@ class SwarmRunStartCommandTest {
                 true,
                 runsApi,
                 scenariosApi,
-                swarmApiErrorTransformer);
+                swarmApiErrorTransformer,
+                System.out);
 
 
         final UploadScenarioResponse uploadScenarioResponse = mock(UploadScenarioResponse.class);
@@ -194,6 +214,7 @@ class SwarmRunStartCommandTest {
         when(runsApi.startRun(any())).thenThrow(exception);
 
         assertEquals(-1, command.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
         verify(scenariosApi).uploadScenario(any());
         verify(swarmApiErrorTransformer).transformError(any());
         verify(runsApi).startRun(any());
@@ -210,7 +231,8 @@ class SwarmRunStartCommandTest {
                 false,
                 runsApi,
                 scenariosApi,
-                swarmApiErrorTransformer);
+                swarmApiErrorTransformer,
+                System.out);
 
 
         final UploadScenarioResponse uploadScenarioResponse = mock(UploadScenarioResponse.class);
@@ -228,6 +250,7 @@ class SwarmRunStartCommandTest {
         when(runsApi.getRun("1337")).thenReturn(runResponse);
 
         assertEquals(0, command.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
         verify(scenariosApi).uploadScenario(any());
         verify(runsApi).startRun(any());
         verify(runsApi).getRun("1337");
@@ -246,7 +269,8 @@ class SwarmRunStartCommandTest {
                 true,
                 runsApi,
                 scenariosApi,
-                swarmApiErrorTransformer);
+                swarmApiErrorTransformer,
+                System.out);
 
 
         final UploadScenarioResponse uploadScenarioResponse = mock(UploadScenarioResponse.class);
@@ -264,6 +288,7 @@ class SwarmRunStartCommandTest {
         when(runsApi.getRun("1337")).thenReturn(runResponse);
 
         assertEquals(0, command.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
         verify(scenariosApi).uploadScenario(any());
         verify(runsApi).startRun(any());
         verify(runsApi, times(0)).getRun("1337");
