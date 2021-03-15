@@ -162,26 +162,8 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
         System.out.println("Run status: " + startRunResponse.getRunStatus());
 
         if (!detached) {
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                try {
-                    final StopRunRequest stopRunRequest = new StopRunRequest();
-                    stopRunRequest.runStatus("STOPPED");
-                    runsApi.stopRun(runId.toString(), stopRunRequest);
-
-                } catch (final ApiException e) {
-                    final Error error = errorTransformer.transformError(e);
-                    Logger.error("Failed to stop run '{}'. {}.", runId, error.getDetail());
-                    System.err.println("Failed to stop run '" + runId + "'. " + error.getDetail());
-                }
-                try {
-                    scenariosApi.deleteScenario(scenarioId.toString());
-                } catch (final ApiException e) {
-                    final Error error = errorTransformer.transformError(e);
-                    Logger.error("Failed to delete scenario. {}.", error.getDetail());
-                    System.err.println("Failed to delete scenario. '" + error.getDetail());
-                }
-            }));
-
+            Runtime.getRuntime().addShutdownHook(
+                    new SwarmRunStartCommandShutdownHook(runsApi, scenariosApi, errorTransformer, runId, scenarioId));
             try {
                 pollUntilFinished(runId);
             } catch (final ApiException apiException) {
