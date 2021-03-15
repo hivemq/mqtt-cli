@@ -52,9 +52,8 @@ public class SwarmRunStartCommandShutdownHook extends Thread {
     public void run() {
         try {
             final StopRunRequest stopRunRequest = new StopRunRequest();
-            stopRunRequest.runStatus("STOPPED");
+            stopRunRequest.runStatus("STOPPING");
             runsApi.stopRun(runId.toString(), stopRunRequest);
-
         } catch (final ApiException e) {
             final Error error = errorTransformer.transformError(e);
             Logger.error("Failed to stop run '{}'. {}.", runId, error.getDetail());

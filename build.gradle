@@ -169,6 +169,7 @@ ext {
 
     // Dependency versions
 
+    awaitilityVersion = '4.0.3'
     picoclishell3Version = '4.5.0'
     picocliVersion = '4.5.0'
     jline3Version = '3.16.0'
@@ -238,6 +239,7 @@ dependencies {
     implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
     implementation group: 'com.opencsv', name: 'opencsv', version: openCsvVersion
 
+    testImplementation group: 'org.awaitility', name: 'awaitility', version: awaitilityVersion
     testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion

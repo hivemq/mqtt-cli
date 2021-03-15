@@ -49,8 +49,6 @@ public class SwarmStatusCommandIT {
             .withLogConsumer(outputFrame -> System.out.print("SWARM: " + outputFrame.getUtf8String()))
             .withExposedPorts(REST_PORT);
 
-    final public @NotNull HiveMQTestContainerExtension hivemq = new HiveMQTestContainerExtension();
-
     private @NotNull CommandLine commandLine;
     private @NotNull PrintStream out;
 
@@ -59,7 +57,6 @@ public class SwarmStatusCommandIT {
     void setUp() throws Exception {
 
         final CompletableFuture<Void> swarmStartFuture = CompletableFuture.runAsync(swarm::start);
-        final CompletableFuture<Void> hivemqStartFuture = CompletableFuture.runAsync(hivemq::start);
 
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(60, TimeUnit.SECONDS)
@@ -76,13 +73,11 @@ public class SwarmStatusCommandIT {
         out = mock(PrintStream.class);
 
         swarmStartFuture.get();
-        hivemqStartFuture.get();
     }
 
     @AfterEach
     void tearDown() {
         swarm.stop();
-        hivemq.stop();
     }
 
     @Test
