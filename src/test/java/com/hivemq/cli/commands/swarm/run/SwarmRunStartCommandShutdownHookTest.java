@@ -31,28 +31,17 @@ import static org.mockito.Mockito.*;
  */
 class SwarmRunStartCommandShutdownHookTest {
 
-    private @NotNull RunsApi runsApi;
     private @NotNull ScenariosApi scenariosApi;
     private @NotNull SwarmApiErrorTransformer errorTransformer;
     private @NotNull SwarmRunStartCommandShutdownHook shutdownHook;
 
     @BeforeEach
     void setUp() {
-        runsApi = mock(RunsApi.class);
+        final RunsApi runsApi = mock(RunsApi.class);
         scenariosApi = mock(ScenariosApi.class);
         errorTransformer = mock(SwarmApiErrorTransformer.class);
 
         shutdownHook = new SwarmRunStartCommandShutdownHook(runsApi, scenariosApi, errorTransformer, 1, 2);
-    }
-
-    @Test
-    void stopRunFailed_errorLogged() throws ApiException, InterruptedException {
-        final ApiException exception = mock(ApiException.class);
-        when(errorTransformer.transformError(any())).thenReturn(new Error(""));
-        when(runsApi.stopRun(eq("1"), any())).thenThrow(exception);
-        shutdownHook.start();
-        shutdownHook.join();
-        verify(errorTransformer, times(1)).transformError(any());
     }
 
     @Test
