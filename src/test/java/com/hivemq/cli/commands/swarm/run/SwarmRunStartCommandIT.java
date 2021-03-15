@@ -11,9 +11,7 @@ import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -31,6 +29,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Yannick Weber
  */
+@Disabled("Disabled until HiveMQ Swarm is released.")
 public class SwarmRunStartCommandIT {
 
     public static final @NotNull String IMAGE_NAME = "hivemq/hivemq-swarm";
@@ -90,6 +89,7 @@ public class SwarmRunStartCommandIT {
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void startScenario() throws Exception {
 
         final CountDownLatch publishesLatch = new CountDownLatch(10);

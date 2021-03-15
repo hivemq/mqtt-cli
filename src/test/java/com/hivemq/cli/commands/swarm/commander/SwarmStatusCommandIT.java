@@ -6,12 +6,9 @@ import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.Configuration;
 import com.hivemq.cli.openapi.swarm.CommanderApi;
 import com.hivemq.cli.openapi.swarm.RunsApi;
-import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -28,6 +25,7 @@ import static org.mockito.Mockito.verify;
 /**
  * @author Yannick Weber
  */
+@Disabled("Disabled until HiveMQ Swarm is released.")
 public class SwarmStatusCommandIT {
 
     public static final @NotNull String IMAGE_NAME = "hivemq/hivemq-swarm";
@@ -81,6 +79,7 @@ public class SwarmStatusCommandIT {
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void getCommanderStatus() {
         final int execute = commandLine.execute(
                 "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT)
