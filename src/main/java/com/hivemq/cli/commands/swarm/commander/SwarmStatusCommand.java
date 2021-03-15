@@ -37,11 +37,8 @@ import java.io.PrintStream;
 /**
  * @author Yannick Weber
  */
-/**
- * @author Yannick Weber
- */
-@CommandLine.Command(name = "commander",
-        description = "HiveMQ Swarm Commander Command Line Interpreter.",
+@CommandLine.Command(name = "Check the status of HiveMQ Swarm.",
+        description = "",
         synopsisHeading = "%n@|bold Usage:|@  ",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",

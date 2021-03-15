@@ -23,6 +23,7 @@ import com.hivemq.cli.commands.swarm.SwarmCLICommand;
 import com.hivemq.cli.commands.swarm.commander.SwarmStatusCommand;
 import com.hivemq.cli.commands.swarm.run.SwarmRunCommand;
 import com.hivemq.cli.commands.swarm.run.SwarmRunStartCommand;
+import com.hivemq.cli.commands.swarm.run.SwarmRunStopCommand;
 import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.Configuration;
 import com.hivemq.cli.openapi.swarm.CommanderApi;
@@ -54,12 +55,14 @@ public class SwarmCLIModule {
             final @NotNull SwarmCLICommand swarmCLICommand,
             final @NotNull SwarmStatusCommand swarmStatusCommand,
             final @NotNull SwarmRunStartCommand swarmRunStartCommand,
+            final @NotNull SwarmRunStopCommand swarmRunStopCommand,
             final @NotNull SwarmRunCommand swarmRunCommand) {
 
         return new CommandLine(swarmCLICommand)
                 .addSubcommand(swarmStatusCommand)
                 .addSubcommand(new CommandLine(swarmRunCommand)
                         .addSubcommand(swarmRunStartCommand))
+                        .addSubcommand(swarmRunStopCommand)
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
                 .setParameterExceptionHandler(handler);

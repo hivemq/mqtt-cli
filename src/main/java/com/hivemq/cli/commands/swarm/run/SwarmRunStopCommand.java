@@ -35,7 +35,7 @@ import javax.inject.Provider;
  * @author Yannick Weber
  */
 @CommandLine.Command(name = "start",
-        description = "HiveMQ Swarm Run Start Command Line Interpreter.",
+        description = "Stop HiveMQ Swarm runs.",
         synopsisHeading = "%n@|bold Usage:|@  ",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",
@@ -44,7 +44,7 @@ import javax.inject.Provider;
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class SwarmRunStopCommand extends AbstractSwarmCommand {
 
-    @CommandLine.Option(names = {"-r", "--run-id"}, description = "The id of the run to stop.", order = 1)
+    @CommandLine.Option(names = {"-r", "--run-id"}, description = "The id of the run to stop.", order = 3)
     private @NotNull Integer runId;
 
     private final @NotNull RunsApi runsApi;
