@@ -34,7 +34,7 @@ public abstract class AbstractSwarmCommand implements Callable<Integer> {
     @VisibleForTesting
     public @NotNull String commanderUrl = "http://localhost:8080";
 
-    @CommandLine.Option(names = {"--format"}, defaultValue = "pretty", description = "The export output format (default pretty)", order = 4)
+    @CommandLine.Option(names = {"--format"}, defaultValue = "pretty", description = "The export output format (default pretty)", order = 2)
     protected @NotNull OutputFormat format = OutputFormat.pretty;
 
     @Override

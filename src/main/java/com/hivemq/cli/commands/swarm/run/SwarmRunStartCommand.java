@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  * @author Yannick Weber
  */
 @CommandLine.Command(name = "start",
-        description = "HiveMQ Swarm Run Start Command Line Interpreter.",
+        description = "Start HiveMQ Swarm runs.",
         synopsisHeading = "%n@|bold Usage:|@  ",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",
@@ -49,10 +49,13 @@ import java.util.concurrent.TimeUnit;
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class SwarmRunStartCommand extends AbstractSwarmCommand {
 
-    @CommandLine.Option(names = {"-f", "--file"}, description = "The scenario file", order = 2)
+    @CommandLine.Option(names = {"-f", "--file"}, description = "The scenario file. " +
+            "If a scenario file is given this command uploads, executes and deletes the scenario afterwards.", order = 3)
     private @Nullable File scenario;
 
-    @CommandLine.Option(names = {"-d"}, defaultValue = "false", description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 9)
+    @CommandLine.Option(names = {"-d", "--detach"}, defaultValue = "false", description = "Run the command in detached mode. " +
+            "In detached mode the command uploads and executes the scenario and does not wait until the scenario is finished. " +
+            "The scenario is not deleted afterwards.", order = 4)
     private @NotNull Boolean detached;
 
     private final @NotNull RunsApi runsApi;
