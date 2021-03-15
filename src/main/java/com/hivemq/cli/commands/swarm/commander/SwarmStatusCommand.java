@@ -52,7 +52,7 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
     }
 
     @CommandLine.Option(names = {"--format"}, defaultValue = "pretty", description = "The export output format (default pretty)", order = 2)
-    protected @NotNull OutputFormat format = OutputFormat.PRETTY;
+    private @NotNull OutputFormat format = OutputFormat.PRETTY;
 
     private final @NotNull Gson gson;
     private final @NotNull RunsApi runsApi;
