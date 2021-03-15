@@ -61,4 +61,12 @@ class SwarmApiErrorTransformerTest {
         final Error error = swarmApiErrorTransformer.transformError(apiException);
         assertEquals("Internal Server Error.", error.getDetail());
     }
+
+    @Test
+    void transform0_connectionRefused() {
+        final ApiException apiException = mock(ApiException.class);
+        when(apiException.getCode()).thenReturn(0);
+        final Error error = swarmApiErrorTransformer.transformError(apiException);
+        assertEquals("Connection Refused.", error.getDetail());
+    }
 }

@@ -34,6 +34,9 @@ public class SwarmApiErrorTransformer {
     }
 
     public @NotNull Error transformError(final @NotNull ApiException apiException) {
+        if (apiException.getCode() == 0) {
+            return new Error("Connection Refused.");
+        }
         if (apiException.getCode() == 500) {
             return new Error("Internal Server Error.");
         }

@@ -241,4 +241,12 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
         throw new IllegalArgumentException("Invalid scenario file ending.");
     }
 
+    @Override
+    public @NotNull String toString() {
+        return "SwarmRunStartCommand{" +
+                "commanderUrl='" + commanderUrl + '\'' +
+                ", scenario=" + (scenario != null ? scenario.getAbsolutePath() : null) +
+                ", detached=" + detached +
+                '}';
+    }
 }

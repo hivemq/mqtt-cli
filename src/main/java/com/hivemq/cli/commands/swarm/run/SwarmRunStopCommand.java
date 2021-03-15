@@ -34,7 +34,7 @@ import javax.inject.Provider;
 /**
  * @author Yannick Weber
  */
-@CommandLine.Command(name = "start",
+@CommandLine.Command(name = "stop",
         description = "Stop HiveMQ Swarm runs.",
         synopsisHeading = "%n@|bold Usage:|@  ",
         descriptionHeading = "%n",
@@ -96,4 +96,11 @@ public class SwarmRunStopCommand extends AbstractSwarmCommand {
         }
     }
 
+    @Override
+    public @NotNull String toString() {
+        return "SwarmRunStopCommand{" +
+                "commanderUrl='" + commanderUrl + '\'' +
+                ", runId=" + runId +
+                '}';
+    }
 }
