@@ -40,6 +40,7 @@ class SwarmApiErrorTransformerTest {
     @Test
     void transformEmptyString_emptyError() {
         final ApiException apiException = mock(ApiException.class);
+        when(apiException.getCode()).thenReturn(400);
         when(apiException.getResponseBody()).thenReturn("");
         final Error error = swarmApiErrorTransformer.transformError(apiException);
         assertEquals("Unspecified Error.", error.getDetail());
@@ -48,6 +49,7 @@ class SwarmApiErrorTransformerTest {
     @Test
     void transformValidError_returned() {
         final ApiException apiException = mock(ApiException.class);
+        when(apiException.getCode()).thenReturn(400);
         when(apiException.getResponseBody()).thenReturn(
                 "{\"errors\":[{\"title\":\"Requested Resource Not Found.\",\"detail\":\"Run with id '3' was not found.\"}]}");
         final Error error = swarmApiErrorTransformer.transformError(apiException);

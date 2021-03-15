@@ -55,16 +55,13 @@ public class SwarmRunStartCommandShutdownHook extends Thread {
             stopRunRequest.runStatus("STOPPING");
             runsApi.stopRun(runId.toString(), stopRunRequest);
         } catch (final ApiException e) {
-            final Error error = errorTransformer.transformError(e);
-            Logger.error("Failed to stop run '{}'. {}.", runId, error.getDetail());
-            System.err.println("Failed to stop run '" + runId + "'. " + error.getDetail());
+            // catch this silently. Sometimes the run is already stopped when the shutdown hook is executed.
         }
         try {
             scenariosApi.deleteScenario(scenarioId.toString());
         } catch (final ApiException e) {
             final Error error = errorTransformer.transformError(e);
             Logger.error("Failed to delete scenario. {}.", error.getDetail());
-            System.err.println("Failed to delete scenario. '" + error.getDetail());
         }
     }
 }
