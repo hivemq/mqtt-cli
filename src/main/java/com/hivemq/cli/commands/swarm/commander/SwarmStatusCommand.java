@@ -37,8 +37,8 @@ import java.io.PrintStream;
 /**
  * @author Yannick Weber
  */
-@CommandLine.Command(name = "Check the status of HiveMQ Swarm.",
-        description = "",
+@CommandLine.Command(name = "status",
+        description = "Check the status of HiveMQ Swarm.",
         synopsisHeading = "%n@|bold Usage:|@  ",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",
@@ -46,6 +46,13 @@ import java.io.PrintStream;
         mixinStandardHelpOptions = true,
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class SwarmStatusCommand extends AbstractSwarmCommand {
+
+    public enum OutputFormat {
+        JSON, PRETTY
+    }
+
+    @CommandLine.Option(names = {"--format"}, defaultValue = "pretty", description = "The export output format (default pretty)", order = 2)
+    protected @NotNull OutputFormat format = OutputFormat.PRETTY;
 
     private final @NotNull Gson gson;
     private final @NotNull RunsApi runsApi;
@@ -96,7 +103,7 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
         if (commanderStatus.getCommanderStatus() != null) {
             final String runId = commanderStatus.getRunId();
             if (runId == null) {
-                if (format == OutputFormat.json) {
+                if (format == OutputFormat.JSON) {
                     final CommanderStatus status = new CommanderStatus(commanderStatus.getCommanderStatus());
                     out.println(gson.toJson(status));
                 } else {
@@ -112,7 +119,7 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
                     System.err.println("Could not obtain run with id '" + runId + "'. " + error.getDetail());
                     return -1;
                 }
-                if (format == OutputFormat.json) {
+                if (format == OutputFormat.JSON) {
                     final CommanderStatusWithRun commanderStatusWithRun = new CommanderStatusWithRun(
                             commanderStatus.getCommanderStatus(),
                             runId,
@@ -124,7 +131,7 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
                             runResponse.getScenarioStage()
                     );
                     out.println(gson.toJson(commanderStatusWithRun));
-                } else if (format == OutputFormat.pretty) {
+                } else if (format == OutputFormat.PRETTY) {
                     out.println("Status:" + commanderStatus.getCommanderStatus());
                     out.println("Run-id:" + runId);
                     out.println("Run-Status: " + runResponse.getRunStatus());
@@ -144,4 +151,10 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return "SwarmStatusCommand{" +
+                "format=" + format +
+                '}';
+    }
 }

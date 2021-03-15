@@ -60,9 +60,10 @@ public class SwarmCLIModule {
 
         return new CommandLine(swarmCLICommand)
                 .addSubcommand(swarmStatusCommand)
-                .addSubcommand(new CommandLine(swarmRunCommand)
-                        .addSubcommand(swarmRunStartCommand))
-                        .addSubcommand(swarmRunStopCommand)
+                .addSubcommand(
+                        new CommandLine(swarmRunCommand)
+                        .addSubcommand(swarmRunStartCommand)
+                        .addSubcommand(swarmRunStopCommand))
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
                 .setParameterExceptionHandler(handler);
