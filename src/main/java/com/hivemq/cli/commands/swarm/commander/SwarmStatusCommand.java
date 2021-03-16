@@ -107,7 +107,7 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
                     final CommanderStatus status = new CommanderStatus(commanderStatus.getCommanderStatus());
                     out.println(gson.toJson(status));
                 } else {
-                    out.println("Status:" + commanderStatus.getCommanderStatus());
+                    out.println("Status: " + commanderStatus.getCommanderStatus());
                 }
             } else {
                 final RunResponse runResponse;
@@ -132,13 +132,13 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
                     );
                     out.println(gson.toJson(commanderStatusWithRun));
                 } else if (format == OutputFormat.PRETTY) {
-                    out.println("Status:" + commanderStatus.getCommanderStatus());
-                    out.println("Run-id:" + runId);
+                    out.println("Status: " + commanderStatus.getCommanderStatus());
+                    out.println("Run-id: " + runId);
                     out.println("Run-Status: " + runResponse.getRunStatus());
-                    out.println("Scenario-id:" + runResponse.getScenarioId());
-                    out.println("Scenario-name:" + runResponse.getScenarioName());
-                    out.println("Scenario-description:" + runResponse.getScenarioDescription());
-                    out.println("Scenario-type:" + runResponse.getScenarioType());
+                    out.println("Scenario-id: " + runResponse.getScenarioId());
+                    out.println("Scenario-name: " + runResponse.getScenarioName());
+                    out.println("Scenario-description: " + runResponse.getScenarioDescription());
+                    out.println("Scenario-type: " + runResponse.getScenarioType());
                     out.println("Scenario-Stage: " + runResponse.getScenarioStage());
                 }
             }
