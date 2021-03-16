@@ -69,7 +69,6 @@ class ShellModule {
                 .addSubcommand(shellExitCommand)
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
-                .setCaseInsensitiveEnumValuesAllowed(true)
                 .setParameterExceptionHandler(handler);
     }
 

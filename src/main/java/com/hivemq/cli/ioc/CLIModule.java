@@ -68,7 +68,8 @@ class CLIModule {
                 .addSubcommand(swarmCLICommand)
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
-                .setParameterExceptionHandler(handler);
+                .setParameterExceptionHandler(handler)
+                .setCaseInsensitiveEnumValuesAllowed(true);
     }
 
     @Provides
