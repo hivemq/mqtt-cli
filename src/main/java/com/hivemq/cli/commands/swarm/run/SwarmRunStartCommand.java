@@ -51,7 +51,9 @@ import java.util.concurrent.TimeUnit;
 public class SwarmRunStartCommand extends AbstractSwarmCommand {
 
     @CommandLine.Option(names = {"-f", "--file"}, description = "The scenario file. " +
-            "If a scenario file is given this command uploads, executes and deletes the scenario afterwards.", order = 3)
+            "If a scenario file is given this command uploads, executes and deletes the scenario afterwards.",
+            required = true,
+            order = 3)
     private @Nullable File scenario;
 
     @CommandLine.Option(names = {"-d", "--detach"}, defaultValue = "false", description = "Run the command in detached mode. " +
