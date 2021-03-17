@@ -47,7 +47,7 @@ $ mqtt [flags] [METHOD] [OPTION [OPTION]]
 * [Shell](shell)
 * [Test](test) 
 * [HiveMQ](hivemq)
-* [HiveMQ Swarm](swarm) 
+* [Swarm](swarm) 
 
 ***
 
