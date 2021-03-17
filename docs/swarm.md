@@ -2,14 +2,14 @@
 layout: default
 title: HiveMQ Swarm
 nav_order: 8
-has_children: true
+has_children: false
 ---
 
 {:.main-header-color-yellow}
 # HiveMQ Swarm
 ***
 
-The HiveMQ Swarm command line argument offers various HiveMQ Swarm commands.
+The HiveMQ Swarm command offers various ways to interact with HiveMQ Swarm.
 
 
 ```
@@ -25,8 +25,6 @@ Options:
 Commands:
   status  Check the status of HiveMQ Swarm.
   run     HiveMQ Swarm Run Command Line Interpreter.
-
-
 ```
 
 ***
@@ -57,14 +55,14 @@ mqtt swarm status    [-f=<file>]
                      [-url=<url>] 
 ```
 
-***
-
 ### Options
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-url``   | | The URL of the HiveMQ Swarm Rest endpoint. | ``http://localhost:8888``
 |  | ``--format`` | The export output format. (Currently supported formats [``pretty``]) | ``pretty``
+
+***
 
 ## Run
 
@@ -101,8 +99,6 @@ mqtt hivemq run [COMMAND]
 Commands:
   start stop
 ```
-
-***
 
 ### Options
 
