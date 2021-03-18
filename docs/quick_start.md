@@ -47,6 +47,7 @@ $ mqtt [flags] [METHOD] [OPTION [OPTION]]
 * [Shell](shell)
 * [Test](test) 
 * [HiveMQ](hivemq)
+* [Swarm](swarm) 
 
 ***
 
@@ -116,3 +117,23 @@ Commands:
 ```
 
 This command gives access to the HiveMQ command line which offers commands to interact with a  running HiveMQ instance.
+
+# HiveMQ Swarm
+***
+
+The HiveMQ Swarm command offers various ways to interact with HiveMQ Swarm.
+
+```
+$ mqtt swarm
+Usage:  mqtt swarm [-hV] [COMMAND]
+
+HiveMQ Swarm Command Line Interpreter.
+
+Options:
+  -h, --help      Show this help message and exit.
+  -V, --version   Print version information and exit.
+
+Commands:
+  status  Check the status of HiveMQ Swarm.
+  run     HiveMQ Swarm Run Command Line Interpreter.
+```
