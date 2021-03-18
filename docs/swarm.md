@@ -38,10 +38,10 @@ $ mqtt swarm status --help
 
 Usage:  mqtt swarm status [-hV] [--format=<format>] [-url=<commanderUrl>]
 
-Check the status of HiveMQ Swarm.
+Check the status of HiveMQ Swarm. (READY, STARTING, RUNNING, STOPPING).
 
 Options:
-      --format=<format>     The export output format (default pretty)
+      --format=<format>     The export output format (JSON, PRETTY). Default=PRETTY.
   -h, --help                Show this help message and exit.
       -url=<commanderUrl>   The URL of the HiveMQ Swarm REST API endpoint (default http://localhost:8888)
   -V, --version             Print version information and exit.
