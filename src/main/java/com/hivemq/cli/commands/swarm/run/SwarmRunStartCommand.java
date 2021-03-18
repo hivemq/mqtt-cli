@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Base64;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -114,15 +115,15 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             return -1;
         }
 
-        if (!scenario.canRead()) {
-            Logger.error("File '{}' is not readable.", scenario.getAbsolutePath());
-            System.err.println("File '" + scenario.getAbsolutePath() + "' is not readable.");
-            return -1;
-        }
-
         if (!scenario.exists()) {
             Logger.error("File '{}' does not exist.", scenario.getAbsolutePath());
             System.err.println("File '" + scenario.getAbsolutePath() + "' does not exist.");
+            return -1;
+        }
+
+        if (!scenario.canRead()) {
+            Logger.error("File '{}' is not readable.", scenario.getAbsolutePath());
+            System.err.println("File '" + scenario.getAbsolutePath() + "' is not readable.");
             return -1;
         }
 
@@ -216,17 +217,23 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
             final RunResponse run = runsApi.getRun(Integer.toString(runId));
             out.println("Run status: " + run.getRunStatus());
             out.println("Scenario Stage: " + run.getScenarioStage());
-            finished = "FINISHED".equals(run.getRunStatus());
+            finished = isTerminated(run);
         }
+    }
+
+    private boolean isTerminated(final @NotNull RunResponse run) {
+        return "FINISHED".equals(run.getRunStatus())
+                || "STOPPED".equals(run.getRunStatus())
+                || "FAILED".equals(run.getRunStatus());
     }
 
     private @NotNull String getScenarioName(final @NotNull File scenario) {
         final String fileName = scenario.getName();
         if (fileName.endsWith(".vm")) {
-            return fileName.substring(0, fileName.length() - 3);
+            return UUID.randomUUID() + "-" + fileName.substring(0, fileName.length() - 3);
         }
         if (fileName.endsWith(".xml")) {
-            return fileName.substring(0, fileName.length() - 4);
+            return UUID.randomUUID() + "-" + fileName.substring(0, fileName.length() - 4);
         }
         throw new IllegalArgumentException("Invalid scenario file ending.");
     }

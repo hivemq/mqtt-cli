@@ -21,8 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Yannick Weber
@@ -69,6 +70,24 @@ class SwarmApiErrorTransformerTest {
         final ApiException apiException = mock(ApiException.class);
         when(apiException.getCode()).thenReturn(0);
         final Error error = swarmApiErrorTransformer.transformError(apiException);
-        assertEquals("Connection Refused.", error.getDetail());
+        assertEquals("Connection Refused. Check if the Commander REST-endpoint is enabled.", error.getDetail());
+
+    }
+
+    @Test
+    void transform404_notFound() {
+        final ApiException apiException = mock(ApiException.class);
+        when(apiException.getCode()).thenReturn(404);
+        final Error error = swarmApiErrorTransformer.transformError(apiException);
+        assertEquals("Not found. Check if the commander is running in REST-mode.", error.getDetail());
+    }
+
+    @Test
+    void invalidJson_actualErrorPrinted() {
+        final ApiException apiException = mock(ApiException.class);
+        when(apiException.getCode()).thenReturn(400);
+        when(apiException.getResponseBody()).thenReturn("invalid json");
+        final Error error = swarmApiErrorTransformer.transformError(apiException);
+        assertEquals("invalid json", error.getDetail());
     }
 }

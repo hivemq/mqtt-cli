@@ -35,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Yannick Weber
@@ -151,7 +152,8 @@ class SwarmRunStartCommandTest {
         verify(swarmApiErrorTransformer).transformError(any());
 
         final UploadScenarioRequest value = upload.getValue();
-        assertEquals("scenario", value.getScenarioName());
+        assertNotNull(value.getScenarioName());
+        assertTrue(value.getScenarioName().endsWith("scenario"));
         assertEquals("XML", value.getScenarioType());
         assertNull(value.getScenarioDescription());
         assertEquals("c2NlbmFyaW8tY29udGVudA==", value.getScenario());
@@ -184,7 +186,8 @@ class SwarmRunStartCommandTest {
         verify(swarmApiErrorTransformer).transformError(any());
 
         final UploadScenarioRequest value = upload.getValue();
-        assertEquals("scenario", value.getScenarioName());
+        assertNotNull(value.getScenarioName());
+        assertTrue(value.getScenarioName().endsWith("scenario"));
         assertEquals("VM", value.getScenarioType());
         assertNull(value.getScenarioDescription());
         assertEquals("c2NlbmFyaW8tY29udGVudA==", value.getScenario());

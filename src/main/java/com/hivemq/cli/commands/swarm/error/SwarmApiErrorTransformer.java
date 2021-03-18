@@ -16,10 +16,13 @@
 package com.hivemq.cli.commands.swarm.error;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.hivemq.cli.openapi.ApiException;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 
 import javax.inject.Inject;
+import java.io.IOException;
 
 /**
  * @author Yannick Weber
@@ -34,8 +37,14 @@ public class SwarmApiErrorTransformer {
     }
 
     public @NotNull Error transformError(final @NotNull ApiException apiException) {
+        if (Logger.isDebugEnabled()) {
+            Logger.debug("Error Code: {}\nError Message: {}", apiException.getCode(), apiException.getMessage(), apiException);
+        }
+        if (apiException.getCode() == 404) {
+            return new Error("Not found. Check if the commander is running in REST-mode.");
+        }
         if (apiException.getCode() == 0) {
-            return new Error("Connection Refused.");
+            return new Error("Connection Refused. Check if the Commander REST-endpoint is enabled.");
         }
         if (apiException.getCode() == 500) {
             return new Error("Internal Server Error.");
@@ -44,8 +53,12 @@ public class SwarmApiErrorTransformer {
         if (body == null || body.isEmpty()) {
             return new Error("Unspecified Error.");
         }
-        final ErrorResponse errorResponse = gson.fromJson(body, ErrorResponse.class);
-        return errorResponse.getErrors().get(0);
+        try {
+            final ErrorResponse errorResponse = gson.fromJson(body, ErrorResponse.class);
+            return errorResponse.getErrors().get(0);
+        } catch (final JsonSyntaxException jsonSyntaxException) {
+            return new Error(body);
+        }
     }
 
 }

@@ -38,7 +38,7 @@ import java.io.PrintStream;
  * @author Yannick Weber
  */
 @CommandLine.Command(name = "status",
-        description = "Check the status of HiveMQ Swarm.",
+        description = "Check the status of HiveMQ Swarm. (READY, STARTING, RUNNING, STOPPING).",
         synopsisHeading = "%n@|bold Usage:|@  ",
         descriptionHeading = "%n",
         optionListHeading = "%n@|bold Options:|@%n",
@@ -51,7 +51,7 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
         JSON, PRETTY
     }
 
-    @CommandLine.Option(names = {"--format"}, defaultValue = "pretty", description = "The export output format (default pretty)", order = 2)
+    @CommandLine.Option(names = {"--format"}, defaultValue = "pretty", description = "The export output format (JSON, PRETTY). Default=PRETTY.", order = 2)
     private @NotNull OutputFormat format = OutputFormat.PRETTY;
 
     private final @NotNull Gson gson;
@@ -137,7 +137,10 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
                     out.println("Run-Status: " + runResponse.getRunStatus());
                     out.println("Scenario-id: " + runResponse.getScenarioId());
                     out.println("Scenario-name: " + runResponse.getScenarioName());
-                    out.println("Scenario-description: " + runResponse.getScenarioDescription());
+                    final String scenarioDescription = runResponse.getScenarioDescription();
+                    if (scenarioDescription != null && !scenarioDescription.isEmpty()) {
+                        out.println("Scenario-description: " + scenarioDescription);
+                    }
                     out.println("Scenario-type: " + runResponse.getScenarioType());
                     out.println("Scenario-Stage: " + runResponse.getScenarioStage());
                 }
