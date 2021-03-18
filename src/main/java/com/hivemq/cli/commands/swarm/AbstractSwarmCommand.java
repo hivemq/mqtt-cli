@@ -27,7 +27,7 @@ import java.util.concurrent.Callable;
  */
 public abstract class AbstractSwarmCommand implements Callable<Integer> {
 
-    @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8080", description = "The URL of the HiveMQ Swarm REST API endpoint (default: http://localhost:8888)", order = 1)
+    @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8080", description = "The URL of the HiveMQ Swarm REST API endpoint (default: http://localhost:8080)", order = 1)
     @VisibleForTesting
     public @NotNull String commanderUrl = "http://localhost:8080";
 
