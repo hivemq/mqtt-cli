@@ -106,7 +106,7 @@ Commands:
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-url``   | | The URL of the HiveMQ Swarm Rest endpoint. | ``http://localhost:8888``
 | ``-f``| ``--file`` | The scenario to execute. | required
-| ``-r``| ``--run-id`` | Then id of the run to stop. | ``The current run``
+| ``-r``| ``--run-id`` | The id of the run to stop. | ``The current run``
 | ``-d``| ``--dettach`` | Execute the scenario in detached mode. | ``The current run``
 
 ### Start run directly
