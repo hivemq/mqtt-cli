@@ -207,7 +207,8 @@ dependencies {
 
     implementation group: 'info.picocli', name: 'picocli', version: picocliVersion
     implementation group: 'info.picocli', name: 'picocli-shell-jline3', version: picoclishell3Version
-    implementation group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
+    annotationProcessor group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
+    
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
     implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
     implementation group: 'org.tinylog', name: 'tinylog-api', version: tinylogVersion
