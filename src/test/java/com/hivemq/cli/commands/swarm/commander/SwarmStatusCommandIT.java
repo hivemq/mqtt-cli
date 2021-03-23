@@ -53,6 +53,8 @@ public class SwarmStatusCommandIT {
             .withEnv("SWARM_COMMANDER_AGENTS", "localhost:3881")
             .withEnv("SWARM_COMMANDER_MODE", "rest")
             .withEnv("SWARM_REST_ENABLED", "true")
+            .withEnv("SWARM_AGENT_BIND_ADDRESS", "localhost")
+            .withEnv("SWARM_AGENT_BIND_PORT", "3881")
             .withEnv("SWARM_REST_LISTENER_HTTP_ENABLED", "true")
             .withEnv("SWARM_REST_LISTENER_HTTP_PORT", Integer.toString(REST_PORT))
             .withEnv("SWARM_REST_LISTENER_HTTP_HOST", "0.0.0.0")
