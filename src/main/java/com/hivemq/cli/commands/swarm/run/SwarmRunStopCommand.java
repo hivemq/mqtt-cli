@@ -49,7 +49,7 @@ import java.io.PrintStream;
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class SwarmRunStopCommand extends AbstractSwarmCommand {
 
-    @CommandLine.Option(names = {"-r", "--run-id"}, required = true, description = "The id of the run to stop. If none is given the current run is stopped.", order = 3)
+    @CommandLine.Option(names = {"-r", "--run-id"}, description = "The id of the run to stop. If none is given the current run is stopped.", order = 3)
     private @Nullable Integer runId;
 
     private final @NotNull RunsApi runsApi;
