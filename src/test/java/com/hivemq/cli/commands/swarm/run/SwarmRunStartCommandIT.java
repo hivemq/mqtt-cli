@@ -89,8 +89,10 @@ public class SwarmRunStartCommandIT {
         final ScenariosApi scenariosApi = new ScenariosApi(apiClient);
         final Gson gson = new Gson();
         final SwarmApiErrorTransformer errorTransformer = new SwarmApiErrorTransformer(gson);
-        commandLine = new CommandLine(new SwarmRunStartCommand(() -> runsApi, () -> scenariosApi, errorTransformer, out));
         out = mock(PrintStream.class);
+        commandLine = new CommandLine(new SwarmRunStartCommand(() -> runsApi, () -> scenariosApi, errorTransformer, out));
+        commandLine.setCaseInsensitiveEnumValuesAllowed(true);
+
 
         swarmStartFuture.get();
         hivemqStartFuture.get();

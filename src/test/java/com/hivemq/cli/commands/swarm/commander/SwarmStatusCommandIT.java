@@ -81,8 +81,9 @@ public class SwarmStatusCommandIT {
         final CommanderApi commanderApi = new CommanderApi(apiClient);
         final Gson gson = new Gson();
         final SwarmApiErrorTransformer errorTransformer = new SwarmApiErrorTransformer(gson);
-        commandLine = new CommandLine(new SwarmStatusCommand(gson, () -> runsApi, () -> commanderApi, errorTransformer, out));
         out = mock(PrintStream.class);
+        commandLine = new CommandLine(new SwarmStatusCommand(gson, () -> runsApi, () -> commanderApi, errorTransformer, out));
+        commandLine.setCaseInsensitiveEnumValuesAllowed(true);
 
         swarmStartFuture.get();
     }

@@ -111,6 +111,7 @@ public class SwarmRunStopCommandIT {
         final Gson gson = new Gson();
         final SwarmApiErrorTransformer errorTransformer = new SwarmApiErrorTransformer(gson);
         commandLine = new CommandLine(new SwarmRunStopCommand(() -> runsApi, () -> commanderApi, errorTransformer, out));
+        commandLine.setCaseInsensitiveEnumValuesAllowed(true);
 
     }
 
