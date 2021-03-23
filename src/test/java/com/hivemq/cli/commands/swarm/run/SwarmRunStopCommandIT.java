@@ -49,7 +49,6 @@ import static org.mockito.Mockito.*;
 /**
  * @author Yannick Weber
  */
-@Disabled("Disabled until HiveMQ Swarm is released.")
 public class SwarmRunStopCommandIT {
 
     public static final @NotNull String IMAGE_NAME = "hivemq/hivemq-swarm";
