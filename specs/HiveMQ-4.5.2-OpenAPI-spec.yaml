@@ -78,7 +78,7 @@ info:
     HiveMQ's REST API provides an OpenAPI 3.0 schema definition that can imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   contact:
     url: https://www.hivemq.com
-  version: 4.5.1
+  version: 4.5.2
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
@@ -198,6 +198,105 @@ paths:
                     - title: The endpoint is temporarily not available
                       detail: The endpoint is temporarily not available, please try
                         again later
+  /api/v1/management/backups:
+    get:
+      tags:
+      - Backup & Restore
+      summary: List all available backups
+      description: |-
+        Lists all available backups with their current state.
+
+        This endpoint can be used to get an overview over all backups that are in progress or can be restored.
+
+        Canceled or failed backups are included in the results for up to 1 hour after they have been requested.
+
+        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
+      operationId: getAllBackups
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupList'
+              examples:
+                multiple-results:
+                  summary: Multiple results in different states
+                  description: Example response with one stored backup and one backup
+                    that is currently in progress.
+                  value:
+                    items:
+                    - id: 20200506-081317
+                      createdAt: 2020-05-06T08:13:17Z
+                      bytes: 85550653
+                      state: COMPLETED
+                    - id: 20201006-1902318
+                      createdAt: 2020-05-06T08:13:17Z
+                      state: IN_PROGRESS
+                    - id: 20201006-1902318
+                      createdAt: 2020-05-06T08:13:17Z
+                      state: FAILED
+                      failReason: Another backup is already in progress.
+                empty-results:
+                  summary: Empty result if no backups are known
+                  description: Empty result if no backups are known.
+                  value:
+                    items: []
+        "503":
+          description: Not all cluster nodes at minimum version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                version-check-failed:
+                  summary: Version check failed
+                  description: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: Not all cluster nodes support this endpoint yet, please
+                        try again later
+    post:
+      tags:
+      - Backup & Restore
+      summary: Create a new backup
+      description: |-
+        Triggers the creation of a new backup.
+
+        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
+      operationId: createBackup
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupItem'
+              examples:
+                example:
+                  summary: Created backup that is currently in progress
+                  description: Example response with in-progress backup.
+                  value:
+                    backup:
+                      id: 20201006-1902318
+                      createdAt: 2020-05-06T08:13:17Z
+                      state: IN_PROGRESS
+        "503":
+          description: Not all cluster nodes at minimum version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                version-check-failed:
+                  summary: Version check failed
+                  description: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: Not all cluster nodes support this endpoint yet, please
+                        try again later
   /api/v1/management/backups/{backupId}:
     get:
       tags:
@@ -339,105 +438,6 @@ paths:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-        "503":
-          description: Not all cluster nodes at minimum version
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                version-check-failed:
-                  summary: Version check failed
-                  description: Version check failed
-                  value:
-                    errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
-  /api/v1/management/backups:
-    get:
-      tags:
-      - Backup & Restore
-      summary: List all available backups
-      description: |-
-        Lists all available backups with their current state.
-
-        This endpoint can be used to get an overview over all backups that are in progress or can be restored.
-
-        Canceled or failed backups are included in the results for up to 1 hour after they have been requested.
-
-        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
-      operationId: getAllBackups
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BackupList'
-              examples:
-                multiple-results:
-                  summary: Multiple results in different states
-                  description: Example response with one stored backup and one backup
-                    that is currently in progress.
-                  value:
-                    items:
-                    - id: 20200506-081317
-                      createdAt: 2020-05-06T08:13:17Z
-                      bytes: 85550653
-                      state: COMPLETED
-                    - id: 20201006-1902318
-                      createdAt: 2020-05-06T08:13:17Z
-                      state: IN_PROGRESS
-                    - id: 20201006-1902318
-                      createdAt: 2020-05-06T08:13:17Z
-                      state: FAILED
-                      failReason: Another backup is already in progress.
-                empty-results:
-                  summary: Empty result if no backups are known
-                  description: Empty result if no backups are known.
-                  value:
-                    items: []
-        "503":
-          description: Not all cluster nodes at minimum version
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                version-check-failed:
-                  summary: Version check failed
-                  description: Version check failed
-                  value:
-                    errors:
-                    - title: Endpoint not active yet
-                      detail: Not all cluster nodes support this endpoint yet, please
-                        try again later
-    post:
-      tags:
-      - Backup & Restore
-      summary: Create a new backup
-      description: |-
-        Triggers the creation of a new backup.
-
-        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
-      operationId: createBackup
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BackupItem'
-              examples:
-                example:
-                  summary: Created backup that is currently in progress
-                  description: Example response with in-progress backup.
-                  value:
-                    backup:
-                      id: 20201006-1902318
-                      createdAt: 2020-05-06T08:13:17Z
-                      state: IN_PROGRESS
         "503":
           description: Not all cluster nodes at minimum version
           content:
@@ -774,6 +774,66 @@ paths:
                     - title: Invalid resource
                       detail: The fields {name, events, startAt, endAt} must be specified
                         at creation
+  /api/v1/mqtt/clients/{clientId}/connection:
+    get:
+      tags:
+      - MQTT Clients
+      summary: Get a clients connection state
+      description: |-
+        Returns the information if a specific client is currently connected.
+
+         If you are only interested in the connection status of a client prefer this endpoint over the the full client detail.
+        If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
+      operationId: getMqttClientConnectionState
+      parameters:
+      - name: clientId
+        in: path
+        description: The MQTT client identifier.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionItem'
+              examples:
+                online-client:
+                  summary: online-client
+                  description: Online client
+                  value:
+                    connection:
+                      connected: false
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                not-found:
+                  summary: Not found
+                  description: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                param-missing:
+                  summary: Required URL parameter missing
+                  description: Bad request
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
   /api/v1/mqtt/clients/{clientId}:
     get:
       tags:
@@ -905,66 +965,6 @@ paths:
                     errors:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
-  /api/v1/mqtt/clients/{clientId}/connection:
-    get:
-      tags:
-      - MQTT Clients
-      summary: Get a clients connection state
-      description: |-
-        Returns the information if a specific client is currently connected.
-
-         If you are only interested in the connection status of a client prefer this endpoint over the the full client detail.
-        If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
-      operationId: getMqttClientConnectionState
-      parameters:
-      - name: clientId
-        in: path
-        description: The MQTT client identifier.
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConnectionItem'
-              examples:
-                online-client:
-                  summary: online-client
-                  description: Online client
-                  value:
-                    connection:
-                      connected: false
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                param-missing:
-                  summary: Required URL parameter missing
-                  description: Bad request
-                  value:
-                    errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
   /api/v1/mqtt/clients:
     get:
       tags:
@@ -1210,11 +1210,6 @@ components:
           description: The size of this backup file in bytes.
           format: int64
           nullable: true
-    BackupItem:
-      type: object
-      properties:
-        backup:
-          $ref: '#/components/schemas/Backup'
     BackupList:
       type: object
       properties:
@@ -1223,6 +1218,11 @@ components:
           description: List of result items that are returned by this endpoint
           items:
             $ref: '#/components/schemas/Backup'
+    BackupItem:
+      type: object
+      properties:
+        backup:
+          $ref: '#/components/schemas/Backup'
     TraceFilter:
       type: object
       properties:
@@ -1308,6 +1308,18 @@ components:
           description: List of result items that are returned by this endpoint
           items:
             $ref: '#/components/schemas/TraceRecording'
+    Connection:
+      type: object
+      properties:
+        connected:
+          type: boolean
+          description: If this client is currently connected
+      description: Information about the client's connection state
+    ConnectionItem:
+      type: object
+      properties:
+        connection:
+          $ref: '#/components/schemas/Connection'
     CertificateInformation:
       type: object
       properties:
@@ -1487,18 +1499,6 @@ components:
           $ref: '#/components/schemas/CertificateInformation'
       description: TLS information
       nullable: true
-    Connection:
-      type: object
-      properties:
-        connected:
-          type: boolean
-          description: If this client is currently connected
-      description: Information about the client's connection state
-    ConnectionItem:
-      type: object
-      properties:
-        connection:
-          $ref: '#/components/schemas/Connection'
     Client:
       type: object
       properties:

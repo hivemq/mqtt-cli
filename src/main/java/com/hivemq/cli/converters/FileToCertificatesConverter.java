@@ -21,15 +21,17 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Collection;
 
-public class FileToCertificateConverter implements CommandLine.ITypeConverter<X509Certificate> {
+public class FileToCertificatesConverter implements CommandLine.ITypeConverter<Collection<? extends Certificate>> {
 
     static final String NO_VALID_FILE_EXTENSION = "The given file does not conform to a valid Certificate File Extension as " + Arrays.toString(CertificateConverterUtils.FILE_EXTENSIONS);
 
     @Override
-    public X509Certificate convert(final @NotNull String s) throws Exception {
+    public @NotNull Collection<X509Certificate> convert(final @NotNull String s) throws Exception {
 
         FileConverter fileConverter = new FileConverter();
         final File keyFile = fileConverter.convert(s);
@@ -39,7 +41,7 @@ public class FileToCertificateConverter implements CommandLine.ITypeConverter<X5
         if (!correctExtension)
             throw new IllegalArgumentException(NO_VALID_FILE_EXTENSION);
 
-        return CertificateConverterUtils.generateX509Certificate(keyFile);
+        return CertificateConverterUtils.generateX509Certificates(keyFile);
 
     }
 

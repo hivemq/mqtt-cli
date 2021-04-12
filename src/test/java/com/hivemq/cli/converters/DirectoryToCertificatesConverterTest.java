@@ -28,15 +28,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class DirectoryToCertificateCollectionConverterTest {
-    private DirectoryToCertificateCollectionConverter directoryToCertificateCollectionConverter;
+class DirectoryToCertificatesConverterTest {
+    private DirectoryToCertificatesConverter directoryToCertificatesConverter;
     private String pathToValidDirectory;
     private String pathToValidCertificate;
     private String pathToDirectoryWithoutCertificates;
 
     @BeforeEach
     void setUp() {
-        directoryToCertificateCollectionConverter = new DirectoryToCertificateCollectionConverter();
+        directoryToCertificatesConverter = new DirectoryToCertificatesConverter();
         final URL validCertificateDirResource = getClass().getClassLoader().getResource("FileToCertificateConverter/directory_with_certificates");
         final URL noCertificatesDir = getClass().getClassLoader().getResource("FileToCertificateConverter/directory_without_certificates");
         final URL validCertificateResource = getClass().getClassLoader().getResource("FileToCertificateConverter/validCertificate.pem");
@@ -52,27 +52,27 @@ class DirectoryToCertificateCollectionConverterTest {
 
     @Test
     void convert_Success() throws Exception {
-        Collection<X509Certificate> certificates = directoryToCertificateCollectionConverter.convert(pathToValidDirectory);
+        Collection<X509Certificate> certificates = directoryToCertificatesConverter.convert(pathToValidDirectory);
         assertNotNull(certificates);
         assertEquals(3, certificates.size());
     }
 
     @Test
     void convert_Failure_DirectoryNotFound() {
-        Exception e = assertThrows(FileNotFoundException.class, () -> directoryToCertificateCollectionConverter.convert("invalidPath"));
-        assertEquals(DirectoryToCertificateCollectionConverter.DIRECTORY_NOT_FOUND, e.getMessage());
+        Exception e = assertThrows(FileNotFoundException.class, () -> directoryToCertificatesConverter.convert("invalidPath"));
+        assertEquals(DirectoryToCertificatesConverter.DIRECTORY_NOT_FOUND, e.getMessage());
     }
 
     @Test
     void convert_Failure_DirectoryIsAFile() {
-        Exception e = assertThrows(Exception.class, () -> directoryToCertificateCollectionConverter.convert(pathToValidCertificate));
-        assertEquals(DirectoryToCertificateCollectionConverter.NOT_A_DIRECTORY, e.getMessage());
+        Exception e = assertThrows(Exception.class, () -> directoryToCertificatesConverter.convert(pathToValidCertificate));
+        assertEquals(DirectoryToCertificatesConverter.NOT_A_DIRECTORY, e.getMessage());
     }
 
 
     @Test
     void convert_Failure_DirectoryWithoutCertificates() {
-        Exception e = assertThrows(Exception.class, () -> directoryToCertificateCollectionConverter.convert(pathToDirectoryWithoutCertificates));
-        assertEquals(DirectoryToCertificateCollectionConverter.NO_CERTIFICATES_FOUND_IN_DIRECTORY, e.getMessage());
+        Exception e = assertThrows(Exception.class, () -> directoryToCertificatesConverter.convert(pathToDirectoryWithoutCertificates));
+        assertEquals(DirectoryToCertificatesConverter.NO_CERTIFICATES_FOUND_IN_DIRECTORY, e.getMessage());
     }
 }
