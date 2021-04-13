@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Logging
-nav_order: 8
+nav_order: 9
 ---
 
 {:.main-header-color-yellow}
