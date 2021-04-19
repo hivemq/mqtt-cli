@@ -1,8 +1,7 @@
-dist: trusty
 language: java
+
 jdk:
-  - oraclejdk8
-  - oraclejdk9
+  - openjdk11
 
 stages:
   - test
@@ -11,6 +10,7 @@ stages:
 
 jobs:
   include:
+    - stage: test
     - stage: release
       install: true
       script:
@@ -25,4 +25,3 @@ cache:
   directories:
     - "$HOME/.gradle/caches/"
     - "$HOME/.gradle/wrapper/"
-
