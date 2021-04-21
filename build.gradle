@@ -50,6 +50,7 @@ description = 'MQTT CLI is a tool that provides a feature rich command line inte
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
 
 def hivemqApiVersion = '4.5.3'
+def hivemqSwarmApiVersion = '4.6.0-RC2'
 
 application {
     mainClassName = 'com.hivemq.cli.MqttCLIMain'
@@ -72,12 +73,25 @@ repositories {
  * OpenAPI HiveMQ Rest API dependency *
  ***************/
 
-openApiGenerate {
+task generateHiveMqOpenApi(type: GenerateTask) {
+    group = "hivemq"
     generatorName = "java"
     inputSpec = "$rootDir/specs/HiveMQ-$hivemqApiVersion-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
     apiPackage = "com.hivemq.cli.openapi.hivemq"
     modelPackage = "com.hivemq.cli.openapi.hivemq"
+    configOptions = [
+            dateLibrary: "java8"
+    ]
+}
+
+task generateSwarmOpenApi(type: GenerateTask) {
+    group = "swarm"
+    generatorName = "java"
+    inputSpec = "$rootDir/specs/HiveMQ-Swarm-$hivemqSwarmApiVersion-OpenAPI-spec.yaml".toString()
+    outputDir = "$buildDir/generated/openapi".toString()
+    apiPackage = "com.hivemq.cli.openapi.swarm"
+    modelPackage = "com.hivemq.cli.openapi.swarm"
     configOptions = [
             dateLibrary: "java8"
     ]
@@ -91,7 +105,8 @@ sourceSets {
     }
 }
 
-compileJava.dependsOn tasks.openApiGenerate
+compileJava.dependsOn tasks.generateHiveMqOpenApi
+compileJava.dependsOn tasks.generateSwarmOpenApi
 
 
 /****************
@@ -154,12 +169,14 @@ ext {
 
     // Dependency versions
 
+    awaitilityVersion = '4.0.3'
     picoclishell3Version = '4.5.0'
     picocliVersion = '4.5.0'
     jline3Version = '3.16.0'
     jline3JansiVersion = '3.16.0'
     daggerVersion = '2.30.1'
     guavaVersion = '30.0-jre'
+    commonsIoVersion = '2.8.0'
     hivemqclientVersion = '1.2.0'
     tinylogVersion = '2.0.1'
     jcToolsVersion = '2.1.2'
@@ -210,6 +227,7 @@ dependencies {
     implementation group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
     implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
+    implementation group: 'commons-io', name: 'commons-io', version: commonsIoVersion
     implementation group: 'org.tinylog', name: 'tinylog-api', version: tinylogVersion
     implementation group: 'org.tinylog', name: 'tinylog-impl', version: tinylogVersion
     implementation group: 'org.jetbrains', name: 'annotations', version: jetbrainsAnnotationsVersion
@@ -221,6 +239,7 @@ dependencies {
     implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
     implementation group: 'com.opencsv', name: 'opencsv', version: openCsvVersion
 
+    testImplementation group: 'org.awaitility', name: 'awaitility', version: awaitilityVersion
     testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
@@ -650,6 +669,8 @@ tasks.githubRelease.dependsOn tasks.buildPackageAll
 /****************
  * Helpers *
  ***************/
+
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 import java.security.DigestInputStream
 import java.security.MessageDigest
