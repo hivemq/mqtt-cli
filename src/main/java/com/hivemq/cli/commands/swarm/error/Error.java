@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2019 HiveMQ and the HiveMQ Community
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,35 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-package com.hivemq.cli.ioc;
+package com.hivemq.cli.commands.swarm.error;
 
-import com.hivemq.cli.DefaultCLIProperties;
-import dagger.Component;
 import org.jetbrains.annotations.NotNull;
-import picocli.CommandLine;
+import org.jetbrains.annotations.Nullable;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+/**
+ * @author Yannick Weber
+ */
+public class Error {
 
-@Singleton
-@Component(modules = {
-        CLIModule.class,
-        HiveMQCLIModule.class,
-        ShellModule.class,
-        SwarmCLIModule.class
-})
-public interface MqttCLI {
 
-    @Named("cli")
-    @NotNull CommandLine cli();
+    private final @Nullable String detail;
 
-    @Named("shell")
-    @NotNull CommandLine shell();
+    public Error(final @Nullable String detail) {
+        this.detail = detail;
+    }
 
-    @Named("shell-context")
-    @NotNull CommandLine shellContext();
-
-    @NotNull DefaultCLIProperties defaultCLIProperties();
+    public @Nullable String getDetail() {
+        return detail;
+    }
 }

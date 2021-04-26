@@ -1,0 +1,33 @@
+<scenario>
+    <brokers>
+        <broker id="b1">
+            <address>hivemq</address>
+            <port>1883</port>
+        </broker>
+    </brokers>
+    <clientGroups>
+        <clientGroup id="cg1">
+            <clientIdPattern>client</clientIdPattern>
+        </clientGroup>
+    </clientGroups>
+    <topicGroups>
+        <topicGroup id="tg1">
+            <topicNamePattern>topic</topicNamePattern>
+        </topicGroup>
+    </topicGroups>
+    <subscriptions>
+        <subscription id="sub">
+            <topicFilter>#</topicFilter>
+        </subscription>
+    </subscriptions>
+    <stages>
+        <stage id="s1">
+            <lifeCycle id="s1.l1" clientGroup="cg1">
+                <connect broker="b1"/>
+                <publish topicGroup="tg1" message="ping"/>
+                <delay duration="10h"/>
+                <disconnect/>
+            </lifeCycle>
+        </stage>
+    </stages>
+</scenario>

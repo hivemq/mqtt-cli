@@ -5,8 +5,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:5.2.0'
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.36.0"
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:5.3.0'
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.38.0"
     }
 }
 
@@ -17,14 +17,14 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0' apply false
     id "com.github.hierynomus.license" version "0.15.0"
     id 'org.gradle.crypto.checksum' version '1.2.0'
-    id "nebula.ospackage" version "8.4.1"
-    id 'edu.sc.seis.launch4j' version '2.4.6'
+    id "nebula.ospackage" version "8.5.6"
+    id 'edu.sc.seis.launch4j' version '2.5.0'
     id 'com.palantir.graal' version '0.7.2'
-    id 'de.thetaphi.forbiddenapis' version '3.0.1' apply false
+    id 'de.thetaphi.forbiddenapis' version '3.1' apply false
     id "com.github.breadmoirai.github-release" version "2.2.12"
     id 'org.ajoberstar.git-publish' version '3.0.0'
-    id 'org.owasp.dependencycheck' version '6.0.3' apply false
-    id "com.github.ben-manes.versions" version "0.36.0"
+    id 'org.owasp.dependencycheck' version '6.1.5' apply false
+    id "com.github.ben-manes.versions" version "0.38.0"
     id "org.openapi.generator" version "4.3.1"
 }
 
@@ -32,9 +32,7 @@ apply plugin: "com.github.ben-manes.versions"
 apply plugin: 'de.thetaphi.forbiddenapis'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
-
 apply plugin: 'com.palantir.graal'
-
 apply plugin: 'org.owasp.dependencycheck'
 
 /****************
@@ -44,12 +42,13 @@ apply plugin: 'org.owasp.dependencycheck'
 javadoc.options.encoding = 'UTF-8'
 
 group = 'com.hivemq'
-version = '4.5.3' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
+version = '4.6.0' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 description = 'MQTT CLI is a tool that provides a feature rich command line interface for connecting, ' +
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
 
-def hivemqApiVersion = '4.5.3'
+def hivemqApiVersion = '4.6.0'
+def hivemqSwarmApiVersion = '4.6.0'
 
 application {
     mainClassName = 'com.hivemq.cli.MqttCLIMain'
@@ -72,12 +71,25 @@ repositories {
  * OpenAPI HiveMQ Rest API dependency *
  ***************/
 
-openApiGenerate {
+task generateHiveMqOpenApi(type: GenerateTask) {
+    group = "hivemq"
     generatorName = "java"
     inputSpec = "$rootDir/specs/HiveMQ-$hivemqApiVersion-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
     apiPackage = "com.hivemq.cli.openapi.hivemq"
     modelPackage = "com.hivemq.cli.openapi.hivemq"
+    configOptions = [
+            dateLibrary: "java8"
+    ]
+}
+
+task generateSwarmOpenApi(type: GenerateTask) {
+    group = "swarm"
+    generatorName = "java"
+    inputSpec = "$rootDir/specs/HiveMQ-Swarm-$hivemqSwarmApiVersion-OpenAPI-spec.yaml".toString()
+    outputDir = "$buildDir/generated/openapi".toString()
+    apiPackage = "com.hivemq.cli.openapi.swarm"
+    modelPackage = "com.hivemq.cli.openapi.swarm"
     configOptions = [
             dateLibrary: "java8"
     ]
@@ -91,7 +103,8 @@ sourceSets {
     }
 }
 
-compileJava.dependsOn tasks.openApiGenerate
+compileJava.dependsOn tasks.generateHiveMqOpenApi
+compileJava.dependsOn tasks.generateSwarmOpenApi
 
 
 /****************
@@ -154,21 +167,23 @@ ext {
 
     // Dependency versions
 
-    picoclishell3Version = '4.5.0'
-    picocliVersion = '4.5.0'
-    jline3Version = '3.16.0'
-    jline3JansiVersion = '3.16.0'
-    daggerVersion = '2.30.1'
-    guavaVersion = '30.0-jre'
-    hivemqclientVersion = '1.2.0'
+    awaitilityVersion = '4.0.3'
+    picoclishell3Version = '4.6.1'
+    picocliVersion = '4.6.1'
+    jline3Version = '3.19.0'
+    jline3JansiVersion = '3.19.0'
+    daggerVersion = '2.34.1'
+    guavaVersion = '30.1.1-jre'
+    commonsIoVersion = '2.8.0'
+    hivemqclientVersion = '1.2.2'
     tinylogVersion = '2.0.1'
     jcToolsVersion = '2.1.2'
     jetbrainsAnnotationsVersion = '19.0.0'
     bouncycastleVersion = '1.68'
-    nettyVersion = '4.1.51.Final'
+    nettyVersion = '4.1.63.Final'
     gsonVersion = '2.8.6'
     substrateVmVersion = '19.2.1'
-    junitJupiterVersion = '5.7.0'
+    junitJupiterVersion = '5.7.1'
     openCsvVersion = '5.2'
     swaggerVersion = '1.6.2'
     findBugsVersion = '3.0.2'
@@ -176,11 +191,11 @@ ext {
     gsonFireVersion = '1.8.4'
     javaxVersion = '1.3.2'
     commonsLangVersion = '3.10'
-    mockitoVersion = '3.4.6'
-    hivemqTestcontainerVersion = '1.2.0'
-    mockWebserverVersion = '4.8.0'
-    systemExitVersion = '1.0.0'
-    testcontainersVersion = '1.15.0'
+    mockitoVersion = '3.9.0'
+    hivemqTestcontainerVersion = '1.3.2'
+    mockWebserverVersion = '4.9.1'
+    systemExitVersion = '1.1.1'
+    testcontainersVersion = '1.15.3'
 }
 
 
@@ -210,6 +225,7 @@ dependencies {
     implementation group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
     implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
     implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
+    implementation group: 'commons-io', name: 'commons-io', version: commonsIoVersion
     implementation group: 'org.tinylog', name: 'tinylog-api', version: tinylogVersion
     implementation group: 'org.tinylog', name: 'tinylog-impl', version: tinylogVersion
     implementation group: 'org.jetbrains', name: 'annotations', version: jetbrainsAnnotationsVersion
@@ -221,6 +237,7 @@ dependencies {
     implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
     implementation group: 'com.opencsv', name: 'opencsv', version: openCsvVersion
 
+    testImplementation group: 'org.awaitility', name: 'awaitility', version: awaitilityVersion
     testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
@@ -650,6 +667,8 @@ tasks.githubRelease.dependsOn tasks.buildPackageAll
 /****************
  * Helpers *
  ***************/
+
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 import java.security.DigestInputStream
 import java.security.MessageDigest

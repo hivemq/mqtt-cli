@@ -1,0 +1,770 @@
+openapi: 3.0.1
+info:
+  contact:
+    url: https://www.hivemq.com
+  description: "\n# Introduction\n\nThe HiveMQ Swarm Commander REST API provides endpoints\
+    \ for the following use cases:\n- Listing all scenarios\n- Adding a scenario\n\
+    - Removing a scenario\n- Starting a scenario\n- Stopping a scenario\n\n## API\
+    \ style\nThe Commanders's API is organized in a [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer)\
+    \ fashion.\n\nThe API has predictable resource-oriented URLs that consume and\
+    \ return JSON with the content-type `application/json`.\nIt uses standard HTTP\
+    \ response codes and verbs. All transfered scenarios are encoded with Base64.\n\
+    \nThe base URL is the Host and configured port of your HiveMQ Swarm Commander.\n\
+    \n## Errors\nConventional HTTP response codes are used to indicate the success\
+    \ or failure of an API request.\nCodes in the 2xx range generally indicate success.\n\
+    Codes in the 4xx range indicate an error that failed given the information provided\
+    \ (e.g., a required parameter was omitted).\nCodes in the 5xx range indicate an\
+    \ error on the server side.\n\nFor all user errors a JSON response with additional\
+    \ details is returned in the format [Problem JSON](https://tools.ietf.org/html/rfc7807).\n\
+    \n## OpenAPI\nThe HiveMQ Swarm Commander REST API provides an OpenAPI 3.0 schema\
+    \ definition that\ncan be imported into popular API tooling (e.g. Postman) or\
+    \ can be used to generate client-code for multiple programming languages.\n"
+  title: HiveMQ Swarm REST API
+  version: 4.6.0
+  x-logo:
+    url: https://www.hivemq.com/img/svg/hivemq-bee.svg
+paths:
+  /commander:
+    get:
+      description: "Commander status. \n\n This endpoint returns the current status\
+        \ of the commander."
+      operationId: getCommanderStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                commander-status:
+                  description: Return commander status
+                  summary: Commander status
+                  value:
+                    commander-status: READY
+                    run-id: null
+              schema:
+                $ref: '#/components/schemas/CommanderStateResponse'
+          description: Success
+      summary: Commander status
+      tags:
+      - Commander
+  /runs:
+    get:
+      description: "List all runs \n\n This endpoint returns a list of all runs."
+      operationId: listRuns
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                list-runs:
+                  description: success
+                  summary: List runs
+                  value:
+                    runs:
+                    - run-id: 1
+                      scenario-id: 1
+                      scenario-name: scenario
+                      scenario-description: null
+                      scenario-type: XML
+                      run-status: FINISHED
+                      scenario-stage: Stage with id 's3' (3/3).
+              schema:
+                $ref: '#/components/schemas/ListScenariosResponse'
+          description: Success
+      summary: List all runs.
+      tags:
+      - Runs
+    post:
+      description: "Start a run. \n\n This endpoint accepts runs."
+      operationId: startRun
+      requestBody:
+        content:
+          application/json:
+            examples:
+              start-run:
+                description: The id of the scenario for the run
+                summary: Start run
+                value:
+                  scenario-id: "1"
+            schema:
+              $ref: '#/components/schemas/StartRunRequest'
+        description: The scenario for the run.
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                start-run:
+                  description: Start run.
+                  summary: Start run.
+                  value:
+                    run-id: 1
+                    scenario-id: 1
+                    scenario-name: scenario
+                    scenario-description: null
+                    scenario-type: XML
+                    run-status: STARTING
+              schema:
+                $ref: '#/components/schemas/StartRunResponse'
+          description: Success
+        "400":
+          content:
+            application/json:
+              examples:
+                scenario-missing:
+                  description: Bad request
+                  summary: Scenario field is missing
+                  value:
+                    errors:
+                    - title: Bad Request.
+                      detail: Field 'scenario' is missing.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "409":
+          content:
+            application/json:
+              examples:
+                start-run-failed:
+                  description: Start run failed
+                  summary: Start run failed.
+                  value:
+                    errors:
+                    - title: Requested Resource Not Found.
+                      detail: Scenario with id '2' was not found.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Can not start run.
+      summary: Start a run.
+      tags:
+      - Runs
+  /runs/{id}:
+    delete:
+      description: "Delete a run. \n\n This endpoint deletes the run with the associated\
+        \ id if it exists and is not running."
+      operationId: deleteRun
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          content:
+            application/json:
+              examples:
+                delete-run:
+                  description: Delete run successful
+                  summary: Delete run
+          description: Success
+        "404":
+          content:
+            application/json:
+              examples:
+                scenario-missing:
+                  description: Not Found
+                  summary: Scenario was not found
+                  value:
+                    errors:
+                    - title: Requested Resource Not Found.
+                      detail: Run with id '3' was not found.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              examples:
+                run-in-progress:
+                  description: Run in progress can not be deleted.
+                  summary: Run in progress can not be deleted.
+                  value:
+                    errors:
+                    - title: Can't delete run.
+                      detail: Run with id '1' is in progress.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Run in progress
+      summary: Delete a run.
+      tags:
+      - Runs
+    get:
+      description: "Get a run. \n\n This endpoint returns the run and the associated\
+        \ metadata."
+      operationId: getRun
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                get-run-successful:
+                  description: Get run successful
+                  summary: Get run successful
+                  value:
+                    run-id: 1
+                    scenario-id: 1
+                    scenario-name: scenario
+                    scenario-description: null
+                    scenario-type: XML
+                    run-status: FINISHED
+                    scenario-stage: Stage with id 's3' (3/3).
+              schema:
+                $ref: '#/components/schemas/RunResponse'
+          description: Success
+        "400":
+          content:
+            application/json:
+              examples:
+                id-invalid:
+                  description: Bad request
+                  summary: Run id can not be parsed
+                  value:
+                    errors:
+                    - title: Bad Request.
+                      detail: Id 'bad' is not an integer.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                run-not-found:
+                  description: Not Found
+                  summary: Run was not found
+                  value:
+                    errors:
+                    - title: Requested Resource Not Found.
+                      detail: Run with id '3' was not found.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not Found
+      summary: Get a run.
+      tags:
+      - Runs
+    patch:
+      description: "Stop a run. \n\n This operation stops runs by setting its status\
+        \ to 'stopping'"
+      operationId: stopRun
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            examples:
+              stop-run:
+                description: The new state of the run
+                summary: Stop run
+                value:
+                  run-status: STOPPING
+            schema:
+              $ref: '#/components/schemas/StopRunRequest'
+        description: The new state of the run.
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                stop-run:
+                  description: Stop run.
+                  summary: Stop run.
+                  value:
+                    run-id: 2
+                    scenario-id: 1
+                    scenario-name: scenario
+                    scenario-description: null
+                    scenario-type: XML
+                    run-status: STOPPING
+              schema:
+                $ref: '#/components/schemas/StopRunResponse'
+          description: Success
+        "400":
+          content:
+            application/json:
+              examples:
+                run-missing:
+                  description: Bad request
+                  summary: Run field is missing
+                  value:
+                    errors:
+                    - title: Bad Request.
+                      detail: Field 'status' is missing.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "409":
+          content:
+            application/json:
+              examples:
+                stop-run-failed:
+                  description: Stop run failed
+                  summary: Stop run failed.
+                  value:
+                    errors:
+                    - title: Can not stop run.
+                      detail: Run with id '2' is not in progress.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Can not stop run.
+      summary: Stop a run.
+      tags:
+      - Runs
+  /scenarios:
+    get:
+      description: "List all scenarios \n\n This endpoint returns a list of all scenarios."
+      operationId: listScenarios
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                list-scenarios:
+                  description: success
+                  summary: List scenarios
+                  value:
+                    scenarios:
+                    - scenario-id: 1
+                      scenario-name: scenario
+                      scenario-description: null
+                      scenario-type: XML
+              schema:
+                $ref: '#/components/schemas/ListScenariosResponse'
+          description: Success
+      summary: List all scenarios.
+      tags:
+      - Scenarios
+    post:
+      description: "Upload a scenario. \n\n This endpoint accepts scenarios as Base64\
+        \ strings and the respective metadata.Only valid scenarios can be uploaded."
+      operationId: uploadScenario
+      requestBody:
+        content:
+          application/json:
+            examples:
+              upload-scenario:
+                description: "The scenario to upload with a name, description, type\
+                  \ and the xml/vm content encoded as Base64 string."
+                summary: Upload scenario
+                value:
+                  scenario-name: scenario
+                  scenario-description: An awesome scenario
+                  scenario-type: XML
+                  scenario: BASE64==
+            schema:
+              $ref: '#/components/schemas/UploadScenarioRequest'
+        description: The scenario to upload
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                scenario-upload:
+                  description: Upload scenario
+                  summary: Upload scenario
+                  value:
+                    scenario-id: 1
+                    scenario-name: scenario
+                    scenario-description: null
+                    scenario-type: XML
+              schema:
+                $ref: '#/components/schemas/UploadScenarioResponse'
+          description: Success
+        "400":
+          content:
+            application/json:
+              examples:
+                scenario-missing:
+                  description: Bad request
+                  summary: Scenario field is missing
+                  value:
+                    errors:
+                    - title: Bad Request.
+                      detail: Field 'scenario' is missing.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "409":
+          content:
+            application/json:
+              examples:
+                scenario-upload-failed:
+                  description: Upload scenario failed
+                  summary: Upload scenario failed
+                  value:
+                    errors:
+                    - title: Can not upload scenario.
+                      detail: Scenario with name 'scenario' already exists
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Can not upload scenario
+      summary: Upload a scenario.
+      tags:
+      - Scenarios
+  /scenarios/{id}:
+    delete:
+      description: "Delete a scenario. \n\n This endpoint deletes the scenario with\
+        \ the associated id."
+      operationId: deleteScenario
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          content:
+            application/json:
+              examples:
+                delete-scenario:
+                  description: Delete scenario successful
+                  summary: Delete scenario
+          description: Success
+        "404":
+          content:
+            application/json:
+              examples:
+                scenario-missing:
+                  description: Not Found
+                  summary: Scenario was not found
+                  value:
+                    errors:
+                    - title: Not Found.
+                      detail: Scenario with id '4' was not found.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not Found
+      summary: Delete a scenario.
+      tags:
+      - Scenarios
+    get:
+      description: "Download a scenario. \n\n This endpoint returns the scenario as\
+        \ Base64 string and the associated metadata."
+      operationId: downloadScenario
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                download-upload-successful:
+                  description: Download scenario successful
+                  summary: Download scenario successful
+                  value:
+                    scenario-id: 1
+                    scenario-name: scenario
+                    scenario-description: null
+                    scenario-type: XML
+                    scenario: BASE64==
+              schema:
+                $ref: '#/components/schemas/DownloadScenarioResponse'
+          description: Success
+        "404":
+          content:
+            application/json:
+              examples:
+                scenario-not-found:
+                  description: Not Found
+                  summary: Scenario was not found
+                  value:
+                    errors:
+                    - title: Not Found.
+                      detail: Scenario with id '4' was not found.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not Found
+      summary: Download a scenario.
+      tags:
+      - Scenarios
+components:
+  schemas:
+    CommanderStateResponse:
+      type: object
+      properties:
+        commander-status:
+          type: string
+        run-id:
+          type: string
+    DownloadScenarioResponse:
+      type: object
+      properties:
+        scenario:
+          type: string
+        scenario-description:
+          type: string
+        scenario-id:
+          type: integer
+          format: int32
+        scenario-name:
+          type: string
+        scenario-type:
+          type: string
+    ErrorDetailObject:
+      type: object
+      properties:
+        cause:
+          type: object
+          properties:
+            localizedMessage:
+              type: string
+            message:
+              type: string
+            stackTrace:
+              type: array
+              items:
+                type: object
+                properties:
+                  classLoaderName:
+                    type: string
+                  className:
+                    type: string
+                  fileName:
+                    type: string
+                  lineNumber:
+                    type: integer
+                    format: int32
+                  methodName:
+                    type: string
+                  moduleName:
+                    type: string
+                  moduleVersion:
+                    type: string
+                  nativeMethod:
+                    type: boolean
+            suppressed:
+              type: array
+              items:
+                type: object
+                properties:
+                  localizedMessage:
+                    type: string
+                  message:
+                    type: string
+                  stackTrace:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        classLoaderName:
+                          type: string
+                        className:
+                          type: string
+                        fileName:
+                          type: string
+                        lineNumber:
+                          type: integer
+                          format: int32
+                        methodName:
+                          type: string
+                        moduleName:
+                          type: string
+                        moduleVersion:
+                          type: string
+                        nativeMethod:
+                          type: boolean
+        message:
+          type: string
+        sources:
+          type: array
+          items:
+            type: object
+    Errors:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+    ListScenarioResponseEntry:
+      type: object
+      properties:
+        scenario-description:
+          type: string
+        scenario-id:
+          type: integer
+          format: int32
+        scenario-name:
+          type: string
+        scenario-type:
+          type: string
+    ListScenariosResponse:
+      type: object
+      properties:
+        scenarios:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListScenarioResponseEntry'
+    Message:
+      type: object
+      properties:
+        cause:
+          type: object
+          properties:
+            localizedMessage:
+              type: string
+            message:
+              type: string
+            stackTrace:
+              type: array
+              items:
+                type: object
+                properties:
+                  classLoaderName:
+                    type: string
+                  className:
+                    type: string
+                  fileName:
+                    type: string
+                  lineNumber:
+                    type: integer
+                    format: int32
+                  methodName:
+                    type: string
+                  moduleName:
+                    type: string
+                  moduleVersion:
+                    type: string
+                  nativeMethod:
+                    type: boolean
+            suppressed:
+              type: array
+              items:
+                type: object
+                properties:
+                  localizedMessage:
+                    type: string
+                  message:
+                    type: string
+                  stackTrace:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        classLoaderName:
+                          type: string
+                        className:
+                          type: string
+                        fileName:
+                          type: string
+                        lineNumber:
+                          type: integer
+                          format: int32
+                        methodName:
+                          type: string
+                        moduleName:
+                          type: string
+                        moduleVersion:
+                          type: string
+                        nativeMethod:
+                          type: boolean
+        errorDetail:
+          $ref: '#/components/schemas/ErrorDetailObject'
+        message:
+          type: string
+        source:
+          type: string
+        sources:
+          type: array
+          items:
+            type: object
+    RunResponse:
+      type: object
+      properties:
+        run-id:
+          type: integer
+          format: int32
+        run-status:
+          type: string
+        scenario-description:
+          type: string
+        scenario-id:
+          type: integer
+          format: int32
+        scenario-name:
+          type: string
+        scenario-stage:
+          type: string
+        scenario-type:
+          type: string
+    StartRunRequest:
+      type: object
+      properties:
+        scenario-id:
+          type: string
+    StartRunResponse:
+      type: object
+      properties:
+        run-id:
+          type: integer
+          format: int32
+        run-status:
+          type: string
+        scenario-description:
+          type: string
+        scenario-id:
+          type: integer
+          format: int32
+        scenario-name:
+          type: string
+        scenario-type:
+          type: string
+    StopRunRequest:
+      type: object
+      properties:
+        run-status:
+          type: string
+    StopRunResponse:
+      type: object
+      properties:
+        run-id:
+          type: integer
+          format: int32
+        run-status:
+          type: string
+        scenario-description:
+          type: string
+        scenario-id:
+          type: integer
+          format: int32
+        scenario-name:
+          type: string
+        scenario-type:
+          type: string
+    UploadScenarioRequest:
+      type: object
+      properties:
+        scenario:
+          type: string
+        scenario-description:
+          type: string
+        scenario-name:
+          type: string
+        scenario-type:
+          type: string
+    UploadScenarioResponse:
+      type: object
+      properties:
+        scenario-description:
+          type: string
+        scenario-id:
+          type: integer
+          format: int32
+        scenario-name:
+          type: string
+        scenario-type:
+          type: string
