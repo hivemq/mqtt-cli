@@ -125,7 +125,7 @@ public class SwarmRunStartCommandIT {
 
         publishesLatch.await();
         verify(out, times(1)).println("Uploading scenario from file '" + scenario.getAbsolutePath() + "'.");
-        verify(out, times(1)).println("Successfully uploaded scenario. Scenario-id: 2");
+        verify(out, times(1)).println("Successfully uploaded scenario. Scenario-id: " + 1);
         verify(out, times(1)).println("Run id: 1");
         verify(out, times(1)).println("Run status: STARTING");
     }

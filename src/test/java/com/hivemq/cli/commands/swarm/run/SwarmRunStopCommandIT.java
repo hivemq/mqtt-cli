@@ -142,10 +142,10 @@ public class SwarmRunStopCommandIT {
 
         final UploadScenarioRequest uploadScenarioRequest = new UploadScenarioRequest()
                 .scenarioType("XML").scenario(scenarioBase64).scenarioName("my-scenario");
-        scenariosApi.uploadScenario(uploadScenarioRequest);
+        final UploadScenarioResponse uploadScenarioResponse = scenariosApi.uploadScenario(uploadScenarioRequest);
 
         final StartRunRequest startRunRequest = new StartRunRequest();
-        startRunRequest.setScenarioId("2");
+        startRunRequest.setScenarioId(uploadScenarioResponse.getScenarioId().toString());
         runsApi.startRun(startRunRequest);
 
         // the scenario is started

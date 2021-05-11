@@ -40,7 +40,7 @@ info:
     \ client-code for multiple programming languages.\n"
   contact:
     url: https://www.hivemq.com
-  version: 4.6.0
+  version: 4.6.1
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
