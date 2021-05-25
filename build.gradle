@@ -608,9 +608,9 @@ task buildPackageAll {
  ***************/
 
 githubRelease {
-    token "" + System.getenv("GITHUB_API_TOKEN")
+    token "" + System.getenv("githubToken")
     owner = project.githubOrg
-    targetCommitish "develop"
+    targetCommitish "master"
     body ""
     draft true
     prerelease false
@@ -619,7 +619,7 @@ githubRelease {
             file("${project.buildDebDir}/$debPackageName"),
             file("${project.buildBrewDir}/$brewZipName"),
             buildWindowsZip
-    overwrite false
+    allowUploadToExisting true
 }
 
 /****************
