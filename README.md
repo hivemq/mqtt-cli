@@ -7,7 +7,7 @@
 # MQTT Command Line Interface
 
 [![GitHub Release](https://img.shields.io/github/v/release/hivemq/mqtt-cli?style=for-the-badge)](https://github.com/hivemq/mqtt-cli/releases) 
-[![Build Status](https://img.shields.io/travis/com/hivemq/mqtt-cli/develop.svg?style=for-the-badge)](https://travis-ci.com/hivemq/mqtt-cli) 
+[![Build Status](https://github.com/hivemq/mqtt-cli/actions/workflows/check.yml/badge.svg?branch=master)](https://github.com/hivemq/mqtt-cli/actions/workflows/check.yml/badge.svg?branch=master) 
 [![CLI Downloads](https://img.shields.io/github/downloads/hivemq/mqtt-cli/total?style=for-the-badge)](https://github.com/hivemq/mqtt-cli/releases)
 [![CLI License](https://img.shields.io/github/license/hivemq/mqtt-cli?style=for-the-badge)](https://github.com/hivemq/mqtt-cli/blob/develop/LICENSE)
 [![MQTT Client](https://img.shields.io/badge/hivemq--mqtt--client-1.2.2-green?style=for-the-badge)](https://github.com/hivemq/hivemq-mqtt-client)
