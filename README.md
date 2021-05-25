@@ -6,13 +6,12 @@
 
 # MQTT Command Line Interface
 
-[![GitHub Release](https://img.shields.io/github/v/release/hivemq/mqtt-cli)](https://github.com/hivemq/mqtt-cli/releases) 
-[![Build Status](https://travis-ci.com/hivemq/mqtt-cli.svg?branch=develop)](https://travis-ci.com/hivemq/mqtt-cli) 
-[![CLI Downloads](https://img.shields.io/github/downloads/hivemq/mqtt-cli/total)](https://github.com/hivemq/mqtt-cli/releases)
-[![CLI License](https://img.shields.io/github/license/hivemq/mqtt-cli)](https://github.com/hivemq/mqtt-cli/blob/develop/LICENSE)
-[![MQTT Client](https://img.shields.io/badge/hivemq--mqtt--client-1.2.0-green)](https://github.com/hivemq/hivemq-mqtt-client)
-[![HiveMQ Testcontainer](https://img.shields.io/badge/testcontainer-1.1.1-green.svg)](https://github.com/hivemq/hivemq-testcontainer)
-[![picocli](https://img.shields.io/badge/picocli-4.5.0-green.svg)](https://github.com/remkop/picocli)
+[![GitHub Release](https://img.shields.io/github/v/release/hivemq/mqtt-cli?style=for-the-badge)](https://github.com/hivemq/mqtt-cli/releases) 
+[![Build Status](https://github.com/hivemq/mqtt-cli/actions/workflows/check.yml/badge.svg?branch=master)](https://github.com/hivemq/mqtt-cli/actions/workflows/check.yml/badge.svg?branch=master) 
+[![CLI Downloads](https://img.shields.io/github/downloads/hivemq/mqtt-cli/total?style=for-the-badge)](https://github.com/hivemq/mqtt-cli/releases)
+[![CLI License](https://img.shields.io/github/license/hivemq/mqtt-cli?style=for-the-badge)](https://github.com/hivemq/mqtt-cli/blob/develop/LICENSE)
+[![MQTT Client](https://img.shields.io/badge/hivemq--mqtt--client-1.2.2-green?style=for-the-badge)](https://github.com/hivemq/hivemq-mqtt-client)
+[![picocli](https://img.shields.io/badge/picocli-4.6.1-green.svg?style=for-the-badge)](https://github.com/remkop/picocli)
 
 MQTT 5.0 and 3.1.1 compatible and feature-rich MQTT Command Line Interface
 
