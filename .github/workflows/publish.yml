@@ -20,4 +20,6 @@ jobs:
           export githubToken=${{ secrets.GITHUB_TOKEN }}
           ./gradlew githubRelease
       - name: Update Homebrew repository
-        run: ./gradlew gitPublishPush
+        run: |
+          export GRGIT_USER=${{ secrets.GITHUB_TOKEN }}
+          ./gradlew gitPublishPush
