@@ -16,10 +16,11 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
       - name: Attach artifacts to GitHub release
-        run: |
-          export githubToken=${{ secrets.GITHUB_TOKEN }}
-          ./gradlew githubRelease
+        run: ./gradlew githubRelease
+        env:
+          githubToken: secrets.GITHUB_TOKEN
       - name: Update Homebrew repository
-        run: |
-          export GRGIT_USER=${{ secrets.GITHUB_TOKEN }}
+        run:
           ./gradlew gitPublishPush
+        env:
+          GRGIT_USER: ${{ secrets.GITHUB_TOKEN }}
