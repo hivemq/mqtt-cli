@@ -26,4 +26,4 @@ jobs:
       - name: Update Homebrew repository
         run: ./gradlew gitPublishPush
         env:
-          GRGIT_USER: ${{ secrets.GITHUB_TOKEN }}
+          GRGIT_USER: ${{ secrets.GRGIT_USER }}
