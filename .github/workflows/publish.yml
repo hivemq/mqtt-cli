@@ -22,8 +22,14 @@ jobs:
       - name: Attach artifacts to GitHub release
         run: ./gradlew githubRelease
         env:
-          githubToken: secrets.GITHUB_TOKEN
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Homebrew repository
         run: ./gradlew gitPublishPush
         env:
           GRGIT_USER: ${{ secrets.GRGIT_USER }}
+      - name: Deploy doc to gh-pages
+        if: github.ref == 'refs/heads/master'
+        uses: JamesIves/github-pages-deploy-action@4.1.3
+        with:
+          branch: gh-pages
+          folder: doc
