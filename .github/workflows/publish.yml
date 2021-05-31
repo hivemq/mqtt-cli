@@ -27,3 +27,8 @@ jobs:
         run: ./gradlew gitPublishPush
         env:
           GRGIT_USER: ${{ secrets.GRGIT_USER }}
+      - name: Release Docker-Image
+        run: ./gradlew jib -Djib.to.tags=${GITHUB_REF##*/}
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
