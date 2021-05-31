@@ -22,7 +22,7 @@ jobs:
       - name: Attach artifacts to GitHub release
         run: ./gradlew githubRelease
         env:
-          githubToken: secrets.GITHUB_TOKEN
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Homebrew repository
         run: ./gradlew gitPublishPush
         env:
