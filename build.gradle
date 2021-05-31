@@ -26,6 +26,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '6.1.5' apply false
     id "com.github.ben-manes.versions" version "0.38.0"
     id "org.openapi.generator" version "4.3.1"
+    id "com.google.cloud.tools.jib" version "3.0.0"
 }
 
 apply plugin: "com.github.ben-manes.versions"
@@ -663,6 +664,23 @@ gitPublish {
 
 tasks.githubRelease.dependsOn tasks.buildPackageAll
 
+
+/****************
+ * Dockerhub Release *
+ ***************/
+
+jib {
+    from {
+        image = 'openjdk:11-slim'
+    }
+    to {
+        image = 'hivemq/mqtt-cli'
+        auth {
+            username = System.getenv("DOCKER_USER") == null ? "" : System.getenv("DOCKER_USER")
+            password = System.getenv("DOCKER_PASSWORD") == null ? "" : System.getenv("DOCKER_PASSWORD")
+        }
+    }
+}
 
 /****************
  * Helpers *
