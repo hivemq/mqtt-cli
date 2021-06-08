@@ -27,7 +27,7 @@ jobs:
         run: ./gradlew gitPublishPush
         env:
           GRGIT_USER: ${{ secrets.GRGIT_USER }}
-      - name: Release Docker-Image
+      - name: Publish to Docker Hub
         run: ./gradlew jib
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
