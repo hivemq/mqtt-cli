@@ -677,8 +677,8 @@ jib {
         image = 'hivemq/mqtt-cli'
         tags = [project.version.toString()]
         auth {
-            username = System.getenv("DOCKER_USER") == null ? "" : System.getenv("DOCKER_USER")
-            password = System.getenv("DOCKER_PASSWORD") == null ? "" : System.getenv("DOCKER_PASSWORD")
+            username = Objects.requireNonNullElse(System.getenv("DOCKER_USER"), "")
+            password = Objects.requireNonNullElse(System.getenv("DOCKER_PASSWORD"), "")
         }
     }
 }
