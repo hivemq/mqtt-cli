@@ -1,6 +1,7 @@
 openapi: 3.0.1
 info:
-  title: HiveMQ REST API
+  contact:
+    url: https://www.hivemq.com
   description: "\n# Introduction\n\nHiveMQ's REST API provides endpoints for the following\
     \ use cases:\n- Listing all MQTT Clients\n- Getting detailed information about\
     \ a specific MQTT client\n- Listing all subscriptions for a specific MQTT client\n\
@@ -38,14 +39,12 @@ info:
     \n## OpenAPI\nHiveMQ's REST API provides an OpenAPI 3.0 schema definition that\
     \ can imported into popular API tooling (e.g. Postman) or can be used to generate\
     \ client-code for multiple programming languages.\n"
-  contact:
-    url: https://www.hivemq.com
-  version: 4.6.1
+  title: HiveMQ REST API
+  version: 4.6.2-SNAPSHOT
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
-- name: Backup & Restore
-  description: "These endpoints can be used to create, download, inspect and restore\
+- description: "These endpoints can be used to create, download, inspect and restore\
     \ backups created by HiveMQ.\n\nMore information about the backup and restore\
     \ capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/user-guide/backup-restore.html).\n\
     \n### Backup Requirements\nSome prerequisites are necessary to create a backup\
@@ -60,8 +59,8 @@ tags:
     \ data exists on every HiveMQ node. The import will not start if there is data\
     \ available in your cluster.\n- Message data used by Extensions are only restored\
     \ if the corresponding extension is already started before the restore is started."
-- name: Trace Recordings
-  description: "A Trace Recording is a combination of filters which allows you to\
+  name: Backup & Restore
+- description: "A Trace Recording is a combination of filters which allows you to\
     \ select messages of specific clients or topics, which are logged to a file in\
     \ a human readable format.\nEach trace recording creates cluster-wide trace files\
     \ that can be downloaded as a collective zip file.\n\nYou can log any MQTT message\
@@ -70,92 +69,16 @@ tags:
     \ filters are regular expressions.\n\nThese endpoints can be used to create, download,\
     \ inspect, stop and delete trace recordings.\n\nMore information about the trace\
     \ recording capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/analytic.html#trace-recording).\n"
-- name: MQTT Clients
-  description: "These endpoints can be used to inspect the MQTT clients that are known\
+  name: Trace Recordings
+- description: "These endpoints can be used to inspect the MQTT clients that are known\
     \ to HiveMQ.\n\nWith millions of connected clients, keeping track of specific\
     \ clients can become a challenge. The HiveMQ REST API provides endpoints to list\
     \ and view all the MQTT clients known to HiveMQ. \nInformation about subscriptions,\
     \ connection status, TLS, and more, offer detailed insights into every client."
+  name: MQTT Clients
 paths:
-  /api/v1/management/files/backups/{backupId}:
-    get:
-      tags:
-      - Backup & Restore
-      summary: Download a backup file
-      description: "Download a specific backup file. \n\n This endpoint returns the\
-        \ content of the backup file with the content-type `application/octet-stream`.\
-        \ \n\n Only backups in the states `COMPLETED`, `RESTORE_IN_PROGRESS`, `RESTORE_FAILED`\
-        \ or `RESTORE_COMPLETED` can be downloaded.\n\n This endpoint requires at\
-        \ least HiveMQ version 4.4.0. on all cluster nodes."
-      operationId: downloadBackupFile
-      parameters:
-      - name: backupId
-        in: path
-        description: The id of the backup.
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Success
-          content:
-            application/octet-stream:
-              schema:
-                type: string
-                format: binary
-              examples:
-                file-download:
-                  summary: File download
-                  description: File download
-                  value: <raw data>
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Resource not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                param-missing:
-                  summary: Required URL parameter missing
-                  description: Bad request
-                  value:
-                    errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
-        "503":
-          description: Cluster node not reachable during download
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                temporarily-not-available:
-                  summary: Temporarily not available
-                  description: The endpoint is temporarily not available
-                  value:
-                    errors:
-                    - title: The endpoint is temporarily not available
-                      detail: "The endpoint is temporarily not available, please try\
-                        \ again later"
   /api/v1/management/backups:
     get:
-      tags:
-      - Backup & Restore
-      summary: List all available backups
       description: |-
         Lists all available backups with their current state.
 
@@ -167,16 +90,18 @@ paths:
       operationId: getAllBackups
       responses:
         "200":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/BackupList'
               examples:
+                empty-results:
+                  description: Empty result if no backups are known.
+                  summary: Empty result if no backups are known
+                  value:
+                    items: []
                 multiple-results:
-                  summary: Multiple results in different states
                   description: Example response with one stored backup and one backup
                     that is currently in progress.
+                  summary: Multiple results in different states
                   value:
                     items:
                     - id: 20200506-081317
@@ -190,30 +115,28 @@ paths:
                       createdAt: 2020-05-06T08:13:17Z
                       state: FAILED
                       failReason: Another backup is already in progress.
-                empty-results:
-                  summary: Empty result if no backups are known
-                  description: Empty result if no backups are known.
-                  value:
-                    items: []
+              schema:
+                $ref: '#/components/schemas/BackupList'
+          description: Success
         "503":
-          description: Not all cluster nodes at minimum version
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 version-check-failed:
-                  summary: Version check failed
                   description: Version check failed
+                  summary: Version check failed
                   value:
                     errors:
                     - title: Endpoint not active yet
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
-    post:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not all cluster nodes at minimum version
+      summary: List all available backups
       tags:
       - Backup & Restore
-      summary: Create a new backup
+    post:
       description: |-
         Triggers the creation of a new backup.
 
@@ -221,40 +144,40 @@ paths:
       operationId: createBackup
       responses:
         "200":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/BackupItem'
               examples:
                 example:
-                  summary: Created backup that is currently in progress
                   description: Example response with in-progress backup.
+                  summary: Created backup that is currently in progress
                   value:
                     backup:
                       id: 20201006-1902318
                       createdAt: 2020-05-06T08:13:17Z
                       state: IN_PROGRESS
+              schema:
+                $ref: '#/components/schemas/BackupItem'
+          description: Success
         "503":
-          description: Not all cluster nodes at minimum version
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 version-check-failed:
-                  summary: Version check failed
                   description: Version check failed
+                  summary: Version check failed
                   value:
                     errors:
                     - title: Endpoint not active yet
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
-  /api/v1/management/backups/{backupId}:
-    get:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not all cluster nodes at minimum version
+      summary: Create a new backup
       tags:
       - Backup & Restore
-      summary: Get backup information
+  /api/v1/management/backups/{backupId}:
+    get:
       description: |-
         Returns the information for a specific backup with its current state.
 
@@ -265,210 +188,284 @@ paths:
          This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
       operationId: getBackup
       parameters:
-      - name: backupId
+      - description: The id of the backup.
         in: path
-        description: The id of the backup.
+        name: backupId
         required: true
         schema:
           type: string
       responses:
         "200":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/BackupItem'
               examples:
                 get-example:
-                  summary: Example with a completed backup
                   description: Example response.
+                  summary: Example with a completed backup
                   value:
                     backup:
                       id: 20200506-081317
                       createdAt: 2020-05-06T08:13:17Z
                       bytes: 85550653
                       state: COMPLETED
-        "404":
-          description: Resource not found
-          content:
-            application/json:
               schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+                $ref: '#/components/schemas/BackupItem'
+          description: Success
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 param-missing:
-                  summary: Required URL parameter missing
                   description: Bad request
+                  summary: Required URL parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-        "503":
-          description: Not all cluster nodes at minimum version
-          content:
-            application/json:
               schema:
                 $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+        "503":
+          content:
+            application/json:
               examples:
                 version-check-failed:
-                  summary: Version check failed
                   description: Version check failed
+                  summary: Version check failed
                   value:
                     errors:
                     - title: Endpoint not active yet
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
-    post:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not all cluster nodes at minimum version
+      summary: Get backup information
       tags:
       - Backup & Restore
-      summary: Restore a new backup
+    post:
       description: |-
         Triggers the restore of a stored backup.
 
         This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
       operationId: restoreBackup
       parameters:
-      - name: backupId
+      - description: The id of the backup.
         in: path
-        description: The id of the backup.
+        name: backupId
         required: true
         schema:
           type: string
       responses:
         "200":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/BackupItem'
               examples:
                 example:
-                  summary: Created backup that is currently in progress
                   description: Example response.
+                  summary: Created backup that is currently in progress
                   value:
                     backup:
                       id: 20201006-1902318
                       createdAt: 2020-05-06T08:13:17Z
                       state: IN_PROGRESS
-        "404":
-          description: Resource not found
-          content:
-            application/json:
               schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Example not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+                $ref: '#/components/schemas/BackupItem'
+          description: Success
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 param-missing:
-                  summary: Required URL parameter missing
                   description: Bad request
+                  summary: Required URL parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-        "503":
-          description: Not all cluster nodes at minimum version
-          content:
-            application/json:
               schema:
                 $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Example not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+        "503":
+          content:
+            application/json:
               examples:
                 version-check-failed:
-                  summary: Version check failed
                   description: Version check failed
+                  summary: Version check failed
                   value:
                     errors:
                     - title: Endpoint not active yet
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not all cluster nodes at minimum version
+      summary: Restore a new backup
+      tags:
+      - Backup & Restore
+  /api/v1/management/files/backups/{backupId}:
+    get:
+      description: "Download a specific backup file. \n\n This endpoint returns the\
+        \ content of the backup file with the content-type `application/octet-stream`.\
+        \ \n\n Only backups in the states `COMPLETED`, `RESTORE_IN_PROGRESS`, `RESTORE_FAILED`\
+        \ or `RESTORE_COMPLETED` can be downloaded.\n\n This endpoint requires at\
+        \ least HiveMQ version 4.4.0. on all cluster nodes."
+      operationId: downloadBackupFile
+      parameters:
+      - description: The id of the backup.
+        in: path
+        name: backupId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/octet-stream:
+              examples:
+                file-download:
+                  description: File download
+                  summary: File download
+                  value: <raw data>
+              schema:
+                type: string
+                format: binary
+          description: Success
+        "400":
+          content:
+            application/json:
+              examples:
+                param-missing:
+                  description: Bad request
+                  summary: Required URL parameter missing
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Resource not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+        "503":
+          content:
+            application/json:
+              examples:
+                temporarily-not-available:
+                  description: The endpoint is temporarily not available
+                  summary: Temporarily not available
+                  value:
+                    errors:
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
+                        \ again later"
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Cluster node not reachable during download
+      summary: Download a backup file
+      tags:
+      - Backup & Restore
   /api/v1/management/files/trace-recordings/{traceRecordingId}:
     get:
-      tags:
-      - Trace Recordings
-      summary: Download a trace recording
       description: "Download a specific trace recording. \n\n This endpoint returns\
         \ the content of the trace recording with the content-type `application/zip`.\
         \ \n\nOnly trace recordings in the states `IN_PROGRESS`, `STOPPED` and `ABORTED`\
         \ can be downloaded."
       operationId: downloadTraceRecordingFile
       parameters:
-      - name: traceRecordingId
+      - description: The id of the trace recording.
         in: path
-        description: The id of the trace recording.
+        name: traceRecordingId
         required: true
         schema:
           type: string
       responses:
         "200":
-          description: Success
           content:
             application/zip:
+              examples:
+                file-download:
+                  description: File download
+                  summary: File download
+                  value: <raw data>
               schema:
                 type: string
                 format: binary
-              examples:
-                file-download:
-                  summary: File download
-                  description: File download
-                  value: <raw data>
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Resource not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+          description: Success
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 param-missing:
-                  summary: Required URL parameter missing
                   description: Bad request
+                  summary: Required URL parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-  /api/v1/management/trace-recordings:
-    get:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Resource not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+      summary: Download a trace recording
       tags:
       - Trace Recordings
-      summary: Get all trace recordings
+  /api/v1/management/trace-recordings:
+    get:
       description: "Lists all known trace recordings. \n\nTrace recordings can be\
         \ in different states. These states are:\n- `SCHEDULED` if the start date\
         \ for a trace recording is in the future\n- `STOPPED` if a trace recording\
@@ -478,15 +475,12 @@ paths:
       operationId: getAllTraceRecordings
       responses:
         "200":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/TraceRecordingList'
               examples:
                 single-result:
-                  summary: Single result
                   description: Example response with one recording that is in progress.
+                  summary: Single result
                   value:
                     items:
                     - name: test
@@ -500,10 +494,13 @@ paths:
                       - MQTT_MESSAGE_CONNECT
                       - MQTT_MESSAGE_DISCONNECT
                       state: IN_PROGRESS
-    post:
+              schema:
+                $ref: '#/components/schemas/TraceRecordingList'
+          description: Success
+      summary: Get all trace recordings
       tags:
       - Trace Recordings
-      summary: Create a trace recording
+    post:
       description: "Creates a new trace recording. \n\n To create a trace recording\
         \ you must specify a name, start date, end date, a set of filters and the\
         \ desired packets that should be traced.\n\nAt least one client or topic filter\
@@ -511,16 +508,13 @@ paths:
         \ client and topic filters can be [regular expressions](https://www.hivemq.com/docs/hivemq/4.3/control-center/analytic.html#regular-expressions)."
       operationId: createTraceRecording
       requestBody:
-        description: The trace recording to create
         content:
           application/json:
-            schema:
-              $ref: '#/components/schemas/TraceRecordingItem'
             examples:
               simple-query:
-                summary: Simple query
                 description: "A sample trace recording with a duration of 1 hour,\
                   \ tracing one client, topic filter and CONNECT events."
+                summary: Simple query
                 value:
                   traceRecording:
                     name: test
@@ -532,18 +526,18 @@ paths:
                     - regex: topic/.*
                     events:
                     - MQTT_MESSAGE_CONNECT
+            schema:
+              $ref: '#/components/schemas/TraceRecordingItem'
+        description: The trace recording to create
       responses:
         "201":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/TraceRecordingItem'
               examples:
                 simple-query-result:
-                  summary: Simple query - result
                   description: Response from the server after it created the trace
                     recording. Includes the resulting current state of the recording.
+                  summary: Simple query - result
                   value:
                     traceRecording:
                       name: test
@@ -556,46 +550,49 @@ paths:
                       events:
                       - MQTT_MESSAGE_CONNECT
                       state: IN_PROGRESS
+              schema:
+                $ref: '#/components/schemas/TraceRecordingItem'
+          description: Success
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
-                param-missing:
-                  summary: Required URL parameter missing
-                  description: Bad request
-                  value:
-                    errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
                 body-param-missing:
-                  summary: Required body entity parameter missing
                   description: Bad request
+                  summary: Required body entity parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required body entity parameter is missing
                 invalid-resource:
-                  summary: Invalid resource
                   description: Bad request
+                  summary: Invalid resource
                   value:
                     errors:
                     - title: Invalid resource
                       detail: "The fields {name, events, startAt, endAt} must be specified\
                         \ at creation"
-  /api/v1/management/trace-recordings/{traceRecordingId}:
-    delete:
+                param-missing:
+                  description: Bad request
+                  summary: Required URL parameter missing
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+      summary: Create a trace recording
       tags:
       - Trace Recordings
-      summary: Delete a trace recording
+  /api/v1/management/trace-recordings/{traceRecordingId}:
+    delete:
       description: "Deletes an existing trace recording. \n\n "
       operationId: deleteTraceRecording
       parameters:
-      - name: traceRecordingId
+      - description: The name of the trace recording to delete.
         in: path
-        description: The name of the trace recording to delete.
+        name: traceRecordingId
         required: true
         schema:
           type: string
@@ -603,74 +600,71 @@ paths:
         "204":
           description: "Success, no response body"
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 param-missing:
-                  summary: Required URL parameter missing
                   description: Bad request
+                  summary: Required URL parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-        "404":
-          description: Resource not found
-          content:
-            application/json:
               schema:
                 $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
               examples:
                 not-found:
-                  summary: Not found
                   description: Resource not found
+                  summary: Not found
                   value:
                     errors:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
-    patch:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+      summary: Delete a trace recording
       tags:
       - Trace Recordings
-      summary: Stop a trace recording.
+    patch:
       description: "Stops an existing trace recording.\n\nOnly the state of the trace\
         \ recording can be set to `STOPPED` with this endpoint, changes to other fields\
         \ are ignored."
       operationId: stopTraceRecording
       parameters:
-      - name: traceRecordingId
+      - description: The name of the trace recording to patch/stop.
         in: path
-        description: The name of the trace recording to patch/stop.
+        name: traceRecordingId
         required: true
         schema:
           type: string
       requestBody:
-        description: The trace recording to change
         content:
           application/json:
-            schema:
-              $ref: '#/components/schemas/TraceRecordingItem'
             examples:
               stop-query:
-                summary: Stop query
                 description: Request to stop a trace recording by defining its state
                   as STOPPED.
+                summary: Stop query
                 value:
                   traceRecording:
                     state: STOPPED
+            schema:
+              $ref: '#/components/schemas/TraceRecordingItem'
+        description: The trace recording to change
       responses:
         "200":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/TraceRecordingItem'
               examples:
                 stop-response:
-                  summary: Stop query - response
                   description: A stopped trace recording returned after a stop query
                     was sent.
+                  summary: Stop query - response
                   value:
                     traceRecording:
                       name: test
@@ -683,191 +677,246 @@ paths:
                       events:
                       - MQTT_MESSAGE_CONNECT
                       state: STOPPED
+              schema:
+                $ref: '#/components/schemas/TraceRecordingItem'
+          description: Success
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
-                param-missing:
-                  summary: Required URL parameter missing
-                  description: Bad request
-                  value:
-                    errors:
-                    - title: Required parameter missing
-                      detail: Required URL parameter 'parameterName' is missing
                 body-param-missing:
-                  summary: Required body entity parameter missing
                   description: Bad request
+                  summary: Required body entity parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required body entity parameter is missing
                 invalid-resource:
-                  summary: Invalid resource
                   description: Bad request
+                  summary: Invalid resource
                   value:
                     errors:
                     - title: Invalid resource
                       detail: "The fields {name, events, startAt, endAt} must be specified\
                         \ at creation"
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Resource not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
-  /api/v1/mqtt/clients/{clientId}/connection:
-    get:
-      tags:
-      - MQTT Clients
-      summary: Get a clients connection state
-      description: "Returns the information if a specific client is currently connected.\n\
-        \n If you are only interested in the connection status of a client prefer\
-        \ this endpoint over the the full client detail.\nIf your client identifiers\
-        \ contain special characters, please make sure that the clientId is URL Encoded\
-        \ (a.k.a. percent-encoding, as in RFC 3986)."
-      operationId: getMqttClientConnectionState
-      parameters:
-      - name: clientId
-        in: path
-        description: The MQTT client identifier.
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConnectionItem'
-              examples:
-                online-client:
-                  summary: online-client
-                  description: Online client
-                  value:
-                    connection:
-                      connected: false
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
                 param-missing:
-                  summary: Required URL parameter missing
                   description: Bad request
+                  summary: Required URL parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-    delete:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Resource not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+      summary: Stop a trace recording.
+      tags:
+      - Trace Recordings
+  /api/v1/mqtt/clients:
+    get:
+      description: "Lists all client sessions (online and offline) known to the whole\
+        \ HiveMQ cluster.\n\nThe result contains each client's client identifier.\
+        \ For more details about each client you can call the endpoints that have\
+        \ a clientId in their URL.\n\nThis endpoint uses pagination with a cursor.\n\
+        The results are not sorted in any way, no ordering of any kind is guaranteed.\n\
+        \nThis endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes."
+      operationId: getAllMqttClients
+      parameters:
+      - description: Specifies the page size for the returned results. Has to be between
+          50 and 2500. Default page size is 500.
+        in: query
+        name: limit
+        schema:
+          type: integer
+          format: int32
+      - description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        in: query
+        name: cursor
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                empty-results:
+                  description: Empty result if no clients are known.
+                  summary: Empty result if no clients are known
+                  value:
+                    items: []
+                multiple-results-last-page:
+                  description: Example response with multiple clients. No more pages
+                    left.
+                  summary: "Multiple results, last page"
+                  value:
+                    items:
+                    - id: client-12
+                    - id: client-5
+                    - id: client-32
+                    - id: my-client-id2
+                    - id: my-client-id
+                multiple-results-pages-left:
+                  description: Example response with multiple clients. More pages
+                    left.
+                  summary: "Multiple results, more pages left"
+                  value:
+                    items:
+                    - id: client-12
+                    - id: client-5
+                    - id: client-32
+                    - id: my-client-id2
+                    - id: my-client-id
+                    _links:
+                      next: /api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=5
+                single-result:
+                  description: Example response with one known client.
+                  summary: Single result
+                  value:
+                    items:
+                    - id: client-12
+              schema:
+                $ref: '#/components/schemas/ClientList'
+          description: Success
+        "400":
+          content:
+            application/json:
+              examples:
+                param-missing:
+                  description: Bad request
+                  summary: Required URL parameter missing
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "410":
+          content:
+            application/json:
+              examples:
+                cursor-invalid:
+                  description: Cursor not valid anymore
+                  summary: The passed cursor is not valid anymore
+                  value:
+                    errors:
+                    - title: Cursor not valid anymore
+                      detail: "The passed cursor is not valid anymore, you can request\
+                        \ this resource without a cursor to start from the beginning"
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Cursor not valid anymore
+        "503":
+          content:
+            application/json:
+              examples:
+                version-check-failed:
+                  description: Version check failed
+                  summary: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
+                        \ try again later"
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not all cluster nodes at minimum version
+      summary: List all MQTT clients
       tags:
       - MQTT Clients
-      summary: Disconnect a client
-      description: "Disconnects a specific client if its is currently connected.\n\
-        \n If your client identifiers contain special characters, please make sure\
-        \ that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986)."
-      operationId: disconnectClient
+  /api/v1/mqtt/clients/{clientId}:
+    delete:
+      description: "Invalidates the client session for a client with the given client\
+        \ identifier. If the client is currently connected, it will be disconnected\
+        \ as well.\n\n If your client identifiers contain special characters, please\
+        \ make sure that the clientId is URL encoded (a.k.a. percent-encoding, as\
+        \ in RFC 3986)."
+      operationId: invalidateClientSession
       parameters:
-      - name: clientId
+      - description: The MQTT client identifier.
         in: path
-        description: The MQTT client identifier.
+        name: clientId
         required: true
         schema:
           type: string
-      - name: preventWillMessage
+      - description: Whether to prevent the will message.
         in: query
-        description: Whether to prevent the will message.
+        name: preventWillMessage
         schema:
           type: boolean
           default: false
       responses:
         "204":
-          description: Success (no content)
           content:
             application/json: {}
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+          description: Success (no content)
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 param-invalid:
-                  summary: Query parameter can not be parsed
                   description: Bad request
+                  summary: Query parameter can not be parsed
                   value:
                     errors:
                     - title: Parameter invalid
                       detail: Query parameter 'parameter-name' is invalid
-  /api/v1/mqtt/clients/{clientId}:
-    get:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+      summary: Invalidate a client session
       tags:
       - MQTT Clients
-      summary: Get detailed client information
+    get:
       description: "Returns detailed information for a specific client with it is\
         \ current state.\n\n Including all session and connection information.\nIf\
         \ your client identifiers contain special characters, please make sure that\
         \ the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986)."
       operationId: getMqttClientDetails
       parameters:
-      - name: clientId
+      - description: The MQTT client identifier.
         in: path
-        description: The MQTT client identifier.
+        name: clientId
         required: true
         schema:
           type: string
       responses:
         "200":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ClientItem'
               examples:
                 offline-client:
-                  summary: offline-client
                   description: Offline client
+                  summary: offline-client
                   value:
                     client:
                       id: client-1
@@ -876,8 +925,8 @@ paths:
                       messageQueueSize: 543
                       willPresent: false
                 online-client:
-                  summary: online-client
                   description: Online client
+                  summary: online-client
                   value:
                     client:
                       id: client-2
@@ -898,8 +947,8 @@ paths:
                         cleanStart: true
                         sourceIp: 127.0.0.1
                 online-client-tls-proxy:
-                  summary: online-client-tls-proxy
                   description: Online client with TLS and Proxy Protocol enabled
+                  summary: online-client-tls-proxy
                   value:
                     client:
                       id: client-1
@@ -942,231 +991,181 @@ paths:
                             country: DE
                             state: BY
                             version: "2"
+              schema:
+                $ref: '#/components/schemas/ClientItem'
+          description: Success
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 param-missing:
-                  summary: Required URL parameter missing
                   description: Bad request
+                  summary: Required URL parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-        "404":
-          description: Resource not found
-          content:
-            application/json:
               schema:
                 $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
               examples:
                 not-found:
-                  summary: Not found
                   description: Not found
+                  summary: Not found
                   value:
                     errors:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
-    delete:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+      summary: Get detailed client information
       tags:
       - MQTT Clients
-      summary: Invalidate a client session
-      description: "Invalidates the client session for a client with the given client\
-        \ identifier. If the client is currently connected, it will be disconnected\
-        \ as well.\n\n If your client identifiers contain special characters, please\
-        \ make sure that the clientId is URL encoded (a.k.a. percent-encoding, as\
-        \ in RFC 3986)."
-      operationId: invalidateClientSession
+  /api/v1/mqtt/clients/{clientId}/connection:
+    delete:
+      description: "Disconnects a specific client if its is currently connected.\n\
+        \n If your client identifiers contain special characters, please make sure\
+        \ that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986)."
+      operationId: disconnectClient
       parameters:
-      - name: clientId
+      - description: The MQTT client identifier.
         in: path
-        description: The MQTT client identifier.
+        name: clientId
         required: true
         schema:
           type: string
-      - name: preventWillMessage
+      - description: Whether to prevent the will message.
         in: query
-        description: Whether to prevent the will message.
+        name: preventWillMessage
         schema:
           type: boolean
           default: false
       responses:
         "204":
-          description: Success (no content)
           content:
             application/json: {}
-        "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
-              examples:
-                not-found:
-                  summary: Not found
-                  description: Not found
-                  value:
-                    errors:
-                    - title: Resource not found
-                      detail: Resource with id 'my-resource-id' not found
+          description: Success (no content)
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 param-invalid:
-                  summary: Query parameter can not be parsed
                   description: Bad request
+                  summary: Query parameter can not be parsed
                   value:
                     errors:
                     - title: Parameter invalid
                       detail: Query parameter 'parameter-name' is invalid
-  /api/v1/mqtt/clients:
-    get:
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+      summary: Disconnect a client
       tags:
       - MQTT Clients
-      summary: List all MQTT clients
-      description: "Lists all client sessions (online and offline) known to the whole\
-        \ HiveMQ cluster.\n\nThe result contains each client's client identifier.\
-        \ For more details about each client you can call the endpoints that have\
-        \ a clientId in their URL.\n\nThis endpoint uses pagination with a cursor.\n\
-        The results are not sorted in any way, no ordering of any kind is guaranteed.\n\
-        \nThis endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes."
-      operationId: getAllMqttClients
+    get:
+      description: "Returns the information if a specific client is currently connected.\n\
+        \n If you are only interested in the connection status of a client prefer\
+        \ this endpoint over the the full client detail.\nIf your client identifiers\
+        \ contain special characters, please make sure that the clientId is URL Encoded\
+        \ (a.k.a. percent-encoding, as in RFC 3986)."
+      operationId: getMqttClientConnectionState
       parameters:
-      - name: limit
-        in: query
-        description: Specifies the page size for the returned results. Has to be between
-          50 and 2500. Default page size is 500.
-        schema:
-          type: integer
-          format: int32
-      - name: cursor
-        in: query
-        description: The cursor that has been returned by the previous result page.
-          Do not pass this parameter if you want to fetch the first page.
+      - description: The MQTT client identifier.
+        in: path
+        name: clientId
+        required: true
         schema:
           type: string
       responses:
         "200":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ClientList'
               examples:
-                single-result:
-                  summary: Single result
-                  description: Example response with one known client.
+                online-client:
+                  description: Online client
+                  summary: online-client
                   value:
-                    items:
-                    - id: client-12
-                multiple-results-last-page:
-                  summary: "Multiple results, last page"
-                  description: Example response with multiple clients. No more pages
-                    left.
-                  value:
-                    items:
-                    - id: client-12
-                    - id: client-5
-                    - id: client-32
-                    - id: my-client-id2
-                    - id: my-client-id
-                multiple-results-pages-left:
-                  summary: "Multiple results, more pages left"
-                  description: Example response with multiple clients. More pages
-                    left.
-                  value:
-                    items:
-                    - id: client-12
-                    - id: client-5
-                    - id: client-32
-                    - id: my-client-id2
-                    - id: my-client-id
-                    _links:
-                      next: /api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=5
-                empty-results:
-                  summary: Empty result if no clients are known
-                  description: Empty result if no clients are known.
-                  value:
-                    items: []
+                    connection:
+                      connected: false
+              schema:
+                $ref: '#/components/schemas/ConnectionItem'
+          description: Success
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 param-missing:
-                  summary: Required URL parameter missing
                   description: Bad request
+                  summary: Required URL parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-        "410":
-          description: Cursor not valid anymore
-          content:
-            application/json:
               schema:
                 $ref: '#/components/schemas/Errors'
-              examples:
-                cursor-invalid:
-                  summary: The passed cursor is not valid anymore
-                  description: Cursor not valid anymore
-                  value:
-                    errors:
-                    - title: Cursor not valid anymore
-                      detail: "The passed cursor is not valid anymore, you can request\
-                        \ this resource without a cursor to start from the beginning"
-        "503":
-          description: Not all cluster nodes at minimum version
+          description: Bad request
+        "404":
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
-                version-check-failed:
-                  summary: Version check failed
-                  description: Version check failed
+                not-found:
+                  description: Not found
+                  summary: Not found
                   value:
                     errors:
-                    - title: Endpoint not active yet
-                      detail: "Not all cluster nodes support this endpoint yet, please\
-                        \ try again later"
-  /api/v1/mqtt/clients/{clientId}/subscriptions:
-    get:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+      summary: Get a clients connection state
       tags:
       - MQTT Clients
-      summary: List all subscriptions for MQTT client
+  /api/v1/mqtt/clients/{clientId}/subscriptions:
+    get:
       description: "List all subscriptions for a specific client.\n\nThis endpoint\
         \ does not support pagination with cursor at the moment, but it might be added\
         \ in future versions. Please make sure to check if a cursor is returned and\
         \ another page is available to have a future-proof implementation."
       operationId: getSubscriptionsForMqttClient
       parameters:
-      - name: clientId
+      - description: The MQTT client identifier.
         in: path
-        description: The MQTT client identifier.
+        name: clientId
         required: true
         schema:
           type: string
       responses:
         "200":
-          description: Success
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/ClientSubscriptionList'
               examples:
+                empty-result:
+                  description: Empty result if client has no subscriptions.
+                  summary: Empty result if client has no subscriptions
+                  value:
+                    items: []
                 multiple-results:
-                  summary: Multiple results
                   description: Example response with multiple results.
+                  summary: Multiple results
                   value:
                     items:
                     - topicFilter: topic/0
@@ -1187,67 +1186,62 @@ paths:
                       retainAsPublished: false
                       noLocal: false
                       subscriptionIdentifier: 2
-                empty-result:
-                  summary: Empty result if client has no subscriptions
-                  description: Empty result if client has no subscriptions.
-                  value:
-                    items: []
+              schema:
+                $ref: '#/components/schemas/ClientSubscriptionList'
+          description: Success
         "400":
-          description: Bad request
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Errors'
               examples:
                 param-missing:
-                  summary: Required URL parameter missing
                   description: Bad request
+                  summary: Required URL parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
-        "404":
-          description: Resource not found
-          content:
-            application/json:
               schema:
                 $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
               examples:
                 not-found:
-                  summary: Not found
                   description: Not found
+                  summary: Not found
                   value:
                     errors:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+      summary: List all subscriptions for MQTT client
+      tags:
+      - MQTT Clients
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        title:
-          type: string
-          description: The type of this error
-        detail:
-          type: string
-          description: Detailed contextual description of this error
-    Errors:
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/Error'
     Backup:
       type: object
       properties:
+        bytes:
+          type: integer
+          format: int64
+          description: The size of this backup file in bytes.
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          description: Time the backup was created at
+        failReason:
+          type: string
+          description: "The reason why this backup failed, only present for failed\
+            \ backups."
+          nullable: true
         id:
           type: string
           description: The id of this backup
-        createdAt:
-          type: string
-          description: Time the backup was created at
-          format: date-time
         state:
           type: string
           description: The current state of the backup
@@ -1258,16 +1252,6 @@ components:
           - RESTORE_IN_PROGRESS
           - FAILED
           - RESTORE_FAILED
-        failReason:
-          type: string
-          description: "The reason why this backup failed, only present for failed\
-            \ backups."
-          nullable: true
-        bytes:
-          type: integer
-          description: The size of this backup file in bytes.
-          format: int64
-          nullable: true
     BackupItem:
       type: object
       properties:
@@ -1281,44 +1265,306 @@ components:
           description: List of result items that are returned by this endpoint
           items:
             $ref: '#/components/schemas/Backup'
+    CertificateInformation:
+      type: object
+      description: The client certificate sent by the client
+      nullable: true
+      properties:
+        commonName:
+          type: string
+          description: Common name
+          nullable: true
+        country:
+          type: string
+          description: Country
+          nullable: true
+        organization:
+          type: string
+          description: Organization
+          nullable: true
+        organizationalUnit:
+          type: string
+          description: Organizational unit
+          nullable: true
+        serial:
+          type: string
+          description: The certificates serial
+          nullable: true
+        state:
+          type: string
+          description: State
+          nullable: true
+        validFrom:
+          type: string
+          format: date-time
+          description: Valid from date
+        validUntil:
+          type: string
+          format: date-time
+          description: Valid until date
+        version:
+          type: string
+          description: Certificate version
+          nullable: true
+    Client:
+      type: object
+      description: List of result items that are returned by this endpoint
+      properties:
+        id:
+          type: string
+    ClientDetails:
+      type: object
+      properties:
+        connected:
+          type: boolean
+          description: If this client is connected
+        connectedAt:
+          type: string
+          format: date-time
+          description: Time the client connection was established
+          nullable: true
+        connection:
+          $ref: '#/components/schemas/ConnectionDetails'
+        id:
+          type: string
+          description: The MQTT client identifier
+        messageQueueSize:
+          type: integer
+          format: int64
+          description: The current message queue size for this client
+        restrictions:
+          $ref: '#/components/schemas/ClientRestrictions'
+        sessionExpiryInterval:
+          type: integer
+          format: int64
+          description: The session expiry interval
+          nullable: true
+        willPresent:
+          type: boolean
+          description: If a will is present for this client
+    ClientItem:
+      type: object
+      properties:
+        client:
+          $ref: '#/components/schemas/ClientDetails'
+    ClientList:
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/PaginationCursor'
+        items:
+          type: array
+          description: List of result items that are returned by this endpoint
+          items:
+            $ref: '#/components/schemas/Client'
+    ClientRestrictions:
+      type: object
+      description: The restrictions that are in effect for this client
+      nullable: true
+      properties:
+        maxMessageSize:
+          type: integer
+          format: int64
+          description: maximum MQTT message size
+          nullable: true
+        maxQueueSize:
+          type: integer
+          format: int64
+          description: maximum queue size
+          nullable: true
+        queuedMessageStrategy:
+          type: string
+          description: The queue strategy if the queue is full
+          nullable: true
+    ClientSubscription:
+      type: object
+      description: List of result items that are returned by this endpoint
+      properties:
+        noLocal:
+          type: boolean
+          description: The No Local flag
+        qos:
+          type: string
+          description: The Quality of Service level
+          enum:
+          - AT_MOST_ONCE
+          - AT_LEAST_ONCE
+          - EXACTLY_ONCE
+        retainAsPublished:
+          type: boolean
+          description: The Retain As Published flag
+        retainHandling:
+          type: string
+          description: Retain handling option
+          enum:
+          - SEND
+          - SEND_IF_NEW_SUBSCRIPTION
+          - DO_NOT_SEND
+        subscriptionIdentifier:
+          type: integer
+          format: int32
+          description: The subscription identifier
+          nullable: true
+        topicFilter:
+          type: string
+          description: The MQTT topic filter
+    ClientSubscriptionList:
+      type: object
+      properties:
+        _links:
+          $ref: '#/components/schemas/PaginationCursor'
+        items:
+          type: array
+          description: List of result items that are returned by this endpoint
+          items:
+            $ref: '#/components/schemas/ClientSubscription'
+    Connection:
+      type: object
+      description: Information about the client's connection state
+      properties:
+        connected:
+          type: boolean
+          description: If this client is currently connected
+    ConnectionDetails:
+      type: object
+      description: Information about the clients connection
+      nullable: true
+      properties:
+        cleanStart:
+          type: boolean
+          description: Clean start flag
+        connectedListenerId:
+          type: string
+          description: Id of the HiveMQ listener the client is connected to
+        connectedNodeId:
+          type: string
+          description: Id of the HiveMQ node the client is connected to
+        keepAlive:
+          type: integer
+          format: int32
+          description: Connection Keep Alive in seconds
+          nullable: true
+        mqttVersion:
+          type: string
+          description: MQTT version of the client
+        password:
+          type: string
+          format: byte
+          description: Password
+          nullable: true
+        proxyInformation:
+          $ref: '#/components/schemas/ProxyInformation'
+        sourceIp:
+          type: string
+          description: The client's IP
+          nullable: true
+        tlsInformation:
+          $ref: '#/components/schemas/TlsInformation'
+        username:
+          type: string
+          description: Username
+          nullable: true
+    ConnectionItem:
+      type: object
+      properties:
+        connection:
+          $ref: '#/components/schemas/Connection'
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Detailed contextual description of this error
+        title:
+          type: string
+          description: The type of this error
+    Errors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+    PaginationCursor:
+      type: object
+      description: Links for pagination
+      nullable: true
+      properties:
+        next:
+          type: string
+    ProxyInformation:
+      type: object
+      description: Proxy Protocol information
+      nullable: true
+      properties:
+        destinationIp:
+          type: string
+          description: The client's destination IP as seen by the proxy
+        destinationPort:
+          type: integer
+          format: int32
+          description: The client's destination port as seen by the proxy
+        sourceIp:
+          type: string
+          description: The client's IP as seen by the proxy
+        sourcePort:
+          type: integer
+          format: int32
+          description: The client's Port as seen by the proxy
+        tlvs:
+          type: array
+          description: Additional TLV fields contained in the proxy protocol information
+          items:
+            $ref: '#/components/schemas/TLV'
+          nullable: true
+    TLV:
+      type: object
+      description: Additional TLV fields contained in the proxy protocol information
+      nullable: true
+      properties:
+        key:
+          type: string
+          description: TLV Key
+        value:
+          type: string
+          description: TLV value
+    TlsInformation:
+      type: object
+      description: TLS information
+      nullable: true
+      properties:
+        certificateInformation:
+          $ref: '#/components/schemas/CertificateInformation'
+        cipherSuite:
+          type: string
+          description: The used cipher suite
+        tlsVersion:
+          type: string
+          description: The used TLS version
     TraceFilter:
       type: object
+      description: Topic filters to trace
       properties:
         regex:
           type: string
           description: Regex pattern this filter will trace for.
-      description: Topic filters to trace
     TraceRecording:
       type: object
+      description: "Trace recording item describing the desired (and optionally, when\
+        \ receiving from the server: current) state of a trace recording"
       properties:
-        name:
-          type: string
-          description: "Name of the trace recording. Must be unique, contain at least\
-            \ three characters and only combinations of numbers, letters, dashes and\
-            \ underscores are allowed"
-        startAt:
-          type: string
-          description: Time the trace recording is scheduled to start at
-          format: date-time
-        endAt:
-          type: string
-          description: Time the trace recording is scheduled to stop at. Must be at
-            a later time from the start time
-          format: date-time
         clientIdFilters:
-          uniqueItems: true
           type: array
           description: Client ID filters to trace
           items:
             $ref: '#/components/schemas/TraceFilter'
-        topicFilters:
           uniqueItems: true
-          type: array
-          description: Topic filters to trace
-          items:
-            $ref: '#/components/schemas/TraceFilter'
+        endAt:
+          type: string
+          format: date-time
+          description: Time the trace recording is scheduled to stop at. Must be at
+            a later time from the start time
         events:
-          uniqueItems: true
           type: array
           description: MQTT events to trace
           items:
@@ -1340,6 +1586,16 @@ components:
             - MQTT_MESSAGE_PINGRESP
             - MQTT_MESSAGE_DISCONNECT
             - MQTT_MESSAGE_AUTH
+          uniqueItems: true
+        name:
+          type: string
+          description: "Name of the trace recording. Must be unique, contain at least\
+            \ three characters and only combinations of numbers, letters, dashes and\
+            \ underscores are allowed"
+        startAt:
+          type: string
+          format: date-time
+          description: Time the trace recording is scheduled to start at
         state:
           type: string
           description: "Current state of the recording. Only sent by the API, ignored\
@@ -1349,15 +1605,19 @@ components:
           - IN_PROGRESS
           - ABORTED
           - STOPPED
-      description: "Trace recording item describing the desired (and optionally, when\
-        \ receiving from the server: current) state of a trace recording"
+        topicFilters:
+          type: array
+          description: Topic filters to trace
+          items:
+            $ref: '#/components/schemas/TraceFilter'
+          uniqueItems: true
     TraceRecordingItem:
-      required:
-      - traceRecording
       type: object
       properties:
         traceRecording:
           $ref: '#/components/schemas/TraceRecording'
+      required:
+      - traceRecording
     TraceRecordingList:
       type: object
       properties:
@@ -1366,263 +1626,3 @@ components:
           description: List of result items that are returned by this endpoint
           items:
             $ref: '#/components/schemas/TraceRecording'
-    CertificateInformation:
-      type: object
-      properties:
-        commonName:
-          type: string
-          description: Common name
-          nullable: true
-        organization:
-          type: string
-          description: Organization
-          nullable: true
-        organizationalUnit:
-          type: string
-          description: Organizational unit
-          nullable: true
-        serial:
-          type: string
-          description: The certificates serial
-          nullable: true
-        validFrom:
-          type: string
-          description: Valid from date
-          format: date-time
-        validUntil:
-          type: string
-          description: Valid until date
-          format: date-time
-        country:
-          type: string
-          description: Country
-          nullable: true
-        state:
-          type: string
-          description: State
-          nullable: true
-        version:
-          type: string
-          description: Certificate version
-          nullable: true
-      description: The client certificate sent by the client
-      nullable: true
-    ClientDetails:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The MQTT client identifier
-        connected:
-          type: boolean
-          description: If this client is connected
-        sessionExpiryInterval:
-          type: integer
-          description: The session expiry interval
-          format: int64
-          nullable: true
-        connectedAt:
-          type: string
-          description: Time the client connection was established
-          format: date-time
-          nullable: true
-        messageQueueSize:
-          type: integer
-          description: The current message queue size for this client
-          format: int64
-        willPresent:
-          type: boolean
-          description: If a will is present for this client
-        restrictions:
-          $ref: '#/components/schemas/ClientRestrictions'
-        connection:
-          $ref: '#/components/schemas/ConnectionDetails'
-    ClientItem:
-      type: object
-      properties:
-        client:
-          $ref: '#/components/schemas/ClientDetails'
-    ClientRestrictions:
-      type: object
-      properties:
-        maxMessageSize:
-          type: integer
-          description: maximum MQTT message size
-          format: int64
-          nullable: true
-        maxQueueSize:
-          type: integer
-          description: maximum queue size
-          format: int64
-          nullable: true
-        queuedMessageStrategy:
-          type: string
-          description: The queue strategy if the queue is full
-          nullable: true
-      description: The restrictions that are in effect for this client
-      nullable: true
-    ConnectionDetails:
-      type: object
-      properties:
-        keepAlive:
-          type: integer
-          description: Connection Keep Alive in seconds
-          format: int32
-          nullable: true
-        mqttVersion:
-          type: string
-          description: MQTT version of the client
-        connectedListenerId:
-          type: string
-          description: Id of the HiveMQ listener the client is connected to
-        connectedNodeId:
-          type: string
-          description: Id of the HiveMQ node the client is connected to
-        username:
-          type: string
-          description: Username
-          nullable: true
-        password:
-          type: string
-          description: Password
-          format: byte
-          nullable: true
-        cleanStart:
-          type: boolean
-          description: Clean start flag
-        sourceIp:
-          type: string
-          description: The client's IP
-          nullable: true
-        proxyInformation:
-          $ref: '#/components/schemas/ProxyInformation'
-        tlsInformation:
-          $ref: '#/components/schemas/TlsInformation'
-      description: Information about the clients connection
-      nullable: true
-    ProxyInformation:
-      type: object
-      properties:
-        sourceIp:
-          type: string
-          description: The client's IP as seen by the proxy
-        sourcePort:
-          type: integer
-          description: The client's Port as seen by the proxy
-          format: int32
-        destinationIp:
-          type: string
-          description: The client's destination IP as seen by the proxy
-        destinationPort:
-          type: integer
-          description: The client's destination port as seen by the proxy
-          format: int32
-        tlvs:
-          type: array
-          description: Additional TLV fields contained in the proxy protocol information
-          nullable: true
-          items:
-            $ref: '#/components/schemas/TLV'
-      description: Proxy Protocol information
-      nullable: true
-    TLV:
-      type: object
-      properties:
-        key:
-          type: string
-          description: TLV Key
-        value:
-          type: string
-          description: TLV value
-      description: Additional TLV fields contained in the proxy protocol information
-      nullable: true
-    TlsInformation:
-      type: object
-      properties:
-        cipherSuite:
-          type: string
-          description: The used cipher suite
-        tlsVersion:
-          type: string
-          description: The used TLS version
-        certificateInformation:
-          $ref: '#/components/schemas/CertificateInformation'
-      description: TLS information
-      nullable: true
-    Client:
-      type: object
-      properties:
-        id:
-          type: string
-      description: List of result items that are returned by this endpoint
-    ClientList:
-      type: object
-      properties:
-        items:
-          type: array
-          description: List of result items that are returned by this endpoint
-          items:
-            $ref: '#/components/schemas/Client'
-        _links:
-          $ref: '#/components/schemas/PaginationCursor'
-    PaginationCursor:
-      type: object
-      properties:
-        next:
-          type: string
-      description: Links for pagination
-      nullable: true
-    Connection:
-      type: object
-      properties:
-        connected:
-          type: boolean
-          description: If this client is currently connected
-      description: Information about the client's connection state
-    ConnectionItem:
-      type: object
-      properties:
-        connection:
-          $ref: '#/components/schemas/Connection'
-    ClientSubscription:
-      type: object
-      properties:
-        topicFilter:
-          type: string
-          description: The MQTT topic filter
-        qos:
-          type: string
-          description: The Quality of Service level
-          enum:
-          - AT_MOST_ONCE
-          - AT_LEAST_ONCE
-          - EXACTLY_ONCE
-        retainHandling:
-          type: string
-          description: Retain handling option
-          enum:
-          - SEND
-          - SEND_IF_NEW_SUBSCRIPTION
-          - DO_NOT_SEND
-        retainAsPublished:
-          type: boolean
-          description: The Retain As Published flag
-        noLocal:
-          type: boolean
-          description: The No Local flag
-        subscriptionIdentifier:
-          type: integer
-          description: The subscription identifier
-          format: int32
-          nullable: true
-      description: List of result items that are returned by this endpoint
-    ClientSubscriptionList:
-      type: object
-      properties:
-        items:
-          type: array
-          description: List of result items that are returned by this endpoint
-          items:
-            $ref: '#/components/schemas/ClientSubscription'
-        _links:
-          $ref: '#/components/schemas/PaginationCursor'
