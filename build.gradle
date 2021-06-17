@@ -7,6 +7,11 @@ buildscript {
     dependencies {
         classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:5.3.0'
         classpath "com.github.ben-manes:gradle-versions-plugin:0.38.0"
+        dependencies {
+            if (gradle.includedBuilds.find { it.name == "plugins"} != null) {
+                classpath("com.hivemq:plugins")
+            }
+        }
     }
 }
 
@@ -35,6 +40,11 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.palantir.graal'
 apply plugin: 'org.owasp.dependencycheck'
 
+if (gradle.includedBuilds.find { it.name == "plugins"} != null) {
+    apply plugin: "com.hivemq.version-updater"
+    project.ext.set("versionUpdaterFiles", files("doc/docs/installation.md"))
+}
+
 /****************
  * Project Settings *
  ***************/
@@ -42,12 +52,9 @@ apply plugin: 'org.owasp.dependencycheck'
 javadoc.options.encoding = 'UTF-8'
 
 group = 'com.hivemq'
-version = '4.4.8' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 description = 'MQTT CLI is a tool that provides a feature rich command line interface for connecting, ' +
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
-
-def hivemqApiVersion = '4.4.8'
 
 application {
     mainClassName = 'com.hivemq.cli.MqttCLIMain'
@@ -70,7 +77,8 @@ repositories {
  * OpenAPI HiveMQ Rest API dependency *
  ***************/
 
-openApiGenerate {
+task generateHiveMqOpenApi(type: GenerateTask) {
+    group = "hivemq"
     generatorName = "java"
     inputSpec = "$rootDir/specs/HiveMQ-$hivemqApiVersion-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
@@ -89,7 +97,7 @@ sourceSets {
     }
 }
 
-compileJava.dependsOn tasks.openApiGenerate
+compileJava.dependsOn tasks.generateHiveMqOpenApi
 
 
 /****************
