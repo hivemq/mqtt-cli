@@ -8,7 +8,7 @@ buildscript {
         classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:5.3.0'
         classpath "com.github.ben-manes:gradle-versions-plugin:0.38.0"
         dependencies {
-            if (gradle.includedBuilds.find { it.name == "plugins"} != null) {
+            if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
                 classpath("com.hivemq:plugins")
             }
         }
@@ -41,10 +41,6 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'com.palantir.graal'
 apply plugin: 'org.owasp.dependencycheck'
 
-if (gradle.includedBuilds.find { it.name == "plugins"} != null) {
-    apply plugin: "com.hivemq.version-updater"
-    project.ext.set("versionUpdaterFiles", files("doc/docs/installation.md"))
-}
 
 /****************
  * Project Settings *
@@ -56,9 +52,6 @@ group = 'com.hivemq'
 description = 'MQTT CLI is a tool that provides a feature rich command line interface for connecting, ' +
         'publishing, subscribing, unsubscribing and disconnecting ' +
         'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
-
-def hivemqApiVersion = '4.6.2'
-def hivemqSwarmApiVersion = '4.6.2'
 
 application {
     mainClassName = 'com.hivemq.cli.MqttCLIMain'
@@ -700,6 +693,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 import java.security.DigestInputStream
 import java.security.MessageDigest
+import java.util.regex.Pattern
 
 static def checkSum(File file) {
     file.withInputStream {
@@ -726,4 +720,61 @@ distributions {
 
 shadowDistZip {
     dependsOn(updateThirdPartyLicenses)
+}
+
+/*************************
+ * HiveMQ platform build *
+ *************************/
+
+task deleteOldOpenAPIspecs(type: Delete) {
+    delete fileTree('specs') {
+        include '**/*.yaml'
+    }
+}
+
+if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
+    task copyHiveMQSpec(type: Copy) {
+        dependsOn gradle.includedBuild('hivemq-enterprise').task(':openApiSpec')
+
+        from('../hivemq-enterprise/build/openapi') {
+            include { Pattern.compile(".*${version}-OpenAPI-spec.yaml").matcher(it.name).matches() }
+        }
+        into 'specs'
+    }
+}
+
+if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null) {
+    task copyHiveMQSwarmSpec(type: Copy) {
+        dependsOn gradle.includedBuild('hivemq-swarm').task(':openApiSpec')
+
+        from('../hivemq-swarm/build/openapi') {
+            include { Pattern.compile(".*${version}-OpenAPI-spec.yaml").matcher(it.name).matches() }
+        }
+        into 'specs'
+    }
+}
+
+if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
+        gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
+    task updateSpecs {
+        dependsOn deleteOldOpenAPIspecs
+        dependsOn copyHiveMQSpec
+        dependsOn copyHiveMQSwarmSpec
+
+        doLast {
+            def gradleProperties = new File("${project.projectDir}/gradle.properties")
+            def text = gradleProperties.text
+
+            text = text.replaceAll("(?m)^hivemq-api\\.version=.+", "hivemq-api.version=${version}")
+            text = text.replaceAll("(?m)^hivemq-swarm-api\\.version=.+", "hivemq-swarm-api.version=${version}")
+
+            gradleProperties.write(text)
+        }
+    }
+}
+
+
+if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
+    apply plugin: "com.hivemq.version-updater"
+    project.ext.set("versionUpdaterFiles", files("doc/docs/installation.md"))
 }
