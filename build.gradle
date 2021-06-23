@@ -726,7 +726,7 @@ shadowDistZip {
  * HiveMQ platform build *
  *************************/
 
-task deleteOldOpenAPIspecs(type: Delete) {
+task deleteOldSpecs(type: Delete) {
     delete fileTree('specs') {
         include '**/*.yaml'
     }
@@ -757,9 +757,11 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null) {
 if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
         gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
     task updateSpecs {
-        dependsOn deleteOldOpenAPIspecs
+        dependsOn deleteOldSpecs
         dependsOn copyHiveMQSpec
         dependsOn copyHiveMQSwarmSpec
+        copyHiveMQSpec.mustRunAfter(deleteOldSpecs)
+        copyHiveMQSwarmSpec.mustRunAfter(deleteOldSpecs)
 
         doLast {
             def gradleProperties = new File("${project.projectDir}/gradle.properties")
@@ -776,5 +778,5 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
 
 if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
     apply plugin: "com.hivemq.version-updater"
-    project.ext.set("versionUpdaterFiles", files("doc/docs/installation.md"))
+    project.ext.set("versionUpdaterFiles", ["doc/docs/installation.md"])
 }
