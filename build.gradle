@@ -653,6 +653,8 @@ tasks.githubRelease.dependsOn tasks.buildPackageAll
  * Helpers *
  ***************/
 
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import java.util.regex.Pattern
