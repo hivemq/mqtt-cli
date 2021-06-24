@@ -1,5 +1,4 @@
-// TODO change this to master as soon as the changes are merged
-HIVEMQ_BASE_BRANCH= 'branch=create-composite-ci'
+HIVEMQ_BASE_BRANCH= 'branch=master'
 
 pipeline {
     // by default run on the master node, since it's the only one with direct repo access
