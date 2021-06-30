@@ -1,4 +1,4 @@
-PLATFORM_MASTER = 'branch=master'
+PLATFORM_MASTER = 'master'
 
 pipeline {
     // by default run on the master node, since it's the only one with direct repo access
