@@ -707,32 +707,17 @@ if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
     }
 }
 
-if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null) {
-    task copyHiveMQSwarmSpec(type: Copy) {
-        dependsOn gradle.includedBuild('hivemq-swarm').task(':openApiSpec')
-
-        from('../hivemq-swarm/build/openapi') {
-            include { Pattern.compile(".*${version}-OpenAPI-spec.yaml").matcher(it.name).matches() }
-        }
-        into 'specs'
-    }
-}
-
-if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
-        gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
+if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
     task updateSpecs {
         dependsOn deleteOldSpecs
         dependsOn copyHiveMQSpec
-        dependsOn copyHiveMQSwarmSpec
         copyHiveMQSpec.mustRunAfter(deleteOldSpecs)
-        copyHiveMQSwarmSpec.mustRunAfter(deleteOldSpecs)
 
         doLast {
             def gradleProperties = new File("${project.projectDir}/gradle.properties")
             def text = gradleProperties.text
 
             text = text.replaceAll("(?m)^hivemq-api\\.version=.+", "hivemq-api.version=${version}")
-            text = text.replaceAll("(?m)^hivemq-swarm-api\\.version=.+", "hivemq-swarm-api.version=${version}")
 
             gradleProperties.write(text)
         }
