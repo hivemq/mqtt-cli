@@ -336,7 +336,7 @@ license {
 
 tasks.register("updateThirdPartyLicenses") {
     group "license"
-    dependsOn ":downloadLicenses"
+    dependsOn(tasks.downloadLicenses)
     doLast {
         javaexec {
             main = "-jar"
@@ -593,7 +593,7 @@ launch4j {
 }
 
 tasks.register("buildWindowsZip", Zip) {
-    dependsOn createExe
+    dependsOn(tasks.createExe)
 
     archiveFileName = windowsZipName
     destinationDirectory = file(project.buildWinDir)
@@ -655,7 +655,9 @@ gitPublish {
 }
 
 
-tasks.githubRelease.dependsOn tasks.buildPackageAll
+tasks.githubRelease {
+    dependsOn(tasks.buildPackageAll)
+}
 
 
 /****************
@@ -709,8 +711,8 @@ distributions {
     }
 }
 
-shadowDistZip {
-    dependsOn(updateThirdPartyLicenses)
+tasks.shadowDistZip {
+    dependsOn(tasks.updateThirdPartyLicenses)
 }
 
 /*************************
