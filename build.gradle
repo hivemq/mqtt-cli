@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:5.3.0'
+        classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:5.3.0"
         classpath "com.github.ben-manes:gradle-versions-plugin:0.38.0"
         dependencies {
             if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
@@ -16,53 +16,53 @@ buildscript {
 }
 
 plugins {
-    id 'java'
-    id 'idea'
-    id 'application'
-    id 'com.github.johnrengelman.shadow' version '6.1.0' apply false
+    id "java"
+    id "idea"
+    id "application"
+    id "com.github.johnrengelman.shadow" version "6.1.0" apply false
     id "com.github.hierynomus.license" version "0.15.0"
-    id 'org.gradle.crypto.checksum' version '1.2.0'
+    id "org.gradle.crypto.checksum" version "1.2.0"
     id "nebula.ospackage" version "8.5.6"
-    id 'edu.sc.seis.launch4j' version '2.5.0'
-    id 'com.palantir.graal' version '0.7.2'
-    id 'de.thetaphi.forbiddenapis' version '3.1' apply false
+    id "edu.sc.seis.launch4j" version "2.5.0"
+    id "com.palantir.graal" version "0.7.2"
+    id "de.thetaphi.forbiddenapis" version "3.1" apply false
     id "com.github.breadmoirai.github-release" version "2.2.12"
-    id 'org.ajoberstar.git-publish' version '3.0.0'
-    id 'org.owasp.dependencycheck' version '6.1.5' apply false
+    id "org.ajoberstar.git-publish" version "3.0.0"
+    id "org.owasp.dependencycheck" version "6.1.5" apply false
     id "com.github.ben-manes.versions" version "0.38.0"
     id "org.openapi.generator" version "4.3.1"
 }
 
 apply plugin: "com.github.ben-manes.versions"
-apply plugin: 'de.thetaphi.forbiddenapis'
-apply plugin: 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'com.palantir.graal'
-apply plugin: 'org.owasp.dependencycheck'
+apply plugin: "de.thetaphi.forbiddenapis"
+apply plugin: "application"
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "com.palantir.graal"
+apply plugin: "org.owasp.dependencycheck"
 
 
 /****************
  * Project Settings *
  ***************/
 
-javadoc.options.encoding = 'UTF-8'
+javadoc.options.encoding = "UTF-8"
 
-group = 'com.hivemq'
-description = 'MQTT CLI is a tool that provides a feature rich command line interface for connecting, ' +
-        'publishing, subscribing, unsubscribing and disconnecting ' +
-        'various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 '
+group = "com.hivemq"
+description = "MQTT CLI is a tool that provides a feature rich command line interface for connecting, " +
+        "publishing, subscribing, unsubscribing and disconnecting " +
+        "various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 "
 
 application {
-    mainClassName = 'com.hivemq.cli.MqttCLIMain'
+    mainClassName = "com.hivemq.cli.MqttCLIMain"
 }
 
 idea {
     module {
-        generatedSourceDirs += file('build/generated/sources/annotationProcessor/java/main')
+        generatedSourceDirs += file("build/generated/sources/annotationProcessor/java/main")
     }
 }
-apply plugin: 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "application"
+apply plugin: "com.github.johnrengelman.shadow"
 
 repositories {
     mavenCentral()
@@ -76,7 +76,7 @@ repositories {
 task generateHiveMqOpenApi(type: GenerateTask) {
     group = "hivemq"
     generatorName = "java"
-    inputSpec = "$rootDir/specs/HiveMQ-${getProperty('hivemq-api.version')}-OpenAPI-spec.yaml".toString()
+    inputSpec = "$rootDir/specs/HiveMQ-${getProperty("hivemq-api.version")}-OpenAPI-spec.yaml".toString()
     outputDir = "$buildDir/generated/openapi".toString()
     apiPackage = "com.hivemq.cli.openapi.hivemq"
     modelPackage = "com.hivemq.cli.openapi.hivemq"
@@ -102,17 +102,17 @@ compileJava.dependsOn tasks.generateHiveMqOpenApi
 
 
 ext {
-    moduleName = 'com.hivemq.cli'
-    readableName = 'mqtt-cli'
-    appName = 'MQTT CLI'
-    githubOrg = 'hivemq'
-    githubRepo = 'mqtt-cli'
-    githubUrl = 'https://github.com/' + githubOrg + '/' + githubRepo
-    scmConnection = 'scm:git:git://github.com/' + githubOrg + '/' + githubRepo + '.git'
-    scmDeveloperConnection = 'scm:git:ssh://git@github.com/' + githubOrg + '/' + githubRepo + '.git'
-    issuesUrl = githubUrl + '/issues'
-    docUrl = 'https://' + githubOrg + '.github.io/' + githubRepo + '/'
-    prevVersion = ''
+    moduleName = "com.hivemq.cli"
+    readableName = "mqtt-cli"
+    appName = "MQTT CLI"
+    githubOrg = "hivemq"
+    githubRepo = "mqtt-cli"
+    githubUrl = "https://github.com/" + githubOrg + "/" + githubRepo
+    scmConnection = "scm:git:git://github.com/" + githubOrg + "/" + githubRepo + ".git"
+    scmDeveloperConnection = "scm:git:ssh://git@github.com/" + githubOrg + "/" + githubRepo + ".git"
+    issuesUrl = githubUrl + "/issues"
+    docUrl = "https://" + githubOrg + ".github.io/" + githubRepo + "/"
+    prevVersion = ""
 
     appJarName = "${readableName}.jar"
     appExe = "${readableName}.exe"
@@ -156,33 +156,33 @@ ext {
 
     // Dependency versions
 
-    picoclishell3Version = '4.6.1'
-    picocliVersion = '4.6.1'
-    jline3Version = '3.19.0'
-    jline3JansiVersion = '3.19.0'
-    daggerVersion = '2.34.1'
-    guavaVersion = '30.1.1-jre'
-    hivemqclientVersion = '1.2.2'
-    tinylogVersion = '2.0.1'
-    jcToolsVersion = '2.1.2'
-    jetbrainsAnnotationsVersion = '19.0.0'
-    bouncycastleVersion = '1.68'
-    nettyVersion = '4.1.63.Final'
-    gsonVersion = '2.8.6'
-    substrateVmVersion = '19.2.1'
-    junitJupiterVersion = '5.7.1'
-    openCsvVersion = '5.2'
-    swaggerVersion = '1.6.2'
-    findBugsVersion = '3.0.2'
-    okHttpVersion = '3.14.7'
-    gsonFireVersion = '1.8.4'
-    javaxVersion = '1.3.2'
-    commonsLangVersion = '3.10'
-    mockitoVersion = '3.9.0'
-    hivemqTestcontainerVersion = '1.3.2'
-    mockWebserverVersion = '4.9.1'
-    systemExitVersion = '1.1.1'
-    testcontainersVersion = '1.15.3'
+    picoclishell3Version = "4.6.1"
+    picocliVersion = "4.6.1"
+    jline3Version = "3.19.0"
+    jline3JansiVersion = "3.19.0"
+    daggerVersion = "2.34.1"
+    guavaVersion = "30.1.1-jre"
+    hivemqclientVersion = "1.2.2"
+    tinylogVersion = "2.0.1"
+    jcToolsVersion = "2.1.2"
+    jetbrainsAnnotationsVersion = "19.0.0"
+    bouncycastleVersion = "1.68"
+    nettyVersion = "4.1.63.Final"
+    gsonVersion = "2.8.6"
+    substrateVmVersion = "19.2.1"
+    junitJupiterVersion = "5.7.1"
+    openCsvVersion = "5.2"
+    swaggerVersion = "1.6.2"
+    findBugsVersion = "3.0.2"
+    okHttpVersion = "3.14.7"
+    gsonFireVersion = "1.8.4"
+    javaxVersion = "1.3.2"
+    commonsLangVersion = "3.10"
+    mockitoVersion = "3.9.0"
+    hivemqTestcontainerVersion = "1.3.2"
+    mockWebserverVersion = "4.9.1"
+    systemExitVersion = "1.1.1"
+    testcontainersVersion = "1.15.3"
 }
 
 
@@ -193,44 +193,44 @@ ext {
 dependencies {
 
     // hivemq client api dependencies
-    implementation group: 'io.swagger', name: 'swagger-annotations', version: swaggerVersion
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: findBugsVersion
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: okHttpVersion
-    implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: okHttpVersion
-    implementation group: 'io.gsonfire', name: 'gson-fire', version: gsonFireVersion
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: commonsLangVersion
-    implementation group: 'javax.annotation', name: 'javax.annotation-api', version: javaxVersion
+    implementation("io.swagger:swagger-annotations:${swaggerVersion}")
+    implementation("com.google.code.findbugs:jsr305:${findBugsVersion}")
+    implementation("com.squareup.okhttp3:okhttp:${okHttpVersion}")
+    implementation("com.squareup.okhttp3:logging-interceptor:${okHttpVersion}")
+    implementation("io.gsonfire:gson-fire:${gsonFireVersion}")
+    implementation("org.apache.commons:commons-lang3:${commonsLangVersion}")
+    implementation("javax.annotation:javax.annotation-api:${javaxVersion}")
 
-    implementation group: 'org.jline', name: 'jline', version: jline3Version
-    implementation group: 'org.jline', name: 'jline-terminal-jansi', version: jline3JansiVersion
-    implementation group: 'com.google.dagger', name: 'dagger', version: daggerVersion
-    compileOnly group: 'com.oracle.substratevm', name: "svm", version: substrateVmVersion
-    annotationProcessor group: 'com.google.dagger', name: 'dagger-compiler', version: daggerVersion
+    implementation("org.jline:jline:${jline3Version}")
+    implementation("org.jline:jline-terminal-jansi:${jline3JansiVersion}")
+    implementation("com.google.dagger:dagger:${daggerVersion}")
+    compileOnly("com.oracle.substratevm:svm:${substrateVmVersion}")
+    annotationProcessor("com.google.dagger:dagger-compiler:${daggerVersion}")
 
-    implementation group: 'info.picocli', name: 'picocli', version: picocliVersion
-    implementation group: 'info.picocli', name: 'picocli-shell-jline3', version: picoclishell3Version
-    implementation group: 'info.picocli', name: 'picocli-codegen', version: picocliVersion
-    implementation group: 'com.google.guava', name: 'guava', version: guavaVersion
-    implementation group: 'com.google.code.gson', name: 'gson', version: gsonVersion
-    implementation group: 'org.tinylog', name: 'tinylog-api', version: tinylogVersion
-    implementation group: 'org.tinylog', name: 'tinylog-impl', version: tinylogVersion
-    implementation group: 'org.jetbrains', name: 'annotations', version: jetbrainsAnnotationsVersion
-    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: bouncycastleVersion
-    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: bouncycastleVersion
-    implementation group: 'com.hivemq', name: 'hivemq-mqtt-client', version: hivemqclientVersion
-    implementation group: 'io.netty', name: 'netty-handler', version: nettyVersion
-    implementation group: 'io.netty', name: 'netty-codec-http', version: nettyVersion
-    implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: nettyVersion, classifier: 'linux-x86_64'
-    implementation group: 'com.opencsv', name: 'opencsv', version: openCsvVersion
+    implementation("info.picocli:picocli:${picocliVersion}")
+    implementation("info.picocli:picocli-shell-jline3:${picoclishell3Version}")
+    implementation("info.picocli:picocli-codegen:${picocliVersion}")
+    implementation("com.google.guava:guava:${guavaVersion}")
+    implementation("com.google.code.gson:gson:${gsonVersion}")
+    implementation("org.tinylog:tinylog-api:${tinylogVersion}")
+    implementation("org.tinylog:tinylog-impl:${tinylogVersion}")
+    implementation("org.jetbrains:annotations:${jetbrainsAnnotationsVersion}")
+    implementation("org.bouncycastle:bcprov-jdk15on:${bouncycastleVersion}")
+    implementation("org.bouncycastle:bcpkix-jdk15on:${bouncycastleVersion}")
+    implementation("com.hivemq:hivemq-mqtt-client:${hivemqclientVersion}")
+    implementation("io.netty:netty-handler:${nettyVersion}")
+    implementation("io.netty:netty-codec-http:${nettyVersion}")
+    implementation("io.netty:netty-transport-native-epoll:${nettyVersion}:linux-x86_64")
+    implementation("com.opencsv:opencsv:${openCsvVersion}")
 
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: junitJupiterVersion
-    testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: mockWebserverVersion
-    testImplementation group: 'com.hivemq', name: 'hivemq-testcontainer-junit5', version: hivemqTestcontainerVersion
-    testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: systemExitVersion
-    testImplementation group: 'org.testcontainers', name: 'testcontainers', version: testcontainersVersion
-    testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
+    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:${junitJupiterVersion}")
+    testImplementation("com.squareup.okhttp3:mockwebserver:${mockWebserverVersion}")
+    testImplementation("com.hivemq:hivemq-testcontainer-junit5:${hivemqTestcontainerVersion}")
+    testImplementation("com.ginsberg:junit5-system-exit:${systemExitVersion}")
+    testImplementation("org.testcontainers:testcontainers:${testcontainersVersion}")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
 
 }
 
@@ -240,97 +240,97 @@ dependencies {
 configurations.implementation.setCanBeResolved(true)
 
 downloadLicenses {
-    ext.apache_2 = license('Apache License, Version 2.0', 'https://opensource.org/licenses/Apache-2.0')
-    ext.mit = license('MIT License', 'https://opensource.org/licenses/MIT')
-    ext.cddl_1_0 = license('CDDL, Version 1.0', 'https://opensource.org/licenses/CDDL-1.0')
-    ext.cddl_1_1 = license('CDDL, Version 1.1', 'https://oss.oracle.com/licenses/CDDL+GPL-1.1')
-    ext.lgpl_2_0 = license('LGPL, Version 2.0', 'https://opensource.org/licenses/LGPL-2.0')
-    ext.lgpl_2_1 = license('LGPL, Version 2.1', 'https://opensource.org/licenses/LGPL-2.1')
-    ext.lgpl_3_0 = license('LGPL, Version 3.0', 'https://opensource.org/licenses/LGPL-3.0')
-    ext.epl_1_0 = license('EPL, Version 1.0', 'https://opensource.org/licenses/EPL-1.0')
-    ext.epl_2_0 = license('EPL, Version 2.0', 'https://opensource.org/licenses/EPL-2.0')
-    ext.edl_1_0 = license('EDL, Version 1.0', 'https://www.eclipse.org/org/documents/edl-v10.php')
-    ext.bsd_3clause = license('BSD 3-Clause License', 'https://opensource.org/licenses/BSD-3-Clause')
-    ext.bouncycastle = license('Bouncy Castle Licence', 'https://www.bouncycastle.org/licence.html')
-    ext.w3c = license('W3C License', 'https://opensource.org/licenses/W3C')
-    ext.cc0 = license('CC0', 'https://creativecommons.org/publicdomain/zero/1.0/')
+    ext.apache_2 = license("Apache License, Version 2.0", "https://opensource.org/licenses/Apache-2.0")
+    ext.mit = license("MIT License", "https://opensource.org/licenses/MIT")
+    ext.cddl_1_0 = license("CDDL, Version 1.0", "https://opensource.org/licenses/CDDL-1.0")
+    ext.cddl_1_1 = license("CDDL, Version 1.1", "https://oss.oracle.com/licenses/CDDL+GPL-1.1")
+    ext.lgpl_2_0 = license("LGPL, Version 2.0", "https://opensource.org/licenses/LGPL-2.0")
+    ext.lgpl_2_1 = license("LGPL, Version 2.1", "https://opensource.org/licenses/LGPL-2.1")
+    ext.lgpl_3_0 = license("LGPL, Version 3.0", "https://opensource.org/licenses/LGPL-3.0")
+    ext.epl_1_0 = license("EPL, Version 1.0", "https://opensource.org/licenses/EPL-1.0")
+    ext.epl_2_0 = license("EPL, Version 2.0", "https://opensource.org/licenses/EPL-2.0")
+    ext.edl_1_0 = license("EDL, Version 1.0", "https://www.eclipse.org/org/documents/edl-v10.php")
+    ext.bsd_3clause = license("BSD 3-Clause License", "https://opensource.org/licenses/BSD-3-Clause")
+    ext.bouncycastle = license("Bouncy Castle Licence", "https://www.bouncycastle.org/licence.html")
+    ext.w3c = license("W3C License", "https://opensource.org/licenses/W3C")
+    ext.cc0 = license("CC0", "https://creativecommons.org/publicdomain/zero/1.0/")
 
     aliases = [
-            (apache_2)    : ['Apache 2',
-                             'Apache-2.0',
-                             'Apache 2.0',
-                             'Apache License 2.0',
-                             'Apache License v2.0',
-                             'Apache License Version 2.0',
-                             'Apache License, Version 2.0',
-                             'Apache License, version 2.0',
-                             'The Apache License, Version 2.0',
-                             'Apache Software License - Version 2.0',
-                             'Apache Software License, version 2.0',
-                             'The Apache Software License, version 2.0',
-                             'The Apache Software License, Version 2.0'],
-            (mit)         : ['MIT License',
-                             'MIT license',
-                             'The MIT License'],
-            (cddl_1_0)    : ['CDDL, Version 1.0',
-                             'Common Development and Distribution License 1.0',
-                             'COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0',
-                             license('CDDL', 'https://glassfish.dev.java.net/public/CDDLv1.0.html')],
-            (cddl_1_1)    : ['CDDL 1.1',
-                             'CDDL, Version 1.1',
-                             'Common Development And Distribution License 1.1',
-                             'CDDL+GPL License',
-                             'CDDL + GPLv2 with classpath exception',
-                             'Dual license consisting of the CDDL v1.1 and GPL v2',
-                             'CDDL or GPLv2 with exceptions',
-                             'CDDL/GPLv2+CE'],
-            (lgpl_2_0)    : ['LGPL, Version 2.0',
-                             'GNU General Public License, version 2'],
-            (lgpl_2_1)    : ['LGPL, Version 2.1',
-                             'LGPL, version 2.1',
-                             license('GNU Lesser General Public License', 'http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html')],
-            (lgpl_3_0)    : ['LGPL, Version 3.0',
-                             'Lesser General Public License, version 3 or greater'],
-            (epl_1_0)     : ['EPL, Version 1.0',
-                             'Eclipse Public License - v 1.0',
-                             'Eclipse Public License - Version 1.0',
-                             license('Eclipse Public License', 'http://www.eclipse.org/legal/epl-v10.html')],
-            (epl_2_0)     : ['EPL 2.0',
-                             'EPL, Version 2.0'],
-            (edl_1_0)     : ['EDL 1.0',
-                             'EDL, Version 1.0',
-                             'Eclipse Distribution License - v 1.0'],
-            (bsd_3clause) : ['BSD 3-clause',
-                             'BSD-3-Clause',
-                             'BSD 3-Clause License',
-                             '3-Clause BSD License',
-                             'New BSD License',
-                             license('BSD', 'http://asm.ow2.org/license.html')],
-            (bouncycastle): ['Bouncy Castle Licence'],
-            (w3c)         : ['W3C License',
-                             'W3C Software Copyright Notice and License',
-                             'The W3C Software License'],
-            (cc0)         : ['CC0',
-                             'Public Domain']
+            (apache_2)    : ["Apache 2",
+                             "Apache-2.0",
+                             "Apache 2.0",
+                             "Apache License 2.0",
+                             "Apache License v2.0",
+                             "Apache License Version 2.0",
+                             "Apache License, Version 2.0",
+                             "Apache License, version 2.0",
+                             "The Apache License, Version 2.0",
+                             "Apache Software License - Version 2.0",
+                             "Apache Software License, version 2.0",
+                             "The Apache Software License, version 2.0",
+                             "The Apache Software License, Version 2.0"],
+            (mit)         : ["MIT License",
+                             "MIT license",
+                             "The MIT License"],
+            (cddl_1_0)    : ["CDDL, Version 1.0",
+                             "Common Development and Distribution License 1.0",
+                             "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
+                             license("CDDL", "https://glassfish.dev.java.net/public/CDDLv1.0.html")],
+            (cddl_1_1)    : ["CDDL 1.1",
+                             "CDDL, Version 1.1",
+                             "Common Development And Distribution License 1.1",
+                             "CDDL+GPL License",
+                             "CDDL + GPLv2 with classpath exception",
+                             "Dual license consisting of the CDDL v1.1 and GPL v2",
+                             "CDDL or GPLv2 with exceptions",
+                             "CDDL/GPLv2+CE"],
+            (lgpl_2_0)    : ["LGPL, Version 2.0",
+                             "GNU General Public License, version 2"],
+            (lgpl_2_1)    : ["LGPL, Version 2.1",
+                             "LGPL, version 2.1",
+                             license("GNU Lesser General Public License", "http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html")],
+            (lgpl_3_0)    : ["LGPL, Version 3.0",
+                             "Lesser General Public License, version 3 or greater"],
+            (epl_1_0)     : ["EPL, Version 1.0",
+                             "Eclipse Public License - v 1.0",
+                             "Eclipse Public License - Version 1.0",
+                             license("Eclipse Public License", "http://www.eclipse.org/legal/epl-v10.html")],
+            (epl_2_0)     : ["EPL 2.0",
+                             "EPL, Version 2.0"],
+            (edl_1_0)     : ["EDL 1.0",
+                             "EDL, Version 1.0",
+                             "Eclipse Distribution License - v 1.0"],
+            (bsd_3clause) : ["BSD 3-clause",
+                             "BSD-3-Clause",
+                             "BSD 3-Clause License",
+                             "3-Clause BSD License",
+                             "New BSD License",
+                             license("BSD", "http://asm.ow2.org/license.html")],
+            (bouncycastle): ["Bouncy Castle Licence"],
+            (w3c)         : ["W3C License",
+                             "W3C Software Copyright Notice and License",
+                             "The W3C Software License"],
+            (cc0)         : ["CC0",
+                             "Public Domain"]
     ]
 
-    dependencyConfiguration = 'implementation'
+    dependencyConfiguration = "implementation"
     includeProjectDependencies = true
 }
 
 license {
     include "**/*.java"
     exclude "**/com/hivemq/cli/openapi/**"
-    header = file('HEADER')
+    header = file("HEADER")
 }
 
 
 task updateThirdPartyLicenses {
-    group 'license'
-    dependsOn ':downloadLicenses'
+    group "license"
+    dependsOn ":downloadLicenses"
     doLast {
         javaexec {
-            main = '-jar'
+            main = "-jar"
             args = ["${rootDir}/gradle/tools/license-third-party-tool-3.0.jar",
                     "The MQTT Cli",
                     "${buildDir}/reports/license/dependency-license.xml",
@@ -342,11 +342,11 @@ task updateThirdPartyLicenses {
 }
 
 forbiddenApisMain {
-    exclude '**/LoggingBootstrap.class'
+    exclude "**/LoggingBootstrap.class"
 }
 
 forbiddenApis {
-    bundledSignatures = ['jdk-deprecated', 'jdk-non-portable', 'jdk-reflection']
+    bundledSignatures = ["jdk-deprecated", "jdk-non-portable", "jdk-reflection"]
     ignoreFailures = false
 }
 
@@ -358,13 +358,13 @@ forbiddenApisTest.enabled = false
  ***************/
 
 compileJava {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-    options.encoding = 'UTF-8'
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+    options.encoding = "UTF-8"
 
-    def jv = System.properties['java.version']
-    if (jv.startsWith('6') || jv.startsWith('7')) {
-        throw new RuntimeException('Incompatible JRE version: ' + System.properties['java.version'] + '. Use at least JRE 8 instead.')
+    def jv = System.properties["java.version"]
+    if (jv.startsWith("6") || jv.startsWith("7")) {
+        throw new RuntimeException("Incompatible JRE version: " + System.properties["java.version"] + ". Use at least JRE 8 instead.")
     }
 }
 
@@ -372,33 +372,33 @@ jar {
 
     manifest() {
         attributes(
-                'Built-JDK': System.getProperty('java.version'),
-                'Implementation-Title': project.appName,
-                'Implementation-Version': project.version,
-                'Implementation-Vendor': project.vendor,
-                'Specification-Title': project.appName,
-                'Specification-Version': project.version,
-                'Specification-Vendor': project.vendor,
-                'Main-Class': application.mainClassName,
-                // 'Class-Path': configurations.compile.collect { 'lib/' + it.getName() }.join(' '),
-                'Built-Date': new Date().format("yyyy-MM-dd HH:mm:ss"),
-                // 'SplashScreen-Image': 'mqtt-logo.svg',
-                // 'Sealed': 'true'
+                "Built-JDK": System.getProperty("java.version"),
+                "Implementation-Title": project.appName,
+                "Implementation-Version": project.version,
+                "Implementation-Vendor": project.vendor,
+                "Specification-Title": project.appName,
+                "Specification-Version": project.version,
+                "Specification-Vendor": project.vendor,
+                "Main-Class": application.mainClassName,
+                // "Class-Path": configurations.compile.collect { "lib/" + it.getName() }.join(" "),
+                "Built-Date": new Date().format("yyyy-MM-dd HH:mm:ss"),
+                // "SplashScreen-Image": "mqtt-logo.svg",
+                // "Sealed": "true"
         )
     }
 
     from(configurations.runtime.resolve().collect { it.isDirectory() ? it : zipTree(it) }) {
-        exclude 'META-INF/MANIFEST.MF'
-        exclude 'META-INF/*.SF'
-        exclude 'META-INF/*.DSA'
-        exclude 'META-INF/*.RSA'
+        exclude "META-INF/MANIFEST.MF"
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
     }
 
     finalizedBy shadowJar
 }
 
 shadowJar {
-    archiveClassifier = ''
+    archiveClassifier = ""
 }
 
 
@@ -407,7 +407,7 @@ shadowJar {
  ***************/
 
 compileTestJava {
-    options.encoding = 'UTF-8'
+    options.encoding = "UTF-8"
 }
 
 
@@ -420,34 +420,34 @@ test {
  ***************/
 
 graal {
-    graalVersion '19.2.1'
+    graalVersion "19.2.1"
     outputName "${rootProject.name}"
     mainClass application.mainClassName
-    option '-H:+PrintClassInitialization'
-    option '-H:ReflectionConfigurationFiles=tools/reflection.json'
-    option '-H:-UseServiceLoaderFeature'
-    option '-H:IncludeResources="org/jline/utils/*.*'
-    option '-H:IncludeResources="org/jline/terminal/*.*'
-    option '--allow-incomplete-classpath'
-    option '--report-unsupported-elements-at-runtime'
-    option '--initialize-at-build-time'
-    option '--initialize-at-run-time=' +
-            'io.netty.channel.unix.Errors,' +
-            'io.netty.channel.unix.IovArray,' +
-            'io.netty.channel.unix.Limits,' +
-            'io.netty.channel.unix.Socket,' +
-            'io.netty.channel.epoll.EpollEventArray,' +
-            'io.netty.channel.epoll.EpollEventLoop,' +
-            'io.netty.channel.epoll.Native,' +
-            'io.netty.handler.ssl.ConscryptAlpnSslEngine,' +
-            'io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator,' +
-            'io.netty.handler.ssl.JettyNpnSslEngine,' +
-            'io.netty.handler.ssl.ReferenceCountedOpenSslEngine,' +
-            'io.netty.handler.ssl.ReferenceCountedOpenSslContext,' +
-            'io.netty.handler.codec.http.HttpObjectEncoder,' +
-            'io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder,' +
-            'com.hivemq.client.internal.mqtt.codec.encoder.MqttPingReqEncoder,' +
-            'com.hivemq.client.internal.mqtt.codec.encoder.mqtt3.Mqtt3DisconnectEncoder'
+    option "-H:+PrintClassInitialization"
+    option "-H:ReflectionConfigurationFiles=tools/reflection.json"
+    option "-H:-UseServiceLoaderFeature"
+    option "-H:IncludeResources=\"org/jline/utils/*.*"
+    option "-H:IncludeResources=\"org/jline/terminal/*.*"
+    option "--allow-incomplete-classpath"
+    option "--report-unsupported-elements-at-runtime"
+    option "--initialize-at-build-time"
+    option "--initialize-at-run-time=" +
+            "io.netty.channel.unix.Errors," +
+            "io.netty.channel.unix.IovArray," +
+            "io.netty.channel.unix.Limits," +
+            "io.netty.channel.unix.Socket," +
+            "io.netty.channel.epoll.EpollEventArray," +
+            "io.netty.channel.epoll.EpollEventLoop," +
+            "io.netty.channel.epoll.Native," +
+            "io.netty.handler.ssl.ConscryptAlpnSslEngine," +
+            "io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator," +
+            "io.netty.handler.ssl.JettyNpnSslEngine," +
+            "io.netty.handler.ssl.ReferenceCountedOpenSslEngine," +
+            "io.netty.handler.ssl.ReferenceCountedOpenSslContext," +
+            "io.netty.handler.codec.http.HttpObjectEncoder," +
+            "io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder," +
+            "com.hivemq.client.internal.mqtt.codec.encoder.MqttPingReqEncoder," +
+            "com.hivemq.client.internal.mqtt.codec.encoder.mqtt3.Mqtt3DisconnectEncoder"
 }
 
 /****************
@@ -460,14 +460,14 @@ task buildPackageBrew(type: Zip) {
     archiveFileName = brewZipName
     destinationDirectory = file(project.buildBrewDir)
 
-    into('brew') {
+    into("brew") {
         from shadowJar.archiveFile
         from "$brewDir/mqtt"
     }
 
     from(projectDir) {
-        include 'LICENSE'
-        into 'licenses'
+        include "LICENSE"
+        into "licenses"
     }
 }
 
@@ -497,33 +497,33 @@ ospackage {
 
     url project.website
 
-    summary 'MQTT Command Line Interface for interacting with a MQTT broker'
+    summary "MQTT Command Line Interface for interacting with a MQTT broker"
     packageDescription project.description
-    license 'apache2'
-    packager ''
+    license "apache2"
+    packager ""
     vendor project.vendor
 
     os LINUX
     type BINARY
 
-    user 'root'
-    permissionGroup 'root'
+    user "root"
+    permissionGroup "root"
 
     into "/opt/$packageName"
     from(shadowJar.outputs.files)
     from(configurations.runtime) {
-        into 'lib'
+        into "lib"
     }
-    from('lib') {
-        into 'lib'
+    from("lib") {
+        into "lib"
     }
     from(projectDir) {
-        include 'LICENSE'
-        into 'licenses'
+        include "LICENSE"
+        into "licenses"
         fileType LICENSE
     }
     from(debDir) {
-        include 'mqtt'
+        include "mqtt"
         fileMode 0755
         filter {
             it.replaceAll("@@jarPath@@", "/opt/${packageName}/${shadowJar.archiveFileName.get()}")
@@ -531,7 +531,7 @@ ospackage {
     }
 
 
-    link('/usr/bin/mqtt', "/opt/$packageName/mqtt", 0755)
+    link("/usr/bin/mqtt", "/opt/$packageName/mqtt", 0755)
 
 }
 
@@ -541,8 +541,8 @@ buildDeb {
 
 buildRpm {
     arch NOARCH
-    release '1'
-    requires('jre', '1.8.0', GREATER | EQUAL)
+    release "1"
+    requires("jre", "1.8.0", GREATER | EQUAL)
 }
 
 task buildDebianPackage(type: Copy) {
@@ -568,7 +568,7 @@ task buildRpmPackage(type: Copy) {
  ***************/
 
 launch4j {
-    outputDir = 'packages/windows'
+    outputDir = "packages/windows"
     headerType = "console"
     mainClassName = application.mainClassName
     icon = project.hmqIco
@@ -590,9 +590,9 @@ task buildWindowsZip(type: Zip) {
     destinationDirectory = file(project.buildWinDir)
 
     from("${project.winDir}") {
-        include '*'
+        include "*"
         filter { line ->
-            line.replace('@@exeName@@', project.appExe)
+            line.replace("@@exeName@@", project.appExe)
         }
     }
     from launch4j.dest
@@ -633,11 +633,11 @@ githubRelease {
 gitPublish {
     repoUri = "https://github.com/hivemq/homebrew-mqtt-cli.git"
 
-    branch = 'master'
+    branch = "master"
 
     contents {
         from(project.buildBrewDir) {
-            include 'mqtt-cli.rb'
+            include "mqtt-cli.rb"
         }
     }
 
@@ -661,7 +661,7 @@ import java.util.regex.Pattern
 
 static def checkSum(File file) {
     file.withInputStream {
-        new DigestInputStream(it, MessageDigest.getInstance('SHA-256')).withStream {
+        new DigestInputStream(it, MessageDigest.getInstance("SHA-256")).withStream {
             it.eachByte {}
             it.messageDigest.digest().encodeHex() as String
         }
@@ -674,10 +674,10 @@ static def checkSum(File file) {
 
 distributions {
     shadow {
-        distributionBaseName = 'mqtt-cli'
+        distributionBaseName = "mqtt-cli"
         contents {
-            from 'README.txt'
-            from 'build/packaging'
+            from "README.txt"
+            from "build/packaging"
         }
     }
 }
@@ -691,19 +691,19 @@ shadowDistZip {
  *************************/
 
 task deleteOldSpecs(type: Delete) {
-    delete fileTree('specs') {
-        include '**/*.yaml'
+    delete fileTree("specs") {
+        include "**/*.yaml"
     }
 }
 
 if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
     task copyHiveMQSpec(type: Copy) {
-        dependsOn gradle.includedBuild('hivemq-enterprise').task(':openApiSpec')
+        dependsOn gradle.includedBuild("hivemq-enterprise").task(":openApiSpec")
 
-        from('../hivemq-enterprise/build/openapi') {
+        from("../hivemq-enterprise/build/openapi") {
             include { Pattern.compile(".*${version}-OpenAPI-spec.yaml").matcher(it.name).matches() }
         }
-        into 'specs'
+        into "specs"
     }
 }
 
