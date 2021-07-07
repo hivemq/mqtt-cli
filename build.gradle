@@ -62,7 +62,7 @@ repositories {
  * OpenAPI HiveMQ Rest API dependency *
  ***************/
 
-task generateHiveMqOpenApi(type: GenerateTask) {
+tasks.register("generateHiveMqOpenApi", GenerateTask) {
     group = "hivemq"
     generatorName = "java"
     inputSpec = "$rootDir/specs/HiveMQ-${getProperty("hivemq-api.version")}-OpenAPI-spec.yaml".toString()
@@ -82,7 +82,9 @@ sourceSets {
     }
 }
 
-compileJava.dependsOn tasks.generateHiveMqOpenApi
+tasks.compileJava {
+    dependsOn(tasks.generateHiveMqOpenApi)
+}
 
 
 /****************
@@ -314,7 +316,7 @@ license {
 }
 
 
-task updateThirdPartyLicenses {
+tasks.register("updateThirdPartyLicenses") {
     group "license"
     dependsOn ":downloadLicenses"
     doLast {
@@ -330,7 +332,7 @@ task updateThirdPartyLicenses {
     }
 }
 
-forbiddenApisMain {
+tasks.forbiddenApisMain {
     exclude "**/LoggingBootstrap.class"
 }
 
@@ -340,13 +342,13 @@ forbiddenApis {
 }
 
 //disable
-forbiddenApisTest.enabled = false
+tasks.forbiddenApisTest.enabled = false
 
 /****************
  * Jar *
  ***************/
 
-compileJava {
+tasks.compileJava {
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
     options.encoding = "UTF-8"
@@ -357,7 +359,7 @@ compileJava {
     }
 }
 
-jar {
+tasks.jar {
 
     manifest() {
         attributes(
@@ -386,7 +388,7 @@ jar {
     finalizedBy shadowJar
 }
 
-shadowJar {
+tasks.shadowJar {
     archiveClassifier = ""
 }
 
@@ -395,12 +397,12 @@ shadowJar {
  * Tests *
  ***************/
 
-compileTestJava {
+tasks.compileTestJava {
     options.encoding = "UTF-8"
 }
 
 
-test {
+tasks.test {
     useJUnitPlatform()
 }
 
@@ -443,8 +445,8 @@ graal {
  * Homebrew Package & Formula *
  ***************/
 
-task buildPackageBrew(type: Zip) {
-    dependsOn shadowJar
+tasks.register("buildPackageBrew", Zip) {
+    dependsOn(tasks.shadowJar)
 
     archiveFileName = brewZipName
     destinationDirectory = file(project.buildBrewDir)
@@ -461,8 +463,8 @@ task buildPackageBrew(type: Zip) {
 }
 
 
-task buildBrewFormula(type: Copy) {
-    dependsOn buildPackageBrew
+tasks.register("buildBrewFormula", Copy) {
+    dependsOn(tasks.buildPackageBrew)
 
     from "$brewDir/mqtt-cli.rb"
     into "$buildBrewDir"
@@ -534,7 +536,7 @@ buildRpm {
     requires("jre", "1.8.0", GREATER | EQUAL)
 }
 
-task buildDebianPackage(type: Copy) {
+tasks.register("buildDebianPackage", Copy) {
     from buildDeb
     into project.buildDebDir
     include "*.deb"
@@ -543,7 +545,7 @@ task buildDebianPackage(type: Copy) {
     }
 }
 
-task buildRpmPackage(type: Copy) {
+tasks.register("buildRpmPackage", Copy) {
     from buildRpm
     into project.buildRpmDir
     include "*.rpm"
@@ -572,7 +574,7 @@ launch4j {
     textVersion = project.version
 }
 
-task buildWindowsZip(type: Zip) {
+tasks.register("buildWindowsZip", Zip) {
     dependsOn createExe
 
     archiveFileName = windowsZipName
@@ -592,8 +594,8 @@ task buildWindowsZip(type: Zip) {
  * Package Task *
  ***************/
 
-task buildPackageAll {
-    dependsOn buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip
+tasks.create("buildPackageAll") {
+    dependsOn(tasks.buildBrewFormula, tasks.buildDebianPackage, tasks.buildRpmPackage, tasks.buildWindowsZip)
 }
 
 /****************
@@ -679,15 +681,16 @@ shadowDistZip {
  * HiveMQ platform build *
  *************************/
 
-task deleteOldSpecs(type: Delete) {
+tasks.register("deleteOldSpecs", Delete) {
     delete fileTree("specs") {
         include "**/*.yaml"
     }
 }
 
 if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
-    task copyHiveMQSpec(type: Copy) {
-        dependsOn gradle.includedBuild("hivemq-enterprise").task(":openApiSpec")
+    tasks.register("copyHiveMQSpec", Copy) {
+        dependsOn(gradle.includedBuild("hivemq-enterprise").task(":openApiSpec"))
+        mustRunAfter(tasks.deleteOldSpecs)
 
         from("../hivemq-enterprise/build/openapi") {
             include { Pattern.compile(".*${version}-OpenAPI-spec.yaml").matcher(it.name).matches() }
