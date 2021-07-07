@@ -1,4 +1,4 @@
-rootProject.name = 'mqtt-cli'
+rootProject.name = "mqtt-cli"
 
 if (file("../plugins").exists()) {
     includeBuild("../plugins")
