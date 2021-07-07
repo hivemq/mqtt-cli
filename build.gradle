@@ -5,8 +5,6 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "biz.aQute.bnd:biz.aQute.bnd.gradle:5.3.0"
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.38.0"
         dependencies {
             if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
                 classpath("com.hivemq:plugins")
@@ -19,27 +17,20 @@ plugins {
     id "java"
     id "idea"
     id "application"
-    id "com.github.johnrengelman.shadow" version "6.1.0" apply false
+    id "com.github.johnrengelman.shadow" version "6.1.0"
     id "com.github.hierynomus.license" version "0.15.0"
     id "org.gradle.crypto.checksum" version "1.2.0"
     id "nebula.ospackage" version "8.5.6"
     id "edu.sc.seis.launch4j" version "2.5.0"
     id "com.palantir.graal" version "0.7.2"
-    id "de.thetaphi.forbiddenapis" version "3.1" apply false
+    id "de.thetaphi.forbiddenapis" version "3.1"
     id "com.github.breadmoirai.github-release" version "2.2.12"
     id "org.ajoberstar.git-publish" version "3.0.0"
-    id "org.owasp.dependencycheck" version "6.1.5" apply false
+    id "org.owasp.dependencycheck" version "6.1.5"
     id "com.github.ben-manes.versions" version "0.38.0"
     id "org.openapi.generator" version "4.3.1"
     id "com.google.cloud.tools.jib" version "3.0.0"
 }
-
-apply plugin: "com.github.ben-manes.versions"
-apply plugin: "de.thetaphi.forbiddenapis"
-apply plugin: "application"
-apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: "com.palantir.graal"
-apply plugin: "org.owasp.dependencycheck"
 
 
 /****************
@@ -62,8 +53,6 @@ idea {
         generatedSourceDirs += file("build/generated/sources/annotationProcessor/java/main")
     }
 }
-apply plugin: "application"
-apply plugin: "com.github.johnrengelman.shadow"
 
 repositories {
     mavenCentral()
