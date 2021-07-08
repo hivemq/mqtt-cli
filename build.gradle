@@ -1,8 +1,6 @@
 buildscript {
     repositories {
         mavenCentral()
-        mavenLocal()
-        jcenter()
     }
     dependencies {
         dependencies {
@@ -37,7 +35,9 @@ plugins {
  * Project Settings *
  ***************/
 
-javadoc.options.encoding = "UTF-8"
+tasks.javadoc {
+    options.encoding = "UTF-8"
+}
 
 group = "com.hivemq"
 description = "MQTT CLI is a tool that provides a feature rich command line interface for connecting, " +
@@ -56,7 +56,6 @@ idea {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 /****************
@@ -246,7 +245,6 @@ dependencies {
 /**************
  * Compliance *
  **************/
-configurations.implementation.setCanBeResolved(true)
 
 downloadLicenses {
     ext.apache_2 = license("Apache License, Version 2.0", "https://opensource.org/licenses/Apache-2.0")
@@ -323,7 +321,7 @@ downloadLicenses {
                              "Public Domain"]
     ]
 
-    dependencyConfiguration = "implementation"
+    dependencyConfiguration = "runtimeClasspath"
     includeProjectDependencies = true
 }
 
@@ -335,7 +333,7 @@ license {
 
 
 tasks.register("updateThirdPartyLicenses") {
-    group "license"
+    group = "license"
     dependsOn(tasks.downloadLicenses)
     doLast {
         javaexec {
@@ -403,7 +401,7 @@ tasks.jar {
         exclude "META-INF/*.RSA"
     }
 
-    finalizedBy shadowJar
+    finalizedBy(tasks.shadowJar)
 }
 
 tasks.shadowJar {
