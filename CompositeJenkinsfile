@@ -1,0 +1,49 @@
+PLATFORM_MASTER = 'master-4.5'
+
+pipeline {
+    // by default run on the master node, since it's the only one with direct repo access
+    agent { label 'master' }
+    options {
+        // no checkout needed
+        skipDefaultCheckout()
+        buildDiscarder(logRotator(numToKeepStr: '100'))
+        timestamps()
+    }
+    stages {
+        stage('Update commit id in the composite repo') {
+            steps {
+                script {
+                    commitToHiveMQCompositeRepo()
+                }
+            }
+        }
+    }
+    post {
+        cleanup {
+            cleanWs()
+        }
+    }
+}
+
+private void commitToHiveMQCompositeRepo() {
+    def projectName = determineProjectName()
+    def branchName = env.BRANCH_NAME
+    def url = determineRepoUrl()
+    sh("git clone git@github.com:hivemq/hivemq.git --branch=$PLATFORM_MASTER")
+    dir("hivemq/") {
+        sh("./tooling/reportScmChange.sh $branchName $url $projectName")
+    }
+}
+
+private String determineProjectName() {
+    return scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
+}
+
+private String determineRepoUrl() {
+    String repo = scm.userRemoteConfigs[0].url
+    if (repo.startsWith("https://github.com/")) {
+        return repo.replaceFirst("https://github.com/", "git@github.com:")
+    } else {
+        return repo
+    }
+}
