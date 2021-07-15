@@ -41,7 +41,6 @@ plugins {
     id("com.google.cloud.tools.jib")
 }
 
-
 /* ******************** metadata ******************** */
 
 group = "com.hivemq"
@@ -50,6 +49,7 @@ description = "MQTT CLI is a tool that provides a feature rich command line inte
         "various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 "
 
 application {
+    @Suppress("DEPRECATION") // ShadowJar needs deprecated mainClassName
     mainClassName = "com.hivemq.cli.MqttCLIMain"
 }
 
@@ -373,23 +373,24 @@ graal {
     option("--allow-incomplete-classpath")
     option("--report-unsupported-elements-at-runtime")
     option("--initialize-at-build-time")
-    option("--initialize-at-run-time=" +
-            "io.netty.channel.unix.Errors," +
-            "io.netty.channel.unix.IovArray," +
-            "io.netty.channel.unix.Limits," +
-            "io.netty.channel.unix.Socket," +
-            "io.netty.channel.epoll.EpollEventArray," +
-            "io.netty.channel.epoll.EpollEventLoop," +
-            "io.netty.channel.epoll.Native," +
-            "io.netty.handler.ssl.ConscryptAlpnSslEngine," +
-            "io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator," +
-            "io.netty.handler.ssl.JettyNpnSslEngine," +
-            "io.netty.handler.ssl.ReferenceCountedOpenSslEngine," +
-            "io.netty.handler.ssl.ReferenceCountedOpenSslContext," +
-            "io.netty.handler.codec.http.HttpObjectEncoder," +
-            "io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder," +
-            "com.hivemq.client.internal.mqtt.codec.encoder.MqttPingReqEncoder," +
-            "com.hivemq.client.internal.mqtt.codec.encoder.mqtt3.Mqtt3DisconnectEncoder"
+    option(
+        "--initialize-at-run-time=" +
+                "io.netty.channel.unix.Errors," +
+                "io.netty.channel.unix.IovArray," +
+                "io.netty.channel.unix.Limits," +
+                "io.netty.channel.unix.Socket," +
+                "io.netty.channel.epoll.EpollEventArray," +
+                "io.netty.channel.epoll.EpollEventLoop," +
+                "io.netty.channel.epoll.Native," +
+                "io.netty.handler.ssl.ConscryptAlpnSslEngine," +
+                "io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator," +
+                "io.netty.handler.ssl.JettyNpnSslEngine," +
+                "io.netty.handler.ssl.ReferenceCountedOpenSslEngine," +
+                "io.netty.handler.ssl.ReferenceCountedOpenSslContext," +
+                "io.netty.handler.codec.http.HttpObjectEncoder," +
+                "io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder," +
+                "com.hivemq.client.internal.mqtt.codec.encoder.MqttPingReqEncoder," +
+                "com.hivemq.client.internal.mqtt.codec.encoder.mqtt3.Mqtt3DisconnectEncoder"
     )
 }
 
@@ -419,8 +420,8 @@ val buildBrewFormula by tasks.registering(Copy::class) {
     into(buildBrewDir)
 
     doLast {
-        val homebrewFile : File = file("$buildBrewDir/mqtt-cli.rb")
-        var text : String = homebrewFile.readText()
+        val homebrewFile: File = file("$buildBrewDir/mqtt-cli.rb")
+        var text: String = homebrewFile.readText()
         text = text.replace("@@description@@", project.description!!)
         text = text.replace("@@version@@", project.version.toString())
         text = text.replace("@@filename@@", buildPackageBrew.get().archiveFileName.get())
@@ -484,7 +485,7 @@ tasks.buildRpm {
     requires("jre", "1.8.0", Flags.GREATER or Flags.EQUAL)
 }
 
-val buildDebianPackage by tasks.registering(Copy::class){
+val buildDebianPackage by tasks.registering(Copy::class) {
     from(tasks.buildDeb)
     include("*.deb")
     into(file(buildDebDir))
@@ -553,11 +554,12 @@ githubRelease {
     draft(true)
     prerelease(false)
     releaseAssets
-    releaseAssets(tasks.jar.get().archiveFile,
-            file("$buildRpmDir/$rpmPackageName"),
-            file("$buildDebDir/$debPackageName"),
-            file("$buildBrewDir/$brewZipName"),
-            buildWindowsZip
+    releaseAssets(
+        tasks.jar.get().archiveFile,
+        file("$buildRpmDir/$rpmPackageName"),
+        file("$buildDebDir/$debPackageName"),
+        file("$buildBrewDir/$brewZipName"),
+        buildWindowsZip
     )
     allowUploadToExisting(true)
 }
@@ -599,9 +601,7 @@ jib {
     }
 }
 
-
 /* ******************** Platform distribution ******************** */
-
 
 distributions.main {
     shadow {
@@ -648,7 +648,7 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null) {
 }
 
 if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
-        gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
+    gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
     tasks.register("updateSpecs") {
         dependsOn(deleteOldSpecs)
         dependsOn(tasks.getByName("copyHiveMQSpec"))
