@@ -1,10 +1,6 @@
 rootProject.name = "mqtt-cli"
 
 pluginManagement {
-    repositories {
-        gradlePluginPortal()
-    }
-
     plugins {
         id("com.github.johnrengelman.shadow") version "${extra["plugin.shadow.version"]}"
         id("com.github.hierynomus.license") version "${extra["plugin.license.version"]}"
@@ -20,11 +16,12 @@ pluginManagement {
         id("org.openapi.generator") version "${extra["plugin.openapi.generator.version"]}"
         id("com.google.cloud.tools.jib") version "${extra["plugin.jib.version"]}"
     }
+
+    if (file("../plugins").exists()) {
+        includeBuild("../plugins")
+    }
 }
 
-if (file("../plugins").exists()) {
-    includeBuild("../plugins")
-}
 if (file("../hivemq-enterprise").exists()) {
     includeBuild("../hivemq-enterprise")
 }
