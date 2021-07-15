@@ -1,23 +1,20 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import nl.javadude.gradle.plugins.license.DownloadLicensesExtension.license
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+import org.redline_rpm.header.Architecture
+import org.redline_rpm.header.Flags
 import org.redline_rpm.header.Os
 import org.redline_rpm.header.RpmType
 import org.redline_rpm.payload.Directive
-import java.util.Date
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
-import org.redline_rpm.header.Architecture
-import org.redline_rpm.header.Flags
+import java.util.*
 import java.util.Objects.requireNonNullElse
 import java.util.regex.Pattern
 
 buildscript {
     dependencies {
-        dependencies {
-            if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
-                classpath("com.hivemq:plugins")
-            }
+        if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
+            classpath("com.hivemq:plugins")
         }
     }
 }
@@ -53,49 +50,49 @@ application {
     mainClassName = "com.hivemq.cli.MqttCLIMain"
 }
 
-val readableName by extra("mqtt-cli")
-val appName by extra("MQTT CLI")
-val appJarName by extra("$readableName.jar")
-val appExe by extra("$readableName.exe")
+val readableName = "mqtt-cli"
+val appName = "MQTT CLI"
+val appJarName = "$readableName.jar"
+val appExe = "$readableName.exe"
 
-val githubOrg by extra("hivemq")
-val githubRepo by extra("mqtt-cli")
-val githubUrl by extra("https://github.com/$githubOrg/$githubRepo")
-val scmConnection by extra("scm:git:git://github.com/$githubOrg/$githubRepo.git")
-val scmDeveloperConnection by extra("scm:git:ssh://git@github.com/$githubOrg/$githubRepo.git")
-val issuesUrl by extra("$githubUrl/issues")
-val docUrl by extra("https://$githubOrg.github.io/$githubRepo/")
+val githubOrg = "hivemq"
+val githubRepo = "mqtt-cli"
+val githubUrl = "https://github.com/$githubOrg/$githubRepo"
+val scmConnection = "scm:git:git://github.com/$githubOrg/$githubRepo.git"
+val scmDeveloperConnection = "scm:git:ssh://git@github.com/$githubOrg/$githubRepo.git"
+val issuesUrl = "$githubUrl/issues"
+val docUrl = "https://$githubOrg.github.io/$githubRepo/"
 
-val iconsDir by extra("$projectDir/icons")
-val resDir by extra("$projectDir/res")
-val dmgDir by extra("$projectDir/dmg")
-val pkgDir by extra("$projectDir/packages")
-val brewDir by extra("$pkgDir/homebrew")
-val debDir by extra("$pkgDir/debian")
-val rpmDir by extra("$pkgDir/rpm")
-val winDir by extra("$pkgDir/windows")
+val iconsDir = "$projectDir/icons"
+val resDir = "$projectDir/res"
+val dmgDir = "$projectDir/dmg"
+val pkgDir = "$projectDir/packages"
+val brewDir = "$pkgDir/homebrew"
+val debDir = "$pkgDir/debian"
+val rpmDir = "$pkgDir/rpm"
+val winDir = "$pkgDir/windows"
 
-val buildLaunch4j by extra("$buildDir/launch4j")
+val buildLaunch4j = "$buildDir/launch4j"
 
-val buildPkgDir by extra("$buildDir/packages")
-val buildBrewDir by extra("$buildPkgDir/homebrew")
-val buildDebDir by extra("$buildPkgDir/debian")
-val buildRpmDir by extra("$buildPkgDir/rpm")
-val buildWinDir by extra("$buildPkgDir/windows")
+val buildPkgDir = "$buildDir/packages"
+val buildBrewDir = "$buildPkgDir/homebrew"
+val buildDebDir = "$buildPkgDir/debian"
+val buildRpmDir = "$buildPkgDir/rpm"
+val buildWinDir = "$buildPkgDir/windows"
 
-val packagePreamble by extra("$readableName-$version")
-val rpmPackageName by extra("$packagePreamble.rpm")
-val debPackageName by extra("$packagePreamble.deb")
-val brewZipName by extra("$packagePreamble-brew.zip")
-val windowsZipName by extra("$packagePreamble-win.zip")
+val packagePreamble = "$readableName-$version"
+val rpmPackageName = "$packagePreamble.rpm"
+val debPackageName = "$packagePreamble.deb"
+val brewZipName = "$packagePreamble-brew.zip"
+val windowsZipName = "$packagePreamble-win.zip"
 
-val hmqIco by extra("$iconsDir/05-mqtt-cli-icon.ico")
-val hmqLogo by extra("$iconsDir/05-mqtt-cli-icon.png")
+val hmqIco = "$iconsDir/05-mqtt-cli-icon.ico"
+val hmqLogo = "$iconsDir/05-mqtt-cli-icon.png"
 
-val copyright by extra("Copyright 2019 HiveMQ and the HiveMQ Community")
-val vendor by extra("HiveMQ GmbH")
-val website by extra("https://www.hivemq.com/")
-val license by extra("$projectDir/LICENSE")
+val copyright = "Copyright 2019 HiveMQ and the HiveMQ Community"
+val vendor = "HiveMQ GmbH"
+val website = "https://www.hivemq.com/"
+val license = "$projectDir/LICENSE"
 
 /* ******************** java ******************** */
 
@@ -135,10 +132,8 @@ tasks.jar {
     finalizedBy(tasks.shadowJar)
 }
 
-tasks {
-    named<ShadowJar>("shadowJar") {
-        archiveClassifier.set("")
-    }
+tasks.shadowJar {
+    archiveClassifier.set("")
 }
 
 idea {
@@ -177,7 +172,6 @@ repositories {
 
 dependencies {
 
-    // hivemq client api dependencies
     implementation("io.swagger:swagger-annotations:${property("swagger.version")}")
     implementation("com.google.code.findbugs:jsr305:${property("findBugs.version")}")
     implementation("com.squareup.okhttp3:okhttp:${property("okHttp.version")}")
@@ -348,13 +342,12 @@ val updateThirdPartyLicenses by tasks.registering {
     }
 }
 
-tasks.forbiddenApisMain {
-    exclude("**/LoggingBootstrap.class")
-}
-
 forbiddenApis {
     bundledSignatures = setOf("jdk-deprecated", "jdk-non-portable", "jdk-reflection")
-    ignoreFailures = false
+}
+
+tasks.forbiddenApisMain {
+    exclude("**/LoggingBootstrap.class")
 }
 
 tasks.forbiddenApisTest { enabled = false }
@@ -539,7 +532,7 @@ val buildWindowsZip by tasks.registering(Zip::class) {
 
 /* ******************** package task ******************** */
 
-val buildPackageAll = tasks.create("buildPackageAll") {
+val buildPackageAll by tasks.registering {
     dependsOn(buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip)
 }
 
@@ -593,7 +586,7 @@ jib {
     }
     to {
         image = "hivemq/mqtt-cli"
-        setTags(listOf(project.version.toString()))
+        tags = setOf(project.version.toString())
         auth {
             username = requireNonNullElse(System.getenv("DOCKER_USER"), "")
             password = requireNonNullElse(System.getenv("DOCKER_PASSWORD"), "")
@@ -603,13 +596,11 @@ jib {
 
 /* ******************** Platform distribution ******************** */
 
-distributions.main {
-    shadow {
-        distributionBaseName.set("mqtt-cli")
-        contents {
-            from("README.txt")
-            from("build/packaging")
-        }
+distributions.shadow {
+    distributionBaseName.set("mqtt-cli")
+    contents {
+        from("README.txt")
+        from("build/packaging")
     }
 }
 
@@ -651,8 +642,8 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
     gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
     tasks.register("updateSpecs") {
         dependsOn(deleteOldSpecs)
-        dependsOn(tasks.getByName("copyHiveMQSpec"))
-        dependsOn(tasks.getByName("copyHiveMQSwarmSpec"))
+        dependsOn(tasks.named("copyHiveMQSpec"))
+        dependsOn(tasks.named("copyHiveMQSwarmSpec"))
 
         doLast {
             val gradleProperties = file("${project.projectDir}/gradle.properties")
@@ -674,8 +665,8 @@ if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
 /* ******************** Helpers ******************** */
 
 fun sha256Hash(file: File): String {
-    val bytes = file.inputStream().readAllBytes()
+    val bytes = file.readBytes()
     val md = MessageDigest.getInstance("SHA-256")
     val digest = md.digest(bytes)
-    return digest.fold("", { str, it -> str + "%02x".format(it) })
+    return digest.fold("") { str, it -> str + "%02x".format(it) }
 }
