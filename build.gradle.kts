@@ -231,6 +231,7 @@ tasks.test {
 
 license {
     header = projectDir.resolve("HEADER")
+    include("**/*.java")
     exclude("**/com/hivemq/cli/openapi/**")
     mapping("java", "SLASHSTAR_STYLE")
 }
