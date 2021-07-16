@@ -50,18 +50,11 @@ application {
     mainClassName = "com.hivemq.cli.MqttCLIMain"
 }
 
-val readableName = "mqtt-cli"
-val appName = "MQTT CLI"
-val appExe = "$readableName.exe"
-
-val iconsDir = "$projectDir/icons"
 val pkgDir = "$projectDir/packages"
 val brewDir = "$pkgDir/homebrew"
 val debDir = "$pkgDir/debian"
 val rpmDir = "$pkgDir/rpm"
 val winDir = "$pkgDir/windows"
-
-val buildLaunch4j = "$buildDir/launch4j"
 
 val buildPkgDir = "$buildDir/packages"
 val buildBrewDir = "$buildPkgDir/homebrew"
@@ -69,18 +62,11 @@ val buildDebDir = "$buildPkgDir/debian"
 val buildRpmDir = "$buildPkgDir/rpm"
 val buildWinDir = "$buildPkgDir/windows"
 
-val packagePreamble = "$readableName-$version"
+val packagePreamble = "mqtt-cli-$version"
 val rpmPackageName = "$packagePreamble.rpm"
 val debPackageName = "$packagePreamble.deb"
 val brewZipName = "$packagePreamble-brew.zip"
 val windowsZipName = "$packagePreamble-win.zip"
-
-val hmqIco = "$iconsDir/05-mqtt-cli-icon.ico"
-
-val copyright = "Copyright 2019-present HiveMQ and the HiveMQ Community"
-val vendor = "HiveMQ GmbH"
-val website = "https://www.hivemq.com/"
-val license = "$projectDir/LICENSE"
 
 /* ******************** java ******************** */
 
@@ -107,12 +93,12 @@ tasks.jar {
 
     manifest.attributes(
         "Built-JDK" to System.getProperty("java.version"),
-        "Implementation-Title" to appName,
+        "Implementation-Title" to "MQTT CLI",
         "Implementation-Version" to project.version,
-        "Implementation-Vendor" to vendor,
-        "Specification-Title" to appName,
+        "Implementation-Vendor" to "HiveMQ GmbH",
+        "Specification-Title" to "MQTT CLI",
         "Specification-Version" to project.version,
-        "Specification-Vendor" to vendor,
+        "Specification-Vendor" to "HiveMQ GmbH",
         "Main-Class" to application.mainClass.get(),
         "Built-Date" to currentDate.toString()
     )
@@ -412,10 +398,10 @@ val buildBrewFormula by tasks.registering(Copy::class) {
 /* ******************** debian and rpm packages ******************** */
 
 ospackage {
-    packageName = readableName
+    packageName = "mqtt-cli"
     version = project.version.toString()
 
-    url = website
+    url = "https://www.hivemq.com/"
 
     summary = "MQTT Command Line Interface for interacting with a MQTT broker"
     packageDescription = description
@@ -477,14 +463,14 @@ launch4j {
     outputDir = "packages/windows"
     headerType = "console"
     mainClassName = application.mainClass.get()
-    icon = hmqIco
+    icon = "$projectDir/icons/05-mqtt-cli-icon.ico"
     jar = "lib/${project.tasks.shadowJar.get().archiveFileName.get()}"
-    outfile = appExe
-    copyright = copyright
-    companyName = vendor
+    outfile = "mqtt-cli.exe"
+    copyright = "Copyright 2019-present HiveMQ and the HiveMQ Community"
+    companyName = "HiveMQ GmbH"
     downloadUrl = "https://openjdk.java.net/install/"
     jreMinVersion = "1.8"
-    windowTitle = appName
+    windowTitle = "MQTT CLI"
     version = project.version.toString()
     textVersion = project.version.toString()
 }
@@ -498,7 +484,7 @@ val buildWindowsZip by tasks.registering(Zip::class) {
     from(winDir) {
         //include("*")
         filter { line ->
-            line.replace("@@exeName@@", appExe)
+            line.replace("@@exeName@@", "mqtt-cli.exe")
         }
     }
     from(launch4j.dest)
@@ -510,7 +496,6 @@ val buildWindowsZip by tasks.registering(Zip::class) {
 val buildPackageAll by tasks.registering {
     dependsOn(buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip)
 }
-
 
 /* ******************** Publish Draft-Release with all packages to GitHub Releases ******************** */
 
