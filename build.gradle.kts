@@ -68,20 +68,9 @@ val windowsZipName = "$packagePreamble-win.zip"
 /* ******************** java ******************** */
 
 tasks.compileJava {
-    dependsOn(generateHiveMqOpenApi)
-    dependsOn(generateSwarmOpenApi)
-
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
     options.encoding = "UTF-8"
-}
-
-sourceSets {
-    main {
-        java {
-            srcDir("$rootDir/build/generated/openapi/src/main/java")
-        }
-    }
 }
 
 tasks.jar {
@@ -109,24 +98,58 @@ tasks.shadowJar {
 
 /* ******************** OpenAPI specs ******************** */
 
-val generateHiveMqOpenApi by tasks.registering(GenerateTask::class) {
+val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     group = "hivemq"
     generatorName.set("java")
     inputSpec.set("$rootDir/specs/HiveMQ-${project.property("hivemq-api.version")}-OpenAPI-spec.yaml")
-    outputDir.set("$buildDir/generated/openapi")
+    outputDir.set("$buildDir/tmp/$name")
     apiPackage.set("com.hivemq.cli.openapi.hivemq")
     modelPackage.set("com.hivemq.cli.openapi.hivemq")
     configOptions.put("dateLibrary", "java8")
+    configOptions.put("hideGenerationTimestamp", "true")
+
+    inputs.file(inputSpec.get()).withPropertyName("inputSpec").withPathSensitivity(PathSensitivity.NONE)
+    val outputSrcDir = "$buildDir/generated/openapi/hivemq/java"
+    outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
+    outputs.cacheIf { true }
+    doFirst { delete(outputDir) }
+    doLast {
+        copy {
+            from("${outputDir.get()}/src/main/java")
+            into(outputSrcDir)
+        }
+    }
 }
 
 val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
     group = "swarm"
     generatorName.set("java")
     inputSpec.set("$rootDir/specs/HiveMQ-Swarm-${project.property("hivemq-swarm-api.version")}-OpenAPI-spec.yaml")
-    outputDir.set("$buildDir/generated/openapi")
+    outputDir.set("$buildDir/tmp/$name")
     apiPackage.set("com.hivemq.cli.openapi.swarm")
     modelPackage.set("com.hivemq.cli.openapi.swarm")
     configOptions.put("dateLibrary", "java8")
+    configOptions.put("hideGenerationTimestamp", "true")
+
+    inputs.file(inputSpec.get()).withPropertyName("inputSpec").withPathSensitivity(PathSensitivity.NONE)
+    val outputSrcDir = "$buildDir/generated/openapi/swarm/java"
+    outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
+    outputs.cacheIf { true }
+    doFirst { delete(outputDir) }
+    doLast {
+        copy {
+            from("${outputDir.get()}/src/main/java")
+            into(outputSrcDir)
+            include("${apiPackage.get().replace('.', '/')}/**")
+        }
+    }
+}
+
+sourceSets.main {
+    java {
+        srcDir(generateHivemqOpenApi)
+        srcDir(generateSwarmOpenApi)
+    }
 }
 
 /* ******************** dependencies ******************** */
