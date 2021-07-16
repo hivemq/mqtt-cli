@@ -25,7 +25,6 @@ plugins {
     application
     id("com.github.johnrengelman.shadow")
     id("com.github.hierynomus.license")
-    id("org.gradle.crypto.checksum")
     id("nebula.ospackage")
     id("edu.sc.seis.launch4j")
     id("com.palantir.graal")
