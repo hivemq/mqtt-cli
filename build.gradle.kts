@@ -403,10 +403,10 @@ ospackage {
     url = "https://www.hivemq.com/"
 
     summary = "MQTT Command Line Interface for interacting with a MQTT broker"
-    packageDescription = description
+    packageDescription = project.description
     license = "apache2"
     packager = ""
-    vendor = vendor
+    vendor = "HiveMQ GmbH"
 
     os = Os.LINUX
     type = RpmType.BINARY
