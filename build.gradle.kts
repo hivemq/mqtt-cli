@@ -89,7 +89,7 @@ val windowsZipName = "$packagePreamble-win.zip"
 val hmqIco = "$iconsDir/05-mqtt-cli-icon.ico"
 val hmqLogo = "$iconsDir/05-mqtt-cli-icon.png"
 
-val copyright = "Copyright 2019 HiveMQ and the HiveMQ Community"
+val copyright = "Copyright 2019-present HiveMQ and the HiveMQ Community"
 val vendor = "HiveMQ GmbH"
 val website = "https://www.hivemq.com/"
 val license = "$projectDir/LICENSE"
