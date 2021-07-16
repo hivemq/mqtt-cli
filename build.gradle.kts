@@ -1,3 +1,4 @@
+import com.netflix.gradle.plugins.packaging.CopySpecEnhancement
 import nl.javadude.gradle.plugins.license.DownloadLicensesExtension.license
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import org.redline_rpm.header.Architecture
@@ -51,20 +52,9 @@ application {
 
 val readableName = "mqtt-cli"
 val appName = "MQTT CLI"
-val appJarName = "$readableName.jar"
 val appExe = "$readableName.exe"
 
-val githubOrg = "hivemq"
-val githubRepo = "mqtt-cli"
-val githubUrl = "https://github.com/$githubOrg/$githubRepo"
-val scmConnection = "scm:git:git://github.com/$githubOrg/$githubRepo.git"
-val scmDeveloperConnection = "scm:git:ssh://git@github.com/$githubOrg/$githubRepo.git"
-val issuesUrl = "$githubUrl/issues"
-val docUrl = "https://$githubOrg.github.io/$githubRepo/"
-
 val iconsDir = "$projectDir/icons"
-val resDir = "$projectDir/res"
-val dmgDir = "$projectDir/dmg"
 val pkgDir = "$projectDir/packages"
 val brewDir = "$pkgDir/homebrew"
 val debDir = "$pkgDir/debian"
@@ -86,7 +76,6 @@ val brewZipName = "$packagePreamble-brew.zip"
 val windowsZipName = "$packagePreamble-win.zip"
 
 val hmqIco = "$iconsDir/05-mqtt-cli-icon.ico"
-val hmqLogo = "$iconsDir/05-mqtt-cli-icon.png"
 
 val copyright = "Copyright 2019-present HiveMQ and the HiveMQ Community"
 val vendor = "HiveMQ GmbH"
@@ -389,18 +378,16 @@ graal {
 /* ******************** Homebrew Package & Formula ******************** */
 
 val buildPackageBrew by tasks.registering(Zip::class) {
-    dependsOn(tasks.shadowJar)
 
     archiveFileName.set(brewZipName)
     destinationDirectory.set(file(buildBrewDir))
 
     into("brew") {
-        from(tasks.shadowJar.get().archiveFile.get())
+        from(tasks.shadowJar)
         from("$brewDir/mqtt")
     }
 
-    from(projectDir) {
-        include("LICENSE")
+    from(projectDir.resolve("LICENSE")) {
         into("licenses")
     }
 }
@@ -412,8 +399,8 @@ val buildBrewFormula by tasks.registering(Copy::class) {
     into(buildBrewDir)
 
     doLast {
-        val homebrewFile: File = file("$buildBrewDir/mqtt-cli.rb")
-        var text: String = homebrewFile.readText()
+        val homebrewFile = file("$buildBrewDir/mqtt-cli.rb")
+        var text = homebrewFile.readText()
         text = text.replace("@@description@@", project.description!!)
         text = text.replace("@@version@@", project.version.toString())
         text = text.replace("@@filename@@", buildPackageBrew.get().archiveFileName.get())
@@ -443,28 +430,21 @@ ospackage {
     permissionGroup = "root"
 
     into("/opt/$packageName")
-    from(tasks.shadowJar.get().outputs.files)
+    from(tasks.shadowJar)
 
-    from(configurations.runtime.get(), closureOf<CopySpec> {
-        into("lib")
-    })
-    from("lib", closureOf<CopySpec> {
-        into("lib")
-    })
-    from(projectDir, closureOf<CopySpec> {
-        include("LICENSE")
+    from(projectDir.resolve("LICENSE"), closureOf<CopySpec> {
         into("licenses")
-        fileType = Directive.LICENSE
+        CopySpecEnhancement.fileType(this, Directive.LICENSE)
     })
     from(debDir, closureOf<CopySpec> {
         include("mqtt")
-        fileMode = 0b111101101 // 0755
+        fileMode = 0b111_101_101 // 0755
         filter {
             it.replace("@@jarPath@@", "/opt/${packageName}/${tasks.shadowJar.get().archiveFileName.get()}")
         }
     })
 
-    link("/usr/bin/mqtt", "/opt/$packageName/mqtt", 0b111101101)
+    link("/usr/bin/mqtt", "/opt/$packageName/mqtt", 0b111_101_101)
 }
 
 tasks.buildDeb {
@@ -480,19 +460,15 @@ tasks.buildRpm {
 val buildDebianPackage by tasks.registering(Copy::class) {
     from(tasks.buildDeb)
     include("*.deb")
-    into(file(buildDebDir))
-    rename { fileName: String ->
-        fileName.replace(".+".toRegex(), debPackageName)
-    }
+    into(buildDebDir)
+    rename { debPackageName }
 }
 
 val buildRpmPackage by tasks.registering(Copy::class) {
     from(tasks.buildRpm)
     include("*.rpm")
-    into(file(buildRpmDir))
-    rename { fileName: String ->
-        fileName.replace(".+".toRegex(), rpmPackageName)
-    }
+    into(buildRpmDir)
+    rename { rpmPackageName }
 }
 
 /* ******************** windows zip ******************** */
@@ -540,20 +516,15 @@ val buildPackageAll by tasks.registering {
 
 githubRelease {
     token(System.getenv("githubToken"))
-    owner(githubOrg)
-    targetCommitish("master")
-    body("")
-    draft(true)
-    prerelease(false)
-    releaseAssets
+    draft.set(true)
     releaseAssets(
-        tasks.jar.get().archiveFile,
+        tasks.jar,
         file("$buildRpmDir/$rpmPackageName"),
         file("$buildDebDir/$debPackageName"),
-        file("$buildBrewDir/$brewZipName"),
+        buildPackageBrew,
         buildWindowsZip
     )
-    allowUploadToExisting(true)
+    allowUploadToExisting.set(true)
 }
 
 /* ******************** Update the Homebrew-Formula with the newly built package ******************** */
@@ -568,7 +539,6 @@ gitPublish {
         }
     }
 
-    // message used when committing changes
     commitMessage.set("Release version v${project.version}")
 }
 
