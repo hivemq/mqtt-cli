@@ -9,7 +9,6 @@ import org.redline_rpm.payload.Directive
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.regex.Pattern
 
 buildscript {
     dependencies {
@@ -573,7 +572,7 @@ if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
         mustRunAfter(deleteOldSpecs)
 
         from("../hivemq-enterprise/build/openapi") {
-            include { Pattern.compile(".*${version}-OpenAPI-spec.yaml").matcher(it.name).matches() }
+            include { ".*${version}-OpenAPI-spec.yaml".toRegex().matches(it.name) }
         }
         into("specs")
     }
@@ -585,7 +584,7 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null) {
         mustRunAfter(deleteOldSpecs)
 
         from("../hivemq-swarm/build/openapi") {
-            include { Pattern.compile(".*${version}-OpenAPI-spec.yaml").matcher(it.name).matches() }
+            include { ".*${version}-OpenAPI-spec.yaml".toRegex().matches(it.name) }
         }
         into("specs")
     }
