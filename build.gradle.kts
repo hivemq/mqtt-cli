@@ -20,7 +20,6 @@ buildscript {
 
 plugins {
     java
-    idea
     application
     id("com.github.johnrengelman.shadow")
     id("com.github.hierynomus.license")
@@ -106,12 +105,6 @@ tasks.jar {
 
 tasks.shadowJar {
     archiveClassifier.set("")
-}
-
-idea {
-    module {
-        generatedSourceDirs.add(file("build/generated/sources/annotationProcessor/java/main"))
-    }
 }
 
 /* ******************** OpenAPI specs ******************** */
