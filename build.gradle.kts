@@ -99,7 +99,7 @@ tasks.jar {
         "Specification-Version" to project.version,
         "Specification-Vendor" to "HiveMQ GmbH",
         "Main-Class" to application.mainClass.get(),
-        "Built-Date" to currentDate.toString()
+        "Built-Date" to currentDate
     )
 
     finalizedBy(tasks.shadowJar)
