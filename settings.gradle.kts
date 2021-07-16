@@ -4,7 +4,6 @@ pluginManagement {
     plugins {
         id("com.github.johnrengelman.shadow") version "${extra["plugin.shadow.version"]}"
         id("com.github.hierynomus.license") version "${extra["plugin.license.version"]}"
-        id("org.gradle.crypto.checksum") version "${extra["plugin.checksum.version"]}"
         id("nebula.ospackage") version "${extra["plugin.ospackage.version"]}"
         id("edu.sc.seis.launch4j") version "${extra["plugin.launch4j.version"]}"
         id("com.palantir.graal") version "${extra["plugin.graal.version"]}"
