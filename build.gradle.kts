@@ -602,8 +602,8 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
             val gradleProperties = file("${project.projectDir}/gradle.properties")
             var text = gradleProperties.readText()
 
-            text = text.replace("(?m)^hivemq-api\\.version=.+", "hivemq-api.version=${version}")
-            text = text.replace("(?m)^hivemq-swarm-api\\.version=.+", "hivemq-swarm-api.version=${version}")
+            text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=${version}")
+            text = text.replace("(?m)^hivemq-swarm-api\\.version=.+".toRegex(), "hivemq-swarm-api.version=${version}")
 
             gradleProperties.writeText(text)
         }
