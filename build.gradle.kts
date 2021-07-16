@@ -9,7 +9,6 @@ import org.redline_rpm.payload.Directive
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.Objects.requireNonNullElse
 import java.util.regex.Pattern
 
 buildscript {
@@ -542,8 +541,8 @@ jib {
         image = "hivemq/mqtt-cli"
         tags = setOf(project.version.toString())
         auth {
-            username = requireNonNullElse(System.getenv("DOCKER_USER"), "")
-            password = requireNonNullElse(System.getenv("DOCKER_PASSWORD"), "")
+            username = System.getenv("DOCKER_USER") ?: ""
+            password = System.getenv("DOCKER_PASSWORD") ?: ""
         }
     }
 }
