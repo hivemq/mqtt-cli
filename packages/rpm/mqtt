@@ -1,3 +1,0 @@
-#!/bin/bash
-# Runs Mqtt CLI
-exec java -jar @@jarPath@@ "$@"
