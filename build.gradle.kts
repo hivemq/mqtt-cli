@@ -67,9 +67,13 @@ val windowsZipName = "$packagePreamble-win.zip"
 
 /* ******************** java ******************** */
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
 tasks.compileJava {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
     options.encoding = "UTF-8"
 }
 
