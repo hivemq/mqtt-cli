@@ -74,9 +74,6 @@ tasks.compileJava {
 }
 
 tasks.jar {
-    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    val currentDate = sdf.format(Date())
-
     manifest.attributes(
         "Built-JDK" to System.getProperty("java.version"),
         "Implementation-Title" to "MQTT CLI",
@@ -86,10 +83,8 @@ tasks.jar {
         "Specification-Version" to project.version,
         "Specification-Vendor" to "HiveMQ GmbH",
         "Main-Class" to application.mainClass.get(),
-        "Built-Date" to currentDate
+        "Built-Date" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
     )
-
-    finalizedBy(tasks.shadowJar)
 }
 
 tasks.shadowJar {
