@@ -46,24 +46,6 @@ application {
     mainClassName = "com.hivemq.cli.MqttCLIMain"
 }
 
-val pkgDir = "$projectDir/packages"
-val brewDir = "$pkgDir/homebrew"
-val debDir = "$pkgDir/debian"
-val rpmDir = "$pkgDir/rpm"
-val winDir = "$pkgDir/windows"
-
-val buildPkgDir = "$buildDir/packages"
-val buildBrewDir = "$buildPkgDir/homebrew"
-val buildDebDir = "$buildPkgDir/debian"
-val buildRpmDir = "$buildPkgDir/rpm"
-val buildWinDir = "$buildPkgDir/windows"
-
-val packagePreamble = "mqtt-cli-$version"
-val rpmPackageName = "$packagePreamble.rpm"
-val debPackageName = "$packagePreamble.deb"
-val brewZipName = "$packagePreamble-brew.zip"
-val windowsZipName = "$packagePreamble-win.zip"
-
 /* ******************** java ******************** */
 
 java {
@@ -377,14 +359,13 @@ graal {
 
 val buildPackageBrew by tasks.registering(Zip::class) {
 
-    archiveFileName.set(brewZipName)
-    destinationDirectory.set(file(buildBrewDir))
+    archiveClassifier.set("brew")
+    destinationDirectory.set(buildDir.resolve("packages/homebrew"))
 
     into("brew") {
         from(tasks.shadowJar)
-        from("$brewDir/mqtt")
+        from(projectDir.resolve("packages/homebrew/mqtt"))
     }
-
     from(projectDir.resolve("LICENSE")) {
         into("licenses")
     }
@@ -393,17 +374,13 @@ val buildPackageBrew by tasks.registering(Zip::class) {
 val buildBrewFormula by tasks.registering(Copy::class) {
     dependsOn(buildPackageBrew)
 
-    from("$brewDir/mqtt-cli.rb")
-    into(buildBrewDir)
-
-    doLast {
-        val homebrewFile = file("$buildBrewDir/mqtt-cli.rb")
-        var text = homebrewFile.readText()
-        text = text.replace("@@description@@", project.description!!)
-        text = text.replace("@@version@@", project.version.toString())
-        text = text.replace("@@filename@@", buildPackageBrew.get().archiveFileName.get())
-        text = text.replace("@@shasum@@", sha256Hash(buildPackageBrew.get().archiveFile.get().asFile))
-        homebrewFile.writeText(text)
+    from(projectDir.resolve("packages/homebrew/mqtt-cli.rb"))
+    into(buildDir.resolve("packages/homebrew"))
+    filter {
+        it.replace("@@description@@", project.description!!)
+            .replace("@@version@@", project.version.toString())
+            .replace("@@filename@@", buildPackageBrew.get().archiveFileName.get())
+            .replace("@@shasum@@", sha256Hash(buildPackageBrew.get().archiveFile.get().asFile))
     }
 }
 
@@ -416,7 +393,6 @@ ospackage {
     url = "https://www.hivemq.com/"
 
     summary = "MQTT Command Line Interface for interacting with a MQTT broker"
-    packageDescription = project.description
     license = "apache2"
     packager = ""
     vendor = "HiveMQ GmbH"
@@ -434,11 +410,10 @@ ospackage {
         into("licenses")
         CopySpecEnhancement.fileType(this, Directive.LICENSE)
     })
-    from(debDir, closureOf<CopySpec> {
-        include("mqtt")
+    from(projectDir.resolve("packages/linux/mqtt"), closureOf<CopySpec> {
         fileMode = 0b111_101_101 // 0755
         filter {
-            it.replace("@@jarPath@@", "/opt/${packageName}/${tasks.shadowJar.get().archiveFileName.get()}")
+            it.replace("@@jarPath@@", "/opt/$packageName/${tasks.shadowJar.get().archiveFileName.get()}")
         }
     })
 
@@ -455,17 +430,15 @@ tasks.buildRpm {
 }
 
 val buildDebianPackage by tasks.registering(Copy::class) {
-    from(tasks.buildDeb)
-    include("*.deb")
-    into(buildDebDir)
-    rename { debPackageName }
+    from(tasks.buildDeb.flatMap { it.archiveFile })
+    into(buildDir.resolve("packages/debian"))
+    rename { "${project.name}-${project.version}.deb" }
 }
 
 val buildRpmPackage by tasks.registering(Copy::class) {
-    from(tasks.buildRpm)
-    include("*.rpm")
-    into(buildRpmDir)
-    rename { rpmPackageName }
+    from(tasks.buildRpm.flatMap { it.archiveFile })
+    into(buildDir.resolve("packages/rpm"))
+    rename { "${project.name}-${project.version}.rpm" }
 }
 
 /* ******************** windows zip ******************** */
@@ -486,17 +459,14 @@ launch4j {
 }
 
 val buildWindowsZip by tasks.registering(Zip::class) {
-    dependsOn(tasks.createExe)
 
-    archiveFileName.set(windowsZipName)
-    destinationDirectory.set(file(buildWinDir))
+    archiveClassifier.set("win")
+    destinationDirectory.set(buildDir.resolve("packages/windows"))
 
-    from(winDir) {
-        filter { line ->
-            line.replace("@@exeName@@", "mqtt-cli.exe")
-        }
+    from(projectDir.resolve("packages/windows")) {
+        filter { it.replace("@@exeName@@", launch4j.outfile) }
     }
-    from(launch4j.dest)
+    from(tasks.createExe.map { it.dest })
     from("$projectDir/LICENSE")
 }
 
@@ -527,11 +497,7 @@ gitPublish {
     repoUri.set("https://github.com/hivemq/homebrew-mqtt-cli.git")
     branch.set("master")
 
-    contents {
-        from(buildBrewDir) {
-            include("mqtt-cli.rb")
-        }
-    }
+    contents.from(buildDir.resolve("packages/homebrew/mqtt-cli.rb"))
 
     commitMessage.set("Release version v${project.version}")
 }
