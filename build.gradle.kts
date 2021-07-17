@@ -514,9 +514,9 @@ githubRelease {
     token(System.getenv("githubToken"))
     draft.set(true)
     releaseAssets(
-        tasks.jar,
-        file("$buildRpmDir/$rpmPackageName"),
-        file("$buildDebDir/$debPackageName"),
+        tasks.shadowJar,
+        buildDebianPackage.map { fileTree(it.destinationDir) },
+        buildRpmPackage.map { fileTree(it.destinationDir) },
         buildPackageBrew,
         buildWindowsZip
     )
@@ -536,11 +536,6 @@ gitPublish {
     }
 
     commitMessage.set("Release version v${project.version}")
-}
-
-
-tasks.githubRelease {
-    dependsOn(buildPackageAll)
 }
 
 /* ******************** Dockerhub release ******************** */
