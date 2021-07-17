@@ -1,7 +1,6 @@
 import com.netflix.gradle.plugins.packaging.CopySpecEnhancement
 import nl.javadude.gradle.plugins.license.DownloadLicensesExtension.license
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
-import org.redline_rpm.header.Architecture
 import org.redline_rpm.header.Flags
 import org.redline_rpm.header.Os
 import org.redline_rpm.header.RpmType
@@ -451,7 +450,6 @@ tasks.buildDeb {
 }
 
 tasks.buildRpm {
-    setArch(Architecture.NOARCH)
     release = "1"
     requires("jre", "1.8.0", Flags.GREATER or Flags.EQUAL)
 }
