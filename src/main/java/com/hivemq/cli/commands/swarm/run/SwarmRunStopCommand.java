@@ -30,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
-import sun.jvm.hotspot.types.CIntegerField;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
