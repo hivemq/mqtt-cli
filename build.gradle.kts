@@ -357,7 +357,7 @@ graal {
 
 /* ******************** Homebrew Package & Formula ******************** */
 
-val buildPackageBrew by tasks.registering(Zip::class) {
+val buildBrewZip by tasks.registering(Zip::class) {
 
     archiveClassifier.set("brew")
     destinationDirectory.set(buildDir.resolve("packages/homebrew"))
@@ -372,15 +372,15 @@ val buildPackageBrew by tasks.registering(Zip::class) {
 }
 
 val buildBrewFormula by tasks.registering(Copy::class) {
-    dependsOn(buildPackageBrew)
+    dependsOn(buildBrewZip)
 
     from(projectDir.resolve("packages/homebrew/mqtt-cli.rb"))
     into(buildDir.resolve("packages/homebrew"))
     filter {
         it.replace("@@description@@", project.description!!)
             .replace("@@version@@", project.version.toString())
-            .replace("@@filename@@", buildPackageBrew.get().archiveFileName.get())
-            .replace("@@shasum@@", sha256Hash(buildPackageBrew.get().archiveFile.get().asFile))
+            .replace("@@filename@@", buildBrewZip.get().archiveFileName.get())
+            .replace("@@shasum@@", sha256Hash(buildBrewZip.get().archiveFile.get().asFile))
     }
 }
 
@@ -483,9 +483,9 @@ githubRelease {
     draft.set(true)
     releaseAssets(
         tasks.shadowJar,
+        buildBrewZip,
         buildDebianPackage.map { fileTree(it.destinationDir) },
         buildRpmPackage.map { fileTree(it.destinationDir) },
-        buildPackageBrew,
         buildWindowsZip
     )
     allowUploadToExisting.set(true)
