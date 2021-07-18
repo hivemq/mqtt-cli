@@ -76,7 +76,58 @@ tasks.shadowJar {
     archiveClassifier.set("")
 }
 
-/* ******************** OpenAPI specs ******************** */
+/* ******************** dependencies ******************** */
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation("io.swagger:swagger-annotations:${property("swagger.version")}")
+    implementation("com.google.code.findbugs:jsr305:${property("findBugs.version")}")
+    implementation("com.squareup.okhttp3:okhttp:${property("okHttp.version")}")
+    implementation("com.squareup.okhttp3:logging-interceptor:${property("okHttp.version")}")
+    implementation("io.gsonfire:gson-fire:${property("gsonFire.version")}")
+    implementation("org.apache.commons:commons-lang3:${property("commonsLang.version")}")
+    implementation("javax.annotation:javax.annotation-api:${property("javax.version")}")
+
+    implementation("org.jline:jline:${property("jline3.version")}")
+    implementation("org.jline:jline-terminal-jansi:${property("jline3Jansi.version")}")
+    implementation("com.google.dagger:dagger:${property("dagger.version")}")
+    compileOnly("com.oracle.substratevm:svm:${property("substrateVm.version")}")
+    annotationProcessor("com.google.dagger:dagger-compiler:${property("dagger.version")}")
+
+    implementation("info.picocli:picocli:${property("picocli.version")}")
+    implementation("info.picocli:picocli-shell-jline3:${property("picoclishell.version")}")
+    implementation("info.picocli:picocli-codegen:${property("picocli.version")}")
+    implementation("com.google.guava:guava:${property("guava.version")}")
+    implementation("com.google.code.gson:gson:${property("gson.version")}")
+    implementation("commons-io:commons-io:${property("commonsIo.version")}")
+    implementation("org.tinylog:tinylog-api:${property("tinylog.version")}")
+    implementation("org.tinylog:tinylog-impl:${property("tinylog.version")}")
+    implementation("org.jetbrains:annotations:${property("jetbrainsAnnotations.version")}")
+    implementation("org.bouncycastle:bcprov-jdk15on:${property("bouncycastle.version")}")
+    implementation("org.bouncycastle:bcpkix-jdk15on:${property("bouncycastle.version")}")
+    implementation("com.hivemq:hivemq-mqtt-client:${property("hivemqclient.version")}")
+    implementation("io.netty:netty-handler:${property("netty.version")}")
+    implementation("io.netty:netty-codec-http:${property("netty.version")}")
+    implementation("io.netty:netty-transport-native-epoll:${property("netty.version")}:linux-x86_64")
+    implementation("com.opencsv:opencsv:${property("openCsv.version")}")
+
+    testImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
+    testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junitJupiter.version")}")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:${property("junitJupiter.version")}")
+    testImplementation("com.squareup.okhttp3:mockwebserver:${property("mockWebserver.version")}")
+    testImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemqTestcontainer.version")}")
+    testImplementation("com.ginsberg:junit5-system-exit:${property("systemExit.version")}")
+    testImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junitJupiter.version")}")
+
+}
+
+/* ******************** OpenAPI ******************** */
 
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     group = "hivemq"
@@ -130,57 +181,6 @@ sourceSets.main {
         srcDir(generateHivemqOpenApi)
         srcDir(generateSwarmOpenApi)
     }
-}
-
-/* ******************** dependencies ******************** */
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-
-    implementation("io.swagger:swagger-annotations:${property("swagger.version")}")
-    implementation("com.google.code.findbugs:jsr305:${property("findBugs.version")}")
-    implementation("com.squareup.okhttp3:okhttp:${property("okHttp.version")}")
-    implementation("com.squareup.okhttp3:logging-interceptor:${property("okHttp.version")}")
-    implementation("io.gsonfire:gson-fire:${property("gsonFire.version")}")
-    implementation("org.apache.commons:commons-lang3:${property("commonsLang.version")}")
-    implementation("javax.annotation:javax.annotation-api:${property("javax.version")}")
-
-    implementation("org.jline:jline:${property("jline3.version")}")
-    implementation("org.jline:jline-terminal-jansi:${property("jline3Jansi.version")}")
-    implementation("com.google.dagger:dagger:${property("dagger.version")}")
-    compileOnly("com.oracle.substratevm:svm:${property("substrateVm.version")}")
-    annotationProcessor("com.google.dagger:dagger-compiler:${property("dagger.version")}")
-
-    implementation("info.picocli:picocli:${property("picocli.version")}")
-    implementation("info.picocli:picocli-shell-jline3:${property("picoclishell.version")}")
-    implementation("info.picocli:picocli-codegen:${property("picocli.version")}")
-    implementation("com.google.guava:guava:${property("guava.version")}")
-    implementation("com.google.code.gson:gson:${property("gson.version")}")
-    implementation("commons-io:commons-io:${property("commonsIo.version")}")
-    implementation("org.tinylog:tinylog-api:${property("tinylog.version")}")
-    implementation("org.tinylog:tinylog-impl:${property("tinylog.version")}")
-    implementation("org.jetbrains:annotations:${property("jetbrainsAnnotations.version")}")
-    implementation("org.bouncycastle:bcprov-jdk15on:${property("bouncycastle.version")}")
-    implementation("org.bouncycastle:bcpkix-jdk15on:${property("bouncycastle.version")}")
-    implementation("com.hivemq:hivemq-mqtt-client:${property("hivemqclient.version")}")
-    implementation("io.netty:netty-handler:${property("netty.version")}")
-    implementation("io.netty:netty-codec-http:${property("netty.version")}")
-    implementation("io.netty:netty-transport-native-epoll:${property("netty.version")}:linux-x86_64")
-    implementation("com.opencsv:opencsv:${property("openCsv.version")}")
-
-    testImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
-    testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junitJupiter.version")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:${property("junitJupiter.version")}")
-    testImplementation("com.squareup.okhttp3:mockwebserver:${property("mockWebserver.version")}")
-    testImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemqTestcontainer.version")}")
-    testImplementation("com.ginsberg:junit5-system-exit:${property("systemExit.version")}")
-    testImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junitJupiter.version")}")
-
 }
 
 /* ******************** tests ******************** */
