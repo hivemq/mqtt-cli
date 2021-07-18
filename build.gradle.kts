@@ -496,10 +496,8 @@ githubRelease {
 gitPublish {
     repoUri.set("https://github.com/hivemq/homebrew-mqtt-cli.git")
     branch.set("master")
-
-    contents.from(buildDir.resolve("packages/homebrew/mqtt-cli.rb"))
-
     commitMessage.set("Release version v${project.version}")
+    contents.from(buildBrewFormula) { include("mqtt-cli.rb") }
 }
 
 /* ******************** Dockerhub release ******************** */
