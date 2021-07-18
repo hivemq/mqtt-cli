@@ -183,7 +183,7 @@ sourceSets.main {
     }
 }
 
-/* ******************** tests ******************** */
+/* ******************** test ******************** */
 
 tasks.test {
     useJUnitPlatform()
@@ -355,7 +355,7 @@ graal {
     )
 }
 
-/* ******************** Homebrew Package & Formula ******************** */
+/* ******************** homebrew package & formula ******************** */
 
 val buildBrewZip by tasks.registering(Zip::class) {
 
@@ -470,9 +470,9 @@ val buildWindowsZip by tasks.registering(Zip::class) {
     from("$projectDir/LICENSE")
 }
 
-/* ******************** package task ******************** */
+/* ******************** packages ******************** */
 
-val buildPackageAll by tasks.registering {
+val buildPackages by tasks.registering {
     dependsOn(buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip)
 }
 
@@ -586,7 +586,7 @@ if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
     project.ext.set("versionUpdaterFiles", arrayOf("doc/docs/installation.md"))
 }
 
-/* ******************** Helpers ******************** */
+/* ******************** helpers ******************** */
 
 fun sha256Hash(file: File): String {
     val bytes = file.readBytes()
