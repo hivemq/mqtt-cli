@@ -132,7 +132,7 @@ dependencies {
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     group = "hivemq"
     generatorName.set("java")
-    inputSpec.set("$rootDir/specs/HiveMQ-${project.property("hivemq-api.version")}-OpenAPI-spec.yaml")
+    inputSpec.set("$projectDir/specs/HiveMQ-${project.property("hivemq-api.version")}-OpenAPI-spec.yaml")
     outputDir.set("$buildDir/tmp/$name")
     apiPackage.set("com.hivemq.cli.openapi.hivemq")
     modelPackage.set("com.hivemq.cli.openapi.hivemq")
@@ -140,7 +140,7 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     configOptions.put("hideGenerationTimestamp", "true")
 
     inputs.file(inputSpec.get()).withPropertyName("inputSpec").withPathSensitivity(PathSensitivity.NONE)
-    val outputSrcDir = "$buildDir/generated/openapi/hivemq/java"
+    val outputSrcDir = buildDir.resolve("generated/openapi/hivemq/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
     outputs.cacheIf { true }
     doFirst { delete(outputDir) }
@@ -155,7 +155,7 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
 val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
     group = "swarm"
     generatorName.set("java")
-    inputSpec.set("$rootDir/specs/HiveMQ-Swarm-${project.property("hivemq-swarm-api.version")}-OpenAPI-spec.yaml")
+    inputSpec.set("$projectDir/specs/HiveMQ-Swarm-${project.property("hivemq-swarm-api.version")}-OpenAPI-spec.yaml")
     outputDir.set("$buildDir/tmp/$name")
     apiPackage.set("com.hivemq.cli.openapi.swarm")
     modelPackage.set("com.hivemq.cli.openapi.swarm")
@@ -163,7 +163,7 @@ val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
     configOptions.put("hideGenerationTimestamp", "true")
 
     inputs.file(inputSpec.get()).withPropertyName("inputSpec").withPathSensitivity(PathSensitivity.NONE)
-    val outputSrcDir = "$buildDir/generated/openapi/swarm/java"
+    val outputSrcDir = buildDir.resolve("generated/openapi/swarm/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
     outputs.cacheIf { true }
     doFirst { delete(outputDir) }
@@ -324,7 +324,7 @@ tasks.forbiddenApisTest { enabled = false }
 
 graal {
     graalVersion("19.2.1")
-    outputName(rootProject.name)
+    outputName(project.name)
     mainClass(application.mainClass.get())
     option("-H:+PrintClassInitialization")
     option("-H:ReflectionConfigurationFiles=tools/reflection.json")
@@ -387,7 +387,7 @@ val buildBrewFormula by tasks.registering(Copy::class) {
 /* ******************** debian and rpm packages ******************** */
 
 ospackage {
-    packageName = "mqtt-cli"
+    packageName = project.name
     version = project.version.toString()
 
     url = "https://www.hivemq.com/"
@@ -405,16 +405,15 @@ ospackage {
 
     into("/opt/$packageName")
     from(tasks.shadowJar)
-
-    from(projectDir.resolve("LICENSE"), closureOf<CopySpec> {
-        into("licenses")
-        CopySpecEnhancement.fileType(this, Directive.LICENSE)
-    })
     from(projectDir.resolve("packages/linux/mqtt"), closureOf<CopySpec> {
         fileMode = 0b111_101_101 // 0755
         filter {
             it.replace("@@jarPath@@", "/opt/$packageName/${tasks.shadowJar.get().archiveFileName.get()}")
         }
+    })
+    from(projectDir.resolve("LICENSE"), closureOf<CopySpec> {
+        into("licenses")
+        CopySpecEnhancement.fileType(this, Directive.LICENSE)
     })
 
     link("/usr/bin/mqtt", "/opt/$packageName/mqtt", 0b111_101_101)
@@ -500,7 +499,7 @@ gitPublish {
     contents.from(buildBrewFormula) { include("mqtt-cli.rb") }
 }
 
-/* ******************** Dockerhub release ******************** */
+/* ******************** docker ******************** */
 
 jib {
     from {
@@ -522,7 +521,6 @@ distributions.shadow {
     distributionBaseName.set("mqtt-cli")
     contents {
         from("README.txt")
-        from("build/packaging")
     }
 }
 
@@ -542,7 +540,7 @@ if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
         mustRunAfter(deleteOldSpecs)
 
         from("../hivemq-enterprise/build/openapi") {
-            include { ".*${version}-OpenAPI-spec.yaml".toRegex().matches(it.name) }
+            include { ".*$version-OpenAPI-spec.yaml".toRegex().matches(it.name) }
         }
         into("specs")
     }
@@ -554,7 +552,7 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null) {
         mustRunAfter(deleteOldSpecs)
 
         from("../hivemq-swarm/build/openapi") {
-            include { ".*${version}-OpenAPI-spec.yaml".toRegex().matches(it.name) }
+            include { ".*$version-OpenAPI-spec.yaml".toRegex().matches(it.name) }
         }
         into("specs")
     }
@@ -568,11 +566,11 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
         dependsOn(tasks.named("copyHiveMQSwarmSpec"))
 
         doLast {
-            val gradleProperties = file("${project.projectDir}/gradle.properties")
+            val gradleProperties = file("$projectDir/gradle.properties")
             var text = gradleProperties.readText()
 
-            text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=${version}")
-            text = text.replace("(?m)^hivemq-swarm-api\\.version=.+".toRegex(), "hivemq-swarm-api.version=${version}")
+            text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=$version")
+            text = text.replace("(?m)^hivemq-swarm-api\\.version=.+".toRegex(), "hivemq-swarm-api.version=$version")
 
             gradleProperties.writeText(text)
         }
