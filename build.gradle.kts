@@ -92,8 +92,8 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:${property("commonsLang.version")}")
     implementation("javax.annotation:javax.annotation-api:${property("javax.version")}")
 
-    implementation("org.jline:jline:${property("jline3.version")}")
-    implementation("org.jline:jline-terminal-jansi:${property("jline3Jansi.version")}")
+    implementation("org.jline:jline:${property("jline.version")}")
+    implementation("org.jline:jline-terminal-jansi:${property("jline.version")}")
     implementation("com.google.dagger:dagger:${property("dagger.version")}")
     compileOnly("com.oracle.substratevm:svm:${property("substrateVm.version")}")
     annotationProcessor("com.google.dagger:dagger-compiler:${property("dagger.version")}")
