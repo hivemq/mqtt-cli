@@ -1,33 +1,27 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+import com.netflix.gradle.plugins.packaging.CopySpecEnhancement
 import nl.javadude.gradle.plugins.license.DownloadLicensesExtension.license
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+import org.redline_rpm.header.Flags
 import org.redline_rpm.header.Os
 import org.redline_rpm.header.RpmType
 import org.redline_rpm.payload.Directive
-import java.util.Date
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
-import org.redline_rpm.header.Architecture
-import org.redline_rpm.header.Flags
-import java.util.regex.Pattern
+import java.util.*
 
 buildscript {
     dependencies {
-        dependencies {
-            if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
-                classpath("com.hivemq:plugins")
-            }
+        if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
+            classpath("com.hivemq:plugins")
         }
     }
 }
 
 plugins {
     java
-    idea
     application
     id("com.github.johnrengelman.shadow")
     id("com.github.hierynomus.license")
-    id("org.gradle.crypto.checksum")
     id("nebula.ospackage")
     id("edu.sc.seis.launch4j")
     id("com.palantir.graal")
@@ -37,6 +31,7 @@ plugins {
     id("org.owasp.dependencycheck")
     id("com.github.ben-manes.versions")
     id("org.openapi.generator")
+    id("com.google.cloud.tools.jib")
 }
 
 /* ******************** metadata ******************** */
@@ -51,109 +46,34 @@ application {
     mainClassName = "com.hivemq.cli.MqttCLIMain"
 }
 
-val readableName by extra("mqtt-cli")
-val appName by extra("MQTT CLI")
-val appJarName by extra("$readableName.jar")
-val appExe by extra("$readableName.exe")
-
-val githubOrg by extra("hivemq")
-val githubRepo by extra("mqtt-cli")
-val githubUrl by extra("https://github.com/$githubOrg/$githubRepo")
-val scmConnection by extra("scm:git:git://github.com/$githubOrg/$githubRepo.git")
-val scmDeveloperConnection by extra("scm:git:ssh://git@github.com/$githubOrg/$githubRepo.git")
-val issuesUrl by extra("$githubUrl/issues")
-val docUrl by extra("https://$githubOrg.github.io/$githubRepo/")
-
-val iconsDir by extra("$projectDir/icons")
-val resDir by extra("$projectDir/res")
-val dmgDir by extra("$projectDir/dmg")
-val pkgDir by extra("$projectDir/packages")
-val brewDir by extra("$pkgDir/homebrew")
-val debDir by extra("$pkgDir/debian")
-val rpmDir by extra("$pkgDir/rpm")
-val winDir by extra("$pkgDir/windows")
-
-val buildLaunch4j by extra("$buildDir/launch4j")
-
-val buildPkgDir by extra("$buildDir/packages")
-val buildBrewDir by extra("$buildPkgDir/homebrew")
-val buildDebDir by extra("$buildPkgDir/debian")
-val buildRpmDir by extra("$buildPkgDir/rpm")
-val buildWinDir by extra("$buildPkgDir/windows")
-
-val packagePreamble by extra("$readableName-$version")
-val rpmPackageName by extra("$packagePreamble.rpm")
-val debPackageName by extra("$packagePreamble.deb")
-val brewZipName by extra("$packagePreamble-brew.zip")
-val windowsZipName by extra("$packagePreamble-win.zip")
-
-val hmqIco by extra("$iconsDir/05-mqtt-cli-icon.ico")
-val hmqLogo by extra("$iconsDir/05-mqtt-cli-icon.png")
-
-val copyright by extra("Copyright 2019 HiveMQ and the HiveMQ Community")
-val vendor by extra("HiveMQ GmbH")
-val website by extra("https://www.hivemq.com/")
-val license by extra("$projectDir/LICENSE")
-
 /* ******************** java ******************** */
 
-tasks.compileJava {
-    dependsOn(generateHiveMqOpenApi)
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
 
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
+tasks.compileJava {
     options.encoding = "UTF-8"
 }
 
-sourceSets {
-    main {
-        java {
-            srcDir("$rootDir/build/generated/openapi/src/main/java")
-        }
-    }
-}
-
 tasks.jar {
-    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    val currentDate = sdf.format(Date())
-
     manifest.attributes(
         "Built-JDK" to System.getProperty("java.version"),
-        "Implementation-Title" to appName,
+        "Implementation-Title" to "MQTT CLI",
         "Implementation-Version" to project.version,
-        "Implementation-Vendor" to vendor,
-        "Specification-Title" to appName,
+        "Implementation-Vendor" to "HiveMQ GmbH",
+        "Specification-Title" to "MQTT CLI",
         "Specification-Version" to project.version,
-        "Specification-Vendor" to vendor,
+        "Specification-Vendor" to "HiveMQ GmbH",
         "Main-Class" to application.mainClass.get(),
-        "Built-Date" to currentDate.toString()
+        "Built-Date" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
     )
-
-    finalizedBy(tasks.shadowJar)
 }
 
-tasks {
-    named<ShadowJar>("shadowJar") {
-        archiveClassifier.set("")
-    }
-}
-
-idea {
-    module {
-        generatedSourceDirs.add(file("build/generated/sources/annotationProcessor/java/main"))
-    }
-}
-
-/* ******************** OpenAPI specs ******************** */
-
-val generateHiveMqOpenApi by tasks.registering(GenerateTask::class) {
-    group = "hivemq"
-    generatorName.set("java")
-    inputSpec.set("$rootDir/specs/HiveMQ-${project.property("hivemq-api.version")}-OpenAPI-spec.yaml")
-    outputDir.set("$buildDir/generated/openapi")
-    apiPackage.set("com.hivemq.cli.openapi.hivemq")
-    modelPackage.set("com.hivemq.cli.openapi.hivemq")
-    configOptions.put("dateLibrary", "java8")
+tasks.shadowJar {
+    archiveClassifier.set("")
 }
 
 /* ******************** dependencies ******************** */
@@ -164,7 +84,6 @@ repositories {
 
 dependencies {
 
-    // hivemq client api dependencies
     implementation("io.swagger:swagger-annotations:${property("swagger.version")}")
     implementation("com.google.code.findbugs:jsr305:${property("findBugs.version")}")
     implementation("com.squareup.okhttp3:okhttp:${property("okHttp.version")}")
@@ -173,8 +92,8 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:${property("commonsLang.version")}")
     implementation("javax.annotation:javax.annotation-api:${property("javax.version")}")
 
-    implementation("org.jline:jline:${property("jline3.version")}")
-    implementation("org.jline:jline-terminal-jansi:${property("jline3Jansi.version")}")
+    implementation("org.jline:jline:${property("jline.version")}")
+    implementation("org.jline:jline-terminal-jansi:${property("jline.version")}")
     implementation("com.google.dagger:dagger:${property("dagger.version")}")
     compileOnly("com.oracle.substratevm:svm:${property("substrateVm.version")}")
     annotationProcessor("com.google.dagger:dagger-compiler:${property("dagger.version")}")
@@ -206,7 +125,38 @@ dependencies {
 
 }
 
-/* ******************** tests ******************** */
+/* ******************** OpenAPI ******************** */
+
+val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
+    group = "hivemq"
+    generatorName.set("java")
+    inputSpec.set("$projectDir/specs/HiveMQ-${project.property("hivemq-api.version")}-OpenAPI-spec.yaml")
+    outputDir.set("$buildDir/tmp/$name")
+    apiPackage.set("com.hivemq.cli.openapi.hivemq")
+    modelPackage.set("com.hivemq.cli.openapi.hivemq")
+    configOptions.put("dateLibrary", "java8")
+    configOptions.put("hideGenerationTimestamp", "true")
+
+    inputs.file(inputSpec.get()).withPropertyName("inputSpec").withPathSensitivity(PathSensitivity.NONE)
+    val outputSrcDir = buildDir.resolve("generated/openapi/hivemq/java")
+    outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
+    outputs.cacheIf { true }
+    doFirst { delete(outputDir) }
+    doLast {
+        copy {
+            from("${outputDir.get()}/src/main/java")
+            into(outputSrcDir)
+        }
+    }
+}
+
+sourceSets.main {
+    java {
+        srcDir(generateHivemqOpenApi)
+    }
+}
+
+/* ******************** test ******************** */
 
 tasks.test {
     useJUnitPlatform()
@@ -333,13 +283,12 @@ val updateThirdPartyLicenses by tasks.registering {
     }
 }
 
-tasks.forbiddenApisMain {
-    exclude("**/LoggingBootstrap.class")
-}
-
 forbiddenApis {
     bundledSignatures = setOf("jdk-deprecated", "jdk-non-portable", "jdk-reflection")
-    ignoreFailures = false
+}
+
+tasks.forbiddenApisMain {
+    exclude("**/LoggingBootstrap.class")
 }
 
 tasks.forbiddenApisTest { enabled = false }
@@ -348,7 +297,7 @@ tasks.forbiddenApisTest { enabled = false }
 
 graal {
     graalVersion("19.2.1")
-    outputName(rootProject.name)
+    outputName(project.name)
     mainClass(application.mainClass.get())
     option("-H:+PrintClassInitialization")
     option("-H:ReflectionConfigurationFiles=tools/reflection.json")
@@ -379,55 +328,47 @@ graal {
     )
 }
 
-/* ******************** Homebrew Package & Formula ******************** */
+/* ******************** homebrew package & formula ******************** */
 
-val buildPackageBrew by tasks.registering(Zip::class) {
-    dependsOn(tasks.shadowJar)
+val buildBrewZip by tasks.registering(Zip::class) {
 
-    archiveFileName.set(brewZipName)
-    destinationDirectory.set(file(buildBrewDir))
+    archiveClassifier.set("brew")
+    destinationDirectory.set(buildDir.resolve("packages/homebrew"))
 
     into("brew") {
-        from(tasks.shadowJar.get().archiveFile.get())
-        from("$brewDir/mqtt")
+        from(tasks.shadowJar)
+        from(projectDir.resolve("packages/homebrew/mqtt"))
     }
-
-    from(projectDir) {
-        include("LICENSE")
+    from(projectDir.resolve("LICENSE")) {
         into("licenses")
     }
 }
 
 val buildBrewFormula by tasks.registering(Copy::class) {
-    dependsOn(buildPackageBrew)
+    dependsOn(buildBrewZip)
 
-    from("$brewDir/mqtt-cli.rb")
-    into(buildBrewDir)
-
-    doLast {
-        val homebrewFile: File = file("$buildBrewDir/mqtt-cli.rb")
-        var text: String = homebrewFile.readText()
-        text = text.replace("@@description@@", project.description!!)
-        text = text.replace("@@version@@", project.version.toString())
-        text = text.replace("@@filename@@", buildPackageBrew.get().archiveFileName.get())
-        text = text.replace("@@shasum@@", sha256Hash(buildPackageBrew.get().archiveFile.get().asFile))
-        homebrewFile.writeText(text)
+    from(projectDir.resolve("packages/homebrew/mqtt-cli.rb"))
+    into(buildDir.resolve("packages/homebrew"))
+    filter {
+        it.replace("@@description@@", project.description!!)
+            .replace("@@version@@", project.version.toString())
+            .replace("@@filename@@", buildBrewZip.get().archiveFileName.get())
+            .replace("@@shasum@@", sha256Hash(buildBrewZip.get().archiveFile.get().asFile))
     }
 }
 
 /* ******************** debian and rpm packages ******************** */
 
 ospackage {
-    packageName = readableName
+    packageName = project.name
     version = project.version.toString()
 
-    url = website
+    url = "https://www.hivemq.com/"
 
     summary = "MQTT Command Line Interface for interacting with a MQTT broker"
-    packageDescription = description
     license = "apache2"
     packager = ""
-    vendor = vendor
+    vendor = "HiveMQ GmbH"
 
     os = Os.LINUX
     type = RpmType.BINARY
@@ -436,28 +377,19 @@ ospackage {
     permissionGroup = "root"
 
     into("/opt/$packageName")
-    from(tasks.shadowJar.get().outputs.files)
-
-    from(configurations.runtime.get(), closureOf<CopySpec> {
-        into("lib")
-    })
-    from("lib", closureOf<CopySpec> {
-        into("lib")
-    })
-    from(projectDir, closureOf<CopySpec> {
-        include("LICENSE")
-        into("licenses")
-        fileType = Directive.LICENSE
-    })
-    from(debDir, closureOf<CopySpec> {
-        include("mqtt")
-        fileMode = 0b111101101 // 0755
+    from(tasks.shadowJar)
+    from(projectDir.resolve("packages/linux/mqtt"), closureOf<CopySpec> {
+        fileMode = 0b111_101_101 // 0755
         filter {
-            it.replace("@@jarPath@@", "/opt/${packageName}/${tasks.shadowJar.get().archiveFileName.get()}")
+            it.replace("@@jarPath@@", "/opt/$packageName/${tasks.shadowJar.get().archiveFileName.get()}")
         }
     })
+    from(projectDir.resolve("LICENSE"), closureOf<CopySpec> {
+        into("licenses")
+        CopySpecEnhancement.fileType(this, Directive.LICENSE)
+    })
 
-    link("/usr/bin/mqtt", "/opt/$packageName/mqtt", 0b111101101)
+    link("/usr/bin/mqtt", "/opt/$packageName/mqtt", 0b111_101_101)
 }
 
 tasks.buildDeb {
@@ -465,88 +397,70 @@ tasks.buildDeb {
 }
 
 tasks.buildRpm {
-    setArch(Architecture.NOARCH)
     release = "1"
     requires("jre", "1.8.0", Flags.GREATER or Flags.EQUAL)
 }
 
 val buildDebianPackage by tasks.registering(Copy::class) {
-    from(tasks.buildDeb)
-    include("*.deb")
-    into(file(buildDebDir))
-    rename { fileName: String ->
-        fileName.replace(".+".toRegex(), debPackageName)
-    }
+    from(tasks.buildDeb.flatMap { it.archiveFile })
+    into(buildDir.resolve("packages/debian"))
+    rename { "${project.name}-${project.version}.deb" }
 }
 
 val buildRpmPackage by tasks.registering(Copy::class) {
-    from(tasks.buildRpm)
-    include("*.rpm")
-    into(file(buildRpmDir))
-    rename { fileName: String ->
-        fileName.replace(".+".toRegex(), rpmPackageName)
-    }
+    from(tasks.buildRpm.flatMap { it.archiveFile })
+    into(buildDir.resolve("packages/rpm"))
+    rename { "${project.name}-${project.version}.rpm" }
 }
 
 /* ******************** windows zip ******************** */
 
 launch4j {
-    outputDir = "packages/windows"
     headerType = "console"
     mainClassName = application.mainClass.get()
-    icon = hmqIco
-    jar = "lib/${project.tasks.shadowJar.get().archiveFileName.get()}"
-    outfile = appExe
-    copyright = copyright
-    companyName = vendor
+    icon = "$projectDir/icons/05-mqtt-cli-icon.ico"
+    jarTask = tasks.shadowJar.get()
+    copyConfigurable = emptyList<Any>()
+    copyright = "Copyright 2019-present HiveMQ and the HiveMQ Community"
+    companyName = "HiveMQ GmbH"
     downloadUrl = "https://openjdk.java.net/install/"
     jreMinVersion = "1.8"
-    windowTitle = appName
+    windowTitle = "MQTT CLI"
     version = project.version.toString()
     textVersion = project.version.toString()
 }
 
 val buildWindowsZip by tasks.registering(Zip::class) {
-    dependsOn(tasks.createExe)
 
-    archiveFileName.set(windowsZipName)
-    destinationDirectory.set(file(buildWinDir))
+    archiveClassifier.set("win")
+    destinationDirectory.set(buildDir.resolve("packages/windows"))
 
-    from(winDir) {
-        //include("*")
-        filter { line ->
-            line.replace("@@exeName@@", appExe)
-        }
+    from(projectDir.resolve("packages/windows")) {
+        filter { it.replace("@@exeName@@", launch4j.outfile) }
     }
-    from(launch4j.dest)
-    from(license)
+    from(tasks.createExe.map { it.dest })
+    from("$projectDir/LICENSE")
 }
 
-/* ******************** package task ******************** */
+/* ******************** packages ******************** */
 
-val buildPackageAll = tasks.create("buildPackageAll") {
+val buildPackages by tasks.registering {
     dependsOn(buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip)
 }
-
 
 /* ******************** Publish Draft-Release with all packages to GitHub Releases ******************** */
 
 githubRelease {
     token(System.getenv("githubToken"))
-    owner(githubOrg)
-    targetCommitish("master")
-    body("")
-    draft(true)
-    prerelease(false)
-    releaseAssets
+    draft.set(true)
     releaseAssets(
-        tasks.jar.get().archiveFile,
-        file("$buildRpmDir/$rpmPackageName"),
-        file("$buildDebDir/$debPackageName"),
-        file("$buildBrewDir/$brewZipName"),
+        tasks.shadowJar,
+        buildBrewZip,
+        buildDebianPackage.map { fileTree(it.destinationDir) },
+        buildRpmPackage.map { fileTree(it.destinationDir) },
         buildWindowsZip
     )
-    allowUploadToExisting(true)
+    allowUploadToExisting.set(true)
 }
 
 /* ******************** Update the Homebrew-Formula with the newly built package ******************** */
@@ -554,30 +468,32 @@ githubRelease {
 gitPublish {
     repoUri.set("https://github.com/hivemq/homebrew-mqtt-cli.git")
     branch.set("master")
-
-    contents {
-        from(buildBrewDir) {
-            include("mqtt-cli.rb")
-        }
-    }
-
-    // message used when committing changes
     commitMessage.set("Release version v${project.version}")
+    contents.from(buildBrewFormula) { include("mqtt-cli.rb") }
 }
 
-tasks.githubRelease {
-    dependsOn(buildPackageAll)
+/* ******************** docker ******************** */
+
+jib {
+    from {
+        image = "openjdk:11-jre-slim-buster"
+    }
+    to {
+        image = "hivemq/mqtt-cli"
+        tags = setOf(project.version.toString())
+        auth {
+            username = System.getenv("DOCKER_USER") ?: ""
+            password = System.getenv("DOCKER_PASSWORD") ?: ""
+        }
+    }
 }
 
 /* ******************** Platform distribution ******************** */
 
-distributions.main {
-    shadow {
-        distributionBaseName.set("mqtt-cli")
-        contents {
-            from("README.txt")
-            from("build/packaging")
-        }
+distributions.shadow {
+    distributionBaseName.set("mqtt-cli")
+    contents {
+        from("README.txt")
     }
 }
 
@@ -597,7 +513,7 @@ if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
         mustRunAfter(deleteOldSpecs)
 
         from("../hivemq-enterprise/build/openapi") {
-            include { Pattern.compile(".*${version}-OpenAPI-spec.yaml").matcher(it.name).matches() }
+            include { ".*$version-OpenAPI-spec.yaml".toRegex().matches(it.name) }
         }
         into("specs")
     }
@@ -606,13 +522,13 @@ if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
 if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
     tasks.register("updateSpecs") {
         dependsOn(deleteOldSpecs)
-        dependsOn(tasks.getByName("copyHiveMQSpec"))
+        dependsOn(tasks.named("copyHiveMQSpec"))
 
         doLast {
-            val gradleProperties = file("${project.projectDir}/gradle.properties")
+            val gradleProperties = file("$projectDir/gradle.properties")
             var text = gradleProperties.readText()
 
-            text = text.replace("(?m)^hivemq-api\\.version=.+", "hivemq-api.version=${version}")
+            text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=$version")
 
             gradleProperties.writeText(text)
         }
@@ -624,11 +540,11 @@ if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
     project.ext.set("versionUpdaterFiles", arrayOf("doc/docs/installation.md"))
 }
 
-/* ******************** Helpers ******************** */
+/* ******************** helpers ******************** */
 
 fun sha256Hash(file: File): String {
-    val bytes = file.inputStream().readAllBytes()
+    val bytes = file.readBytes()
     val md = MessageDigest.getInstance("SHA-256")
     val digest = md.digest(bytes)
-    return digest.fold("", { str, it -> str + "%02x".format(it) })
+    return digest.fold("") { str, it -> str + "%02x".format(it) }
 }
