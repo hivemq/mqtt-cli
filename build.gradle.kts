@@ -95,7 +95,7 @@ dependencies {
     implementation("org.jline:jline:${property("jline.version")}")
     implementation("org.jline:jline-terminal-jansi:${property("jline.version")}")
     implementation("com.google.dagger:dagger:${property("dagger.version")}")
-    compileOnly("com.oracle.substratevm:svm:${property("substrateVm.version")}")
+    compileOnly("org.graalvm.nativeimage:svm:${property("substrateVm.version")}")
     annotationProcessor("com.google.dagger:dagger-compiler:${property("dagger.version")}")
 
     implementation("info.picocli:picocli:${property("picocli.version")}")
@@ -119,7 +119,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junitJupiter.version")}")
     testImplementation("org.junit.jupiter:junit-jupiter-params:${property("junitJupiter.version")}")
-    testImplementation("com.squareup.okhttp3:mockwebserver:${property("mockWebserver.version")}")
+    testImplementation("com.squareup.okhttp3:mockwebserver:${property("okHttp.version")}")
     testImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemqTestcontainer.version")}")
     testImplementation("com.ginsberg:junit5-system-exit:${property("systemExit.version")}")
     testImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
