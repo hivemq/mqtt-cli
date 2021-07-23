@@ -4,8 +4,7 @@ pipeline {
     // by default run on the master node, since it's the only one with direct repo access
     agent { label 'master' }
     options {
-        // no checkout needed
-        skipDefaultCheckout()
+        skipDefaultCheckout() // no checkout needed
         buildDiscarder(logRotator(numToKeepStr: '100'))
         timestamps()
     }
@@ -17,7 +16,16 @@ pipeline {
                     try {
                         build job: "../../hivemq4-composite/${branchJobName}", wait: false
                     } catch (e) {
-                        build job: "../../hivemq4-composite", wait: false
+                        try {
+                            sh """
+                                git clone git@github.com:hivemq/hivemq.git --branch=${PLATFORM_MASTER} --single-branch --depth 1 .
+                                git push origin HEAD:${BRANCH_NAME}
+                            """
+                        } catch (e2) { // if push failed, branch already exists
+                        } finally {
+                            cleanWs()
+                            build job: "../../hivemq4-composite", wait: false
+                        }
                     }
                 }
             }
