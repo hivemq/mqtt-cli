@@ -14,7 +14,11 @@ pipeline {
             steps {
                 script {
                     def branchJobName = BRANCH_NAME.replace('/', '%2F')
-                    build job: "../../hivemq4-composite/${branchJobName}", wait: false
+                    try {
+                        build job: "../../hivemq4-composite/${branchJobName}", wait: false
+                    } catch (e) {
+                        build job: "../../hivemq4-composite", wait: false
+                    }
                 }
             }
         }
