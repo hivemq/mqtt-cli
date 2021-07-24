@@ -1,7 +1,6 @@
-PLATFORM_MASTER = 'master'
+MASTER_BRANCH = 'master'
 
 pipeline {
-    // by default run on the master node, since it's the only one with direct repo access
     agent { label 'master' }
     options {
         skipDefaultCheckout() // no checkout needed
@@ -12,19 +11,20 @@ pipeline {
         stage('Trigger build') {
             steps {
                 script {
+                    def multiBranchJobPath = '../../hivemq4-composite'
                     def branchJobName = BRANCH_NAME.replace('/', '%2F')
                     try {
-                        build job: "../../hivemq4-composite/${branchJobName}", wait: false
+                        build job: "${multiBranchJobPath}/${branchJobName}", wait: false
                     } catch (e) {
                         try {
                             sh """
-                                git clone git@github.com:hivemq/hivemq.git --branch=${PLATFORM_MASTER} --single-branch --depth 1 .
+                                git clone git@github.com:hivemq/hivemq.git --branch=${MASTER_BRANCH} --single-branch --depth 1 .
                                 git push origin HEAD:${BRANCH_NAME}
                             """
                         } catch (e2) { // if push failed, branch already exists
                         } finally {
                             cleanWs()
-                            build job: "../../hivemq4-composite", wait: false
+                            build job: multiBranchJobPath, wait: false
                         }
                     }
                 }
