@@ -20,7 +20,7 @@ info:
     \ definition that\ncan be imported into popular API tooling (e.g. Postman) or\
     \ can be used to generate client-code for multiple programming languages.\n"
   title: HiveMQ Swarm REST API
-  version: 4.6.3
+  version: 4.6.4
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 paths:
