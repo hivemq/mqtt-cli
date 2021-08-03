@@ -68,7 +68,7 @@ tasks.jar {
         "Specification-Version" to project.version,
         "Specification-Vendor" to "HiveMQ GmbH",
         "Main-Class" to application.mainClass.get(),
-        "Built-Date" to SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
+        "Built-Date" to SimpleDateFormat("yyyy-MM-dd").format(Date())
     )
 }
 
