@@ -19,16 +19,10 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
-      - name: Attach artifacts to GitHub release
-        run: ./gradlew githubRelease
+      - name: Publish
+        run: ./gradlew githubRelease gitPublishPush jib
         env:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-      - name: Update Homebrew repository
-        run: ./gradlew gitPublishPush
-        env:
           GRGIT_USER: ${{ secrets.GRGIT_USER }}
-      - name: Publish to Docker Hub
-        run: ./gradlew jib
-        env:
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
