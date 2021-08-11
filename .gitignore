@@ -1,11 +1,14 @@
-/out
-/*.iml
-/.idea
-/mqtt-cli.iml
-/*.pem
-/test-certificates/
-/.idea/
-/hmq-mqtt-log.*.txt
-/dependency-reduced-pom.xml
-/build
-/.gradle/
+# Gradle
+.gradle
+build/
+
+# IntelliJ
+out/
+*.iml
+.idea/*
+!.idea/codeStyles
+!.idea/inspectionProfiles
+!.idea/runConfigurations
+
+.java-version
+.DS_Store
