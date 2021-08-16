@@ -42,8 +42,7 @@ description = "MQTT CLI is a tool that provides a feature rich command line inte
         "various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 "
 
 application {
-    @Suppress("DEPRECATION") // ShadowJar needs deprecated mainClassName
-    mainClassName = "com.hivemq.cli.MqttCLIMain"
+    mainClass.set("com.hivemq.cli.MqttCLIMain")
 }
 
 /* ******************** java ******************** */
@@ -293,9 +292,8 @@ val updateThirdPartyLicenses by tasks.registering {
     dependsOn(tasks.downloadLicenses)
     doLast {
         javaexec {
-            main = "-jar"
+            classpath(projectDir.resolve("gradle/tools/license-third-party-tool-3.0.jar"))
             args(
-                "$projectDir/gradle/tools/license-third-party-tool-3.0.jar",
                 "The MQTT Cli",
                 "$buildDir/reports/license/dependency-license.xml",
                 "$projectDir/src/distribution/third-party-licenses/licenses",
