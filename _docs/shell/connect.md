@@ -1,5 +1,4 @@
 ---
-layout: default
 nav_order: 1
 redirect_from: /docs/shell/connect.html
 --- 

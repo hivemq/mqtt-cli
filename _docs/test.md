@@ -1,5 +1,4 @@
 ---
-layout: default
 nav_order: 6
 redirect_from: /docs/test.html
 ---
