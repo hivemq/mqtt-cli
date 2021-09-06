@@ -1,6 +1,7 @@
 ---
 layout: default
 nav_order: 6
+redirect_from: /docs/shell/list.html
 --- 
 
 # List

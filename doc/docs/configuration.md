@@ -2,6 +2,7 @@
 layout: default
 title: Configuration
 nav_order: 10
+redirect_from: /docs/configuration.html
 ---
 
 # Default Properties

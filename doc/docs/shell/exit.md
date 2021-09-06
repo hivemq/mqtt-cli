@@ -1,6 +1,7 @@
 ---
 layout: default
 nav_order: 9
+redirect_from: /docs/shell/exit.html
 --- 
 
 # Exit

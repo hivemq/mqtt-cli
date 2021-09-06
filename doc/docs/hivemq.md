@@ -1,6 +1,7 @@
 ---
 layout: default
 nav_order: 7
+redirect_from: /docs/hivemq.html
 ---
 
 # HiveMQ

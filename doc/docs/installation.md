@@ -3,6 +3,7 @@ layout: default
 nav_order: 2
 redirect_from:
 - /docs/installation/packages.html
+- /docs/installation.html
 ---
 
 # Installation

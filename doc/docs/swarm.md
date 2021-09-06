@@ -1,6 +1,7 @@
 ---
 layout: default
 nav_order: 8
+redirect_from: /docs/swarm.html
 ---
 
 # HiveMQ Swarm

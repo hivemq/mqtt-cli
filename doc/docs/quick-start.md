@@ -2,6 +2,7 @@
 layout: default
 nav_order: 1
 search_exclude: true
+redirect_from: /docs/quick_start.html
 ---
 
 # Quick Start

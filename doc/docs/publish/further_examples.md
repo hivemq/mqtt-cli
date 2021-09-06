@@ -1,5 +1,5 @@
 ---
 title: Further Examples
-permalink: /docs/publish#further-examples
+permalink: /docs/publish/#further-examples
 nav_order: 7
 ---

@@ -1,6 +1,7 @@
 ---
 layout: default
 nav_order: 2
+redirect_from: /docs/shell/disconnect.html
 ---
 
 # Disconnect

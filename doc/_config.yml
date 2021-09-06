@@ -6,7 +6,7 @@ version: 4.4.0
 remote_theme: SgtSilvio/just-the-docs@3e0de1c7
 color_scheme: dark
 
-#permalink: pretty
+permalink: pretty
 
 #collections:
 #  docs:

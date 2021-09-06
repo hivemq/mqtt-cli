@@ -1,6 +1,7 @@
 ---
 layout: default
 nav_order: 4
+redirect_from: /docs/shell/subscribe.html
 ---
 
 # Subscribe

@@ -1,6 +1,7 @@
 ---
 layout: default
 nav_order: 8
+redirect_from: /docs/shell/clear.html
 --- 
 
 # Clear

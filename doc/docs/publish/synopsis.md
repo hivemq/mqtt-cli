@@ -1,5 +1,5 @@
 ---
 title: Synopsis
-permalink: /docs/publish#synopsis
+permalink: /docs/publish/#synopsis
 nav_order: 1
 ---
