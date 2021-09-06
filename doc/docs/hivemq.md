@@ -1,11 +1,8 @@
 ---
 layout: default
-title: HiveMQ
 nav_order: 7
-has_children: true
 ---
 
-{:.main-header-color-yellow}
 # HiveMQ
 ***
 

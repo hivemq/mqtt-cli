@@ -1,11 +1,8 @@
 ---
 layout: default
-title: Subscribe
 nav_order: 4
-has_children: true
 ---
 
-{:.main-header-color-yellow}
 # Subscribe
 *** 
 Subscribes a client to one or more topics.

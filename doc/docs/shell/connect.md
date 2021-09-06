@@ -1,11 +1,8 @@
 ---
 layout: default
-title: Connect
-parent: Shell-Mode
 nav_order: 1
 --- 
 
-{:.main-header-color-yellow}
 # Connect
 ***
 

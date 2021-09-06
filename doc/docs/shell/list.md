@@ -1,11 +1,8 @@
 ---
 layout: default
-title: List
-parent: Shell-Mode
 nav_order: 6
 --- 
 
-{:.main-header-color-yellow}
 # List
 ***
 

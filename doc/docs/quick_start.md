@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Quick Start
 nav_order: 1
 search_exclude: true
 ---
 
-{:.main-header-color-yellow}
 # Quick Start
 ***
 ## Usage

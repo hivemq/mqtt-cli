@@ -1,11 +1,8 @@
 ---
 layout: default
-title: Publish
-parent: Shell-Mode
 nav_order: 3
 ---
 
-{:.main-header-color-yellow}
 # Publish
 ***
 

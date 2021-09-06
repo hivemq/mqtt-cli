@@ -1,12 +1,8 @@
 ---
 layout: default
-title: Shell-Mode
 nav_order: 5
-has_children: true
 ---
 
-
-{:.main-header-color-yellow}
 # Shell-Mode
 ***
 

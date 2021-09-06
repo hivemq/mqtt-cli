@@ -1,10 +1,8 @@
 ---
 layout: default
-title: Publish
 nav_order: 3
-has_children: true
 ---
-{:.main-header-color-yellow}
+
 # Publish
 ***
 Publishes a message to one or more topics.

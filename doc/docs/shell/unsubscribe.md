@@ -1,11 +1,8 @@
 ---
 layout: default
-title: Unsubscribe
-parent: Shell-Mode
 nav_order: 5
 ---
 
-{:.main-header-color-yellow}
 # Unsubscribe
 ***
 

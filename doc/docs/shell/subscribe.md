@@ -1,11 +1,8 @@
 ---
 layout: default
-title: Subscribe
-parent: Shell-Mode
 nav_order: 4
 ---
 
-{:.main-header-color-yellow}
 # Subscribe
 ***
 

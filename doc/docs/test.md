@@ -1,10 +1,8 @@
 ---
 layout: default
-title: Test
 nav_order: 6
-has_children: true
 ---
-{:.main-header-color-yellow}
+
 # Test
 ***
 Runs tests against the specified broker to find out its features and limitations.

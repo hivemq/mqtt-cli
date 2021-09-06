@@ -1,11 +1,8 @@
 ---
 layout: default
-title: Exit
-parent: Shell-Mode
 nav_order: 9
 --- 
 
-{:.main-header-color-yellow}
 # Exit
 ***
 

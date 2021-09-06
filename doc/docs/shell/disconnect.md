@@ -1,11 +1,8 @@
 ---
 layout: default
-title: Disconnect
-parent: Shell-Mode
 nav_order: 2
 ---
 
-{:.main-header-color-yellow}
 # Disconnect
 ***
 

@@ -1,12 +1,10 @@
 ---
 layout: default
-title: Installation
 nav_order: 2
 redirect_from:
 - /docs/installation/packages.html
 ---
 
-{:.main-header-color-yellow}
 # Installation
 ***
 ## Prerequisites

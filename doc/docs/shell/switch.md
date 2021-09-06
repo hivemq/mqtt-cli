@@ -1,11 +1,8 @@
 ---
 layout: default
-title: Switch
-parent: Shell-Mode
 nav_order: 7
 --- 
 
-{:.main-header-color-yellow}
 # Switch
 ***
 
