@@ -1,6 +1,5 @@
 ---
 title: Will Options
-permalink: /docs/publish#will-options
-parent: Publish
+permalink: /docs/publish/#will-options
 nav_order: 5
 ---

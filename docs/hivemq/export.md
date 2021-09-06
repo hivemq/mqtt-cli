@@ -1,6 +1,5 @@
 ---
 title: Export
-permalink: /docs/hivemq#export
-parent: HiveMQ
+permalink: /docs/hivemq/#export
 nav_order: 1
 ---

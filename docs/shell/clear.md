@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Clear
-parent: Shell-Mode
 nav_order: 8
+redirect_from: /docs/shell/clear.html
 --- 
 
-{:.main-header-color-yellow}
 # Clear
 ***
 

@@ -1,6 +1,5 @@
 ---
 title: Synopsis
-permalink: /docs/test#synopsis
-parent: Test
+permalink: /docs/test/#synopsis
 nav_order: 1
 ---

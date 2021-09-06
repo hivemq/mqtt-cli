@@ -1,10 +1,9 @@
 ---
 layout: default
-title: Logging
 nav_order: 9
+redirect_from: /docs/logging.html
 ---
 
-{:.main-header-color-yellow}
 # Logging
 ***
 * All non-shell commands offer an ``-l`` option by which logging to a logfile under ``~/.mqtt-cli/logs`` can be activated

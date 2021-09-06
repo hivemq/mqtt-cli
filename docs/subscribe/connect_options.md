@@ -1,6 +1,5 @@
 ---
 title: Connect Options
-permalink: /docs/subscribe#connect-options
-parent: Subscribe
+permalink: /docs/subscribe/#connect-options
 nav_order: 3
 ---

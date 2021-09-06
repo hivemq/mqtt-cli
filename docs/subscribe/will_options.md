@@ -1,6 +1,5 @@
 ---
 title: Will Options
-permalink: /docs/subscribe#will-options
-parent: Subscribe
+permalink: /docs/subscribe/#will-options
 nav_order: 5
 ---

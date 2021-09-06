@@ -1,6 +1,5 @@
 ---
 title: Connect Options
-permalink: /docs/publish#connect-options
-parent: Publish
+permalink: /docs/publish/#connect-options
 nav_order: 3
 ---

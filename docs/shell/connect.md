@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Connect
-parent: Shell-Mode
 nav_order: 1
+redirect_from: /docs/shell/connect.html
 --- 
 
-{:.main-header-color-yellow}
 # Connect
 ***
 

@@ -1,10 +1,9 @@
 ---
 layout: default
-title: Publish
 nav_order: 3
-has_children: true
+redirect_from: /docs/publish.html
 ---
-{:.main-header-color-yellow}
+
 # Publish
 ***
 Publishes a message to one or more topics.

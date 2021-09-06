@@ -1,12 +1,9 @@
 ---
 layout: default
-title: Shell-Mode
 nav_order: 5
-has_children: true
+redirect_from: /docs/shell.html
 ---
 
-
-{:.main-header-color-yellow}
 # Shell-Mode
 ***
 

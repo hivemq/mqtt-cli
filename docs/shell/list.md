@@ -1,11 +1,9 @@
 ---
 layout: default
-title: List
-parent: Shell-Mode
 nav_order: 6
+redirect_from: /docs/shell/list.html
 --- 
 
-{:.main-header-color-yellow}
 # List
 ***
 

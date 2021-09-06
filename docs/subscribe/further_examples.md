@@ -1,6 +1,5 @@
 ---
 title: Further Examples
-permalink: /docs/subscribe#further-examples
-parent: Subscribe
+permalink: /docs/subscribe/#further-examples
 nav_order: 7
 ---

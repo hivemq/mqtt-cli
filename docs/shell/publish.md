@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Publish
-parent: Shell-Mode
 nav_order: 3
+redirect_from: /docs/shell/publish.html
 ---
 
-{:.main-header-color-yellow}
 # Publish
 ***
 

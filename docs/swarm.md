@@ -1,11 +1,9 @@
 ---
 layout: default
-title: HiveMQ Swarm
 nav_order: 8
-has_children: false
+redirect_from: /docs/swarm.html
 ---
 
-{:.main-header-color-yellow}
 # HiveMQ Swarm
 ***
 

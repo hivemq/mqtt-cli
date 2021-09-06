@@ -1,6 +1,5 @@
 ---
 title: Security Options
-permalink: /docs/subscribe#security-options
-parent: Subscribe
+permalink: /docs/subscribe/#security-options
 nav_order: 4
 ---

@@ -2,10 +2,9 @@
 layout: default
 title: Configuration
 nav_order: 10
-has_children: false
+redirect_from: /docs/configuration.html
 ---
 
-{:.main-header-color-yellow}
 # Default Properties
 ***
 

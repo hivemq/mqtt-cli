@@ -1,11 +1,9 @@
 ---
 layout: default
-title: Exit
-parent: Shell-Mode
 nav_order: 9
+redirect_from: /docs/shell/exit.html
 --- 
 
-{:.main-header-color-yellow}
 # Exit
 ***
 
