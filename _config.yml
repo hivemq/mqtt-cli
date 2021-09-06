@@ -3,24 +3,62 @@ description: A feature-rich MQTT Command line interface
 logo: assets/images/02-mqtt-cli-neg.svg
 version: 4.4.0
 
-remote_theme: SgtSilvio/just-the-docs
+remote_theme: SgtSilvio/just-the-docs@3e0de1c7
+color_scheme: dark
+
+#permalink: pretty
+
+#collections:
+#  docs:
+#    output: true
+
+just_the_docs:
+  collections:
+    html_pages:
+      root_path: docs/
+#    docs:
+  github:
+    repo_link:
+      enabled: true
+    edit_link:
+      enabled: true
+
+#defaults:
+#  - scope:
+#      path: ""
+#      type: docs
+#    values:
+#      layout: default
 
 search_enabled: true
-
-color_scheme: dark
+search:
+  heading_level: 2
+  previews: 3
+  preview_words_before: 5
+  preview_words_after: 10
+  tokenizer_separator: /[\s\-/]+/
+  rel_url: false
+  button: true
 
 aux_links:
   "News":
     - "https://hivemq.github.io/mqtt-cli/news"
-  "GitHub":
-    - "https://github.com/hivemq/mqtt-cli"
 
 plugins:
   - jekyll-remote-theme
+  - jekyll-titles-from-headings
   - jekyll-relative-links
   - jekyll-redirect-from
+  - jekyll-github-metadata
 
-github: [metadata]
+titles_from_headings:
+  enabled: true
+  strip_title: false
+  collections: true
+
+relative_links:
+  enabled: true
+  collections: true
 
 sass:
   style: compressed
@@ -29,6 +67,6 @@ compress_html:
   clippings: all
   comments: all
   endings: all
-  startings: []
-  blank_lines: false
+  startings: [ ]
+  blanklines: false
   profile: false
