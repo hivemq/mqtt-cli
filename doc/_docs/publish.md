@@ -1,5 +1,4 @@
 ---
-layout: default
 nav_order: 3
 redirect_from: /docs/publish.html
 ---

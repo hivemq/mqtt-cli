@@ -1,10 +1,10 @@
 ---
-layout: default
 title: Configuration
 nav_order: 10
 redirect_from: /docs/configuration.html
 ---
 
+{% comment %}disable jekyll-titles-from-headings{% endcomment %}
 # Default Properties
 ***
 

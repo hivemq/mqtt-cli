@@ -1,5 +1,4 @@
 ---
-layout: default
 nav_order: 5
 redirect_from: /docs/shell.html
 ---

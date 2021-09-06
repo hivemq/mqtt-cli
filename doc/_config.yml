@@ -8,27 +8,26 @@ color_scheme: dark
 
 permalink: pretty
 
-#collections:
-#  docs:
-#    output: true
+collections:
+  docs:
+    output: true
 
 just_the_docs:
   collections:
     html_pages:
-      root_path: docs/
-#    docs:
+    docs:
   github:
     repo_link:
       enabled: true
     edit_link:
       enabled: true
 
-#defaults:
-#  - scope:
-#      path: ""
-#      type: docs
-#    values:
-#      layout: default
+defaults:
+  - scope:
+      path: ""
+      type: docs
+    values:
+      layout: default
 
 search_enabled: true
 search:
