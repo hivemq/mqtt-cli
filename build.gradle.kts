@@ -579,7 +579,7 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
 
 if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
     apply(plugin = "com.hivemq.version-updater")
-    project.ext.set("versionUpdaterFiles", arrayOf("doc/docs/installation.md"))
+    project.ext.set("versionUpdaterFiles", arrayOf("docs/_docs/installation.md"))
 }
 
 /* ******************** helpers ******************** */
