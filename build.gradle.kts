@@ -590,3 +590,17 @@ fun sha256Hash(file: File): String {
     val digest = md.digest(bytes)
     return digest.fold("") { str, it -> str + "%02x".format(it) }
 }
+
+/* ******************** artifacts ******************** */
+
+val mqttCliZip by configurations.creating {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("tools"))
+    }
+}
+
+artifacts {
+    add(mqttCliZip.name, tasks.shadowDistZip)
+}
