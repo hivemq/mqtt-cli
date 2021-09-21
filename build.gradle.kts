@@ -147,6 +147,9 @@ dependencies {
 }
 
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
+    if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
+        dependsOn(gradle.includedBuild("hivemq-enterprise").task(":openApiSpec"))
+    }
     group = "hivemq"
     generatorName.set("java")
     inputSpec.set(hivemqOpenApi.elements.map { it.first().asFile.path })
