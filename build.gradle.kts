@@ -127,10 +127,29 @@ dependencies {
 
 /* ******************** OpenAPI ******************** */
 
+val hivemqOpenApi by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("openApis"))
+    }
+}
+
+dependencies {
+
+    if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
+        hivemqOpenApi("com.hivemq:hivemq-enterprise")
+    } else {
+        val hivemqOpenApiFile = files(projectDir.resolve("specs/HiveMQ-${property("hivemq-api.version")}-OpenAPI-spec.yaml"))
+        hivemqOpenApi(hivemqOpenApiFile)
+    }
+
+}
+
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     group = "hivemq"
     generatorName.set("java")
-    inputSpec.set("$projectDir/specs/HiveMQ-${project.property("hivemq-api.version")}-OpenAPI-spec.yaml")
+    inputSpec.set(hivemqOpenApi.elements.map { it.first().asFile.path })
     outputDir.set("$buildDir/tmp/$name")
     apiPackage.set("com.hivemq.cli.openapi.hivemq")
     modelPackage.set("com.hivemq.cli.openapi.hivemq")
@@ -509,12 +528,8 @@ val deleteOldSpecs by tasks.registering(Delete::class) {
 
 if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
     tasks.register<Copy>("copyHiveMQSpec") {
-        dependsOn(gradle.includedBuild("hivemq-enterprise").task(":openApiSpec"))
         mustRunAfter(deleteOldSpecs)
-
-        from("../hivemq-enterprise/build/openapi") {
-            include { ".*$version-OpenAPI-spec.yaml".toRegex().matches(it.name) }
-        }
+        from(hivemqOpenApi.elements.map { it.first().asFile })
         into("specs")
     }
 }
@@ -525,7 +540,7 @@ if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
         dependsOn(tasks.named("copyHiveMQSpec"))
 
         doLast {
-            val gradleProperties = file("$projectDir/gradle.properties")
+            val gradleProperties = projectDir.resolve("gradle.properties")
             var text = gradleProperties.readText()
 
             text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=$version")
