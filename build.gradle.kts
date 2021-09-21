@@ -164,6 +164,7 @@ dependencies {
 }
 
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
+    dependsOn(gradle.includedBuild("hivemq-enterprise").task(":openApiSpec"))
     group = "hivemq"
     generatorName.set("java")
     inputSpec.set(hivemqOpenApi.elements.map { it.first().asFile.path })
@@ -187,6 +188,7 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
 }
 
 val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
+    dependsOn(gradle.includedBuild("hivemq-swarm").task(":openApiSpec"))
     group = "swarm"
     generatorName.set("java")
     inputSpec.set(swarmOpenApi.elements.map { it.first().asFile.path })
