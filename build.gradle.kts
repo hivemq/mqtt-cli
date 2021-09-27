@@ -537,7 +537,6 @@ if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
 
 if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
     apply(plugin = "com.hivemq.version-updater")
-    project.ext.set("versionUpdaterFiles", arrayOf("doc/docs/installation.md"))
 }
 
 /* ******************** helpers ******************** */
