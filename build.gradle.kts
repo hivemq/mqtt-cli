@@ -520,38 +520,19 @@ distributions.shadow {
 
 /* ******************** HiveMQ composite build ******************** */
 
-val deleteOldSpecs by tasks.registering(Delete::class) {
-    projectDir.resolve("specs").walk().forEach {
-        if (!it.isDirectory && it.name.endsWith("OpenAPI-spec.yaml")) {
-            delete(it)
-        }
+tasks.register<Sync>("updateSpecs") {
+    from(hivemqOpenApi)
+    into("specs")
+
+    doLast {
+        val gradleProperties = projectDir.resolve("gradle.properties")
+        var text = gradleProperties.readText()
+
+        text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=$version")
+
+        gradleProperties.writeText(text)
     }
 }
-
-if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
-    tasks.register<Copy>("copyHiveMQSpec") {
-        mustRunAfter(deleteOldSpecs)
-        from(hivemqOpenApi.elements.map { it.first().asFile })
-        into("specs")
-    }
-}
-
-if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
-    tasks.register("updateSpecs") {
-        dependsOn(deleteOldSpecs)
-        dependsOn(tasks.named("copyHiveMQSpec"))
-
-        doLast {
-            val gradleProperties = projectDir.resolve("gradle.properties")
-            var text = gradleProperties.readText()
-
-            text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=$version")
-
-            gradleProperties.writeText(text)
-        }
-    }
-}
-
 /* ******************** helpers ******************** */
 
 fun sha256Hash(file: File): String {
