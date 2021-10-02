@@ -150,9 +150,6 @@ dependencies {
 }
 
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
-    if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
-        dependsOn(gradle.includedBuild("hivemq-enterprise").task(":openApiSpec"))
-    }
     group = "hivemq"
     generatorName.set("java")
     inputSpec.set(hivemqOpenApi.singleFile.path)
@@ -162,13 +159,13 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     configOptions.put("dateLibrary", "java8")
     configOptions.put("hideGenerationTimestamp", "true")
 
-    inputs.file(inputSpec.get()).withPropertyName("inputSpec").withPathSensitivity(PathSensitivity.NONE)
+    inputs.file(inputSpec).withPropertyName("inputSpec").withPathSensitivity(PathSensitivity.NONE)
     val outputSrcDir = buildDir.resolve("generated/openapi/hivemq/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
     outputs.cacheIf { true }
     doFirst { delete(outputDir) }
     doLast {
-        copy {
+        sync {
             from("${outputDir.get()}/src/main/java")
             into(outputSrcDir)
         }
