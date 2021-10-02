@@ -562,46 +562,19 @@ distributions.shadow {
 
 /* ******************** HiveMQ composite build ******************** */
 
-val deleteOldSpecs by tasks.registering(Delete::class) {
-    projectDir.resolve("specs").walk().forEach {
-        if (!it.isDirectory && it.name.endsWith("OpenAPI-spec.yaml")) {
-            delete(it)
-        }
-    }
-}
+tasks.register<Sync>("updateSpecs") {
+    from(hivemqOpenApi)
+    from(swarmOpenApi)
+    into("specs")
 
-if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
-    tasks.register<Copy>("copyHiveMQSpec") {
-        mustRunAfter(deleteOldSpecs)
-        from(hivemqOpenApi.elements.map { it.first().asFile })
-        into("specs")
-    }
-}
+    doLast {
+        val gradleProperties = projectDir.resolve("gradle.properties")
+        var text = gradleProperties.readText()
 
-if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null) {
-    tasks.register<Copy>("copyHiveMQSwarmSpec") {
-        mustRunAfter(deleteOldSpecs)
-        from(swarmOpenApi.elements.map { it.first().asFile })
-        into("specs")
-    }
-}
+        text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=$version")
+        text = text.replace("(?m)^hivemq-swarm-api\\.version=.+".toRegex(), "hivemq-swarm-api.version=$version")
 
-if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
-    gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
-    tasks.register("updateSpecs") {
-        dependsOn(deleteOldSpecs)
-        dependsOn(tasks.named("copyHiveMQSpec"))
-        dependsOn(tasks.named("copyHiveMQSwarmSpec"))
-
-        doLast {
-            val gradleProperties = projectDir.resolve("gradle.properties")
-            var text = gradleProperties.readText()
-
-            text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=$version")
-            text = text.replace("(?m)^hivemq-swarm-api\\.version=.+".toRegex(), "hivemq-swarm-api.version=$version")
-
-            gradleProperties.writeText(text)
-        }
+        gradleProperties.writeText(text)
     }
 }
 
