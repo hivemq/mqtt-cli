@@ -154,7 +154,7 @@ dependencies {
         hivemqOpenApi(hivemqOpenApiFile)
     }
 
-    if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
+    if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null) {
         swarmOpenApi("com.hivemq:hivemq-swarm")
     } else {
         val swarmOpenApiFile = files(projectDir.resolve("specs/HiveMQ-Swarm-${property("hivemq-swarm-api.version")}-OpenAPI-spec.yaml"))
