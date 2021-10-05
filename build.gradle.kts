@@ -132,19 +132,19 @@ dependencies {
 
 /* ******************** OpenAPI ******************** */
 
-val hivemqOpenApi by configurations.creating {
+val hivemqOpenApi: Configuration by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
     attributes {
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("openApis"))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("open-api"))
     }
 }
 
-val swarmOpenApi by configurations.creating {
+val swarmOpenApi: Configuration by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
     attributes {
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("openApis"))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("open-api"))
     }
 }
 
@@ -593,14 +593,15 @@ fun sha256Hash(file: File): String {
 
 /* ******************** artifacts ******************** */
 
-val mqttCliZip by configurations.creating {
+val releaseBinary: Configuration by configurations.creating {
     isCanBeConsumed = true
     isCanBeResolved = false
     attributes {
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("tools"))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("binary"))
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named("release"))
     }
 }
 
 artifacts {
-    add(mqttCliZip.name, tasks.shadowDistZip)
+    add(releaseBinary.name, tasks.shadowDistZip)
 }
