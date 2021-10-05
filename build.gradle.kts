@@ -155,7 +155,7 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     }
     group = "hivemq"
     generatorName.set("java")
-    inputSpec.set(hivemqOpenApi.elements.map { it.first().asFile.path })
+    inputSpec.set(hivemqOpenApi.singleFile.path)
     outputDir.set("$buildDir/tmp/$name")
     apiPackage.set("com.hivemq.cli.openapi.hivemq")
     modelPackage.set("com.hivemq.cli.openapi.hivemq")
