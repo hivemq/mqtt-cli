@@ -10,9 +10,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 buildscript {
-    dependencies {
-        if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
-            classpath("com.hivemq:plugins")
+    if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
+        plugins {
+            id("com.hivemq.version-updater")
         }
     }
 }
@@ -611,9 +611,8 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
     }
 }
 
-if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
-    apply(plugin = "com.hivemq.version-updater")
-    project.ext.set("versionUpdaterFiles", arrayOf("doc/docs/installation.md"))
+plugins.withId("com.hivemq.version-updater") {
+    project.ext.set("versionUpdaterFiles", arrayOf("docs/_docs/installation.md"))
 }
 
 /* ******************** helpers ******************** */
