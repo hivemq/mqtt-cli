@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 buildscript {
-    if (gradle.includedBuilds.find { it.name == "plugins" } != null) {
+    if (gradle.includedBuilds.any { it.name == "plugins" }) {
         plugins {
             id("com.hivemq.version-updater")
         }
@@ -150,14 +150,14 @@ val swarmOpenApi: Configuration by configurations.creating {
 
 dependencies {
 
-    if (gradle.includedBuilds.find { it.name == "hivemq-enterprise" } != null) {
+    if (gradle.includedBuilds.any { it.name == "hivemq-enterprise" }) {
         hivemqOpenApi("com.hivemq:hivemq-enterprise")
     } else {
         val hivemqOpenApiFile = files(projectDir.resolve("specs/HiveMQ-${property("hivemq-api.version")}-OpenAPI-spec.yaml"))
         hivemqOpenApi(hivemqOpenApiFile)
     }
 
-    if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null) {
+    if (gradle.includedBuilds.any { it.name == "hivemq-swarm" }) {
         swarmOpenApi("com.hivemq:hivemq-swarm")
     } else {
         val swarmOpenApiFile = files(projectDir.resolve("specs/HiveMQ-Swarm-${property("hivemq-swarm-api.version")}-OpenAPI-spec.yaml"))
