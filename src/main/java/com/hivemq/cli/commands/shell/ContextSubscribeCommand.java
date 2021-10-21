@@ -34,6 +34,7 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
@@ -103,6 +104,10 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
             printToSTDOUT = true;
         }
 
+        if (!createOutputFile()) {
+            return;
+        }
+
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.subscribe(contextClient, this);
@@ -161,6 +166,31 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
             }
         }
 
+
+    }
+
+    private boolean createOutputFile() {
+
+        if (publishFile == null) {
+            return true;
+        }
+
+        if (publishFile.isDirectory()) {
+            Logger.error("Cannot create file {} as it is a directory", publishFile.getAbsolutePath());
+            return false;
+        }
+
+        if (publishFile.exists()) {
+            Logger.debug("Writing to existing file {}", publishFile.getAbsolutePath());
+            return true;
+        } else {
+            try {
+                return publishFile.createNewFile();
+            } catch (final @NotNull IOException e) {
+                Logger.error("Could not create file {}", publishFile.getAbsolutePath(), Throwables.getRootCause(e).getMessage());
+                return false;
+            }
+        }
 
     }
 
