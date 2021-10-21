@@ -149,21 +149,17 @@ val swarmOpenApi: Configuration by configurations.creating {
 }
 
 dependencies {
-
     if (gradle.includedBuilds.any { it.name == "hivemq-enterprise" }) {
         hivemqOpenApi("com.hivemq:hivemq-enterprise")
     } else {
-        val hivemqOpenApiFile = files(projectDir.resolve("specs/HiveMQ-${property("hivemq-api.version")}-OpenAPI-spec.yaml"))
-        hivemqOpenApi(hivemqOpenApiFile)
+        hivemqOpenApi(layout.projectDirectory.files("specs/hivemq-openapi.yaml"))
     }
 
     if (gradle.includedBuilds.any { it.name == "hivemq-swarm" }) {
         swarmOpenApi("com.hivemq:hivemq-swarm")
     } else {
-        val swarmOpenApiFile = files(projectDir.resolve("specs/HiveMQ-Swarm-${property("hivemq-swarm-api.version")}-OpenAPI-spec.yaml"))
-        swarmOpenApi(swarmOpenApiFile)
+        swarmOpenApi(layout.projectDirectory.files("specs/hivemq-swarm-openapi.yaml"))
     }
-
 }
 
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
@@ -565,19 +561,9 @@ distributions.shadow {
 /* ******************** HiveMQ composite build ******************** */
 
 tasks.register<Sync>("updateSpecs") {
-    from(hivemqOpenApi)
-    from(swarmOpenApi)
+    from(hivemqOpenApi) { rename { "hivemq-openapi.yaml" } }
+    from(swarmOpenApi) { rename { "hivemq-swarm-openapi.yaml" } }
     into("specs")
-
-    doLast {
-        val gradleProperties = projectDir.resolve("gradle.properties")
-        var text = gradleProperties.readText()
-
-        text = text.replace("(?m)^hivemq-api\\.version=.+".toRegex(), "hivemq-api.version=$version")
-        text = text.replace("(?m)^hivemq-swarm-api\\.version=.+".toRegex(), "hivemq-swarm-api.version=$version")
-
-        gradleProperties.writeText(text)
-    }
 }
 /* ******************** helpers ******************** */
 
