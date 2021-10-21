@@ -158,18 +158,18 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         }
 
         if (publishFile.isDirectory()) {
-            Logger.error("Cannot create file {} as it is a directory", publishFile.getAbsolutePath());
+            Logger.error("Cannot create output file {} as it is a directory", publishFile.getAbsolutePath());
             return false;
         }
 
         if (publishFile.exists()) {
-            Logger.debug("Writing to existing file {}", publishFile.getAbsolutePath());
+            Logger.debug("Writing to existing output file {}", publishFile.getAbsolutePath());
             return true;
         } else {
             try {
                 return publishFile.createNewFile();
             } catch (final @NotNull IOException e) {
-                Logger.error("Could not create file {}", publishFile.getAbsolutePath(), Throwables.getRootCause(e).getMessage());
+                Logger.error("Could not create output file {}", publishFile.getAbsolutePath(), Throwables.getRootCause(e).getMessage());
                 return false;
             }
         }
