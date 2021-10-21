@@ -11,7 +11,7 @@ redirect_from:
 
 At least Java 8 is required to run MQTT CLI.
 
-The CLI is implemented with the [11.0.4 Java release](https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot) which is the preferred version to run this project.
+The CLI is implemented with [Java 11](https://adoptium.net/?variant=openjdk11) which is the preferred version to run this project.
 
 
 ## Docker
