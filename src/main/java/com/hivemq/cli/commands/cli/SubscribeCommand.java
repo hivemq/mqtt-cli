@@ -40,9 +40,8 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 @CommandLine.Command(name = "sub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -125,6 +124,10 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
         logUnusedOptions();
 
+        if (!createOutputFile()) {
+            return;
+        }
+
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             subscribeClient = mqttClientExecutor.subscribe(this);
@@ -145,6 +148,31 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
+
+    }
+
+    private boolean createOutputFile() {
+
+        if (publishFile == null) {
+            return true;
+        }
+
+        if (publishFile.isDirectory()) {
+            Logger.error("Cannot create file {} as it is a directory", publishFile.getAbsolutePath());
+            return false;
+        }
+
+        if (publishFile.exists()) {
+            Logger.debug("Writing to existing file {}", publishFile.getAbsolutePath());
+            return true;
+        } else {
+            try {
+                return publishFile.createNewFile();
+            } catch (final @NotNull IOException e) {
+                Logger.error("Could not create file {}", publishFile.getAbsolutePath(), Throwables.getRootCause(e).getMessage());
+                return false;
+            }
+        }
 
     }
 
