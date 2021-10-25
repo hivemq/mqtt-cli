@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 
 public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
 
-    private final @Nullable File publishFile;
+    private final @Nullable File outputFile;
     private final @NotNull Mqtt5Client client;
     private final boolean printToStdout;
     private final boolean isBase64;
@@ -40,7 +40,7 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
 
     SubscribeMqtt5PublishCallback(final @NotNull Subscribe subscribe, final @NotNull Mqtt5Client client) {
         printToStdout = subscribe.isPrintToSTDOUT();
-        publishFile = subscribe.getOutputFile();
+        outputFile = subscribe.getOutputFile();
         isBase64 = subscribe.isBase64();
         isJsonOutput = subscribe.isJsonOutput();
         showTopics = subscribe.showTopics();
@@ -57,7 +57,7 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
 
         if (showTopics) { message = mqtt5Publish.getTopic() + ": " + message; }
 
-        if (publishFile != null) { MqttPublishUtils.printToFile(publishFile, message); }
+        if (outputFile != null) { MqttPublishUtils.printToFile(outputFile, message); }
         if (printToStdout) { System.out.println(message); }
 
         Logger.debug("{} received PUBLISH ('{}') {}",

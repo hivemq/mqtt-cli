@@ -149,8 +149,6 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     }
 
-
-
     @Override
     public void logUnusedOptions() {
         super.logUnusedOptions();
@@ -192,7 +190,6 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
                 (outputFile != null ? (", publishFile=" + outputFile.getAbsolutePath()) : "") +
                 '}';
     }
-
 
     @NotNull
     @Override
