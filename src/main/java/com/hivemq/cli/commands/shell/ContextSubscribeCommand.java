@@ -34,7 +34,6 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
@@ -74,7 +73,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @Nullable Mqtt5UserProperty[] userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
-    @Nullable private File publishFile;
+    @Nullable private File outputFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
@@ -104,7 +103,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
             printToSTDOUT = true;
         }
 
-        if (!createOutputFile()) {
+        if (!createOutputFile(outputFile)){
             return;
         }
 
@@ -169,31 +168,6 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     }
 
-    private boolean createOutputFile() {
-
-        if (publishFile == null) {
-            return true;
-        }
-
-        if (publishFile.isDirectory()) {
-            Logger.error("Cannot create output file {} as it is a directory", publishFile.getAbsolutePath());
-            return false;
-        }
-
-        if (publishFile.exists()) {
-            Logger.debug("Writing to existing output file {}", publishFile.getAbsolutePath());
-            return true;
-        } else {
-            try {
-                return publishFile.createNewFile();
-            } catch (final @NotNull IOException e) {
-                Logger.error("Could not create output file {}", publishFile.getAbsolutePath(), Throwables.getRootCause(e).getMessage());
-                return false;
-            }
-        }
-
-    }
-
     @Override
     public String toString() {
         return  getClass().getSimpleName() + "{" +
@@ -205,17 +179,17 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 ", jsonOutput=" + jsonOutput +
                 ", showTopics=" + showTopics +
                 (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
-                (publishFile != null ? (", publishFile=" + publishFile.getAbsolutePath()) : "") +
+                (outputFile != null ? (", publishFile=" + outputFile.getAbsolutePath()) : "") +
                 '}';
     }
 
     public void setDefaultOptions() {
 
-        if (publishFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
+        if (outputFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
             if (isVerbose()) {
                 Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
             }
-            publishFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
+            outputFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
         }
 
     }
@@ -239,8 +213,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     }
 
     @Nullable
-    public File getPublishFile() {
-        return publishFile;
+    public File getOutputFile() {
+        return outputFile;
     }
 
     public boolean isPrintToSTDOUT() {
