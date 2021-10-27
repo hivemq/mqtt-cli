@@ -35,14 +35,11 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
-import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 @CommandLine.Command(name = "sub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -88,7 +85,7 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     @Nullable private Mqtt5UserProperty[] userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written", order = 1)
-    @Nullable private File publishFile;
+    @Nullable private File outputFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, hidden = true, defaultValue = "true", description = "The received messages will be written to the console (default: true)", order = 1)
     private boolean printToSTDOUT;
@@ -124,6 +121,10 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
         Logger.trace("Command {} ", this);
 
         logUnusedOptions();
+
+        if (!createOutputFile(outputFile)){
+            return;
+        }
 
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
@@ -168,9 +169,9 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
     public void setDefaultOptions() {
         super.setDefaultOptions();
 
-        if (publishFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
+        if (outputFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
             Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
-            publishFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
+            outputFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
         }
 
     }
@@ -186,10 +187,9 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
                 ", jsonOutput=" + jsonOutput +
                 ", showTopics=" + showTopics +
                 (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
-                (publishFile != null ? (", publishFile=" + publishFile.getAbsolutePath()) : "") +
+                (outputFile != null ? (", publishFile=" + outputFile.getAbsolutePath()) : "") +
                 '}';
     }
-
 
     @NotNull
     @Override
@@ -205,8 +205,8 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
 
     @Nullable
     @Override
-    public File getPublishFile() {
-        return publishFile;
+    public File getOutputFile() {
+        return outputFile;
     }
 
     public boolean isPrintToSTDOUT() {

@@ -15,11 +15,16 @@
  */
 package com.hivemq.cli.utils;
 
+import com.google.common.base.Throwables;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 public class MqttPublishUtils {
 
@@ -28,15 +33,27 @@ public class MqttPublishUtils {
             return Base64.toBase64String(payload);
         }
         else {
-            return new String(payload);
+            return new String(payload, StandardCharsets.UTF_8);
         }
     }
 
     public static void printToFile(final @NotNull File publishFile, final @NotNull String message) {
-        final PrintWriter fileWriter = FileUtils.createFileAppender(publishFile);
-        fileWriter.println(message);
-        fileWriter.flush();
-        fileWriter.close();
+
+        // Re-create a deleted output file if it was deleted manually
+        try {
+            if (publishFile.createNewFile()) {
+                Logger.debug("Re-created deleted output file {}", publishFile.getAbsolutePath());
+            }
+        } catch (final @NotNull IOException e) {
+            Logger.error("Cannot re-create deleted output file {}", publishFile.getAbsolutePath(), e.getMessage());
+            return;
+        }
+
+        try {
+            Files.write(publishFile.toPath(), (message + System.lineSeparator()).getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+        } catch (final @NotNull IOException e) {
+            Logger.error("Cannot write to output file {}", publishFile.getAbsolutePath(), e.getMessage());
+        }
     }
 
 }
