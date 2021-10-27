@@ -46,6 +46,7 @@ public class MqttPublishUtils {
             }
         } catch (final @NotNull IOException e) {
             Logger.error("Cannot re-create deleted output file {}", publishFile.getAbsolutePath(), e.getMessage());
+            return;
         }
 
         try {
