@@ -73,7 +73,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @Nullable Mqtt5UserProperty[] userProperties;
 
     @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
-    @Nullable private File publishFile;
+    @Nullable private File outputFile;
 
     @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
@@ -101,6 +101,10 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
         if (stay) {
             printToSTDOUT = true;
+        }
+
+        if (!createOutputFile(outputFile)){
+            return;
         }
 
         try {
@@ -175,17 +179,17 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
                 ", jsonOutput=" + jsonOutput +
                 ", showTopics=" + showTopics +
                 (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
-                (publishFile != null ? (", publishFile=" + publishFile.getAbsolutePath()) : "") +
+                (outputFile != null ? (", publishFile=" + outputFile.getAbsolutePath()) : "") +
                 '}';
     }
 
     public void setDefaultOptions() {
 
-        if (publishFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
+        if (outputFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
             if (isVerbose()) {
                 Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
             }
-            publishFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
+            outputFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
         }
 
     }
@@ -209,8 +213,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     }
 
     @Nullable
-    public File getPublishFile() {
-        return publishFile;
+    public File getOutputFile() {
+        return outputFile;
     }
 
     public boolean isPrintToSTDOUT() {
