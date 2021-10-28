@@ -610,11 +610,6 @@ if (gradle.includedBuilds.find { it.name == "hivemq-swarm" } != null &&
         }
     }
 }
-
-plugins.withId("com.hivemq.version-updater") {
-    project.ext.set("versionUpdaterFiles", arrayOf("docs/_docs/installation.md"))
-}
-
 /* ******************** helpers ******************** */
 
 fun sha256Hash(file: File): String {
