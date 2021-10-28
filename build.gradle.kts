@@ -569,9 +569,9 @@ distributions.shadow {
 /* ******************** HiveMQ composite build ******************** */
 
 val deleteOldSpecs by tasks.registering(Delete::class) {
-    delete {
-        fileTree("specs") {
-            include("**/*.yaml")
+    projectDir.resolve("specs").walk().forEach {
+        if (!it.isDirectory && it.name.endsWith("OpenAPI-spec.yaml")) {
+            delete(it)
         }
     }
 }
