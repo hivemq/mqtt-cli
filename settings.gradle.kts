@@ -18,6 +18,8 @@ pluginManagement {
 
     if (file("../plugins").exists()) {
         includeBuild("../plugins")
+    } else if(file("../hivemq/plugins").exists()) {
+        includeBuild("../hivemq/plugins")
     }
 }
 
