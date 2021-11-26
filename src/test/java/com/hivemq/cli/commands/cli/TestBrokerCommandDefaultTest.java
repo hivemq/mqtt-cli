@@ -21,25 +21,19 @@ import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.utility.DockerImageName;
 
 @Disabled("Tests are only used to check output")
-public class TestBrokerCommandDefaultTest {
-    final static public @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension("hivemq/hivemq4", "4.4.0");
+class TestBrokerCommandDefaultTest {
+
+    static final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"));
 
     @BeforeAll
     static void beforeAll() {
         hivemq.start();
-    }
-
-    @BeforeEach
-    void setUp() {
-        if (!hivemq.isRunning()) {
-            hivemq.start();
-        }
     }
 
     @AfterAll

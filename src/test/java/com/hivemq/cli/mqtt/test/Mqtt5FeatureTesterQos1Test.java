@@ -21,32 +21,24 @@ import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
+import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Mqtt5FeatureTesterQos1Test {
+class Mqtt5FeatureTesterQos1Test {
 
-    final static public @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension("hivemq/hivemq4", "4.4.0");
+    static final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"))
+                    .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/qos1-config.xml"));
 
     static Mqtt5FeatureTester mqtt5FeatureTester;
 
     @BeforeAll
     static void beforeAll() {
-        hivemq.withHiveMQConfig(new File("src/test/resources/mqtt/test/qos1-config.xml"));
         hivemq.start();
         mqtt5FeatureTester = new Mqtt5FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
-    }
-
-    @BeforeEach
-    void setUp() {
-        if (!hivemq.isRunning()) {
-            hivemq.start();
-        }
     }
 
     @AfterAll
@@ -71,6 +63,4 @@ public class Mqtt5FeatureTesterQos1Test {
         final QosTestResult qosTestResult = mqtt5FeatureTester.testQos(MqttQos.EXACTLY_ONCE, 10);
         assertEquals(0, qosTestResult.getReceivedPublishes());
     }
-
-
 }
