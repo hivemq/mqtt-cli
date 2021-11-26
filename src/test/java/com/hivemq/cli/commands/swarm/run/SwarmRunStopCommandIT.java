@@ -27,11 +27,13 @@ import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.MountableFile;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -93,7 +95,8 @@ public class SwarmRunStopCommandIT {
 
         out = mock(PrintStream.class);
 
-        final byte[] bytes = Files.toByteArray(new File("src/test/resources/SwarmRunStopCommandIT/blockScenario.xml"));
+        final byte[] bytes = Files.toByteArray(
+                new File(getClass().getResource("/SwarmRunStopCommandIT/blockScenario.xml").getPath()));
         final String scenarioString =
                 new String(bytes, StandardCharsets.UTF_8).replace("localhost", "broker");
         scenarioBase64 = Base64.getEncoder().encodeToString(scenarioString.getBytes(StandardCharsets.UTF_8));
