@@ -22,32 +22,24 @@ import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
+import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 @Disabled("Tests are only used to check output")
-public class TestBrokerCommandQos1Test {
+class TestBrokerCommandQos1Test {
 
-    final static public @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension("hivemq/hivemq4", "4.4.0");
+    static final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"))
+                    .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/qos1-config.xml"));
 
     static Mqtt3FeatureTester mqtt3FeatureTester;
 
     @BeforeAll
     static void beforeAll() {
-        hivemq.withHiveMQConfig(new File("src/test/resources/mqtt/test/qos1-config.xml"));
         hivemq.start();
         mqtt3FeatureTester = new Mqtt3FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
-    }
-
-    @BeforeEach
-    void setUp() {
-        if (!hivemq.isRunning()) {
-            hivemq.start();
-        }
     }
 
     @AfterAll
@@ -66,5 +58,4 @@ public class TestBrokerCommandQos1Test {
     void qos1_restricted_mqtt5_features() {
         MqttCLIMain.main(new String[]{"test", "-V", "5", "-a", "-p", String.valueOf(hivemq.getMqttPort())});
     }
-
 }
