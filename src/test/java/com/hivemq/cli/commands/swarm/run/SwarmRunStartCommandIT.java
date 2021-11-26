@@ -26,13 +26,16 @@ import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.MountableFile;
 import picocli.CommandLine;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -116,15 +119,16 @@ public class SwarmRunStartCommandIT {
         client.connect();
         client.toAsync().subscribeWith().topicFilter("#").callback((ack) -> publishesLatch.countDown()).send().get();
 
-        final File scenario = new File("src/test/resources/SwarmRunStartCommandIT/my-scenario.xml");
+        final String scenario =
+                MountableFile.forClasspathResource("SwarmRunStartCommandIT/my-scenario.xml").getResolvedPath();
         final int execute = commandLine.execute(
                 "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT),
-                "-f=" + scenario.getAbsolutePath()
+                "-f=" + scenario
         );
         assertEquals(0, execute);
 
         publishesLatch.await();
-        verify(out, times(1)).println("Uploading scenario from file '" + scenario.getAbsolutePath() + "'.");
+        verify(out, times(1)).println("Uploading scenario from file '" + scenario + "'.");
         verify(out, times(1)).println("Successfully uploaded scenario. Scenario-id: " + 1);
         verify(out, times(1)).println("Run id: 1");
         verify(out, times(1)).println("Run status: STARTING");
