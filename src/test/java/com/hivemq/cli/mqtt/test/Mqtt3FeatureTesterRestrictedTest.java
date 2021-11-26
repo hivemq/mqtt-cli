@@ -15,56 +15,39 @@
  */
 package com.hivemq.cli.mqtt.test;
 
-import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
-import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
-import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
-import com.hivemq.cli.mqtt.test.results.TestResult;
-import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
-import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
+import com.hivemq.cli.mqtt.test.results.*;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
+import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 import static com.hivemq.cli.mqtt.test.results.TestResult.PUBLISH_FAILED;
 import static com.hivemq.cli.mqtt.test.results.TestResult.SUBSCRIBE_FAILED;
-import static com.hivemq.cli.mqtt.test.results.TestResult.TIME_OUT;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class Mqtt3FeatureTesterRestrictedTest {
+class Mqtt3FeatureTesterRestrictedTest {
 
-    final static public @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension("hivemq/hivemq4", "4.4.0");
+    static final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"))
+                    .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/restricted-config.xml"));
 
     static Mqtt3FeatureTester mqtt3FeatureTester;
 
     @BeforeAll
     static void beforeAll() {
-        hivemq.withHiveMQConfig(new File("src/test/resources/mqtt/test/restricted-config.xml"));
         hivemq.start();
         mqtt3FeatureTester = new Mqtt3FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
-    }
-
-    @BeforeEach
-    void setUp() {
-        if (!hivemq.isRunning()) {
-            hivemq.start();
-        }
     }
 
     @AfterAll
     static void afterAll() {
         hivemq.stop();
     }
-
 
     @Test
     void wildcard_subscriptions_failed() {
@@ -103,11 +86,9 @@ public class Mqtt3FeatureTesterRestrictedTest {
         assertEquals(30, topicLengthTestResults.getMaxTopicLength());
     }
 
-
     @Test
     void clientId_length_failed_max_30() {
         final ClientIdLengthTestResults clientIdLengthTestResults = mqtt3FeatureTester.testClientIdLength();
         assertEquals(30, clientIdLengthTestResults.getMaxClientIdLength());
     }
-
 }
