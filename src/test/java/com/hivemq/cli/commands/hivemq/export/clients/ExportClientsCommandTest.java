@@ -24,13 +24,12 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.rules.TemporaryFolder;
+import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -46,16 +45,12 @@ class ExportClientsCommandTest {
     public static final int HTTP_PORT = 8888;
 
     @RegisterExtension
-    final public @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension("hivemq/hivemq4", "4.4.0")
-            .withHiveMQConfig(new File("src/test/resources/hivemq.configs/rest-api-config.xml"))
-            .withExposedPorts(HTTP_PORT);
+    final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"))
+                    .withHiveMQConfig(MountableFile.forClasspathResource("hivemq.configs/rest-api-config.xml"))
+                    .withExposedPorts(HTTP_PORT);
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-
-
-    private File file;
+    private @NotNull File file;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -76,7 +71,7 @@ class ExportClientsCommandTest {
         client.connect();
 
 
-        CommandLine cmd = new CommandLine(new ExportClientsCommand());
+        final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute(
                 "-f=" + file.getAbsolutePath(),
                 "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT)
@@ -94,7 +89,7 @@ class ExportClientsCommandTest {
     @Test
     void client_details_25_success() throws IOException, CsvException {
 
-        Mqtt5BlockingClient[] clients = new Mqtt5BlockingClient[25];
+        final Mqtt5BlockingClient[] clients = new Mqtt5BlockingClient[25];
         for (int i = 0; i < 25; i++) {
             clients[i] = Mqtt5Client.builder()
                     .serverPort(hivemq.getMqttPort())
@@ -103,7 +98,7 @@ class ExportClientsCommandTest {
         }
 
 
-        CommandLine cmd = new CommandLine(new ExportClientsCommand());
+        final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute(
                 "-f=" + file.getAbsolutePath(),
                 "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT)
@@ -129,7 +124,7 @@ class ExportClientsCommandTest {
         client.connect();
 
 
-        CommandLine cmd = new CommandLine(new ExportClientsCommand());
+        final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute(
                 "-f=" + file.getAbsolutePath(),
                 "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT),
@@ -158,7 +153,7 @@ class ExportClientsCommandTest {
 
     @Test
     void rate_limit() throws IOException, CsvException {
-        Mqtt5BlockingClient[] clients = new Mqtt5BlockingClient[25];
+        final Mqtt5BlockingClient[] clients = new Mqtt5BlockingClient[25];
         for (int i = 0; i < 10; i++) {
             clients[i] = Mqtt5Client.builder()
                     .serverPort(hivemq.getMqttPort())
@@ -168,7 +163,7 @@ class ExportClientsCommandTest {
 
 
         final long startTime = System.nanoTime();
-        CommandLine cmd = new CommandLine(new ExportClientsCommand());
+        final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute(
                 "-f=" + file.getAbsolutePath(),
                 "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT),
@@ -197,7 +192,7 @@ class ExportClientsCommandTest {
         client.connect();
 
 
-        CommandLine cmd = new CommandLine(new ExportClientsCommand());
+        final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute(
                 "-f=" + file.getAbsolutePath(),
                 "-url=http://" + hivemq.getContainerIpAddress() + ":" + 8889
@@ -207,5 +202,4 @@ class ExportClientsCommandTest {
 
         client.disconnect();
     }
-
 }
