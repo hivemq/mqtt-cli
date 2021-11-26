@@ -49,7 +49,7 @@ class ExportClientsCommandTest {
     final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"))
                     .withHiveMQConfig(MountableFile.forClasspathResource("hivemq.configs/rest-api-config.xml"))
-                    .withExposedPorts(HTTP_PORT);
+                    .withExposedPorts(HiveMQTestContainerExtension.MQTT_PORT, HTTP_PORT);
 
     private @NotNull File file;
 
