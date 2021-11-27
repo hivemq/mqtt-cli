@@ -15,7 +15,6 @@
  */
 package com.hivemq.cli.commands.swarm.run;
 
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiClient;
@@ -36,9 +35,10 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import picocli.CommandLine;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
@@ -95,8 +95,8 @@ public class SwarmRunStopCommandIT {
 
         out = mock(PrintStream.class);
 
-        final byte[] bytes = Files.toByteArray(
-                new File(getClass().getResource("/SwarmRunStopCommandIT/blockScenario.xml").getPath()));
+        final byte[] bytes = Files.readAllBytes(
+                Paths.get(getClass().getResource("/SwarmRunStopCommandIT/blockScenario.xml").getPath()));
         final String scenarioString =
                 new String(bytes, StandardCharsets.UTF_8).replace("localhost", "broker");
         scenarioBase64 = Base64.getEncoder().encodeToString(scenarioString.getBytes(StandardCharsets.UTF_8));
