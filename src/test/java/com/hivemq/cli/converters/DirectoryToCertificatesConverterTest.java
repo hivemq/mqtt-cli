@@ -36,9 +36,9 @@ class DirectoryToCertificatesConverterTest {
     @BeforeEach
     void setUp() {
         directoryToCertificatesConverter = new DirectoryToCertificatesConverter();
-        final URL validCertificateDirResource = getClass().getClassLoader().getResource("FileToCertificateConverter/directory_with_certificates");
-        final URL noCertificatesDir = getClass().getClassLoader().getResource("FileToCertificateConverter/directory_without_certificates");
-        final URL validCertificateResource = getClass().getClassLoader().getResource("FileToCertificateConverter/validCertificate.pem");
+        final URL validCertificateDirResource = getClass().getResource("/FileToCertificateConverter/directory_with_certificates");
+        final URL noCertificatesDir = getClass().getResource("/FileToCertificateConverter/directory_without_certificates");
+        final URL validCertificateResource = getClass().getResource("/FileToCertificateConverter/validCertificate.pem");
 
         assertNotNull(validCertificateDirResource);
         assertNotNull(validCertificateResource);
