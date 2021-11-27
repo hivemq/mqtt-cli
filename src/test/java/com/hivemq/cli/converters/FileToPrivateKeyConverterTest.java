@@ -38,10 +38,10 @@ class FileToPrivateKeyConverterTest {
     void setUp() {
         fileToPrivateKeyConverter = new FileToPrivateKeyConverter();
 
-        final URL encryptedRSAKeyResource = getClass().getClassLoader().getResource("FileToPrivateKeyConverter/encrypted_RSA_key.pem");
-        final URL decryptedRSAKeyResource = getClass().getClassLoader().getResource("FileToPrivateKeyConverter/decrypted_RSA_key.pem");
-        final URL decryptedECKeyResource = getClass().getClassLoader().getResource("FileToPrivateKeyConverter/decrypted_EC_key.pem");
-        final URL decryptedMalformedRSAKeyResource = getClass().getClassLoader().getResource("FileToPrivateKeyConverter/decrypted_malformed_RSA_key.pem");
+        final URL encryptedRSAKeyResource = getClass().getResource("/FileToPrivateKeyConverter/encrypted_RSA_key.pem");
+        final URL decryptedRSAKeyResource = getClass().getResource("/FileToPrivateKeyConverter/decrypted_RSA_key.pem");
+        final URL decryptedECKeyResource = getClass().getResource("/FileToPrivateKeyConverter/decrypted_EC_key.pem");
+        final URL decryptedMalformedRSAKeyResource = getClass().getResource("/FileToPrivateKeyConverter/decrypted_malformed_RSA_key.pem");
 
 
         assertNotNull(encryptedRSAKeyResource);
