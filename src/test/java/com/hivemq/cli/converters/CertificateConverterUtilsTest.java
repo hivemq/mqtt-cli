@@ -40,8 +40,8 @@ class CertificateConverterUtilsTest {
 
     @BeforeEach
     void setUp() {
-        final URL validCertificateResource = getClass().getClassLoader().getResource("FileToCertificateConverter/validCertificate.pem");
-        final URL invalidCertificate = getClass().getClassLoader().getResource("FileToCertificateConverter/invalidCertificate.pem");
+        final URL validCertificateResource = getClass().getResource("/FileToCertificateConverter/validCertificate.pem");
+        final URL invalidCertificate = getClass().getResource("/FileToCertificateConverter/invalidCertificate.pem");
 
         assert validCertificateResource != null;
         assert invalidCertificate != null;

@@ -67,6 +67,6 @@ class PasswordFileToByteBufferConverterTest {
 
 
     private File getFile(final @NotNull String fileName) {
-        return new File(getClass().getClassLoader().getResource(this.getClass().getSimpleName() + "/" + fileName).getPath());
+        return new File(getClass().getResource("/" + getClass().getSimpleName() + "/" + fileName).getPath());
     }
 }
