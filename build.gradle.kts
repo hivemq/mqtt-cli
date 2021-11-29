@@ -142,7 +142,7 @@ dependencies {
     if (gradle.includedBuilds.any { it.name == "hivemq-enterprise" }) {
         hivemqOpenApi("com.hivemq:hivemq-enterprise")
     } else {
-        hivemqOpenApi(layout.projectDirectory.files("specs/hivemq-openapi.yaml"))
+        hivemqOpenApi(files("specs/hivemq-openapi.yaml"))
     }
 }
 
@@ -158,7 +158,7 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
 
     inputs.file(hivemqOpenApi.elements.map { it.first() }).withPropertyName("inputSpec")
         .withPathSensitivity(PathSensitivity.NONE)
-    val outputSrcDir = buildDir.resolve("generated/openapi/hivemq/java")
+    val outputSrcDir = layout.buildDirectory.dir("generated/openapi/hivemq/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
     outputs.cacheIf { true }
     doFirst { delete(outputDir) }
@@ -185,7 +185,7 @@ tasks.test {
 /* ******************** compliance ******************** */
 
 license {
-    header = projectDir.resolve("HEADER")
+    header = file("HEADER")
     include("**/*.java")
     exclude("**/com/hivemq/cli/openapi/**")
     mapping("java", "SLASHSTAR_STYLE")
@@ -291,7 +291,7 @@ val updateThirdPartyLicenses by tasks.registering {
     dependsOn(tasks.downloadLicenses)
     doLast {
         javaexec {
-            classpath(projectDir.resolve("gradle/tools/license-third-party-tool-3.0.jar"))
+            classpath("gradle/tools/license-third-party-tool-3.0.jar")
             args(
                 "The MQTT Cli",
                 "$buildDir/reports/license/dependency-license.xml",
@@ -352,13 +352,13 @@ graal {
 val buildBrewZip by tasks.registering(Zip::class) {
 
     archiveClassifier.set("brew")
-    destinationDirectory.set(buildDir.resolve("packages/homebrew"))
+    destinationDirectory.set(layout.buildDirectory.dir("packages/homebrew"))
 
     into("brew") {
         from(tasks.shadowJar)
-        from(projectDir.resolve("packages/homebrew/mqtt"))
+        from("packages/homebrew/mqtt")
     }
-    from(projectDir.resolve("LICENSE")) {
+    from("LICENSE") {
         into("licenses")
     }
 }
@@ -366,8 +366,8 @@ val buildBrewZip by tasks.registering(Zip::class) {
 val buildBrewFormula by tasks.registering(Copy::class) {
     dependsOn(buildBrewZip)
 
-    from(projectDir.resolve("packages/homebrew/mqtt-cli.rb"))
-    into(buildDir.resolve("packages/homebrew"))
+    from("packages/homebrew/mqtt-cli.rb")
+    into(layout.buildDirectory.dir("packages/homebrew"))
     filter {
         it.replace("@@description@@", project.description!!)
             .replace("@@version@@", project.version.toString())
@@ -397,13 +397,13 @@ ospackage {
 
     into("/opt/$packageName")
     from(tasks.shadowJar)
-    from(projectDir.resolve("packages/linux/mqtt"), closureOf<CopySpec> {
+    from("packages/linux/mqtt", closureOf<CopySpec> {
         fileMode = 0b111_101_101 // 0755
         filter {
             it.replace("@@jarPath@@", "/opt/$packageName/${tasks.shadowJar.get().archiveFileName.get()}")
         }
     })
-    from(projectDir.resolve("LICENSE"), closureOf<CopySpec> {
+    from("LICENSE", closureOf<CopySpec> {
         into("licenses")
         CopySpecEnhancement.fileType(this, Directive.LICENSE)
     })
@@ -422,13 +422,13 @@ tasks.buildRpm {
 
 val buildDebianPackage by tasks.registering(Copy::class) {
     from(tasks.buildDeb.flatMap { it.archiveFile })
-    into(buildDir.resolve("packages/debian"))
+    into(layout.buildDirectory.dir("packages/debian"))
     rename { "${project.name}-${project.version}.deb" }
 }
 
 val buildRpmPackage by tasks.registering(Copy::class) {
     from(tasks.buildRpm.flatMap { it.archiveFile })
-    into(buildDir.resolve("packages/rpm"))
+    into(layout.buildDirectory.dir("packages/rpm"))
     rename { "${project.name}-${project.version}.rpm" }
 }
 
@@ -452,13 +452,13 @@ launch4j {
 val buildWindowsZip by tasks.registering(Zip::class) {
 
     archiveClassifier.set("win")
-    destinationDirectory.set(buildDir.resolve("packages/windows"))
+    destinationDirectory.set(layout.buildDirectory.dir("packages/windows"))
 
-    from(projectDir.resolve("packages/windows")) {
+    from("packages/windows") {
         filter { it.replace("@@exeName@@", launch4j.outfile) }
     }
     from(tasks.createExe.map { it.dest })
-    from("$projectDir/LICENSE")
+    from("LICENSE")
 }
 
 /* ******************** packages ******************** */
