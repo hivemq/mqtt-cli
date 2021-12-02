@@ -20,22 +20,21 @@ import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.swarm.*;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
-import org.testcontainers.shaded.com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Yannick Weber
@@ -45,7 +44,6 @@ class SwarmRunStartCommandTest {
     private @NotNull RunsApi runsApi;
     private @NotNull ScenariosApi scenariosApi;
     private @NotNull SwarmApiErrorTransformer swarmApiErrorTransformer;
-    private @NotNull File tempDir;
     private @NotNull ApiClient apiClient;
 
     @BeforeEach
@@ -53,7 +51,6 @@ class SwarmRunStartCommandTest {
         runsApi = mock(RunsApi.class);
         scenariosApi = mock(ScenariosApi.class);
         swarmApiErrorTransformer = mock(SwarmApiErrorTransformer.class);
-        tempDir = Files.createTempDir();
 
         apiClient = mock(ApiClient.class);
         when(runsApi.getApiClient()).thenReturn(apiClient);
@@ -127,13 +124,13 @@ class SwarmRunStartCommandTest {
     }
 
     @Test
-    void uploadScenario_xml_error() throws IOException, ApiException {
-        final File scenario = new File(tempDir, "scenario.xml");
-        FileUtils.writeStringToFile(scenario, "scenario-content", StandardCharsets.UTF_8);
+    void uploadScenario_xml_error(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
+        final Path scenario = tempDir.resolve("scenario.xml");
+        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand(
                 "http://localhost:8080",
-                scenario,
+                scenario.toFile(),
                 true,
                 runsApi,
                 scenariosApi,
@@ -157,17 +154,16 @@ class SwarmRunStartCommandTest {
         assertEquals("XML", value.getScenarioType());
         assertNull(value.getScenarioDescription());
         assertEquals("c2NlbmFyaW8tY29udGVudA==", value.getScenario());
-
     }
 
     @Test
-    void uploadScenario_vm_error() throws IOException, ApiException {
-        final File scenario = new File(tempDir, "scenario.vm");
-        FileUtils.writeStringToFile(scenario, "scenario-content", StandardCharsets.UTF_8);
+    void uploadScenario_vm_error(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
+        final Path scenario = tempDir.resolve("scenario.vm");
+        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand(
                 "http://localhost:8080",
-                scenario,
+                scenario.toFile(),
                 true,
                 runsApi,
                 scenariosApi,
@@ -194,13 +190,13 @@ class SwarmRunStartCommandTest {
     }
 
     @Test
-    void uploadScenarioSuccessButCantStart_error() throws IOException, ApiException {
-        final File scenario = new File(tempDir, "scenario.vm");
-        FileUtils.writeStringToFile(scenario, "scenario-content", StandardCharsets.UTF_8);
+    void uploadScenarioSuccessButCantStart_error(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
+        final Path scenario = tempDir.resolve("scenario.vm");
+        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand(
                 "http://localhost:8080",
-                scenario,
+                scenario.toFile(),
                 true,
                 runsApi,
                 scenariosApi,
@@ -224,13 +220,13 @@ class SwarmRunStartCommandTest {
     }
 
     @Test
-    void runScenarioAttached() throws IOException, ApiException {
-        final File scenario = new File(tempDir, "scenario.vm");
-        FileUtils.writeStringToFile(scenario, "scenario-content", StandardCharsets.UTF_8);
+    void runScenarioAttached(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
+        final Path scenario = tempDir.resolve("scenario.vm");
+        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand(
                 "http://localhost:8080",
-                scenario,
+                scenario.toFile(),
                 false,
                 runsApi,
                 scenariosApi,
@@ -262,13 +258,13 @@ class SwarmRunStartCommandTest {
     }
 
     @Test
-    void runScenarioDetached() throws IOException, ApiException {
-        final File scenario = new File(tempDir, "scenario.vm");
-        FileUtils.writeStringToFile(scenario, "scenario-content", StandardCharsets.UTF_8);
+    void runScenarioDetached(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
+        final Path scenario = tempDir.resolve("scenario.vm");
+        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand(
                 "http://localhost:8080",
-                scenario,
+                scenario.toFile(),
                 true,
                 runsApi,
                 scenariosApi,
