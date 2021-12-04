@@ -558,6 +558,10 @@ distributions.shadow {
     }
 }
 
+tasks.startShadowScripts {
+    applicationName = "mqtt"
+}
+
 /* ******************** HiveMQ composite build ******************** */
 
 tasks.register<Sync>("updateSpecs") {
