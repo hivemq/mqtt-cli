@@ -21,6 +21,7 @@ import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.Configuration;
 import com.hivemq.cli.openapi.swarm.CommanderApi;
 import com.hivemq.cli.openapi.swarm.RunsApi;
+import com.hivemq.cli.utils.TestLoggerUtils;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
@@ -67,6 +68,7 @@ public class SwarmStatusCommandIT {
 
     @BeforeEach
     void setUp() throws Exception {
+        TestLoggerUtils.resetLogger();
 
         final CompletableFuture<Void> swarmStartFuture = CompletableFuture.runAsync(swarm::start);
 
