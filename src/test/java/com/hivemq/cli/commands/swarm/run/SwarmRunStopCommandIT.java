@@ -20,6 +20,7 @@ import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.Configuration;
 import com.hivemq.cli.openapi.swarm.*;
+import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
@@ -87,6 +88,7 @@ public class SwarmRunStopCommandIT {
 
     @BeforeEach
     void setUp() throws Exception {
+        TestLoggerUtils.resetLogger();
 
         final CompletableFuture<Void> swarmStartFuture = CompletableFuture.runAsync(swarm::start);
         final CompletableFuture<Void> hivemqStartFuture = CompletableFuture.runAsync(hivemq::start);
