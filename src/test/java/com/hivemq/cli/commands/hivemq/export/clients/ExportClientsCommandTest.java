@@ -15,6 +15,7 @@
  */
 package com.hivemq.cli.commands.hivemq.export.clients;
 
+import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
@@ -54,6 +55,7 @@ class ExportClientsCommandTest {
 
     @BeforeEach
     void setUp() throws IOException {
+        TestLoggerUtils.resetLogger();
         file = File.createTempFile("client_details", ".csv");
     }
 
