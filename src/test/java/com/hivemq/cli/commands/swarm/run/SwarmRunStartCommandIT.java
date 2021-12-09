@@ -21,6 +21,7 @@ import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.Configuration;
 import com.hivemq.cli.openapi.swarm.RunsApi;
 import com.hivemq.cli.openapi.swarm.ScenariosApi;
+import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
@@ -79,6 +80,7 @@ public class SwarmRunStartCommandIT {
 
     @BeforeEach
     void setUp() throws Exception {
+        TestLoggerUtils.resetLogger();
 
         final CompletableFuture<Void> swarmStartFuture = CompletableFuture.runAsync(swarm::start);
         final CompletableFuture<Void> hivemqStartFuture = CompletableFuture.runAsync(hivemq::start);
