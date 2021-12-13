@@ -196,6 +196,7 @@ downloadLicenses {
         license("Apache License, Version 2.0", "https://opensource.org/licenses/Apache-2.0") to listOf(
             "Apache 2",
             "Apache 2.0",
+            "Apache-2.0",
             "Apache License 2.0",
             "Apache License, 2.0",
             "Apache License v2.0",
@@ -206,7 +207,8 @@ downloadLicenses {
             "The Apache License, Version 2.0",
             "Apache Software License - Version 2.0",
             "Apache Software License, version 2.0",
-            "The Apache Software License, Version 2.0"
+            "The Apache Software License, Version 2.0",
+            "The Apache Software License, version 2.0"
         ),
         license("MIT License", "https://opensource.org/licenses/MIT") to listOf(
             "MIT License",
