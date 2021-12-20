@@ -16,10 +16,23 @@
 package com.hivemq.cli;
 
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
+import com.hivemq.cli.utils.TestLoggerUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
 class MqttCLIMainTest {
+
+    @BeforeEach
+    void setUp() {
+        TestLoggerUtils.resetLogger();
+    }
+
+    @AfterEach
+    void tearDown() {
+        TestLoggerUtils.resetLogger();
+    }
 
     @Test
     @ExpectSystemExitWithStatus(0)
