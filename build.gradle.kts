@@ -222,8 +222,6 @@ sourceSets.main {
 
 tasks.test {
     useJUnitPlatform()
-    //FIXME: remove this again
-    testLogging.showStandardStreams = true
 }
 
 /* ******************** compliance ******************** */
