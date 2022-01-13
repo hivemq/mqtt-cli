@@ -17,6 +17,7 @@ package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.Publish;
+import com.hivemq.cli.commands.options.MessagePayloadOptions;
 import com.hivemq.cli.converters.ByteBufferConverter;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
@@ -66,8 +67,8 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default for all: 0)")
     @NotNull private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message to publish")
-    @NotNull private ByteBuffer message;
+    @CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
+    @NotNull MessagePayloadOptions message;
 
     @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, defaultValue = "false", description = "The message will be retained (default: false)")
     @Nullable private Boolean retain;
@@ -134,7 +135,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
                 "key=" + getKey() +
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
-                ", message=" + new String(message.array(), StandardCharsets.UTF_8) +
+                ", message=" + new String(message.getMessageBuffer().array(), StandardCharsets.UTF_8) +
                 ", retain=" + retain +
                 (messageExpiryInterval != null ? (", messageExpiryInterval=" + messageExpiryInterval) : "") +
                 (payloadFormatIndicator != null ? (", payloadFormatIndicator=" + payloadFormatIndicator) : "") +
@@ -160,11 +161,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     @NotNull
     @Override
     public ByteBuffer getMessage() {
-        return message;
-    }
-
-    public void setMessage(final ByteBuffer message) {
-        this.message = message;
+        return message.getMessageBuffer();
     }
 
     @Nullable
