@@ -13,7 +13,7 @@ Instead it uses the currently active context client.
 
 ```
 client@host> pub    -t <topics> [-t <topics>]... 
-                    -m <message> 
+                    (-m <message> | -m:file <filename>)
                     [-q <qos>]... 
                     [-r]
                     [-e <messageExpiryInterval>] 
@@ -33,6 +33,7 @@ client@host> pub    -t <topics> [-t <topics>]...
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-t``   | ``--topic``| The MQTT topic where the message will be published. |
 | ``-m``| ``--message`` | The message which will be published on the topic. |
+| ``-m:file`` | ``--message-file``           | The file whose payload will be published on the topic.                                                                                                                                                                                |
 | ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 | ``-r``| ``--[no-]retain`` | Message will be retained. | ``False``
 | ``-e`` | ``--messageExpiryInterval`` | The lifetime of the publish message in seconds. |
