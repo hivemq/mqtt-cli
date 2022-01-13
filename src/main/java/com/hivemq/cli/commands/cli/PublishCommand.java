@@ -18,11 +18,8 @@ package com.hivemq.cli.commands.cli;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Publish;
-import com.hivemq.cli.converters.ByteBufferConverter;
-import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
-import com.hivemq.cli.converters.MqttQosConverter;
-import com.hivemq.cli.converters.PayloadFormatIndicatorConverter;
-import com.hivemq.cli.converters.UnsignedIntConverter;
+import com.hivemq.cli.commands.options.MessagePayloadOptions;
+import com.hivemq.cli.converters.*;
 import com.hivemq.cli.impl.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -37,15 +34,12 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
-import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 @CommandLine.Command(name = "pub",
         versionProvider = MqttCLIMain.CLIVersionProvider.class,
@@ -79,8 +73,8 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default for all: 0)", order = 1)
     @NotNull private MqttQos[] qos;
 
-    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, required = true, description = "The message to publish", order = 1)
-    @NotNull private ByteBuffer message;
+    @CommandLine.ArgGroup(exclusive = true, multiplicity = "1", order = 1)
+    @NotNull MessagePayloadOptions message;
 
     @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, description = "The message will be retained (default: false)", order = 1)
     @Nullable private Boolean retain;
@@ -172,7 +166,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
                  connectOptions() +
                 ", topics=" + Arrays.toString(topics) +
                 ", qos=" + Arrays.toString(qos) +
-                ", message=" + new String(message.array(), StandardCharsets.UTF_8) +
+                ", message=" + new String(message.getMessageBuffer().array(), StandardCharsets.UTF_8) +
                 (retain != null ? (", retain=" + retain) : "") +
                 (messageExpiryInterval != null ? (", messageExpiryInterval=" + messageExpiryInterval) : "") +
                 (payloadFormatIndicator != null ? (", payloadFormatIndicator=" + payloadFormatIndicator) : "") +
@@ -199,11 +193,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @NotNull
     @Override
     public ByteBuffer getMessage() {
-        return message;
-    }
-
-    public void setMessage(final ByteBuffer message) {
-        this.message = message;
+        return message.getMessageBuffer();
     }
 
     @Nullable
