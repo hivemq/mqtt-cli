@@ -454,7 +454,7 @@ ospackage {
 }
 
 tasks.buildDeb {
-    requires("default-jre").or("java8-runtime")
+    requires("default-jre").or("java8-runtime").or("java8-runtime-headless")
 }
 
 tasks.buildRpm {
