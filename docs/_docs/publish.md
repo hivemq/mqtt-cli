@@ -10,11 +10,12 @@ Publishes a message to one or more topics.
 ## Simple Examples   
 
 
-|Command                                                |Explanation                                                              |
-|-------------------------------------------------------|-------------------------------------------------------------------------|
-| ``mqtt pub -t test -m "Hello" `` | Publish the message ``Hello`` with topic 'topic' using the default settings
-| ``mqtt pub -t test1 -t test2 -m "Hello Tests"`` | Publish the message ``Hello Tests`` with topics 'test1' and 'test2'
-| ``mqtt pub -t test -m "Hello" -h localhost -p 1884``| Publish the message ``Hello`` with topic 'topic' to a broker at localhost:1884|
+| Command                                              |Explanation                                                              |
+|------------------------------------------------------|-------------------------------------------------------------------------|
+| ``mqtt pub -t test -m "Hello" ``                     | Publish the message ``Hello`` with topic 'topic' using the default settings
+| ``mqtt pub -t test1 -t test2 -m "Hello Tests"``      | Publish the message ``Hello Tests`` with topics 'test1' and 'test2'
+| ``mqtt pub -t test -m "Hello" -h localhost -p 1884`` | Publish the message ``Hello`` with topic 'topic' to a broker at localhost:1884|
+| ``mqtt pub -t test -m:file payload.txt``             | Publish the message in payload.txt with topic 'topic' using the default settings
 
 <!---
 See also 
@@ -29,7 +30,7 @@ mqtt pub --help
 
 ``` 
 mqtt pub    -t <topics> [-t <topics>]... 
-            -m <message> 
+            (-m <message> | -m:file <filename>)
             [-cdrsvl] 
             [-q <qos>]...
             [-e <messageExpiryInterval>]          
@@ -85,21 +86,22 @@ mqtt pub    -t <topics> [-t <topics>]...
 
 ## Publish options
 
-|Option   |Long Version    | Explanation                                         | Default|
-|---------|----------------|-----------------------------------------------------|---------|
-| ``-t``   | ``--topic``| The MQTT topic to which the message will be published. |
-| ``-m``| ``--message`` | The message which will be published on the topic. |
-| ``-r``| ``--[no-]retain`` | Whether the message will be retained. | ``False``
-| ``-q`` | ``--qos`` | Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
-| ``-e`` | ``--messageExpiryInterval`` | The lifetime of the publish message in seconds. |
-| ``-ct`` | ``--contentType`` | A description of the content of the publish message. |
-| ``-cd`` | ``--correlationData`` | The correlation data of the publish message. |
-| ``-pf`` | ``--payloadFormatIndicator`` | The payload format indicator of the publish message. |
-| ``-rt`` | ``--responseTopic`` | The topic name for the response message of the publish message. |
-| ``-up`` | ``--userProperty``  | A user property of the publish message |
-| ``-d``    |   ``--debug``     | Print debug level messages to the console. | ``False``
-| ``-v``    |   ``--verbose``   | Print trace level messages to the console. | ``False``
-| ``-l`` | | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties) | ``false``
+| Option      | Long Version                 | Explanation                                                                                                                                                                                                                           | Default|
+|-------------|------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| ``-t``      | ``--topic``                  | The MQTT topic to which the message will be published.                                                                                                                                                                                |
+| ``-m``      | ``--message``                | The message which will be published on the topic.                                                                                                                                                                                     |
+| ``-m:file`` | ``--message-file``           | The file whose payload will be published on the topic.                                                                                                                                                                                |
+| ``-r``      | ``--[no-]retain``            | Whether the message will be retained.                                                                                                                                                                                                 | ``False``
+| ``-q``      | ``--qos``                    | Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
+| ``-e``      | ``--messageExpiryInterval``  | The lifetime of the publish message in seconds.                                                                                                                                                                                       |
+| ``-ct``     | ``--contentType``            | A description of the content of the publish message.                                                                                                                                                                                  |
+| ``-cd``     | ``--correlationData``        | The correlation data of the publish message.                                                                                                                                                                                          |
+| ``-pf``     | ``--payloadFormatIndicator`` | The payload format indicator of the publish message.                                                                                                                                                                                  |
+| ``-rt``     | ``--responseTopic``          | The topic name for the response message of the publish message.                                                                                                                                                                       |
+| ``-up``     | ``--userProperty``           | A user property of the publish message                                                                                                                                                                                                |
+| ``-d``      | ``--debug``                  | Print debug level messages to the console.                                                                                                                                                                                            | ``False``
+| ``-v``      | ``--verbose``                | Print trace level messages to the console.                                                                                                                                                                                            | ``False``
+| ``-l``      |                              | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)                                                                                                                                                          | ``false``
 
 ***
 
