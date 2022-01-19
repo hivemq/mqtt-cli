@@ -7,7 +7,7 @@ redirect_from: /docs/shell/subscribe.html
 ***
 
 The subscribe with a context subscribes the currently active context client to the given topics.
-By default it doesn't block the console like the [Subscribe](/docs/subscribe) without a context does.
+By default it doesn't block the console like the [Subscribe](../subscribe) without a context does.
 To enable this behavior you can use the **-s** option.
 
 
@@ -46,7 +46,7 @@ client@host> sub    -t <topics> [-t <topics>]...
 ## Examples
 
 > Subscribe to test topic on default settings (output will be written to Logfile.
-See [Logging](/docs/logging)):
+See [Logging](../logging)):
 
 ```
 mqtt> con -i myClient

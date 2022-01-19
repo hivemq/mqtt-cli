@@ -6,7 +6,7 @@ redirect_from: /docs/shell/publish.html
 # Publish
 ***
 
-The publish with a context works almost the same as [Publish](/docs/publish) but it will not create a new connection and publish with a new client.
+The publish with a context works almost the same as [Publish](../publish) but it will not create a new connection and publish with a new client.
 Instead it uses the currently active context client.
 
 ## Synopsis
