@@ -40,23 +40,23 @@ mqtt> ...
 
 ### Commands **without** an active context
 
-* [Connect](shell/connect)
-* [Disconnect](shell/disconnect)
-* [Switch](shell/switch)
-* [List](shell/list)
-* [Clear](shell/clear)
-* [Exit](shell/exit)
+* [Connect](connect)
+* [Disconnect](disconnect)
+* [Switch](switch)
+* [List](list)
+* [Clear](clear)
+* [Exit](exit)
 
 ### Commands **with** an active context
 
-* [Publish](shell/publish)
-* [Subscribe](shell/subscribe)
-* [Unsubscribe](shell/unsubscribe)
-* [Disconnect](shell/disconnect)
-* [Switch](shell/switch)
-* [List](shell/list)
-* [Clear](shell/clear)
-* [Exit](shell/exit)
+* [Publish](publish)
+* [Subscribe](subscribe)
+* [Unsubscribe](unsubscribe)
+* [Disconnect](disconnect)
+* [Switch](switch)
+* [List](list)
+* [Clear](clear)
+* [Exit](exit)
 
 
 
