@@ -180,6 +180,9 @@ sourceSets.main {
 
 tasks.test {
     useJUnitPlatform()
+    reports {
+        junitXml.isOutputPerTestCase = true
+    }
 }
 
 /* ******************** compliance ******************** */
