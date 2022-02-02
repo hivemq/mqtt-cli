@@ -1,4 +1,4 @@
-MASTER_BRANCH = 'master'
+MASTER_BRANCH = 'master-4.7'
 
 pipeline {
     agent { label 'master' }
