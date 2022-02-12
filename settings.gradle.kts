@@ -16,9 +16,7 @@ pluginManagement {
         id("com.google.cloud.tools.jib") version "${extra["plugin.jib.version"]}"
     }
 
-    if (file("../plugins").exists()) {
-        includeBuild("../plugins")
-    } else if(file("../hivemq/plugins").exists()) {
+    if (file("../hivemq/plugins").exists()) {
         includeBuild("../hivemq/plugins")
     }
 }
