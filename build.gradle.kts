@@ -32,6 +32,7 @@ plugins {
     id("com.github.ben-manes.versions")
     id("org.openapi.generator")
     id("com.google.cloud.tools.jib")
+    id("io.github.sgtsilvio.gradle.defaults")
 }
 
 /* ******************** metadata ******************** */
@@ -180,9 +181,6 @@ sourceSets.main {
 
 tasks.test {
     useJUnitPlatform()
-    reports {
-        junitXml.isOutputPerTestCase = true
-    }
 }
 
 /* ******************** compliance ******************** */
