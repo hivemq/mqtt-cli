@@ -14,6 +14,7 @@ pluginManagement {
         id("com.github.ben-manes.versions") version "${extra["plugin.ben-manes.versions.version"]}"
         id("org.openapi.generator") version "${extra["plugin.openapi.generator.version"]}"
         id("com.google.cloud.tools.jib") version "${extra["plugin.jib.version"]}"
+        id("io.github.sgtsilvio.gradle.defaults") version "${extra["plugin.defaults.version"]}"
     }
 
     if (file("../hivemq/plugins").exists()) {
