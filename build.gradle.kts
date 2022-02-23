@@ -54,10 +54,6 @@ java {
     }
 }
 
-tasks.compileJava {
-    options.encoding = "UTF-8"
-}
-
 tasks.jar {
     manifest.attributes(
         "Built-JDK" to System.getProperty("java.version"),
@@ -87,7 +83,6 @@ repositories {
 }
 
 dependencies {
-
     implementation("io.swagger:swagger-annotations:${property("swagger.version")}")
     implementation("com.google.code.findbugs:jsr305:${property("findBugs.version")}")
     implementation("com.squareup.okhttp3:okhttp:${property("okHttp.version")}")
@@ -118,17 +113,6 @@ dependencies {
     implementation("io.netty:netty-codec-http:${property("netty.version")}")
     implementation("io.netty:netty-transport-native-epoll:${property("netty.version")}:linux-x86_64")
     implementation("com.opencsv:opencsv:${property("openCsv.version")}")
-
-    testImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
-    testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junitJupiter.version")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:${property("junitJupiter.version")}")
-    testImplementation("com.squareup.okhttp3:mockwebserver:${property("okHttp.version")}")
-    testImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemqTestcontainer.version")}")
-    testImplementation("com.ginsberg:junit5-system-exit:${property("systemExit.version")}")
-    testImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junitJupiter.version")}")
-
 }
 
 /* ******************** OpenAPI ******************** */
@@ -223,6 +207,18 @@ sourceSets.main {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+dependencies {
+    testImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
+    testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junitJupiter.version")}")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:${property("junitJupiter.version")}")
+    testImplementation("com.squareup.okhttp3:mockwebserver:${property("okHttp.version")}")
+    testImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemqTestcontainer.version")}")
+    testImplementation("com.ginsberg:junit5-system-exit:${property("systemExit.version")}")
+    testImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junitJupiter.version")}")
 }
 
 /* ******************** compliance ******************** */
@@ -552,7 +548,7 @@ jib {
     }
 }
 
-/* ******************** Platform distribution ******************** */
+/* ******************** platform distribution ******************** */
 
 distributions.shadow {
     distributionBaseName.set("mqtt-cli")
