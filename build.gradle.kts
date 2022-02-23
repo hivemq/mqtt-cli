@@ -21,18 +21,18 @@ plugins {
     java
     application
     id("com.github.johnrengelman.shadow")
-    id("com.github.hierynomus.license")
+    id("io.github.sgtsilvio.gradle.defaults")
     id("nebula.ospackage")
     id("edu.sc.seis.launch4j")
+    id("org.openapi.generator")
+    id("com.google.cloud.tools.jib")
     id("com.palantir.graal")
+    id("com.github.hierynomus.license")
     id("de.thetaphi.forbiddenapis")
     id("com.github.breadmoirai.github-release")
     id("org.ajoberstar.git-publish")
     id("org.owasp.dependencycheck")
     id("com.github.ben-manes.versions")
-    id("org.openapi.generator")
-    id("com.google.cloud.tools.jib")
-    id("io.github.sgtsilvio.gradle.defaults")
 }
 
 /* ******************** metadata ******************** */
