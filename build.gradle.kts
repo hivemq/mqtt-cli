@@ -169,14 +169,12 @@ tasks.test {
 }
 
 dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter:${property("junitJupiter.version")}")
     testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junitJupiter.version")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:${property("junitJupiter.version")}")
     testImplementation("com.squareup.okhttp3:mockwebserver:${property("okHttp.version")}")
     testImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemqTestcontainer.version")}")
     testImplementation("com.ginsberg:junit5-system-exit:${property("systemExit.version")}")
     testImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junitJupiter.version")}")
 }
 
 /* ******************** compliance ******************** */
