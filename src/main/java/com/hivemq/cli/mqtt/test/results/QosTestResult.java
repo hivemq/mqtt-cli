@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt.test.results;
 
 public class QosTestResult {
+
     private final int receivedPublishes;
     private final long timeToReceivePublishes;
 

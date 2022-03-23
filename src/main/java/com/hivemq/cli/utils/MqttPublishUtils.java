@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
-import com.google.common.base.Throwables;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -28,17 +28,15 @@ import java.nio.file.StandardOpenOption;
 
 public class MqttPublishUtils {
 
-    public static String formatPayload(final byte[] payload, final boolean isBase64) {
+    public static String formatPayload(final byte @NotNull [] payload, final boolean isBase64) {
         if (isBase64) {
             return Base64.toBase64String(payload);
-        }
-        else {
+        } else {
             return new String(payload, StandardCharsets.UTF_8);
         }
     }
 
     public static void printToFile(final @NotNull File publishFile, final @NotNull String message) {
-
         // Re-create a deleted output file if it was deleted manually
         try {
             if (publishFile.createNewFile()) {
@@ -50,10 +48,12 @@ public class MqttPublishUtils {
         }
 
         try {
-            Files.write(publishFile.toPath(), (message + System.lineSeparator()).getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            Files.write(
+                    publishFile.toPath(),
+                    (message + System.lineSeparator()).getBytes(StandardCharsets.UTF_8),
+                    StandardOpenOption.APPEND);
         } catch (final @NotNull IOException e) {
             Logger.error("Cannot write to output file {}", publishFile.getAbsolutePath(), e.getMessage());
         }
     }
-
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.swarm.run;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -35,20 +36,14 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.PrintStream;
 
-/**
- * @author Yannick Weber
- */
-@CommandLine.Command(name = "stop",
-        description = "Stop HiveMQ Swarm runs.",
-        synopsisHeading = "%n@|bold Usage:|@  ",
-        descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n",
-        mixinStandardHelpOptions = true,
+@CommandLine.Command(name = "stop", description = "Stop HiveMQ Swarm runs.", synopsisHeading = "%n@|bold Usage:|@  ",
+        descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
+        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class SwarmRunStopCommand extends AbstractSwarmCommand {
 
-    @CommandLine.Option(names = {"-r", "--run-id"}, description = "The id of the run to stop. If none is given the current run is stopped.", order = 3)
+    @CommandLine.Option(names = {"-r", "--run-id"},
+            description = "The id of the run to stop. If none is given the current run is stopped.", order = 3)
     private @Nullable Integer runId;
 
     private final @NotNull RunsApi runsApi;
@@ -76,7 +71,6 @@ public class SwarmRunStopCommand extends AbstractSwarmCommand {
             final @NotNull CommanderApi commanderApi,
             final @NotNull SwarmApiErrorTransformer errorTransformer,
             final @NotNull PrintStream out) {
-
         this(() -> runsApi, () -> commanderApi, errorTransformer, out);
         this.commanderUrl = commanderUrl;
         this.runId = runId;
@@ -132,9 +126,6 @@ public class SwarmRunStopCommand extends AbstractSwarmCommand {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmRunStopCommand{" +
-                "commanderUrl='" + commanderUrl + '\'' +
-                ", runId=" + runId +
-                '}';
+        return "SwarmRunStopCommand{" + "commanderUrl='" + commanderUrl + '\'' + ", runId=" + runId + '}';
     }
 }

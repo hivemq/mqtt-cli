@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.swarm.error;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-/**
- * @author Yannick Weber
- */
 public class ErrorResponse {
 
     private final @NotNull List<Error> errors;
@@ -33,5 +31,4 @@ public class ErrorResponse {
     public @NotNull List<Error> getErrors() {
         return errors;
     }
-
 }

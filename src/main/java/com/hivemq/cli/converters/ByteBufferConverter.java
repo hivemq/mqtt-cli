@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 public class ByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
 
     @Override
-    public ByteBuffer convert(final @NotNull String s) throws Exception {
+    public @NotNull ByteBuffer convert(final @NotNull String s) throws Exception {
         return ByteBuffer.wrap(s.getBytes(StandardCharsets.UTF_8));
     }
 }

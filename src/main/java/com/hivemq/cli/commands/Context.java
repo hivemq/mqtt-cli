@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands;
+
+import org.jetbrains.annotations.NotNull;
 
 public interface Context extends CliCommand {
 
-    String getIdentifier();
+    @NotNull String getIdentifier();
 
-    String getKey();
+    @NotNull String getKey();
 }

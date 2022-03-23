@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt.test.results;
 
 public enum TestResult {
-    OK, PUBLISH_FAILED, SUBSCRIBE_FAILED, WRONG_PAYLOAD, TIME_OUT, INTERRUPTED
+    OK,
+    PUBLISH_FAILED,
+    SUBSCRIBE_FAILED,
+    WRONG_PAYLOAD,
+    TIME_OUT,
+    INTERRUPTED
 }

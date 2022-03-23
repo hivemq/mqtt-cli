@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commandline;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,31 +24,28 @@ import java.io.PrintWriter;
 abstract class CommonErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
 
     @Override
-    public int handleParseException(final @NotNull CommandLine.ParameterException ex, final @NotNull String[] args) throws Exception {
+    public int handleParseException(
+            final @NotNull CommandLine.ParameterException ex, final @NotNull String @NotNull [] args) throws Exception {
+        printErrorMessage(ex);
 
-       printErrorMessage(ex);
-
-       return generateExitCode(ex);
+        return generateExitCode(ex);
     }
 
     private void printErrorMessage(final @NotNull CommandLine.ParameterException parameterException) {
         final PrintWriter writer = parameterException.getCommandLine().getErr();
 
         if (parameterException.getCause() != null) {
-            writer.println(parameterException.getMessage().
-                    replace(parameterException.getCause().toString(),
-                            parameterException.getCause().getMessage()));
-        }
-        else {
+            writer.println(parameterException.getMessage()
+                    .replace(parameterException.getCause().toString(), parameterException.getCause().getMessage()));
+        } else {
             writer.println(parameterException.getMessage());
         }
     }
 
-    private int generateExitCode(final @NotNull  CommandLine.ParameterException parameterException) {
+    private int generateExitCode(final @NotNull CommandLine.ParameterException parameterException) {
         final CommandLine cmd = parameterException.getCommandLine();
-        CommandLine.Model.CommandSpec spec = cmd.getCommandSpec();
-        return cmd.getExitCodeExceptionMapper() != null
-                ? cmd.getExitCodeExceptionMapper().getExitCode(parameterException)
-                : spec.exitCodeOnInvalidInput();
+        final CommandLine.Model.CommandSpec spec = cmd.getCommandSpec();
+        return cmd.getExitCodeExceptionMapper() != null ?
+                cmd.getExitCodeExceptionMapper().getExitCode(parameterException) : spec.exitCodeOnInvalidInput();
     }
 }

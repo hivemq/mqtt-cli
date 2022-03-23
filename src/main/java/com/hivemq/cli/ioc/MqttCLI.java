@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.ioc;
 
 import com.hivemq.cli.DefaultCLIProperties;
@@ -25,21 +26,22 @@ import javax.inject.Singleton;
 
 @Singleton
 @Component(modules = {
-        CLIModule.class,
-        HiveMQCLIModule.class,
-        ShellModule.class,
-        SwarmCLIModule.class
+        CLIModule.class, HiveMQCLIModule.class, ShellModule.class, SwarmCLIModule.class
 })
 public interface MqttCLI {
 
+    @SuppressWarnings("NullableProblems") //Dagger implemented methods do not create @NotNull annotations
     @Named("cli")
     @NotNull CommandLine cli();
 
+    @SuppressWarnings("NullableProblems") //Dagger implemented methods do not create @NotNull annotations
     @Named("shell")
     @NotNull CommandLine shell();
 
+    @SuppressWarnings("NullableProblems") //Dagger implemented methods do not create @NotNull annotations
     @Named("shell-context")
     @NotNull CommandLine shellContext();
 
+    @SuppressWarnings("NullableProblems") //Dagger implemented methods do not create @NotNull annotations
     @NotNull DefaultCLIProperties defaultCLIProperties();
 }

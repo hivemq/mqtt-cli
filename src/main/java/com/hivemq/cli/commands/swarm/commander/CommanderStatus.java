@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.swarm.commander;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * @author Yannick Weber
- */
 public class CommanderStatus {
 
     private final @NotNull String status;

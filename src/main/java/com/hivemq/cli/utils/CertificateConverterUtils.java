@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
@@ -27,29 +28,35 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 
 public class CertificateConverterUtils {
-    public static final String[] FILE_EXTENSIONS = {".pem", ".cer", ".crt"};
-    public static final String NO_VALID_CERTIFICATE = "The given file contains no valid or supported certficate,";
 
-    public static @NotNull Collection<X509Certificate> generateX509Certificates(final @NotNull File keyFile) throws Exception {
+    public static final @NotNull String @NotNull [] FILE_EXTENSIONS = {".pem", ".cer", ".crt"};
+    public static final @NotNull String NO_VALID_CERTIFICATE =
+            "The given file contains no valid or supported certificate,";
 
+    public static @NotNull Collection<X509Certificate> generateX509Certificates(final @NotNull File keyFile)
+            throws Exception {
         // Instantiate X509 certificate factory
         final CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        try {
 
+        try {
             // Parse X509 certificate chain
-            final Collection<? extends Certificate> certificateChainCollection = cf.generateCertificates(new FileInputStream(keyFile));
+            final Collection<? extends Certificate> certificateChainCollection =
+                    cf.generateCertificates(new FileInputStream(keyFile));
 
             // Cast to X509Certificate collection and return it
+            //noinspection unchecked
             return (Collection<X509Certificate>) certificateChainCollection;
 
-        } catch (CertificateException | FileNotFoundException ce) {
+        } catch (final CertificateException | FileNotFoundException e) {
             throw new CertificateException(NO_VALID_CERTIFICATE);
         }
     }
 
     public static boolean endsWithValidExtension(final @NotNull String fileName) {
         for (final String extension : FILE_EXTENSIONS) {
-            if (fileName.endsWith(extension)) return true;
+            if (fileName.endsWith(extension)) {
+                return true;
+            }
         }
         return false;
     }

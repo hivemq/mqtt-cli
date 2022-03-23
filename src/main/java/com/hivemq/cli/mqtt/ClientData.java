@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.client.mqtt.MqttClient;
@@ -25,10 +26,9 @@ import java.util.Set;
 
 public class ClientData {
 
-    @NotNull private final MqttClient mqttClient;
-    @NotNull private final LocalDateTime creationTime;
-    @NotNull private final Set<MqttTopicFilter> subscribedTopics;
-
+    private final @NotNull MqttClient mqttClient;
+    private final @NotNull LocalDateTime creationTime;
+    private final @NotNull Set<MqttTopicFilter> subscribedTopics;
 
     public ClientData(final @NotNull MqttClient mqttClient) {
         this.mqttClient = mqttClient;
@@ -36,41 +36,27 @@ public class ClientData {
         this.subscribedTopics = new HashSet<>();
     }
 
-    public ClientData(final @NotNull MqttClient mqttClient, final @NotNull LocalDateTime creationTime) {
-        this.mqttClient = mqttClient;
-        this.creationTime = creationTime;
-        this.subscribedTopics = new HashSet<>();
-    }
-
-    public ClientData(final @NotNull MqttClient mqttClient, final @NotNull LocalDateTime creationTime, final @NotNull Set<MqttTopicFilter> subscribedTopics) {
-        this.mqttClient = mqttClient;
-        this.creationTime = creationTime;
-        this.subscribedTopics = subscribedTopics;
-    }
-
     public void addSubscription(final @NotNull MqttTopicFilter topic) {
         subscribedTopics.add(topic);
     }
 
-    public boolean removeSubscription(final @NotNull MqttTopicFilter topic) {
-        return subscribedTopics.remove(topic);
+    public void removeSubscription(final @NotNull MqttTopicFilter topic) {
+        subscribedTopics.remove(topic);
     }
 
     public void removeAllSubscriptions() {
         subscribedTopics.clear();
     }
 
-    @NotNull public LocalDateTime getCreationTime() {
+    public @NotNull LocalDateTime getCreationTime() {
         return creationTime;
     }
 
-    @NotNull public Set<MqttTopicFilter> getSubscribedTopics() {
+    public @NotNull Set<MqttTopicFilter> getSubscribedTopics() {
         return subscribedTopics;
     }
 
-    @NotNull public MqttClient getClient() {
+    public @NotNull MqttClient getClient() {
         return this.mqttClient;
     }
-
-
 }

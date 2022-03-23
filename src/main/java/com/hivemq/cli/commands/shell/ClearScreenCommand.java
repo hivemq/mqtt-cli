@@ -13,39 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
-
 import com.hivemq.cli.commands.CliCommand;
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.concurrent.Callable;
-
 
 /**
  * Command that clears the screen.
  */
-@CommandLine.Command(
-        name = "cls",
-        aliases = "clear",
-        description = "Clear the screen")
-
-public class ClearScreenCommand implements CliCommand, Callable<Void> {
+@CommandLine.Command(name = "cls", aliases = "clear", description = "Clear the screen")
+public class ClearScreenCommand implements CliCommand, Runnable {
 
     @Inject
     ClearScreenCommand() {}
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
+    private boolean usageHelpRequested;
 
-    public Void call() {
+    @Override
+    public void run() {
         ShellCommand.clearScreen();
-        return null;
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return this.getClass().getSimpleName();
     }
 
