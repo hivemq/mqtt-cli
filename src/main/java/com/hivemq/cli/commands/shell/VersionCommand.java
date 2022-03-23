@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.MqttCLIMain;
@@ -21,8 +22,7 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-@CommandLine.Command(name = "version",
-        description = "Prints version information",
+@CommandLine.Command(name = "version", description = "Prints version information",
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class VersionCommand implements Runnable {
 
@@ -30,7 +30,7 @@ public class VersionCommand implements Runnable {
     VersionCommand() {
     }
 
-    @SuppressWarnings("NullableProblems")
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
     private @NotNull CommandLine.Model.CommandSpec spec;
 

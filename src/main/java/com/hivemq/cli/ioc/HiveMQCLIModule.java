@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.ioc;
 
 import com.hivemq.cli.commandline.CommandErrorMessageHandler;
@@ -40,10 +41,8 @@ public class HiveMQCLIModule {
             final @NotNull ExportClientsCommand exportClientsCommand,
             final @NotNull CommandLineConfig config,
             final @NotNull CommandErrorMessageHandler handler) {
-
-        return new CommandLine(hivemqCliCommand)
-                .addSubcommand(new CommandLine(exportCommand)
-                        .addSubcommand(exportClientsCommand))
+        return new CommandLine(hivemqCliCommand) //
+                .addSubcommand(new CommandLine(exportCommand).addSubcommand(exportClientsCommand))
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
                 .setParameterExceptionHandler(handler);

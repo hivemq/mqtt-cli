@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
@@ -35,64 +36,82 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@CommandLine.Command(name = "sub",
-        aliases = "subscribe",
+@CommandLine.Command(name = "sub", aliases = "subscribe",
         description = "Subscribe this MQTT client to a list of topics")
 public class ContextSubscribeCommand extends ShellContextCommand implements Runnable, Subscribe, Unsubscribe {
 
-    public static final int IDLE_TIME = 1000;
-    private final DefaultCLIProperties defaultCLIProperties;
+    private static final int IDLE_TIME = 1000;
 
-    //needed for pico cli - reflection code generation
+    private final @NotNull DefaultCLIProperties defaultCLIProperties;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
     public ContextSubscribeCommand() {
+        //noinspection ConstantConditions
         this(null, null);
     }
 
     @Inject
-    public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor,
-                                   final @NotNull DefaultCLIProperties defaultCLIProperties) {
+    public ContextSubscribeCommand(
+            final @NotNull MqttClientExecutor mqttClientExecutor,
+            final @NotNull DefaultCLIProperties defaultCLIProperties) {
         super(mqttClientExecutor);
         this.defaultCLIProperties = defaultCLIProperties;
     }
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
+    private boolean usageHelpRequested;
 
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via required
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
-    @NotNull private String[] topics;
+    private @NotNull String @NotNull [] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2", description = "Quality of service for the corresponding topics (default for all: 2)")
-    @NotNull private MqttQos[] qos;
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2",
+            description = "Quality of service for the corresponding topics (default for all: 2)")
+    private @NotNull MqttQos @NotNull [] qos;
 
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the subscribe message")
-    @Nullable Mqtt5UserProperty[] userProperties;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
+            description = "A user property of the subscribe message")
+    private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
 
-    @CommandLine.Option(names = {"-of", "--outputToFile"}, description = "A file to which the received publish messages will be written")
-    @Nullable private File outputFile;
+    @CommandLine.Option(names = {"-of", "--outputToFile"},
+            description = "A file to which the received publish messages will be written")
+    private @Nullable File outputFile;
 
-    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false", description = "The received messages will be written to the console (default: false)")
+    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, defaultValue = "false",
+            description = "The received messages will be written to the console (default: false)")
     private boolean printToSTDOUT;
 
-    @CommandLine.Option(names = {"-s", "--stay"}, defaultValue = "false", description = "The subscribe will block the console and wait for publish messages to print (default: false)")
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-s", "--stay"}, defaultValue = "false",
+            description = "The subscribe will block the console and wait for publish messages to print (default: false)")
     private boolean stay;
 
-    @CommandLine.Option(names = {"-b64", "--base64"}, description = "Specify the encoding of the received messages as Base64 (default: false)")
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-b64", "--base64"},
+            description = "Specify the encoding of the received messages as Base64 (default: false)")
     private boolean base64;
 
-    @CommandLine.Option(names = {"-J", "--jsonOutput"}, defaultValue = "false", description = "Print the received publishes in pretty JSON format", order = 1)
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-J", "--jsonOutput"}, defaultValue = "false",
+            description = "Print the received publishes in pretty JSON format", order = 1)
     private boolean jsonOutput;
 
-    @CommandLine.Option(names = {"-T", "--showTopics"}, defaultValue = "false", description = "Prepend the specific topic name to the received publish", order = 1)
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-T", "--showTopics"}, defaultValue = "false",
+            description = "Prepend the specific topic name to the received publish", order = 1)
     private boolean showTopics;
 
     @Override
     public void run() {
-
         Logger.trace("Command {} ", this);
 
         setDefaultOptions();
@@ -103,38 +122,34 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
             printToSTDOUT = true;
         }
 
-        if (!createOutputFile(outputFile)){
+        if (outputFileInvalid(outputFile)) {
             return;
         }
 
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
-            mqttClientExecutor.subscribe(contextClient, this);
-        }
-        catch (final Exception ex) {
+            mqttClientExecutor.subscribe(Objects.requireNonNull(contextClient), this);
+        } catch (final Exception ex) {
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
 
         if (stay) {
             try {
                 stay();
-            }
-            catch (final InterruptedException ex) {
+            } catch (final InterruptedException ex) {
                 Logger.error(ex, Throwables.getRootCause(ex).getMessage());
             }
         }
     }
 
     private void stay() throws InterruptedException {
-
         final CountDownLatch latch = new CountDownLatch(1);
 
         final Runnable waitForDisconnectRunnable = () -> {
-            while (contextClient.getState().isConnected()) {
+            while (Objects.requireNonNull(contextClient).getState().isConnected()) {
                 try {
                     Thread.sleep(IDLE_TIME);
-                }
-                catch (final InterruptedException e) {
+                } catch (final InterruptedException e) {
                     return;
                 }
             }
@@ -159,32 +174,56 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
         if (contextClient != null) {
             if (!contextClient.getState().isConnectedOrReconnect()) {
                 removeContext();
-            }
-            else {
+            } else {
                 mqttClientExecutor.unsubscribe(contextClient, this);
             }
         }
-
-
     }
 
     @Override
-    public String toString() {
-        return  getClass().getSimpleName() + "{" +
-                "key=" + ((contextClient == null)? "null" : getKey()) +
-                ", topics=" + Arrays.toString(topics) +
-                ", qos=" + Arrays.toString(qos) +
-                ", outputToConsole=" + printToSTDOUT +
-                ", base64=" + base64 +
-                ", jsonOutput=" + jsonOutput +
-                ", showTopics=" + showTopics +
+    public @NotNull String toString() {
+        return getClass().getSimpleName() + "{" + "key=" + ((contextClient == null) ? "null" : getKey()) + ", topics=" +
+                Arrays.toString(topics) + ", qos=" + Arrays.toString(qos) + ", outputToConsole=" + printToSTDOUT +
+                ", base64=" + base64 + ", jsonOutput=" + jsonOutput + ", showTopics=" + showTopics +
                 (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
-                (outputFile != null ? (", publishFile=" + outputFile.getAbsolutePath()) : "") +
-                '}';
+                (outputFile != null ? (", publishFile=" + outputFile.getAbsolutePath()) : "") + '}';
     }
 
-    public void setDefaultOptions() {
+    @Override
+    public @NotNull String @NotNull [] getTopics() {
+        return topics;
+    }
 
+    @Override
+    public @NotNull MqttQos @NotNull [] getQos() {
+        return qos;
+    }
+
+    @Override
+    public @Nullable File getOutputFile() {
+        return outputFile;
+    }
+
+    @Override
+    public boolean isPrintToSTDOUT() {
+        return printToSTDOUT;
+    }
+
+    @Override
+    public boolean isBase64() {return base64;}
+
+    @Override
+    public boolean isJsonOutput() {return jsonOutput;}
+
+    @Override
+    public boolean showTopics() {return showTopics;}
+
+    @Override
+    public @Nullable Mqtt5UserProperties getUserProperties() {
+        return MqttUtils.convertToMqtt5UserProperties(userProperties);
+    }
+
+    private void setDefaultOptions() {
         if (outputFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
             if (isVerbose()) {
                 Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
@@ -195,45 +234,11 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     }
 
     private void logUnusedOptions() {
-        if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
+        if (Objects.requireNonNull(contextClient).getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
             if (userProperties != null) {
-                Logger.warn("Subscribe user properties were set but are unused in MQTT version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Subscribe user properties were set but are unused in MQTT version {}",
+                        MqttVersion.MQTT_3_1_1);
             }
         }
-    }
-
-    @NotNull
-    public String[] getTopics() {
-        return topics;
-    }
-
-    @NotNull
-    public MqttQos[] getQos() {
-        return qos;
-    }
-
-    @Nullable
-    public File getOutputFile() {
-        return outputFile;
-    }
-
-    public boolean isPrintToSTDOUT() {
-        return printToSTDOUT;
-    }
-
-    public boolean isBase64() { return base64; }
-
-    public boolean isJsonOutput() { return jsonOutput; }
-
-    public boolean showTopics() { return showTopics; }
-
-    @Override
-    @Nullable
-    public Mqtt5UserProperties getUserProperties() {
-        return MqttUtils.convertToMqtt5UserProperties(userProperties);
-    }
-
-    public void setUserProperties(@Nullable final Mqtt5UserProperty... userProperties) {
-        this.userProperties = userProperties;
     }
 }

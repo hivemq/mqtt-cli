@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands;
 
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;

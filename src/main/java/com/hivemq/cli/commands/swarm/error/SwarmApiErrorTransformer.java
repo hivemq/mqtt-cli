@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.swarm.error;
 
 import com.google.gson.Gson;
@@ -22,11 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
-/**
- * @author Yannick Weber
- */
 public class SwarmApiErrorTransformer {
 
     private final @NotNull Gson gson;
@@ -38,7 +35,11 @@ public class SwarmApiErrorTransformer {
 
     public @NotNull Error transformError(final @NotNull ApiException apiException) {
         if (Logger.isDebugEnabled()) {
-            Logger.debug("Error Code: {}\nError Message: {}", apiException.getCode(), apiException.getMessage(), apiException);
+            Logger.debug(
+                    "Error Code: {}\nError Message: {}",
+                    apiException.getCode(),
+                    apiException.getMessage(),
+                    apiException);
         }
         if (apiException.getCode() == 404) {
             return new Error("Not found. Check if the commander is running in REST-mode.");
@@ -60,5 +61,4 @@ public class SwarmApiErrorTransformer {
             return new Error(body);
         }
     }
-
 }

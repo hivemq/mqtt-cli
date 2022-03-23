@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commandline;
 
 import org.jetbrains.annotations.NotNull;
@@ -21,19 +22,21 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.io.PrintWriter;
 
-public class CommandErrorMessageHandler extends CommonErrorMessageHandler implements CommandLine.IParameterExceptionHandler {
+public class CommandErrorMessageHandler extends CommonErrorMessageHandler
+        implements CommandLine.IParameterExceptionHandler {
 
-   @Inject CommandErrorMessageHandler() {};
+    @Inject
+    CommandErrorMessageHandler() {}
 
     @Override
-    public int handleParseException(final @NotNull CommandLine.ParameterException ex, final @NotNull  String[] args) throws Exception {
-
+    public int handleParseException(
+            final @NotNull CommandLine.ParameterException ex, final @NotNull String @NotNull [] args) throws Exception {
         final int exitCode = super.handleParseException(ex, args);
 
         final CommandLine cmd = ex.getCommandLine();
         final PrintWriter writer = cmd.getErr();
 
-        CommandLine.Model.CommandSpec spec = cmd.getCommandSpec();
+        final CommandLine.Model.CommandSpec spec = cmd.getCommandSpec();
 
         writer.printf("Try '%s --help' for more information.%n", spec.qualifiedName());
 

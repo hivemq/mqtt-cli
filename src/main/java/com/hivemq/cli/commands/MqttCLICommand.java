@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands;
 
 import com.hivemq.cli.MqttCLIMain;
@@ -21,21 +22,17 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-@CommandLine.Command(name = "mqtt",
-        description = "MQTT Command Line Interpreter.",
-        synopsisHeading = "%n@|bold Usage:|@  ",
-        synopsisSubcommandLabel = "{ pub | sub | shell | test | hivemq }",
-        descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n",
-        mixinStandardHelpOptions = true,
+@CommandLine.Command(name = "mqtt", description = "MQTT Command Line Interpreter.",
+        synopsisHeading = "%n@|bold Usage:|@  ", synopsisSubcommandLabel = "{ pub | sub | shell | test | hivemq }",
+        descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
+        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
-
 public class MqttCLICommand {
 
+    @SuppressWarnings("unused")
     public static final @NotNull String VERSION_STRING = "1.0";
 
     @Inject
-    MqttCLICommand() { }
+    MqttCLICommand() {}
 
 }

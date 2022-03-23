@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.commands.hivemq.export.clients;
 
+package com.hivemq.cli.commands.hivemq.export.clients;
 
 import com.google.common.base.Throwables;
 import com.google.gson.*;
@@ -25,6 +25,7 @@ import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -33,28 +34,24 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
 
-
-@CommandLine.Command(
-        name = "clients",
-        description = "Export HiveMQ client details",
-        sortOptions = false,
-        mixinStandardHelpOptions = true,
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
+@CommandLine.Command(name = "clients", description = "Export HiveMQ client details", sortOptions = false,
+        mixinStandardHelpOptions = true, versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class ExportClientsCommand extends AbstractExportCommand implements Callable<Integer> {
 
-    final static int CLIENT_IDS_QUEUE_LIMIT = 100_000;
-    final static int CLIENT_DETAILS_QUEUE_LIMIT = 10_000;
-    private final static String DEFAULT_FILE_NAME = "hivemq_client_details";
+    private final static @NotNull String DEFAULT_FILE_NAME = "hivemq_client_details";
+    private final static int CLIENT_IDS_QUEUE_LIMIT = 100_000;
+    private final static int CLIENT_DETAILS_QUEUE_LIMIT = 10_000;
 
     @Inject
     public ExportClientsCommand() {
     }
 
     @Override
-    public Integer call() throws IOException, InterruptedException, ExecutionException {
+    public @NotNull Integer call() throws IOException, InterruptedException, ExecutionException {
         Logger.trace("Command {}", this);
 
         // For now only CSV is supported as output format
@@ -83,17 +80,17 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         Logger.info("Starting export of client details for HiveMQ at {} ", url);
 
         // Start retrieving client ids
-        final ClientIdsRetrieverTask clientIdsRetrieverTask = new ClientIdsRetrieverTask(hivemqRestService, clientIdsQueue);
+        final ClientIdsRetrieverTask clientIdsRetrieverTask =
+                new ClientIdsRetrieverTask(hivemqRestService, clientIdsQueue);
         final CompletableFuture<Void> clientIdsRetrieverFuture = CompletableFuture.runAsync(clientIdsRetrieverTask);
 
         // Start retrieving client details
-        final ClientDetailsRetrieverTask clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(
-                hivemqRestService,
+        final ClientDetailsRetrieverTask clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hivemqRestService,
                 clientIdsRetrieverFuture,
                 clientIdsQueue,
-                clientDetailsQueue
-        );
-        final CompletableFuture<Void> clientDetailsRetrieverFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
+                clientDetailsQueue);
+        final CompletableFuture<Void> clientDetailsRetrieverFuture =
+                CompletableFuture.runAsync(clientDetailsRetrieverTask);
 
         //Fix line end character if "\n" or "\r" are passed
         switch (csvLineEndCharacter) {
@@ -114,18 +111,25 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
                 csvQuoteCharacter,
                 csvEscapeChar,
                 csvLineEndCharacter);
-        final CompletableFuture<Void> clientDetailsCsvWriterFuture = CompletableFuture.runAsync(clientDetailsCsvWriterTask);
+        final CompletableFuture<Void> clientDetailsCsvWriterFuture =
+                CompletableFuture.runAsync(clientDetailsCsvWriterTask);
 
         // Start printing
         final ScheduledExecutorService printingScheduler = Executors.newScheduledThreadPool(1);
-        printingScheduler.scheduleWithFixedDelay(
-                new PrintingTask(clientIdsRetrieverTask, clientIdsRetrieverFuture, clientDetailsCsvWriterTask),
-                100, 500, TimeUnit.MILLISECONDS);
+        printingScheduler.scheduleWithFixedDelay(new PrintingTask(clientIdsRetrieverTask,
+                        clientIdsRetrieverFuture,
+                        clientDetailsCsvWriterTask),
+                100,
+                500,
+                TimeUnit.MILLISECONDS);
 
 
         // Handle completion of all futures
-        final CompletableFuture<Void> exportFuture = CompletableFuture.allOf(clientIdsRetrieverFuture, clientDetailsRetrieverFuture, clientDetailsCsvWriterFuture);
-        final CompletableFuture<Integer> exportResultFuture = exportFuture.handle(new ExportCompletedHandler(clientDetailsCsvWriterTask, printingScheduler));
+        final CompletableFuture<Void> exportFuture = CompletableFuture.allOf(clientIdsRetrieverFuture,
+                clientDetailsRetrieverFuture,
+                clientDetailsCsvWriterFuture);
+        final CompletableFuture<Integer> exportResultFuture =
+                exportFuture.handle(new ExportCompletedHandler(clientDetailsCsvWriterTask, printingScheduler));
 
         // Join all future
         final Integer exitCode = exportResultFuture.get();
@@ -135,50 +139,54 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         return exitCode;
     }
 
-
     private static class PrintingTask implements Runnable {
+
         private final @NotNull ClientIdsRetrieverTask clientIdsRetrieverTask;
         private final @NotNull CompletableFuture<Void> clientIdsRetrieverFuture;
         private final @NotNull ClientDetailsCsvWriterTask clientDetailsCsvWriterTask;
         private long lastReported = -1;
 
-
-        public PrintingTask(final @NotNull ClientIdsRetrieverTask clientIdsRetrieverTask,
-                            final @NotNull CompletableFuture<Void> clientIdsRetrieverFuture,
-                            final @NotNull ClientDetailsCsvWriterTask clientDetailsCsvWriterTask) {
+        public PrintingTask(
+                final @NotNull ClientIdsRetrieverTask clientIdsRetrieverTask,
+                final @NotNull CompletableFuture<Void> clientIdsRetrieverFuture,
+                final @NotNull ClientDetailsCsvWriterTask clientDetailsCsvWriterTask) {
             this.clientIdsRetrieverTask = clientIdsRetrieverTask;
             this.clientIdsRetrieverFuture = clientIdsRetrieverFuture;
             this.clientDetailsCsvWriterTask = clientDetailsCsvWriterTask;
         }
 
         public void run() {
-            long newValue = clientDetailsCsvWriterTask.getWrittenClientDetails();
+            final long newValue = clientDetailsCsvWriterTask.getWrittenClientDetails();
             if (newValue != lastReported) {
                 lastReported = newValue;
                 if (clientIdsRetrieverFuture.isDone()) {
                     final long receivedClientIds = clientIdsRetrieverTask.getReceivedClientIds();
-                    System.out.append("\rExporting client details: " + lastReported + " / " + receivedClientIds).flush();
+                    System.out.append("\rExporting client details: ")
+                            .append(String.valueOf(lastReported))
+                            .append(" / ")
+                            .append(String.valueOf(receivedClientIds))
+                            .flush();
                 } else {
-                    System.out.append("\rExporting client details: " + lastReported).flush();
+                    System.out.append("\rExporting client details: ").append(String.valueOf(lastReported)).flush();
                 }
             }
         }
-
     }
 
     private class ExportCompletedHandler implements BiFunction<Void, Throwable, Integer> {
+
         private final @NotNull ClientDetailsCsvWriterTask clientDetailsCsvWriterTask;
         private final @NotNull ScheduledExecutorService printingScheduler;
 
-        public ExportCompletedHandler(final @NotNull ClientDetailsCsvWriterTask clientDetailsCsvWriterTask,
-                                      final @NotNull ScheduledExecutorService printingScheduler) {
+        public ExportCompletedHandler(
+                final @NotNull ClientDetailsCsvWriterTask clientDetailsCsvWriterTask,
+                final @NotNull ScheduledExecutorService printingScheduler) {
             this.clientDetailsCsvWriterTask = clientDetailsCsvWriterTask;
             this.printingScheduler = printingScheduler;
         }
 
-
         @Override
-        public @NotNull Integer apply(Void o, Throwable throwable) {
+        public @NotNull Integer apply(final @Nullable Void o, final @Nullable Throwable throwable) {
             printingScheduler.shutdown();
             if (throwable != null) {
                 if (throwable.getCause() instanceof ApiException) {
@@ -188,27 +196,34 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
                         try {
                             final JsonElement je = JsonParser.parseString(apiException.getResponseBody());
                             final String jsonString = gson.toJson(je);
-                            System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
+                            System.err.println("\rFailed to retrieve client details: " +
+                                    Throwables.getRootCause(throwable).getMessage());
                             System.err.println(jsonString);
                         } catch (final JsonParseException jsonEx) {
-                            System.err.println("\rFailed to retrieve client details. Please check the URL for the HiveMQ REST-API");
+                            System.err.println(
+                                    "\rFailed to retrieve client details. Please check the URL for the HiveMQ REST-API");
                         }
                     } else {
-                        System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
+                        System.err.println("\rFailed to retrieve client details: " +
+                                Throwables.getRootCause(throwable).getMessage());
                     }
                 } else {
-                    System.err.println("\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
+                    System.err.println(
+                            "\rFailed to retrieve client details: " + Throwables.getRootCause(throwable).getMessage());
                 }
 
                 if (clientDetailsCsvWriterTask.getWrittenClientDetails() > 0) {
-                    System.out.println("Wrote " + clientDetailsCsvWriterTask.getWrittenClientDetails() + " client details to " + file.getPath());
+                    System.out.println(
+                            "Wrote " + clientDetailsCsvWriterTask.getWrittenClientDetails() + " client details to " +
+                                    Objects.requireNonNull(file).getPath());
                 } else {
-                    file.delete();
+                    Objects.requireNonNull(file).delete();
                 }
 
                 return -1; // Export failed
             } else {
-                System.out.println("\rSuccessfully exported " + clientDetailsCsvWriterTask.getWrittenClientDetails() + " client details to " + file.getPath());
+                System.out.println("\rSuccessfully exported " + clientDetailsCsvWriterTask.getWrittenClientDetails() +
+                        " client details to " + Objects.requireNonNull(file).getPath());
                 return 0; // Export was successful
             }
         }

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.commands.shell;
 
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import org.jetbrains.annotations.NotNull;
@@ -22,21 +22,23 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-@CommandLine.Command(name = "exit",
-        description = "Exit the current context")
+@CommandLine.Command(name = "exit", description = "Exit the current context")
 public class ContextExitCommand extends ShellContextCommand implements Runnable {
 
-    //needed for pico cli - reflection code generation
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
     public ContextExitCommand() {
+        //noinspection ConstantConditions
         this(null);
     }
+
     @Inject
-    public ContextExitCommand(@NotNull MqttClientExecutor mqttClientExecutor) {
+    public ContextExitCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         super(mqttClientExecutor);
     }
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
+    private boolean usageHelpRequested;
 
     @Override
     public void run() {
@@ -44,8 +46,7 @@ public class ContextExitCommand extends ShellContextCommand implements Runnable 
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return getClass().getSimpleName();
     }
-
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.rest;
 
 import com.google.common.util.concurrent.RateLimiter;
@@ -23,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 @SuppressWarnings("UnstableApiUsage")
-public class RateLimitInterceptor implements Interceptor  {
+public class RateLimitInterceptor implements Interceptor {
 
     private final @NotNull RateLimiter rateLimiter;
 
@@ -32,7 +33,7 @@ public class RateLimitInterceptor implements Interceptor  {
     }
 
     @Override
-    public @NotNull Response intercept(Chain chain) throws IOException {
+    public @NotNull Response intercept(final @NotNull Chain chain) throws IOException {
         rateLimiter.acquire(1);
         return chain.proceed(chain.request());
     }

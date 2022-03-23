@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
 import com.hivemq.cli.utils.CertificateConverterUtils;
@@ -27,23 +28,21 @@ import java.util.Collection;
 
 public class FileToCertificatesConverter implements CommandLine.ITypeConverter<Collection<? extends Certificate>> {
 
-    static final String NO_VALID_FILE_EXTENSION = "The given file does not conform to a valid Certificate File Extension as " + Arrays.toString(CertificateConverterUtils.FILE_EXTENSIONS);
+    static final @NotNull String NO_VALID_FILE_EXTENSION =
+            "The given file does not conform to a valid Certificate File Extension as " +
+                    Arrays.toString(CertificateConverterUtils.FILE_EXTENSIONS);
 
     @Override
     public @NotNull Collection<X509Certificate> convert(final @NotNull String s) throws Exception {
-
-        FileConverter fileConverter = new FileConverter();
+        final FileConverter fileConverter = new FileConverter();
         final File keyFile = fileConverter.convert(s);
 
         final boolean correctExtension = CertificateConverterUtils.endsWithValidExtension(keyFile.getName());
 
-        if (!correctExtension)
+        if (!correctExtension) {
             throw new IllegalArgumentException(NO_VALID_FILE_EXTENSION);
+        }
 
         return CertificateConverterUtils.generateX509Certificates(keyFile);
-
     }
-
-
-
 }

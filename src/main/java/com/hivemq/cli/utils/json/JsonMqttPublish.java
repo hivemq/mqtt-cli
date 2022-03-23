@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.json;
 
 import com.google.gson.JsonElement;
@@ -34,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class JsonMqttPublish extends JsonFormatted {
 
@@ -71,30 +73,32 @@ public class JsonMqttPublish extends JsonFormatted {
         }
 
         responseTopic = publish.getResponseTopic().map(MqttTopic::toString).orElse(null);
-        correlationData = publish.getCorrelationData()
-                .map(cd -> new String(cd.array(), StandardCharsets.UTF_8))
-                .orElse(null);
+        correlationData =
+                publish.getCorrelationData().map(cd -> new String(cd.array(), StandardCharsets.UTF_8)).orElse(null);
 
         if (publish.getUserProperties().asList().size() > 0) {
             userProperties = new HashMap<>();
-            publish.getUserProperties().asList()
-                    .forEach(up ->  userProperties.put(up.getName().toString(), up.getValue().toString()));
+            publish.getUserProperties()
+                    .asList()
+                    .forEach(up -> Objects.requireNonNull(userProperties)
+                            .put(up.getName().toString(), up.getValue().toString()));
         }
     }
 
-    private JsonElement payloadToJson(final byte[] payload, final boolean isBase64) {
-
+    private @NotNull JsonElement payloadToJson(final byte @NotNull [] payload, final boolean isBase64) {
         final String payloadString = MqttPublishUtils.formatPayload(payload, isBase64);
 
         JsonElement payloadJson;
-        try { payloadJson = JsonParser.parseString(payloadString); }
-        catch (JsonSyntaxException ex) { payloadJson = new JsonPrimitive(payloadString); }
+        try {
+            payloadJson = JsonParser.parseString(payloadString);
+        } catch (final JsonSyntaxException e) {
+            payloadJson = new JsonPrimitive(payloadString);
+        }
 
         return payloadJson;
     }
 
-    @NotNull
-    private String getReceivedAt() {
+    private @NotNull String getReceivedAt() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 }
