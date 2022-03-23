@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.CliCommand;
@@ -26,22 +27,19 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@CommandLine.Command(name = "ls",
-        aliases = "list",
-        description = "List all connected clients with their respective identifiers"
-)
-
+@CommandLine.Command(name = "ls", aliases = "list",
+        description = "List all connected clients with their respective identifiers")
 public class ListClientsCommand implements Runnable, CliCommand {
 
-    private final MqttClientExecutor mqttClientExecutor;
+    //TODO: This is unused
+    private final @NotNull MqttClientExecutor mqttClientExecutor;
 
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
     public ListClientsCommand() {
+        //noinspection ConstantConditions
         this(null);
     }
 
@@ -50,27 +48,34 @@ public class ListClientsCommand implements Runnable, CliCommand {
         this.mqttClientExecutor = mqttClientExecutor;
     }
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
+    private boolean usageHelpRequested;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-t"}, defaultValue = "false", description = "sort by creation time, newest first")
     private boolean sortByTime;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-U"}, defaultValue = "false", description = "do not sort")
     private boolean doNotSort;
 
-    @CommandLine.Option(names = {"-r", "--reverse"}, defaultValue = "false", description = "reverse order while sorting")
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-r", "--reverse"}, defaultValue = "false",
+            description = "reverse order while sorting")
     private boolean reverse;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-l", "--long"}, defaultValue = "false", description = "use a long listing format")
     private boolean longOutput;
 
-    @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false", description = "list subscribed topics of clients")
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false",
+            description = "list subscribed topics of clients")
     private boolean listSubscriptions;
 
     @Override
     public void run() {
-
         Logger.trace("Command {}", this);
 
         final List<ClientData> sortedClientData = getSortedClientData();
@@ -78,89 +83,100 @@ public class ListClientsCommand implements Runnable, CliCommand {
         final PrintWriter writer = ShellCommand.TERMINAL_WRITER;
 
         if (longOutput) {
-            writer.println("total " + sortedClientData.size());
+            Objects.requireNonNull(writer).println("total " + sortedClientData.size());
 
             if (sortedClientData.size() == 0) {
                 return;
             }
 
-
-            final Set<MqttClient> clients = sortedClientData.stream()
-                    .map(clientData -> clientData.getClient())
-                    .collect(Collectors.toSet());
+            final Set<MqttClient> clients =
+                    sortedClientData.stream().map(ClientData::getClient).collect(Collectors.toSet());
 
             final int longestID = clients.stream()
+                    .filter(c -> c.getConfig().getClientIdentifier().isPresent())
                     .map(c -> c.getConfig().getClientIdentifier().get().toString().length())
                     .max(Integer::compareTo)
-                    .get();
+                    .orElse(0);
 
-            final int longestHost = clients.stream()
-                    .map(c -> c.getConfig().getServerHost().length())
-                    .max(Integer::compareTo)
-                    .get();
+            final int longestHost =
+                    clients.stream().map(c -> c.getConfig().getServerHost().length()).max(Integer::compareTo).orElse(0);
 
             final int longestState = clients.stream()
                     .map(c -> c.getConfig().getState().toString().length())
                     .max(Integer::compareTo)
-                    .get();
+                    .orElse(0);
 
             final int longestVersion = clients.stream()
                     .map(c -> c.getConfig().getMqttVersion().toString().length())
                     .max(Integer::compareTo)
-                    .get();
+                    .orElse(0);
 
             final int longestSSLVersion = clients.stream()
                     .map(c -> c.getConfig().getSslConfig().toString().length())
                     .max(Integer::compareTo)
                     .orElse("NO_SSL".length());
 
-            final String format = new String("%-" + longestState + "s " +
-                    "%02d:%02d:%02d " +
-                    "%-" + longestID + "s " +
-                    "%-" + longestHost + "s " +
-                    "%5d " +
-                    "%-" + longestVersion + "s " +
-                    "%-" + longestSSLVersion + "s\n");
+            final String format =
+                    "%-" + longestState + "s " + "%02d:%02d:%02d " + "%-" + longestID + "s " + "%-" + longestHost +
+                            "s " + "%5d " + "%-" + longestVersion + "s " + "%-" + longestSSLVersion + "s\n";
 
             for (final ClientData clientData : sortedClientData) {
-
                 final MqttClient client = clientData.getClient();
-
                 final LocalDateTime dateTime = clientData.getCreationTime();
-
                 final String connectionState = client.getState().toString();
 
-                writer.printf(format,
+                writer.printf(
+                        format,
                         connectionState,
-                        dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond(),
-                        client.getConfig().getClientIdentifier().get().toString(),
+                        dateTime.getHour(),
+                        dateTime.getMinute(),
+                        dateTime.getSecond(),
+                        client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
                         client.getConfig().getServerHost(),
                         client.getConfig().getServerPort(),
                         client.getConfig().getMqttVersion().name(),
-                        client.getConfig().getSslConfig().map(ssl -> ssl.getProtocols().get().toString()).orElse("NO_SSL"));
+                        client.getConfig()
+                                .getSslConfig()
+                                .flatMap(ssl -> ssl.getProtocols().map(Objects::toString))
+                                .orElse("NO_SSL"));
 
                 if (listSubscriptions) {
                     writer.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
-
-
         } else {
-
             for (final ClientData clientData : sortedClientData) {
-                writer.println(clientData.getClient().getConfig().getClientIdentifier().get() + "@" + clientData.getClient().getConfig().getServerHost());
+                Objects.requireNonNull(writer)
+                        .println(clientData.getClient()
+                                .getConfig()
+                                .getClientIdentifier()
+                                .map(Object::toString)
+                                .orElse("") + "@" + clientData.getClient().getConfig().getServerHost());
                 if (listSubscriptions) {
                     writer.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
                 }
             }
         }
-
-
     }
 
+    @Override
+    public @NotNull String toString() {
+        return getClass().getSimpleName() + "{" + "sortByTime=" + sortByTime + ", doNotSort=" + doNotSort +
+                ", reverse=" + reverse + ", listSubscriptions" + listSubscriptions + ", longOutput=" + longOutput + '}';
+    }
 
-    public List<ClientData> getSortedClientData() {
-        List<ClientData> sortedClientData =  new ArrayList<>(MqttClientExecutor.getClientDataMap().values());
+    @Override
+    public boolean isVerbose() {
+        return ShellCommand.isVerbose();
+    }
+
+    @Override
+    public boolean isDebug() {
+        return ShellCommand.isDebug();
+    }
+
+    public @NotNull List<ClientData> getSortedClientData() {
+        final List<ClientData> sortedClientData = new ArrayList<>(MqttClientExecutor.getClientDataMap().values());
 
         if (doNotSort) {
             return sortedClientData;
@@ -169,10 +185,8 @@ public class ListClientsCommand implements Runnable, CliCommand {
         Comparator<ClientData> comparator;
         if (sortByTime) {
             comparator = Comparator.comparing(ClientData::getCreationTime);
-        }
-        else {
-            comparator = Comparator.comparing(clientData -> clientData
-                    .getClient()
+        } else {
+            comparator = Comparator.comparing(clientData -> clientData.getClient()
                     .getConfig()
                     .getClientIdentifier()
                     .map(Object::toString)
@@ -184,31 +198,5 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
         sortedClientData.sort(comparator);
         return sortedClientData;
-    }
-
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{" +
-                "sortByTime=" + sortByTime +
-                ", doNotSort=" + doNotSort +
-                ", reverse=" + reverse +
-                ", listSubscriptions" + listSubscriptions +
-                ", longOutput=" + longOutput +
-                '}';
-    }
-
-    private String getKey(final MqttClient client) {
-        return client.getConfig().getClientIdentifier() + client.getConfig().getServerHost();
-    }
-
-    @Override
-    public boolean isVerbose() {
-        return ShellCommand.isVerbose();
-    }
-
-    @Override
-    public boolean isDebug() {
-        return ShellCommand.isDebug();
     }
 }

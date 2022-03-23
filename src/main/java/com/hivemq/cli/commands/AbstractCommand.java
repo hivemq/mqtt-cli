@@ -13,33 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands;
 
 import picocli.CommandLine;
 
-@CommandLine.Command(sortOptions = false,
-        synopsisHeading = "%n@|bold Usage|@:  ",
-        synopsisSubcommandLabel = "{ pub | sub | shell }",
-        descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options|@:%n",
-        commandListHeading = "%n@|boldCommands|@:%n",
-        separator = " ")
+@CommandLine.Command(sortOptions = false, synopsisHeading = "%n@|bold Usage|@:  ",
+        synopsisSubcommandLabel = "{ pub | sub | shell }", descriptionHeading = "%n",
+        optionListHeading = "%n@|bold Options|@:%n", commandListHeading = "%n@|boldCommands|@:%n", separator = " ")
 public abstract class AbstractCommand implements CliCommand {
 
     private boolean debug;
     private boolean verbose;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode", order = 0)
     private void activateDebugMode(final boolean debug) {
-
         if (debug && !verbose) {
             this.debug = true;
         }
     }
 
-    @CommandLine.Option(names = {"-v", "--verbose"}, defaultValue = "false", description = "Enable verbose mode", order = 0)
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-v", "--verbose"}, defaultValue = "false", description = "Enable verbose mode",
+            order = 0)
     private void activateVerboseMode(final boolean verbose) {
-
         if (verbose) {
             this.verbose = true;
             debug = true;
@@ -56,5 +54,4 @@ public abstract class AbstractCommand implements CliCommand {
     public boolean isVerbose() {
         return verbose;
     }
-
 }

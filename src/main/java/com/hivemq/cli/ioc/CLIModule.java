@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.ioc;
 
 import com.hivemq.cli.DefaultCLIProperties;
@@ -32,16 +33,11 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
 
-/**
- * @author Georg Held
- */
 @Module(includes = HiveMQCLIModule.class)
 class CLIModule {
 
-    private static final String PROPERTIES_FILE_PATH =
-            System.getProperty("user.home") + File.separator +
-                    ".mqtt-cli" + File.separator +
-                    "config.properties";
+    private static final @NotNull String PROPERTIES_FILE_PATH =
+            System.getProperty("user.home") + File.separator + ".mqtt-cli" + File.separator + "config.properties";
 
     @Provides
     @Singleton
@@ -55,9 +51,7 @@ class CLIModule {
             final @NotNull @Named("hivemq-cli") CommandLine hivemqCliCommandLine,
             final @NotNull CommandLineConfig config,
             final @NotNull CommandErrorMessageHandler handler) {
-
-        return new CommandLine(main)
-                .addSubcommand(publishCommand)
+        return new CommandLine(main).addSubcommand(publishCommand)
                 .addSubcommand(subscribeCommand)
                 .addSubcommand(shellCommand)
                 .addSubcommand(testBrokerCommand)

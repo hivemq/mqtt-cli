@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt.test.results;
 
 import com.hivemq.cli.utils.Tuple;
@@ -21,10 +22,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class TopicLengthTestResults {
-    private final int maxTopicLength;
-    private final @NotNull List<@NotNull Tuple<Integer, TestResult>> testResults;
 
-    public TopicLengthTestResults(final int maxTopicLength, final @NotNull List<@NotNull Tuple<Integer, TestResult>> testResults) {
+    private final int maxTopicLength;
+    private final @NotNull List<Tuple<Integer, TestResult>> testResults;
+
+    public TopicLengthTestResults(
+            final int maxTopicLength, final @NotNull List<Tuple<Integer, TestResult>> testResults) {
         this.maxTopicLength = maxTopicLength;
         this.testResults = testResults;
     }
@@ -33,8 +36,7 @@ public class TopicLengthTestResults {
         return maxTopicLength;
     }
 
-    public @NotNull List<@NotNull Tuple<Integer, TestResult>> getTestResults() {
+    public @NotNull List<Tuple<Integer, TestResult>> getTestResults() {
         return testResults;
     }
-
 }

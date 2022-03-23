@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
@@ -21,19 +22,18 @@ import picocli.CommandLine;
 
 public class Mqtt5UserPropertyConverter implements CommandLine.ITypeConverter<Mqtt5UserProperty> {
 
-    static final String KEY_VALUE_DELIMETER_ERROR = "a key value pair wasn't delimited by '='";
-    static final String NO_PAIR_FOUND = "No key value pair was given.";
+    static final @NotNull String KEY_VALUE_DELIMETER_ERROR = "a key value pair wasn't delimited by '='";
+    static final @NotNull String NO_PAIR_FOUND = "No key value pair was given.";
 
     @Override
-    public Mqtt5UserProperty convert(final @NotNull String s) throws Exception {
+    public @NotNull Mqtt5UserProperty convert(final @NotNull String s) throws Exception {
+        final String[] splitKeyValue = s.split("=");
 
-        final String[] splittedKeyValue = s.split("=");
-
-        if (splittedKeyValue.length != 2) {
+        if (splitKeyValue.length != 2) {
             throw new Exception(KEY_VALUE_DELIMETER_ERROR);
         }
 
-        return Mqtt5UserProperty.of(splittedKeyValue[0], splittedKeyValue[1]);
+        return Mqtt5UserProperty.of(splitKeyValue[0], splitKeyValue[1]);
     }
 
 }

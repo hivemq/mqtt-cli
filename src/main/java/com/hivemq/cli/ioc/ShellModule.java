@@ -13,24 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.ioc;
 
 import com.hivemq.cli.commandline.CommandLineConfig;
 import com.hivemq.cli.commandline.ShellErrorMessageHandler;
-import com.hivemq.cli.commands.shell.ClearScreenCommand;
-import com.hivemq.cli.commands.shell.ContextDisconnectCommand;
-import com.hivemq.cli.commands.shell.ContextExitCommand;
-import com.hivemq.cli.commands.shell.ContextPublishCommand;
-import com.hivemq.cli.commands.shell.ContextSubscribeCommand;
-import com.hivemq.cli.commands.shell.ContextSwitchCommand;
-import com.hivemq.cli.commands.shell.ContextUnsubscribeCommand;
-import com.hivemq.cli.commands.shell.ListClientsCommand;
-import com.hivemq.cli.commands.shell.ShellCommand;
-import com.hivemq.cli.commands.shell.ShellConnectCommand;
-import com.hivemq.cli.commands.shell.ShellContextCommand;
-import com.hivemq.cli.commands.shell.ShellDisconnectCommand;
-import com.hivemq.cli.commands.shell.ShellExitCommand;
-import com.hivemq.cli.commands.shell.VersionCommand;
+import com.hivemq.cli.commands.shell.*;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
@@ -56,8 +44,7 @@ class ShellModule {
             final @NotNull ShellExitCommand shellExitCommand,
             final @NotNull CommandLineConfig config,
             final @NotNull ShellErrorMessageHandler handler) {
-
-        return new CommandLine(shellCommand)
+        return new CommandLine(shellCommand) //
                 .addSubcommand(CommandLine.HelpCommand.class)
                 .addSubcommand(versionCommand)
                 .addSubcommand(shellConnectCommand)
@@ -89,8 +76,7 @@ class ShellModule {
             final @NotNull CommandLineConfig config,
             final @NotNull ShellErrorMessageHandler handler) {
 
-        return new CommandLine(main)
-                .addSubcommand(CommandLine.HelpCommand.class)
+        return new CommandLine(main).addSubcommand(CommandLine.HelpCommand.class)
                 .addSubcommand(versionCommand)
                 .addSubcommand(contextPublishCommand)
                 .addSubcommand(contextSubscribeCommand)

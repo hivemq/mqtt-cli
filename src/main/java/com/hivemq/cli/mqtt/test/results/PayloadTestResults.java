@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.mqtt.test.results;
 
+package com.hivemq.cli.mqtt.test.results;
 
 import com.hivemq.cli.utils.Tuple;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +22,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class PayloadTestResults {
+
     private final int payloadSize;
-    private final @NotNull List<@NotNull Tuple<Integer, TestResult>> testResults;
+    private final @NotNull List<Tuple<Integer, TestResult>> testResults;
 
     public PayloadTestResults(final int payloadSize, final @NotNull List<Tuple<Integer, TestResult>> testResults) {
         this.payloadSize = payloadSize;
@@ -34,7 +35,7 @@ public class PayloadTestResults {
         return payloadSize;
     }
 
-    public @NotNull List<@NotNull Tuple<Integer, TestResult>> getTestResults() {
+    public @NotNull List<Tuple<Integer, TestResult>> getTestResults() {
         return testResults;
     }
 }

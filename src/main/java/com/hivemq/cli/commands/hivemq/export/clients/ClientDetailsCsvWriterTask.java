@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.hivemq.export.clients;
 
-import com.hivemq.cli.openapi.hivemq.CertificateInformation;
-import com.hivemq.cli.openapi.hivemq.ClientDetails;
-import com.hivemq.cli.openapi.hivemq.ClientRestrictions;
-import com.hivemq.cli.openapi.hivemq.ConnectionDetails;
-import com.hivemq.cli.openapi.hivemq.ProxyInformation;
-import com.hivemq.cli.openapi.hivemq.TLV;
-import com.hivemq.cli.openapi.hivemq.TlsInformation;
+import com.hivemq.cli.openapi.hivemq.*;
 import com.opencsv.CSVWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,84 +37,50 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class ClientDetailsCsvWriterTask implements Runnable {
 
-    public static final String[] EXPORT_CSV_HEADER = {
-            "clientId",
-            "connected",
-            "sessionExpiryInterval",
-            "connectedAt",
-            "messageQueueSize",
-            "willPresent",
-            "maxMessageSize",
-            "maxQueueSize",
-            "queuedMessageStrategy",
-            "ip",
-            "sourceIp",
-            "sourcePort",
-            "destinationIp",
-            "destinationPort",
-            "tlvs",
-            "mqttVersion",
-            "connectedListenerId",
-            "connectedNodeId",
-            "keepAlive",
-            "username",
-            "password",
-            "cleanStart",
-            "cipherSuite",
-            "tlsVersion",
-            "certificateCommonName",
-            "certificateOrganization",
-            "certificateOrganizationalUnit",
-            "certificateSerial",
-            "certificateValidFrom",
-            "certificateValidUntil",
-            "certificateCountry",
-            "certificateState"
+    static final @NotNull String @NotNull [] EXPORT_CSV_HEADER = {
+            "clientId", "connected", "sessionExpiryInterval", "connectedAt", "messageQueueSize", "willPresent",
+            "maxMessageSize", "maxQueueSize", "queuedMessageStrategy", "ip", "sourceIp", "sourcePort", "destinationIp",
+            "destinationPort", "tlvs", "mqttVersion", "connectedListenerId", "connectedNodeId", "keepAlive", "username",
+            "password", "cleanStart", "cipherSuite", "tlsVersion", "certificateCommonName", "certificateOrganization",
+            "certificateOrganizationalUnit", "certificateSerial", "certificateValidFrom", "certificateValidUntil",
+            "certificateCountry", "certificateState"
     };
 
+    private final @NotNull AtomicLong writtenClientDetails = new AtomicLong(0);
     private final @NotNull CompletableFuture<Void> clientDetailsFuture;
     private final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
     private final @NotNull File file;
     private final @NotNull CSVWriter csvWriter;
     private final @NotNull BufferedWriter bufferedFileWriter;
 
-    private final @NotNull AtomicLong writtenClientDetails = new AtomicLong(0);
-
-    public ClientDetailsCsvWriterTask(final @NotNull CompletableFuture<Void> clientDetailsFuture,
-                                      final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
-                                      final @NotNull File file,
-                                      final char lineSeparator,
-                                      final char quoteCharacter,
-                                      final char escapeCharacter,
-                                      final @NotNull String lineEndCharacter) throws IOException {
+    public ClientDetailsCsvWriterTask(
+            final @NotNull CompletableFuture<Void> clientDetailsFuture,
+            final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
+            final @NotNull File file,
+            final char lineSeparator,
+            final char quoteCharacter,
+            final char escapeCharacter,
+            final @NotNull String lineEndCharacter) throws IOException {
         this.clientDetailsFuture = clientDetailsFuture;
         this.clientDetailsQueue = clientDetailsQueue;
         this.file = file;
         this.bufferedFileWriter = new BufferedWriter(new FileWriter(file, false));
 
-        csvWriter = new CSVWriter(
-                bufferedFileWriter,
-                lineSeparator,
-                quoteCharacter,
-                escapeCharacter,
-                lineEndCharacter
-        );
+        csvWriter = new CSVWriter(bufferedFileWriter, lineSeparator, quoteCharacter, escapeCharacter, lineEndCharacter);
     }
 
     @Override
     public void run() {
-
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 bufferedFileWriter.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 Logger.error(e, "Interrupted before CSV could be written - CSV may be malformed");
                 System.err.println("Interrupted before all content was written, output file may be incomplete");
             }
         }));
 
         try {
-
             writeHeader();
 
             while (!clientDetailsFuture.isDone() || !clientDetailsQueue.isEmpty()) {
@@ -130,19 +91,16 @@ public class ClientDetailsCsvWriterTask implements Runnable {
                     writeRow(clientDetails);
                     writtenClientDetails.incrementAndGet();
                 }
-
             }
-
             csvWriter.close();
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             Logger.error(e, "Writing of CSV file failed");
             throw new CompletionException(e);
         }
         Logger.debug("Finished writing {} client details to CSV file {}", writtenClientDetails, file.getAbsolutePath());
     }
 
-    public long getWrittenClientDetails() { return writtenClientDetails.get(); }
+    public long getWrittenClientDetails() {return writtenClientDetails.get();}
 
     private void writeHeader() {
         csvWriter.writeNext(EXPORT_CSV_HEADER);
@@ -166,9 +124,9 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         csvWriter.writeNext(row.toArray(new String[]{}));
     }
 
-    private void addConnectionDetails(List<String> row, ConnectionDetails connectionDetails) {
+    private void addConnectionDetails(
+            final @NotNull List<String> row, final @Nullable ConnectionDetails connectionDetails) {
         if (connectionDetails != null) {
-
             row.add(connectionDetails.getSourceIp());
 
             final ProxyInformation proxyInformation = connectionDetails.getProxyInformation();
@@ -191,8 +149,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
 
             final TlsInformation tlsInformation = connectionDetails.getTlsInformation();
             addTlsInformation(row, tlsInformation);
-        }
-        else {
+        } else {
             row.add(null); // Ip
             addProxyInformation(row, null);
             row.add(null); // mqttVersion
@@ -206,23 +163,22 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         }
     }
 
-    private void addTlsInformation(List<String> row, TlsInformation tlsInformation) {
+    private void addTlsInformation(final @NotNull List<String> row, final @Nullable TlsInformation tlsInformation) {
         if (tlsInformation != null) {
-
             row.add(tlsInformation.getCipherSuite());
             row.add(tlsInformation.getTlsVersion());
 
             final CertificateInformation certificateInformation = tlsInformation.getCertificateInformation();
             addCertificateInformation(row, certificateInformation);
-        }
-        else {
+        } else {
             row.add(null); // cipherSuite
             row.add(null); // tlsVersion
             addCertificateInformation(row, null);
         }
     }
 
-    private void addCertificateInformation(List<String> row, CertificateInformation certificateInformation) {
+    private void addCertificateInformation(
+            final @NotNull List<String> row, final @Nullable CertificateInformation certificateInformation) {
         if (certificateInformation != null) {
             row.add(certificateInformation.getCommonName());
             row.add(certificateInformation.getOrganization());
@@ -232,8 +188,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
             row.add(toCsvString(certificateInformation.getValidUntil()));
             row.add(toCsvString(certificateInformation.getCountry()));
             row.add(toCsvString(certificateInformation.getState()));
-        }
-        else {
+        } else {
             row.add(null); // certificateCommonName
             row.add(null); // certificateOrganization
             row.add(null); // certificateOrganizationalUnit
@@ -245,7 +200,8 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         }
     }
 
-    private void addProxyInformation(List<String> row, ProxyInformation proxyInformation) {
+    private void addProxyInformation(
+            final @NotNull List<String> row, final @Nullable ProxyInformation proxyInformation) {
         if (proxyInformation != null) {
             row.add(proxyInformation.getSourceIp());
             row.add(toCsvString(proxyInformation.getSourcePort()));
@@ -255,20 +211,19 @@ public class ClientDetailsCsvWriterTask implements Runnable {
             final List<TLV> tlvs = proxyInformation.getTlvs();
             if (tlvs != null) {
                 final StringBuilder sb = new StringBuilder();
-                    for (TLV tlv : tlvs) {
-                        sb.append(tlv.getKey()).append("=");
-                        final String value = tlv.getValue();
-                        if (value != null) {
-                            sb.append(value);
-                        }
-                        sb.append(';');
+                for (final TLV tlv : tlvs) {
+                    sb.append(tlv.getKey()).append("=");
+                    final String value = tlv.getValue();
+                    if (value != null) {
+                        sb.append(value);
                     }
+                    sb.append(';');
+                }
                 row.add(sb.toString());
             } else {
                 row.add(null); // tlvs
             }
-        }
-        else {
+        } else {
             row.add(null); // sourceIp
             row.add(null); // sourcePort
             row.add(null); // destinationIp
@@ -277,7 +232,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         }
     }
 
-    private void addRestrictions(List<String> row, ClientRestrictions restrictions) {
+    private void addRestrictions(final @NotNull List<String> row, final @Nullable ClientRestrictions restrictions) {
         if (restrictions != null) {
             row.add(toCsvString(restrictions.getMaxMessageSize()));
             row.add(toCsvString(restrictions.getMaxQueueSize()));
@@ -289,8 +244,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         }
     }
 
-    private String toCsvString(final @Nullable Object object) {
+    private @Nullable String toCsvString(final @Nullable Object object) {
         return object != null ? object.toString() : null;
     }
-
 }

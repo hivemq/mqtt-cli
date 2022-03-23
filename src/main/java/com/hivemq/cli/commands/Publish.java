@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -25,9 +26,9 @@ import java.nio.ByteBuffer;
 
 public interface Publish extends Context {
 
-    @NotNull String[] getTopics();
+    @NotNull String @NotNull [] getTopics();
 
-    @NotNull MqttQos[] getQos();
+    @NotNull MqttQos @NotNull [] getQos();
 
     @NotNull ByteBuffer getMessage();
 
@@ -44,6 +45,5 @@ public interface Publish extends Context {
     @Nullable ByteBuffer getCorrelationData();
 
     @Nullable Mqtt5UserProperties getUserProperties();
-
 
 }

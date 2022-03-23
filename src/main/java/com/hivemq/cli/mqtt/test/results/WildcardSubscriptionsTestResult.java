@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt.test.results;
 
 import org.jetbrains.annotations.NotNull;
 
 public class WildcardSubscriptionsTestResult {
-    private final boolean success;
-    private final TestResult plusWildcardTest;
-    private final TestResult hashWildcardTest;
 
-    public @NotNull WildcardSubscriptionsTestResult(final @NotNull TestResult plusWildcardTest,
-                                                    final @NotNull TestResult hashWildcardTest) {
+    private final boolean success;
+    private final @NotNull TestResult plusWildcardTest;
+    private final @NotNull TestResult hashWildcardTest;
+
+    public WildcardSubscriptionsTestResult(
+            final @NotNull TestResult plusWildcardTest, final @NotNull TestResult hashWildcardTest) {
         this.plusWildcardTest = plusWildcardTest;
         this.hashWildcardTest = hashWildcardTest;
-
         success = (plusWildcardTest == TestResult.OK) && (hashWildcardTest == TestResult.OK);
     }
 

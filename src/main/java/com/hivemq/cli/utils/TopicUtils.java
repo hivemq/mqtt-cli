@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,10 @@ public class TopicUtils {
     }
 
     public static @NotNull String generateTopicUUID(final int maxLength) {
-        if (maxLength == -1 || maxLength > 32) return generateTopicUUID();
-        else return generateTopicUUID().substring(0, maxLength);
+        if (maxLength == -1 || maxLength > 32) {
+            return generateTopicUUID();
+        } else {
+            return generateTopicUUID().substring(0, maxLength);
+        }
     }
 }

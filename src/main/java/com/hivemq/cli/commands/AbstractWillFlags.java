@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands;
 
-import com.hivemq.cli.converters.ByteBufferConverter;
-import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
-import com.hivemq.cli.converters.MqttQosConverter;
-import com.hivemq.cli.converters.PayloadFormatIndicatorConverter;
-import com.hivemq.cli.converters.UnsignedIntConverter;
+import com.hivemq.cli.converters.*;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -27,6 +24,7 @@ import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -38,62 +36,62 @@ import java.util.Arrays;
 public abstract class AbstractWillFlags extends MqttCommand implements Will {
 
     @CommandLine.Option(names = {"-Wt", "--willTopic"}, description = "The topic of the will message", order = 3)
-    @Nullable
-    private String willTopic;
+    private @Nullable String willTopic;
 
-    @CommandLine.Option(names = {"-Wm", "--willMessage"}, converter = ByteBufferConverter.class, description = "The payload of the will message", order = 3)
-    @Nullable
-    private ByteBuffer willMessage;
+    @CommandLine.Option(names = {"-Wm", "--willMessage"}, converter = ByteBufferConverter.class,
+            description = "The payload of the will message", order = 3)
+    private @Nullable ByteBuffer willMessage;
 
-    @CommandLine.Option(names = {"-Wq", "--willQualityOfService"}, defaultValue = "0", converter = MqttQosConverter.class, description = "Quality of service level for the will message (default: 0)", order = 3)
-    @Nullable
-    private MqttQos willQos;
+    @CommandLine.Option(names = {"-Wq", "--willQualityOfService"}, defaultValue = "0",
+            converter = MqttQosConverter.class,
+            description = "Quality of service level for the will message (default: 0)", order = 3)
+    private @Nullable MqttQos willQos;
 
-    @CommandLine.Option(names = {"-Wr", "--willRetain"}, negatable = true, description = "Will message as retained message (default: false)", order = 3)
-    @Nullable
-    private Boolean willRetain;
+    @CommandLine.Option(names = {"-Wr", "--willRetain"}, negatable = true,
+            description = "Will message as retained message (default: false)", order = 3)
+    private @Nullable Boolean willRetain;
 
-    @CommandLine.Option(names = {"-We", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the will message in seconds (default: no message expiry)", order = 3)
-    @Nullable
-    private Long willMessageExpiryInterval;
+    @CommandLine.Option(names = {"-We", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class,
+            description = "The lifetime of the will message in seconds (default: no message expiry)", order = 3)
+    private @Nullable Long willMessageExpiryInterval;
 
-    @CommandLine.Option(names = {"-Wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, description = "The Server delays publishing the client's will message until the will delay has passed (default: " + Mqtt5WillPublish.DEFAULT_DELAY_INTERVAL + ")", order = 3)
-    @Nullable
-    private Long willDelayInterval;
+    @CommandLine.Option(names = {"-Wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, description =
+            "The Server delays publishing the client's will message until the will delay has passed (default: " +
+                    Mqtt5WillPublish.DEFAULT_DELAY_INTERVAL + ")", order = 3)
+    private @Nullable Long willDelayInterval;
 
-    @CommandLine.Option(names = {"-Wpf", "--willPayloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the will message", order = 3)
-    @Nullable
-    private Mqtt5PayloadFormatIndicator willPayloadFormatIndicator;
+    @CommandLine.Option(names = {"-Wpf", "--willPayloadFormatIndicator"},
+            converter = PayloadFormatIndicatorConverter.class,
+            description = "The payload format indicator of the will message", order = 3)
+    private @Nullable Mqtt5PayloadFormatIndicator willPayloadFormatIndicator;
 
-    @CommandLine.Option(names = {"-Wct", "--willContentType"}, description = "A description of the will message's content", order = 3)
-    @Nullable
-    private String willContentType;
+    @CommandLine.Option(names = {"-Wct", "--willContentType"},
+            description = "A description of the will message's content", order = 3)
+    private @Nullable String willContentType;
 
-    @CommandLine.Option(names = {"-Wrt", "--willResponseTopic"}, description = "The topic name for the response message", order = 3)
-    @Nullable
-    private String willResponseTopic;
+    @CommandLine.Option(names = {"-Wrt", "--willResponseTopic"},
+            description = "The topic name for the response message", order = 3)
+    private @Nullable String willResponseTopic;
 
-    @CommandLine.Option(names = {"-Wcd", "--willCorrelationData"}, converter = ByteBufferConverter.class, description = "The correlation data of the will message", order = 3)
-    @Nullable
-    private ByteBuffer willCorrelationData;
+    @CommandLine.Option(names = {"-Wcd", "--willCorrelationData"}, converter = ByteBufferConverter.class,
+            description = "The correlation data of the will message", order = 3)
+    private @Nullable ByteBuffer willCorrelationData;
 
-    @CommandLine.Option(names = {"-Wup", "--willUserProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the will message", order = 3)
-    @Nullable
-    private Mqtt5UserProperty[] willUserProperties;
+    @CommandLine.Option(names = {"-Wup", "--willUserProperty"}, converter = Mqtt5UserPropertyConverter.class,
+            description = "A user property of the will message", order = 3)
+    private @Nullable Mqtt5UserProperty @Nullable [] willUserProperties;
 
-
-    String getWillOptions() {
+    @NotNull String getWillOptions() {
         if (willTopic == null) {
             return "";
         }
-        return  ", willTopic=" + willTopic +
-                (willQos != null ? (", willQos=" + willQos) : "") +
+        return ", willTopic=" + willTopic + (willQos != null ? (", willQos=" + willQos) : "") +
                 (willMessage != null ? (", willMessage=" + willMessage) : "") +
                 (willRetain != null ? (", willRetain=" + willRetain) : "") +
-                (willMessageExpiryInterval != null ? (", willMessageExpiryInterval=" + willMessageExpiryInterval) : "") +
-                (willDelayInterval != null ? (", willDelayInterval=" + willDelayInterval) : "") +
-                (willPayloadFormatIndicator != null ? (", willPayloadFormatIndicator=" + willPayloadFormatIndicator) : "") +
-                (willContentType != null ? (", willContentType=" + willContentType) : "") +
+                (willMessageExpiryInterval != null ? (", willMessageExpiryInterval=" + willMessageExpiryInterval) :
+                        "") + (willDelayInterval != null ? (", willDelayInterval=" + willDelayInterval) : "") +
+                (willPayloadFormatIndicator != null ? (", willPayloadFormatIndicator=" + willPayloadFormatIndicator) :
+                        "") + (willContentType != null ? (", willContentType=" + willContentType) : "") +
                 (willResponseTopic != null ? (", willResponseTopic=" + willResponseTopic) : "") +
                 (willCorrelationData != null ? (", willCorrelationData=" + willCorrelationData) : "") +
                 (willUserProperties != null ? (", willUserProperties=" + Arrays.toString(willUserProperties)) : "");
@@ -125,69 +123,58 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         }
     }
 
-    @Nullable
     @Override
-    public String getWillTopic() {
+    public @Nullable String getWillTopic() {
         return willTopic;
     }
 
-    @Nullable
     @Override
-    public ByteBuffer getWillMessage() {
+    public @Nullable ByteBuffer getWillMessage() {
         return willMessage;
     }
 
-    @Nullable
     @Override
-    public MqttQos getWillQos() {
+    public @Nullable MqttQos getWillQos() {
         return willQos;
     }
 
-    @Nullable
     @Override
-    public Boolean getWillRetain() {
+    public @Nullable Boolean getWillRetain() {
         return willRetain;
     }
 
-    @Nullable
     @Override
-    public Long getWillMessageExpiryInterval() {
+    public @Nullable Long getWillMessageExpiryInterval() {
         return willMessageExpiryInterval;
     }
 
-    @Nullable
     @Override
-    public Long getWillDelayInterval() {
+    public @Nullable Long getWillDelayInterval() {
         return willDelayInterval;
     }
 
-    @Nullable
     @Override
-    public Mqtt5PayloadFormatIndicator getWillPayloadFormatIndicator() {
+    public @Nullable Mqtt5PayloadFormatIndicator getWillPayloadFormatIndicator() {
         return willPayloadFormatIndicator;
     }
 
-    @Nullable
     @Override
-    public String getWillContentType() {
+    public @Nullable String getWillContentType() {
         return willContentType;
     }
 
-    @Nullable
     @Override
-    public String getWillResponseTopic() {
+    public @Nullable String getWillResponseTopic() {
         return willResponseTopic;
     }
 
-    @Nullable
     @Override
-    public ByteBuffer getWillCorrelationData() {
+    public @Nullable ByteBuffer getWillCorrelationData() {
         return willCorrelationData;
     }
 
-    @Nullable
     @Override
-    public Mqtt5UserProperties getWillUserProperties() {
+    public @Nullable Mqtt5UserProperties getWillUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(willUserProperties);
     }
 
