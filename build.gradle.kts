@@ -397,6 +397,8 @@ tasks.forbiddenApisMain {
 
 tasks.forbiddenApisTest { enabled = false }
 
+tasks.named("forbiddenApisIntegrationTest") { enabled = false }
+
 /* ******************** graal ******************** */
 
 graal {
