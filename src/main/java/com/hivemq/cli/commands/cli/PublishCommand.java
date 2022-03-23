@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.cli;
 
 import com.google.common.base.Throwables;
@@ -20,7 +21,7 @@ import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.options.MessagePayloadOptions;
 import com.hivemq.cli.converters.*;
-import com.hivemq.cli.impl.MqttAction;
+import com.hivemq.cli.commands.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
@@ -41,71 +42,96 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-@CommandLine.Command(name = "pub",
-        versionProvider = MqttCLIMain.CLIVersionProvider.class,
-        aliases = "publish",
-        description = "Publish a message to a list of topics.",
-        abbreviateSynopsis = false)
-
+@CommandLine.Command(name = "pub", versionProvider = MqttCLIMain.CLIVersionProvider.class, aliases = "publish",
+        description = "Publish a message to a list of topics.")
 public class PublishCommand extends AbstractConnectFlags implements MqttAction, Publish {
 
-    private final MqttClientExecutor mqttClientExecutor;
+    private final @NotNull MqttClientExecutor mqttClientExecutor;
 
-    private MqttClientSslConfig sslConfig;
+    private @Nullable MqttClientSslConfig sslConfig;
 
-    //needed for pico cli - reflection code generation
-    public PublishCommand() { this(null); }
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public PublishCommand() {
+        //noinspection ConstantConditions
+        this(null);
+    }
 
     @Inject
     public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;
     }
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
-    boolean versionInfoRequested;
+    private boolean versionInfoRequested;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
+    private boolean usageHelpRequested;
 
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via required
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to", order = 1)
-    @NotNull private String[] topics;
+    private @NotNull String @NotNull [] topics;
 
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0", description = "Quality of service for the corresponding topic (default for all: 0)", order = 1)
-    @NotNull private MqttQos[] qos;
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
+    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0",
+            description = "Quality of service for the corresponding topic (default for all: 0)", order = 1)
+    private @NotNull MqttQos @NotNull [] qos;
 
-    @CommandLine.ArgGroup(exclusive = true, multiplicity = "1", order = 1)
-    @NotNull MessagePayloadOptions message;
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via multiplicity = 1
+    @CommandLine.ArgGroup(multiplicity = "1", order = 1)
+    private @NotNull MessagePayloadOptions message;
 
-    @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, description = "The message will be retained (default: false)", order = 1)
-    @Nullable private Boolean retain;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-r", "--retain"}, negatable = true,
+            description = "The message will be retained (default: false)", order = 1)
+    private @Nullable Boolean retain;
 
-    @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the publish message in seconds (default: no message expiry)", order = 1)
-    @Nullable private Long messageExpiryInterval;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class,
+            description = "The lifetime of the publish message in seconds (default: no message expiry)", order = 1)
+    private @Nullable Long messageExpiryInterval;
 
-    @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class, description = "The payload format indicator of the publish message", order = 1)
-    @Nullable private Mqtt5PayloadFormatIndicator payloadFormatIndicator;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class,
+            description = "The payload format indicator of the publish message", order = 1)
+    private @Nullable Mqtt5PayloadFormatIndicator payloadFormatIndicator;
 
-    @CommandLine.Option(names = {"-ct", "--contentType"}, description = "A description of publish message's content", order = 1)
-    @Nullable private String contentType;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-ct", "--contentType"}, description = "A description of publish message's content",
+            order = 1)
+    private @Nullable String contentType;
 
-    @CommandLine.Option(names = {"-rt", "--responseTopic"}, description = "The topic name for the publish message`s response message", order = 1)
-    @Nullable private String responseTopic;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-rt", "--responseTopic"},
+            description = "The topic name for the publish message`s response message", order = 1)
+    private @Nullable String responseTopic;
 
-    @CommandLine.Option(names = {"-cd", "--correlationData"}, converter = ByteBufferConverter.class, description = "The correlation data of the publish message", order = 1)
-    @Nullable private ByteBuffer correlationData;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-cd", "--correlationData"}, converter = ByteBufferConverter.class,
+            description = "The correlation data of the publish message", order = 1)
+    private @Nullable ByteBuffer correlationData;
 
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the publish message", order = 1)
-    @Nullable private Mqtt5UserProperty[] userProperties;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
+            description = "A user property of the publish message", order = 1)
+    private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
 
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 1)
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
+            description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
+            order = 1)
     private boolean logToLogfile;
 
     @Override
     public void run() {
-
         String logLevel = "warn";
-        if (isDebug()) logLevel = "debug";
-        if (isVerbose()) logLevel = "trace";
+        if (isDebug()) {
+            logLevel = "debug";
+        }
+        if (isVerbose()) {
+            logLevel = "trace";
+        }
         LoggerUtils.setupConsoleLogging(logToLogfile, logLevel);
 
         setDefaultOptions();
@@ -123,18 +149,14 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         try {
             qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
             mqttClientExecutor.publish(this);
-        }
-        catch (final ConnectionFailedException cex) {
+        } catch (final ConnectionFailedException cex) {
             Logger.error(cex, cex.getCause().getMessage());
-        }
-        catch (final Exception ex) {
+        } catch (final Exception ex) {
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
-
     }
 
     public void logUnusedOptions() {
-
         super.logUnusedOptions();
 
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
@@ -142,7 +164,8 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
                 Logger.warn("Publish message expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
             if (payloadFormatIndicator != null) {
-                Logger.warn("Publish payload format indicator was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Publish payload format indicator was set but is unused in MQTT Version {}",
+                        MqttVersion.MQTT_3_1_1);
             }
             if (contentType != null) {
                 Logger.warn("Publish content type was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
@@ -151,101 +174,82 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
                 Logger.warn("Publish response topic was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
             }
             if (correlationData != null) {
-                Logger.warn("Publish correlation data was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Publish correlation data was set but is unused in MQTT Version {}",
+                        MqttVersion.MQTT_3_1_1);
             }
             if (userProperties != null) {
-                Logger.warn("Publish user properties were set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Publish user properties were set but is unused in MQTT Version {}",
+                        MqttVersion.MQTT_3_1_1);
             }
         }
-
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{" +
-                 connectOptions() +
-                ", topics=" + Arrays.toString(topics) +
-                ", qos=" + Arrays.toString(qos) +
-                ", message=" + new String(message.getMessageBuffer().array(), StandardCharsets.UTF_8) +
+    public @NotNull String toString() {
+        return getClass().getSimpleName() + "{" + connectOptions() + ", topics=" + Arrays.toString(topics) + ", qos=" +
+                Arrays.toString(qos) + ", message=" +
+                new String(message.getMessageBuffer().array(), StandardCharsets.UTF_8) +
                 (retain != null ? (", retain=" + retain) : "") +
                 (messageExpiryInterval != null ? (", messageExpiryInterval=" + messageExpiryInterval) : "") +
                 (payloadFormatIndicator != null ? (", payloadFormatIndicator=" + payloadFormatIndicator) : "") +
                 (contentType != null ? (", contentType=" + contentType) : "") +
-                (responseTopic != null ? (", responseTopic=" + responseTopic) : "") +
-                (correlationData != null ? (", correlationData=" + new String(correlationData.array(), StandardCharsets.UTF_8)) : "") +
-                (userProperties != null ? (", userProperties=" + getUserProperties()) : "") +
-                '}';
+                (responseTopic != null ? (", responseTopic=" + responseTopic) : "") + (correlationData != null ?
+                (", correlationData=" + new String(correlationData.array(), StandardCharsets.UTF_8)) : "") +
+                (userProperties != null ? (", userProperties=" + getUserProperties()) : "") + '}';
     }
 
-
-    @NotNull
     @Override
-    public String[] getTopics() {
+    public @NotNull String @NotNull [] getTopics() {
         return topics;
     }
 
-    @NotNull
     @Override
-    public MqttQos[] getQos() {
+    public @NotNull MqttQos @NotNull [] getQos() {
         return qos;
     }
 
-    @NotNull
     @Override
-    public ByteBuffer getMessage() {
+    public @NotNull ByteBuffer getMessage() {
         return message.getMessageBuffer();
     }
 
-    @Nullable
     @Override
-    public Boolean getRetain() {
+    public @Nullable Boolean getRetain() {
         return retain;
     }
 
     @Override
-    @Nullable
-    public Long getMessageExpiryInterval() {
+    public @Nullable Long getMessageExpiryInterval() {
         return messageExpiryInterval;
     }
 
-    @Nullable
     @Override
-    public Mqtt5PayloadFormatIndicator getPayloadFormatIndicator() {
+    public @Nullable Mqtt5PayloadFormatIndicator getPayloadFormatIndicator() {
         return payloadFormatIndicator;
     }
 
-    @Nullable
     @Override
-    public String getContentType() {
+    public @Nullable String getContentType() {
         return contentType;
     }
 
-    @Nullable
     @Override
-    public String getResponseTopic() {
+    public @Nullable String getResponseTopic() {
         return responseTopic;
     }
 
-    @Nullable
     @Override
-    public ByteBuffer getCorrelationData() {
+    public @Nullable ByteBuffer getCorrelationData() {
         return correlationData;
     }
 
-    @Nullable
     @Override
-    public Mqtt5UserProperties getUserProperties() {
+    public @Nullable Mqtt5UserProperties getUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(userProperties);
     }
 
-    public void setUserProperties(@Nullable final Mqtt5UserProperty... userProperties) {
-        this.userProperties = userProperties;
-    }
-
-    @Nullable
     @Override
-    public MqttClientSslConfig getSslConfig() {
+    public @Nullable MqttClientSslConfig getSslConfig() {
         return sslConfig;
     }
-
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.swarm.commander;
 
 import com.google.gson.Gson;
@@ -34,24 +35,21 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.PrintStream;
 
-/**
- * @author Yannick Weber
- */
 @CommandLine.Command(name = "status",
         description = "Check the status of HiveMQ Swarm. (READY, STARTING, RUNNING, STOPPING).",
-        synopsisHeading = "%n@|bold Usage:|@  ",
-        descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n",
-        mixinStandardHelpOptions = true,
+        synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
+        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class SwarmStatusCommand extends AbstractSwarmCommand {
 
     public enum OutputFormat {
-        JSON, PRETTY
+        JSON,
+        PRETTY
     }
 
-    @CommandLine.Option(names = {"--format"}, defaultValue = "pretty", description = "The export output format (JSON, PRETTY). Default=PRETTY.", order = 2)
+    @SuppressWarnings("FieldMayBeFinal")
+    @CommandLine.Option(names = {"--format"}, defaultValue = "pretty",
+            description = "The export output format (JSON, PRETTY). Default=PRETTY.", order = 2)
     private @NotNull OutputFormat format = OutputFormat.PRETTY;
 
     private final @NotNull Gson gson;
@@ -128,8 +126,7 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
                             runResponse.getScenarioDescription(),
                             runResponse.getScenarioType(),
                             runResponse.getRunStatus(),
-                            runResponse.getScenarioStage()
-                    );
+                            runResponse.getScenarioStage());
                     out.println(gson.toJson(commanderStatusWithRun));
                 } else if (format == OutputFormat.PRETTY) {
                     out.println("Status: " + commanderStatus.getCommanderStatus());
@@ -145,19 +142,16 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
                     out.println("Scenario-Stage: " + runResponse.getScenarioStage());
                 }
             }
-
         } else {
             Logger.error("Commander status response did not contain a status.\n", commanderStatus.toString());
-            System.err.println("Commander status response did not contain a status.\n " + commanderStatus.toString());
+            System.err.println("Commander status response did not contain a status.\n " + commanderStatus);
             return -1;
         }
         return 0;
     }
 
     @Override
-    public String toString() {
-        return "SwarmStatusCommand{" +
-                "format=" + format +
-                '}';
+    public @NotNull String toString() {
+        return "SwarmStatusCommand{" + "format=" + format + '}';
     }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commandline;
 
 import org.jetbrains.annotations.NotNull;
@@ -24,18 +25,21 @@ import javax.inject.Singleton;
 @Singleton
 public class CommandLineConfig {
 
-    private final static CommandLine.Help.ColorScheme COLOR_SCHEME = new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)
-            .commands(CommandLine.Help.Ansi.Style.bold, CommandLine.Help.Ansi.Style.fg_yellow)
-            .options(CommandLine.Help.Ansi.Style.italic, CommandLine.Help.Ansi.Style.fg_yellow)
-            .parameters(CommandLine.Help.Ansi.Style.fg_yellow)
-            .optionParams(CommandLine.Help.Ansi.Style.italic)
-            .build();
-
+    //@formatter:off
+    private final static @NotNull CommandLine.Help.ColorScheme COLOR_SCHEME =
+            new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.ON)
+                    .commands(CommandLine.Help.Ansi.Style.bold, CommandLine.Help.Ansi.Style.fg_yellow)
+                    .options(CommandLine.Help.Ansi.Style.italic, CommandLine.Help.Ansi.Style.fg_yellow)
+                    .parameters(CommandLine.Help.Ansi.Style.fg_yellow)
+                    .optionParams(CommandLine.Help.Ansi.Style.italic)
+                    .build();
+    //@formatter:on
     private static final int CLI_WIDTH = 160;
 
-    @Inject public CommandLineConfig() {};
+    @Inject
+    public CommandLineConfig() {}
 
-    @NotNull public CommandLine.Help.ColorScheme getColorScheme() {
+    public @NotNull CommandLine.Help.ColorScheme getColorScheme() {
         return COLOR_SCHEME;
     }
 

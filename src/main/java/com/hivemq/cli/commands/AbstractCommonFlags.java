@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands;
 
 import com.google.common.base.Throwables;
@@ -31,30 +32,44 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlags implements Connect {
 
     @CommandLine.Option(names = {"-u", "--user"}, description = "The username for authentication", order = 2)
     private @Nullable String user;
 
-    @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true, converter = ByteBufferConverter.class, description = "The password for authentication", order = 2)
+    @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true,
+            converter = ByteBufferConverter.class, description = "The password for authentication", order = 2)
     private @Nullable ByteBuffer password;
 
-    @CommandLine.Option(names = {"-pw:env"}, arity = "0..1", converter = EnvVarToByteBufferConverter.class, fallbackValue = "MQTT_CLI_PW", description = "The password for authentication read in from an environment variable", order = 2)
-    private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) { password = passwordEnvironmentVariable; }
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-pw:env"}, arity = "0..1", converter = EnvVarToByteBufferConverter.class,
+            fallbackValue = "MQTT_CLI_PW",
+            description = "The password for authentication read in from an environment variable", order = 2)
+    private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) {
+        password = passwordEnvironmentVariable;
+    }
 
-    @CommandLine.Option(names = {"-pw:file"}, converter = PasswordFileToByteBufferConverter.class, description = "The password for authentication read in from a file", order = 2)
-    private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) { password = passwordFromFile; }
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-pw:file"}, converter = PasswordFileToByteBufferConverter.class,
+            description = "The password for authentication read in from a file", order = 2)
+    private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) {password = passwordFromFile;}
 
-    @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class, description = "A keep alive of the client (in seconds) (default: 60)", order = 2)
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class,
+            description = "A keep alive of the client (in seconds) (default: 60)", order = 2)
     private @Nullable Integer keepAlive;
 
-    @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true, description = "Define a clean start for the connection (default: true)", order = 2)
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true,
+            description = "Define a clean start for the connection (default: true)", order = 2)
     private @Nullable Boolean cleanStart;
 
     @CommandLine.Mixin
-    private final SslOptions sslOptions = new SslOptions();
+    private final @NotNull SslOptions sslOptions = new SslOptions();
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-ws"}, description = "Use WebSocket transport protocol (default: false)", order = 2)
     private boolean useWebSocket;
 
@@ -64,7 +79,8 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     @Override
     public void setDefaultOptions() {
         super.setDefaultOptions();
-        final DefaultCLIProperties defaultCLIProperties = MqttCLIMain.MQTTCLI.defaultCLIProperties();
+        final DefaultCLIProperties defaultCLIProperties =
+                Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
 
         if (user == null) {
             user = defaultCLIProperties.getUsername();
@@ -78,42 +94,29 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
             }
         }
 
-
         if (useWebSocket && webSocketPath == null) {
             webSocketPath = defaultCLIProperties.getWebsocketPath();
         }
-
     }
 
-    @Nullable
-    public MqttClientSslConfig buildSslConfig() throws Exception {
+    public @Nullable MqttClientSslConfig buildSslConfig() throws Exception {
         return sslOptions.buildSslConfig();
     }
 
-
     @Override
-    public String toString() {
-
-        return "Connect{" +
-                "key=" + getKey() +
-                ", " + commonOptions() +
-                '}';
+    public @NotNull String toString() {
+        return "Connect{" + "key=" + getKey() + ", " + commonOptions() + '}';
     }
 
-
-    public String commonOptions() {
-        return super.toString() +
-                (user != null ? (", user=" + user) : "") +
+    public @NotNull String commonOptions() {
+        return super.toString() + (user != null ? (", user=" + user) : "") +
                 (keepAlive != null ? (", keepAlive=" + keepAlive) : "") +
-                (cleanStart != null ? (", cleanStart=" + cleanStart) : "") +
-                ", sslOptions=" + sslOptions +
-                ", useWebSocket=" + useWebSocket +
-                (webSocketPath != null ? (", webSocketPath=" + webSocketPath) : "") +
+                (cleanStart != null ? (", cleanStart=" + cleanStart) : "") + ", sslOptions=" + sslOptions +
+                ", useWebSocket=" + useWebSocket + (webSocketPath != null ? (", webSocketPath=" + webSocketPath) : "") +
                 getWillOptions();
     }
 
-    @Nullable
-    public String getUser() {
+    public @Nullable String getUser() {
         return user;
     }
 
@@ -121,27 +124,21 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
         this.user = user;
     }
 
-    @Nullable
-    public ByteBuffer getPassword() {
+    public @Nullable ByteBuffer getPassword() {
         return password;
     }
 
-    @Nullable
-    public Integer getKeepAlive() {
+    public @Nullable Integer getKeepAlive() {
         return keepAlive;
     }
 
-    @Nullable
-    public Boolean getCleanStart() {
+    public @Nullable Boolean getCleanStart() {
         return cleanStart;
     }
 
-    @Nullable
-    public MqttWebSocketConfig getWebSocketConfig() {
+    public @Nullable MqttWebSocketConfig getWebSocketConfig() {
         if (useWebSocket) {
-            return MqttWebSocketConfig.builder()
-                    .serverPath(webSocketPath)
-                    .build();
+            return MqttWebSocketConfig.builder().serverPath(Objects.requireNonNull(webSocketPath)).build();
         } else {
             return null;
         }

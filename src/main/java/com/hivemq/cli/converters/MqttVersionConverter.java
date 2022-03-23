@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
 import com.hivemq.client.mqtt.MqttVersion;
@@ -20,8 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 public class MqttVersionConverter implements CommandLine.ITypeConverter<MqttVersion> {
-    static final String UNSUPPORTED_MQTT_VERSION = "The specified MQTT Version is not supported.";
-    static final String BAD_NUMBER_FORMAT = "The given number can't be parsed to a valid MQTT Version";
+
+    static final @NotNull String UNSUPPORTED_MQTT_VERSION = "The specified MQTT Version is not supported.";
+    static final @NotNull String BAD_NUMBER_FORMAT = "The given number can't be parsed to a valid MQTT Version";
 
     @Override
     public @NotNull MqttVersion convert(final @NotNull String value) throws Exception {

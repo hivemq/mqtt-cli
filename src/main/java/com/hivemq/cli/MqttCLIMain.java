@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli;
 
 import com.hivemq.cli.ioc.DaggerMqttCLI;
@@ -22,6 +23,8 @@ import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
 import java.security.Security;
@@ -30,12 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-
 public class MqttCLIMain {
 
-    public static MqttCLI MQTTCLI = null;
+    public static @Nullable MqttCLI MQTTCLI = null;
 
-    public static void main(final String[] args) {
+    public static void main(final @NotNull String... args) {
 
         Security.setProperty("crypto.policy", "unlimited");
 
@@ -45,7 +47,7 @@ public class MqttCLIMain {
 
         try {
             defaultCLIProperties.init();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.err.println(e.getMessage());
             System.exit(-1);
         }
@@ -63,18 +65,15 @@ public class MqttCLIMain {
 
     }
 
-
     private static class DisconnectAllClientsTask extends Thread {
 
         @Override
         public void run() {
-
             final Map<String, ClientData> clientKeyToClientData = MqttClientExecutor.getClientDataMap();
 
-            final List<CompletableFuture<Void>> disconnectFutures = new ArrayList<CompletableFuture<Void>>();
+            final List<CompletableFuture<Void>> disconnectFutures = new ArrayList<>();
 
-            for (final Map.Entry<String, ClientData> entry: clientKeyToClientData.entrySet()) {
-
+            for (final Map.Entry<String, ClientData> entry : clientKeyToClientData.entrySet()) {
                 final MqttClient client = entry.getValue().getClient();
                 if (client.getConfig().getState().isConnectedOrReconnect()) {
                     switch (client.getConfig().getMqttVersion()) {
@@ -87,24 +86,23 @@ public class MqttCLIMain {
                     }
                 }
             }
-
-            CompletableFuture.allOf(disconnectFutures.toArray(new CompletableFuture<?>[0]))
-                    .join();
+            CompletableFuture.allOf(disconnectFutures.toArray(new CompletableFuture<?>[0])).join();
         }
     }
 
     public static class CLIVersionProvider implements CommandLine.IVersionProvider {
 
         @Override
-        public String[] getVersion() throws Exception {
+        public @NotNull String @NotNull [] getVersion() throws Exception {
             String version = getClass().getPackage().getImplementationVersion();
             if (version == null) {
                 version = "DEVELOPMENT";
             }
-            return new String[]{version,
-                    "Picocli " + CommandLine.VERSION,
+            return new String[]{
+                    version, "Picocli " + CommandLine.VERSION,
                     "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
-                    "OS: ${os.name} ${os.version} ${os.arch}"};
+                    "OS: ${os.name} ${os.version} ${os.arch}"
+            };
         }
     }
 }

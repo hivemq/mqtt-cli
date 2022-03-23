@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -26,9 +27,9 @@ import java.io.IOException;
 
 public interface Subscribe extends Context {
 
-    @NotNull String[] getTopics();
+    @NotNull String @NotNull [] getTopics();
 
-    @NotNull MqttQos[] getQos();
+    @NotNull MqttQos @NotNull [] getQos();
 
     @Nullable File getOutputFile();
 
@@ -42,16 +43,14 @@ public interface Subscribe extends Context {
 
     @Nullable Mqtt5UserProperties getUserProperties();
 
-    default boolean createOutputFile(final @Nullable File outputFile) {
-
+    default boolean outputFileInvalid(final @Nullable File outputFile) {
         if (outputFile == null) {
             // option --outputToFile was not used
-            return true;
+            return false;
         }
-
         if (outputFile.isDirectory()) {
             Logger.error("Cannot create output file {} as it is a directory", outputFile.getAbsolutePath());
-            return false;
+            return true;
         }
 
         try {
@@ -60,11 +59,9 @@ public interface Subscribe extends Context {
             }
         } catch (final @NotNull IOException e) {
             Logger.error("Could not create output file {}", outputFile.getAbsolutePath(), e);
-            return false;
+            return true;
         }
 
-        return true;
-
+        return false;
     }
-
 }

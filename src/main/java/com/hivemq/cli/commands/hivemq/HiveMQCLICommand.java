@@ -13,32 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.hivemq;
 
 import com.hivemq.cli.MqttCLIMain;
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "hivemq",
-        description = "HiveMQ Command Line Interpreter.",
-        synopsisHeading = "%n@|bold Usage:|@  ",
-        descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n",
-        mixinStandardHelpOptions = true,
+@CommandLine.Command(name = "hivemq", description = "HiveMQ Command Line Interpreter.",
+        synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
+        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class HiveMQCLICommand implements Callable<Integer> {
 
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
-    CommandLine.Model.CommandSpec spec;
+    private @NotNull CommandLine.Model.CommandSpec spec;
 
     @Inject
-    public HiveMQCLICommand() { }
+    public HiveMQCLICommand() {}
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
         return 0;
     }

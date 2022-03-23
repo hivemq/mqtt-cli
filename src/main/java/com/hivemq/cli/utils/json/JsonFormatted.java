@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.jetbrains.annotations.NotNull;
 
 abstract class JsonFormatted {
 
-     private final static Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .setLenient()
-            .create();
+    private static final @NotNull Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
 
-    public String toString() {
+    public @NotNull String toString() {
         return gson.toJson(this);
     }
-
 }

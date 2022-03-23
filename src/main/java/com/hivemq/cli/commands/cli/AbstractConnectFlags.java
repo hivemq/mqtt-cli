@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.commands.AbstractCommonFlags;
@@ -23,6 +24,7 @@ import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -31,16 +33,17 @@ import java.util.Arrays;
 
 public abstract class AbstractConnectFlags extends AbstractCommonFlags implements Connect {
 
-    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client", order = 2)
-    @Nullable
-    private Long sessionExpiryInterval;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
+            description = "The lifetime of the session of the connected client", order = 2)
+    private @Nullable Long sessionExpiryInterval;
 
-    @CommandLine.Option(names = {"-Cup", "--connectUserProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the connect message'", order = 2)
-    @Nullable
-    private Mqtt5UserProperty[] connectUserProperties;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-Cup", "--connectUserProperty"}, converter = Mqtt5UserPropertyConverter.class,
+            description = "A user property of the connect message'", order = 2)
+    private @Nullable Mqtt5UserProperty @Nullable [] connectUserProperties;
 
-
-    String connectOptions() {
+    @NotNull String connectOptions() {
         return commonOptions() +
                 (sessionExpiryInterval != null ? (", sessionExpiryInterval=" + sessionExpiryInterval) : "") +
                 (connectUserProperties != null ? (", userProperties=" + Arrays.toString(connectUserProperties)) : "") +
@@ -53,23 +56,22 @@ public abstract class AbstractConnectFlags extends AbstractCommonFlags implement
         super.logUnusedOptions();
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
             if (sessionExpiryInterval != null) {
-                Logger.warn("Connect session expiry interval was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Connect session expiry interval was set but is unused in MQTT Version {}",
+                        MqttVersion.MQTT_3_1_1);
             }
 
             if (connectUserProperties != null) {
-                Logger.warn("Connect user properties were set but are unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Connect user properties were set but are unused in MQTT Version {}",
+                        MqttVersion.MQTT_3_1_1);
             }
         }
     }
 
-    @Nullable
-    public Long getSessionExpiryInterval() {
+    public @Nullable Long getSessionExpiryInterval() {
         return sessionExpiryInterval;
     }
 
-    @Nullable
-    public Mqtt5UserProperties getConnectUserProperties() {
+    public @Nullable Mqtt5UserProperties getConnectUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(connectUserProperties);
     }
-
 }

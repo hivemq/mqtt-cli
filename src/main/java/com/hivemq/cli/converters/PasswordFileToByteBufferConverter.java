@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import java.io.BufferedReader;
@@ -23,11 +25,11 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 
 public class PasswordFileToByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
+
     @Override
-    public ByteBuffer convert(String value) throws Exception {
+    public @NotNull ByteBuffer convert(final @NotNull String value) throws Exception {
         final FileConverter fileConverter = new FileConverter();
         final File file = fileConverter.convert(value);
-
         final BufferedReader in = Files.newBufferedReader(file.toPath());
 
         return ByteBuffer.wrap(in.readLine().getBytes());

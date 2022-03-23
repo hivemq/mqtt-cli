@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt.test.results;
 
 public enum SharedSubscriptionTestResult {
-    OK, NOT_SHARED, TIME_OUT, INTERRUPTED, PUBLISH_FAILED, SUBSCRIBE_FAILED;
+    OK,
+    NOT_SHARED,
+    TIME_OUT,
+    INTERRUPTED,
+    PUBLISH_FAILED,
+    SUBSCRIBE_FAILED
 }

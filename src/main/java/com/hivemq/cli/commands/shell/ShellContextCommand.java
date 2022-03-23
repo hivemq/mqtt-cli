@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.commands.shell;
 
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -24,24 +24,22 @@ import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
-@CommandLine.Command(sortOptions = false,
-        name = "> ",
+@CommandLine.Command(sortOptions = false, name = "> ",
         description = "In context mode all MQTT commands relate to the currently active client.",
         synopsisHeading = "%n@|bold Usage|@:  ",
-        synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch | ls | cls | exit }",
-        descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options|@:%n",
-        commandListHeading = "%n@|bold Commands|@:%n",
-        separator = " ")
-
+        synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch | ls | cls | exit }", descriptionHeading = "%n",
+        optionListHeading = "%n@|bold Options|@:%n", commandListHeading = "%n@|bold Commands|@:%n", separator = " ")
 public class ShellContextCommand implements Runnable, CliCommand {
 
     public static @Nullable MqttClient contextClient;
-    MqttClientExecutor mqttClientExecutor;
+
+    @NotNull MqttClientExecutor mqttClientExecutor;
 
     //needed for pico cli - reflection code generation
     public ShellContextCommand() {
+        //noinspection ConstantConditions
         this(null);
     }
 
@@ -64,18 +62,23 @@ public class ShellContextCommand implements Runnable, CliCommand {
 
     @Override
     public void run() {
-        ShellCommand.TERMINAL_WRITER.println(ShellCommand.getUsageMessage());
+        Objects.requireNonNull(ShellCommand.TERMINAL_WRITER).println(ShellCommand.getUsageMessage());
     }
 
-    public String getKey() {
-        return "client {" +
-                "identifier='" + contextClient.getConfig().getClientIdentifier().get() + '\'' +
-                ", host='" + contextClient.getConfig().getServerHost() + '\'' +
-                '}';
+    public @NotNull String getKey() {
+        return "client {" + "identifier='" + Objects.requireNonNull(contextClient)
+                .getConfig()
+                .getClientIdentifier()
+                .map(Object::toString)
+                .orElse("") + '\'' + ", host='" + contextClient.getConfig().getServerHost() + '\'' + '}';
     }
 
-    public String getIdentifier() {
-        return contextClient.getConfig().getClientIdentifier().get().toString();
+    public @NotNull String getIdentifier() {
+        return Objects.requireNonNull(contextClient)
+                .getConfig()
+                .getClientIdentifier()
+                .map(Object::toString)
+                .orElse("");
     }
 
     public boolean isDebug() {

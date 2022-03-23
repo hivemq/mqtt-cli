@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.cli;
 
 import com.google.common.base.Joiner;
@@ -23,13 +24,7 @@ import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
-import com.hivemq.cli.mqtt.test.results.AsciiCharsInClientIdTestResults;
-import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
-import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
-import com.hivemq.cli.mqtt.test.results.QosTestResult;
-import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
-import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
-import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
+import com.hivemq.cli.mqtt.test.results.*;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -42,58 +37,26 @@ import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckRestrict
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
-import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
-@CommandLine.Command(
-        name = "test",
+@CommandLine.Command(name = "test",
         description = "Tests the specified broker on different MQTT feature support and prints the results",
         sortOptions = false)
 public class TestBrokerCommand implements Runnable {
 
-    final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
+    private static final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
 
-    @CommandLine.Option(names = {"-h", "--host"}, description = "The hostname of the message broker (default 'localhost')", order = 1)
-    private @Nullable String host;
-
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
-    @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)", order = 1)
-    private @Nullable Integer port;
-
-    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class, description = "The MQTT version to test the broker on (default: test both versions)", order = 1)
-    private @Nullable MqttVersion version;
-
-    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false", description = "Perform all tests for all MQTT versions (default: only MQTT 3)", order = 1)
-    private boolean testAll;
-
-    @CommandLine.Option(names = {"-t", "--timeOut"}, defaultValue = "10", description = "The time to wait for the broker to respond", order = 1)
-    private @NotNull Integer timeOut;
-
-    @CommandLine.Option(names = {"-q", "--qosTries"}, defaultValue = "10", description = "The amount of publishes to send to the broker on every qos level", order = 1)
-    private @NotNull Integer qosTries;
-
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 1)
-    private boolean logToLogfile;
-
-    @CommandLine.Mixin
-    private AuthenticationOptions authenticationOptions = new AuthenticationOptions();
-
-    @CommandLine.Mixin
-    private SslOptions sslOptions = new SslOptions();
+    private final @NotNull DefaultCLIProperties defaultCLIProperties;
 
     private @Nullable MqttClientSslConfig sslConfig;
 
-    private final DefaultCLIProperties defaultCLIProperties;
-
-    //needed for pico cli - reflection code generation
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
     public TestBrokerCommand() {
+        //noinspection ConstantConditions
         this(null);
     }
 
@@ -102,9 +65,56 @@ public class TestBrokerCommand implements Runnable {
         this.defaultCLIProperties = defaultCLIProperties;
     }
 
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
+    private boolean versionInfoRequested;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    private boolean usageHelpRequested;
+
+    @CommandLine.Option(names = {"-h", "--host"},
+            description = "The hostname of the message broker (default 'localhost')", order = 1)
+    private @Nullable String host;
+
+    @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)",
+            order = 1)
+    private @Nullable Integer port;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class,
+            description = "The MQTT version to test the broker on (default: test both versions)", order = 1)
+    private @Nullable MqttVersion version;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false",
+            description = "Perform all tests for all MQTT versions (default: only MQTT 3)", order = 1)
+    private boolean testAll;
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
+    @CommandLine.Option(names = {"-t", "--timeOut"}, defaultValue = "10",
+            description = "The time to wait for the broker to respond", order = 1)
+    private @NotNull Integer timeOut;
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
+    @CommandLine.Option(names = {"-q", "--qosTries"}, defaultValue = "10",
+            description = "The amount of publishes to send to the broker on every qos level", order = 1)
+    private @NotNull Integer qosTries;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
+            description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
+            order = 1)
+    private boolean logToLogfile;
+
+    @CommandLine.Mixin
+    private final @NotNull AuthenticationOptions authenticationOptions = new AuthenticationOptions();
+
+    @CommandLine.Mixin
+    private final @NotNull SslOptions sslOptions = new SslOptions();
+
     @Override
     public void run() {
-
         LoggerUtils.turnOffConsoleLogging(logToLogfile);
 
         Logger.trace("Command {}", this);
@@ -118,7 +128,7 @@ public class TestBrokerCommand implements Runnable {
 
         try {
             sslConfig = sslOptions.buildSslConfig();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e, "Could not build SSL configuration");
             System.err.println("Could not build SSL config - " + Throwables.getRootCause(e).getMessage());
             return;
@@ -138,20 +148,19 @@ public class TestBrokerCommand implements Runnable {
 
     public void testMqtt5Features() {
         final Mqtt5FeatureTester mqtt5Tester = new Mqtt5FeatureTester(
-                host,
-                port,
+                Objects.requireNonNull(host),
+                Objects.requireNonNull(port),
                 authenticationOptions.getUser(),
                 authenticationOptions.getPassword(),
                 sslConfig,
-                timeOut
-        );
+                timeOut);
 
         Logger.info("Testing MQTT 5");
 
         // Test if MQTT5 is supported
         System.out.print("MQTT 5: ");
 
-        Mqtt5ConnAck connAck;
+        final Mqtt5ConnAck connAck;
         try {
             connAck = mqtt5Tester.testConnect();
         } catch (final Exception e) {
@@ -164,15 +173,15 @@ public class TestBrokerCommand implements Runnable {
             System.out.println("NO");
             return;
         } else if (connAck.getReasonCode() != Mqtt5ConnAckReasonCode.SUCCESS) {
-            System.out.println(connAck.getReasonCode().toString());
+            System.out.println(connAck.getReasonCode());
             return;
         } else {
             System.out.println("OK");
         }
 
-        //*********************//
-        /* Connect Restrictions */
-        //*********************//
+        /* **********************
+         * Connect Restrictions *
+         ************************/
 
         final Mqtt5ConnAckRestrictions restrictions = connAck.getRestrictions();
 
@@ -203,16 +212,19 @@ public class TestBrokerCommand implements Runnable {
         System.out.println(restrictions.getTopicAliasMaximum());
 
         System.out.print("\t\t> Session expiry interval: ");
-        System.out.println(connAck.getSessionExpiryInterval().isPresent() ? connAck.getSessionExpiryInterval().getAsLong() + "s" : "Client-based");
+        System.out.println(
+                connAck.getSessionExpiryInterval().isPresent() ? connAck.getSessionExpiryInterval().getAsLong() + "s" :
+                        "Client-based");
 
         System.out.print("\t\t> Server keep alive: ");
-        System.out.println(connAck.getServerKeepAlive().isPresent() ? connAck.getServerKeepAlive().getAsInt() + "s" : "Client-based");
+        System.out.println(connAck.getServerKeepAlive().isPresent() ? connAck.getServerKeepAlive().getAsInt() + "s" :
+                "Client-based");
 
 
         if (testAll) {
-            //**************//
-            /* Do all tests */
-            //*************//
+            /* **************
+             * Do all tests *
+             ****************/
 
             // Print max topic length
             System.out.print("\t- Maximum topic length: ");
@@ -247,7 +259,8 @@ public class TestBrokerCommand implements Runnable {
 
             // Test if wildcard subscriptions are allowed
             System.out.print("\t- Wildcard subscriptions: ");
-            final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = mqtt5Tester.testWildcardSubscriptions();
+            final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult =
+                    mqtt5Tester.testWildcardSubscriptions();
             if (wildcardSubscriptionsTestResult.isSuccess()) {
                 System.out.println("OK");
             } else {
@@ -260,7 +273,7 @@ public class TestBrokerCommand implements Runnable {
 
             System.out.print("\t- Shared subscriptions: ");
             final SharedSubscriptionTestResult sharedSubscriptionTestResult = mqtt5Tester.testSharedSubscription();
-            System.out.println(sharedSubscriptionTestResult.toString());
+            System.out.println(sharedSubscriptionTestResult);
 
             // Test max payload size
             System.out.print("\t- Payload size: ");
@@ -294,23 +307,22 @@ public class TestBrokerCommand implements Runnable {
 
     public void testMqtt3Features() {
         final Mqtt3FeatureTester mqtt3Tester = new Mqtt3FeatureTester(
-                host,
-                port,
+                Objects.requireNonNull(host),
+                Objects.requireNonNull(port),
                 authenticationOptions.getUser(),
                 authenticationOptions.getPassword(),
                 sslConfig,
-                timeOut
-        );
+                timeOut);
 
         Logger.info("Testing MQTT 3");
 
         // Test if MQTT3 is supported
         System.out.print("MQTT 3: ");
 
-        Mqtt3ConnAck connAck;
+        final Mqtt3ConnAck connAck;
         try {
             connAck = mqtt3Tester.testConnect();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Logger.error(e, "Could not connect MQTT 3 client");
             System.out.println("Could not connect MQTT 3 client - " + Throwables.getRootCause(e).getMessage());
             return;
@@ -318,12 +330,10 @@ public class TestBrokerCommand implements Runnable {
         if (connAck == null) {
             System.out.println("NO");
             return;
-        }
-        else if (connAck.getReturnCode() != Mqtt3ConnAckReturnCode.SUCCESS) {
-            System.out.println(connAck.getReturnCode().toString());
+        } else if (connAck.getReturnCode() != Mqtt3ConnAckReturnCode.SUCCESS) {
+            System.out.println(connAck.getReturnCode());
             return;
-        }
-        else {
+        } else {
             System.out.println("OK");
         }
 
@@ -373,7 +383,7 @@ public class TestBrokerCommand implements Runnable {
 
         System.out.print("\t- Shared subscriptions: ");
         final SharedSubscriptionTestResult sharedSubscriptionTestResult = mqtt3Tester.testSharedSubscription();
-        System.out.println(sharedSubscriptionTestResult.toString());
+        System.out.println(sharedSubscriptionTestResult);
 
         // Test max payload size
         System.out.print("\t- Payload size: ");
@@ -405,20 +415,10 @@ public class TestBrokerCommand implements Runnable {
     }
 
     @Override
-    public String toString() {
-        return "TestBrokerCommand{" +
-                "MAX_PAYLOAD_TEST_SIZE=" + MAX_PAYLOAD_TEST_SIZE +
-                ", host='" + host + '\'' +
-                ", usageHelpRequested=" + usageHelpRequested +
-                ", port=" + port +
-                ", version=" + version +
-                ", testAll=" + testAll +
-                ", timeOut=" + timeOut +
-                ", qosTries=" + qosTries +
-                ", logToLogfile=" + logToLogfile +
-                ", authenticationOptions=" + authenticationOptions +
-                ", sslOptions=" + sslOptions +
-                ", sslConfig=" + sslConfig +
-                '}';
+    public @NotNull String toString() {
+        return "TestBrokerCommand{" + "MAX_PAYLOAD_TEST_SIZE=" + MAX_PAYLOAD_TEST_SIZE + ", host='" + host + '\'' +
+                ", port=" + port + ", version=" + version + ", testAll=" + testAll + ", timeOut=" + timeOut +
+                ", qosTries=" + qosTries + ", logToLogfile=" + logToLogfile + ", authenticationOptions=" +
+                authenticationOptions + ", sslOptions=" + sslOptions + ", sslConfig=" + sslConfig + '}';
     }
 }
