@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,27 +24,24 @@ import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.security.PrivateKey;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FileToPrivateKeyConverterTest {
 
-    private FileToPrivateKeyConverter fileToPrivateKeyConverter;
-    private String pathToEncryptedRSAKey;
-    private String pathToDecryptedRSAKey;
-    private String pathToDecryptedECKey;
-    private String pathToDecryptedMalformedRSAKey;
+    private @NotNull FileToPrivateKeyConverter fileToPrivateKeyConverter;
+    private @NotNull String pathToEncryptedRSAKey;
+    private @NotNull String pathToDecryptedRSAKey;
+    private @NotNull String pathToDecryptedECKey;
+    private @NotNull String pathToDecryptedMalformedRSAKey;
 
     @BeforeEach
     void setUp() {
         fileToPrivateKeyConverter = new FileToPrivateKeyConverter();
-
         final URL encryptedRSAKeyResource = getClass().getResource("/FileToPrivateKeyConverter/encrypted_RSA_key.pem");
         final URL decryptedRSAKeyResource = getClass().getResource("/FileToPrivateKeyConverter/decrypted_RSA_key.pem");
         final URL decryptedECKeyResource = getClass().getResource("/FileToPrivateKeyConverter/decrypted_EC_key.pem");
-        final URL decryptedMalformedRSAKeyResource = getClass().getResource("/FileToPrivateKeyConverter/decrypted_malformed_RSA_key.pem");
-
+        final URL decryptedMalformedRSAKeyResource =
+                getClass().getResource("/FileToPrivateKeyConverter/decrypted_malformed_RSA_key.pem");
 
         assertNotNull(encryptedRSAKeyResource);
         assertNotNull(decryptedRSAKeyResource);
@@ -59,26 +58,29 @@ class FileToPrivateKeyConverterTest {
     @Test
     void convert_ENCRYPTED_RSA_KEY_SUCCESS() throws Exception {
         System.setIn(new ByteArrayInputStream("password".getBytes()));
-        PrivateKey privateKey = fileToPrivateKeyConverter.convert(pathToEncryptedRSAKey);
+        final PrivateKey privateKey = fileToPrivateKeyConverter.convert(pathToEncryptedRSAKey);
+
         assertNotNull(privateKey);
     }
 
     @Test
     void convert_DECRYPTED_RSA_KEY_SUCCESS() throws Exception {
-        PrivateKey privateKey = fileToPrivateKeyConverter.convert(pathToDecryptedRSAKey);
+        final PrivateKey privateKey = fileToPrivateKeyConverter.convert(pathToDecryptedRSAKey);
+
         assertNotNull(privateKey);
     }
 
     @Test
     void convert_DECRYPTED_EC_KEY_SUCCESS() throws Exception {
-        PrivateKey privateKey = fileToPrivateKeyConverter.convert(pathToDecryptedECKey);
+        final PrivateKey privateKey = fileToPrivateKeyConverter.convert(pathToDecryptedECKey);
+
         assertNotNull(privateKey);
     }
 
     @Test
-    void convert_DECRYPTED_MALFORMED_RSA_KEY_FAILURE() throws Exception {
-        Exception e = assertThrows(Exception.class, () -> fileToPrivateKeyConverter.convert(pathToDecryptedMalformedRSAKey));
+    void convert_DECRYPTED_MALFORMED_RSA_KEY_FAILURE() {
+        final Exception e =
+                assertThrows(Exception.class, () -> fileToPrivateKeyConverter.convert(pathToDecryptedMalformedRSAKey));
         assertEquals(FileToPrivateKeyConverter.MALFORMED_KEY, e.getMessage());
     }
-
 }

@@ -21,7 +21,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
 class MqttCLIMainTest {
 
     @BeforeEach
@@ -37,24 +36,24 @@ class MqttCLIMainTest {
     @Test
     @ExpectSystemExitWithStatus(0)
     void mqtt_command() {
-        MqttCLIMain.main(new String[]{});
+        MqttCLIMain.main();
     }
 
     @Test
     @ExpectSystemExitWithStatus(0)
     void hivemq_command() {
-        MqttCLIMain.main(new String[]{"hivemq"});
+        MqttCLIMain.main("hivemq");
     }
 
     @Test
     @ExpectSystemExitWithStatus(0)
     void hivemq_export_command() {
-        MqttCLIMain.main(new String[]{"hivemq", "export"});
+        MqttCLIMain.main("hivemq", "export");
     }
 
     @Test
     @ExpectSystemExitWithStatus(0)
     void hivemq_export_clients_help_command() {
-        MqttCLIMain.main(new String[]{"hivemq", "export", "clients", "-h"});
+        MqttCLIMain.main("hivemq", "export", "clients", "-h");
     }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
@@ -26,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class Mqtt5UserPropertyConverterTest {
 
-    private Mqtt5UserPropertyConverter userPropertiesConverter;
+    private @NotNull Mqtt5UserPropertyConverter userPropertiesConverter;
 
     @BeforeEach
     void setUp() {
@@ -36,16 +37,16 @@ class Mqtt5UserPropertyConverterTest {
     @ParameterizedTest
     @ValueSource(strings = {"test=test", " = ", "3251251=1252151"})
     void testSuccess_OnePair(final @NotNull String s) throws Exception {
-        String[] keyValuePair = s.split("=");
-        Mqtt5UserProperty expected = Mqtt5UserProperty.of(keyValuePair[0], keyValuePair[1]);
+        final String[] keyValuePair = s.split("=");
+        final Mqtt5UserProperty expected = Mqtt5UserProperty.of(keyValuePair[0], keyValuePair[1]);
 
         assertEquals(expected, userPropertiesConverter.convert(s));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "=", " =", "test=", "==="})
-    void testFailure_NoDelimeterFound(String s) {
-        Exception e = assertThrows(Exception.class, () -> userPropertiesConverter.convert(s));
+    void testFailure_NoDelimeterFound(final @NotNull String s) {
+        final Exception e = assertThrows(Exception.class, () -> userPropertiesConverter.convert(s));
         assertEquals(Mqtt5UserPropertyConverter.KEY_VALUE_DELIMETER_ERROR, e.getMessage());
     }
 }
