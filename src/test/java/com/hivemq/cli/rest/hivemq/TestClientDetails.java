@@ -13,16 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.rest.hivemq;
 
-
-import com.hivemq.cli.openapi.hivemq.CertificateInformation;
-import com.hivemq.cli.openapi.hivemq.ClientDetails;
-import com.hivemq.cli.openapi.hivemq.ClientRestrictions;
-import com.hivemq.cli.openapi.hivemq.ConnectionDetails;
-import com.hivemq.cli.openapi.hivemq.ProxyInformation;
-import com.hivemq.cli.openapi.hivemq.TLV;
-import com.hivemq.cli.openapi.hivemq.TlsInformation;
+import com.hivemq.cli.openapi.hivemq.*;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;

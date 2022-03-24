@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli;
 
 import com.hivemq.client.mqtt.MqttVersion;
-import org.junit.jupiter.api.BeforeAll;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.tinylog.Level;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 
@@ -30,20 +33,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultCLIPropertiesTest {
 
-    @TempDir
-    static Path pathToTmpDir;
-    private static String pathToPropertiesDir;
-    private static String pathToEmptyProperties;
-    private static String pathToOverrideProperties;
-    @TempDir
-    static Path pathToNoProperties;
+    private @NotNull Path pathToTmpDir;
+    private @NotNull Path pathToNoProperties;
+    private @NotNull String pathToPropertiesDir;
+    private @NotNull String pathToEmptyProperties;
+    private @NotNull String pathToOverrideProperties;
 
-    @BeforeAll
-    static void setUp() throws IOException {
+    @BeforeEach
+    void setUp(@TempDir final @NotNull Path pathToTmpDir, @TempDir final @NotNull Path pathToNoProperties)
+            throws IOException {
+        this.pathToTmpDir = pathToTmpDir;
+        this.pathToNoProperties = pathToNoProperties;
         System.setProperty("user.home", pathToTmpDir.toString());
-        File mqttDir = new File(pathToTmpDir.toString() + "/.mqtt-cli");
-        mqttDir.createNewFile();
-        pathToPropertiesDir = DefaultCLIPropertiesTest.class.getResource("/PropertyFiles").getPath();
+        final File mqttDir = new File(pathToTmpDir + "/.mqtt-cli");
+        assertTrue(mqttDir.createNewFile());
+        final URL resource = getClass().getResource("/PropertyFiles");
+        assertNotNull(resource);
+        pathToPropertiesDir = resource.getPath();
         pathToEmptyProperties = pathToPropertiesDir + "/empty.properties";
         pathToOverrideProperties = pathToPropertiesDir + "/override.properties";
     }
@@ -56,7 +62,6 @@ class DefaultCLIPropertiesTest {
         defaultCLIProperties.init();
 
         assertTrue(missingProperties.exists());
-
         assertEquals(MqttVersion.MQTT_5_0, defaultCLIProperties.getMqttVersion());
         assertEquals("localhost", defaultCLIProperties.getHost());
         assertEquals(1883, defaultCLIProperties.getPort());
@@ -115,5 +120,4 @@ class DefaultCLIPropertiesTest {
 
         assertThrows(IllegalArgumentException.class, defaultCLIProperties::init);
     }
-
 }

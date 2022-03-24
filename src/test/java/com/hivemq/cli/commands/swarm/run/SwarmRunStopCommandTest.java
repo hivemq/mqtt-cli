@@ -31,9 +31,6 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-/**
- * @author Yannick Weber
- */
 class SwarmRunStopCommandTest {
 
     private @NotNull RunsApi runsApi;
@@ -127,5 +124,4 @@ class SwarmRunStopCommandTest {
         verify(apiClient).setBasePath("http://localhost:8080");
         verify(errorTransformer, times(0)).transformError(any());
     }
-
 }

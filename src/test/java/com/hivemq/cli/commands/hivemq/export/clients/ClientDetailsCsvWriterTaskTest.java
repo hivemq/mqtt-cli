@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.hivemq.export.clients;
 
-import com.hivemq.cli.openapi.hivemq.CertificateInformation;
-import com.hivemq.cli.openapi.hivemq.ClientDetails;
-import com.hivemq.cli.openapi.hivemq.ClientRestrictions;
-import com.hivemq.cli.openapi.hivemq.ConnectionDetails;
-import com.hivemq.cli.openapi.hivemq.ProxyInformation;
-import com.hivemq.cli.openapi.hivemq.TLV;
-import com.hivemq.cli.openapi.hivemq.TlsInformation;
+import com.hivemq.cli.openapi.hivemq.*;
 import com.hivemq.cli.rest.hivemq.TestClientDetails;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 import com.opencsv.exceptions.CsvValidationException;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import java.io.File;
 import java.io.FileReader;
@@ -37,11 +32,7 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 
 import static com.hivemq.cli.commands.hivemq.export.clients.ClientDetailsCsvWriterTask.EXPORT_CSV_HEADER;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -49,33 +40,36 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 class ClientDetailsCsvWriterTaskTest {
 
-    @Mock
-    private CompletableFuture<Void> clientDetailsFuture;
-    private File csvFile;
-    private BlockingQueue<ClientDetails> clientDetailsQueue;
-    private ClientDetailsCsvWriterTask clientDetailsCsvWriterTask;
-
-    private CSVReader csvReader;
+    private @NotNull CompletableFuture<Void> clientDetailsFuture;
+    private @NotNull File csvFile;
+    private @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+    private @NotNull ClientDetailsCsvWriterTask clientDetailsCsvWriterTask;
+    private @NotNull CSVReader csvReader;
 
     @BeforeEach
-    @SuppressWarnings("unchecked")
     void setUp() throws IOException {
+        //noinspection unchecked
         clientDetailsFuture = mock(CompletableFuture.class);
         when(clientDetailsFuture.isDone()).thenReturn(false);
+
         csvFile = File.createTempFile("client_details", ".csv");
         clientDetailsQueue = new LinkedBlockingQueue<>();
-        clientDetailsCsvWriterTask = new ClientDetailsCsvWriterTask(clientDetailsFuture, clientDetailsQueue, csvFile,
-                CSVWriter.DEFAULT_SEPARATOR, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+        clientDetailsCsvWriterTask = new ClientDetailsCsvWriterTask(
+                clientDetailsFuture,
+                clientDetailsQueue,
+                csvFile,
+                CSVWriter.DEFAULT_SEPARATOR,
+                CSVWriter.DEFAULT_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
-
         csvReader = new CSVReader(new FileReader(csvFile));
     }
 
     @Test
-    void all_client_details_success() throws IOException, CsvValidationException, ExecutionException, InterruptedException {
+    void all_client_details_success()
+            throws IOException, CsvValidationException, ExecutionException, InterruptedException {
         final ClientDetails clientDetails = new ClientDetails();
         clientDetails.setId("test");
         clientDetails.setConnected(true);
@@ -110,8 +104,6 @@ class ClientDetailsCsvWriterTaskTest {
 
         proxyInformation.setTlvs(tlvs);
         connectionDetails.setProxyInformation(proxyInformation);
-
-
         connectionDetails.setMqttVersion("MQTT 3.1.1");
         connectionDetails.setConnectedListenerId("tcp-listener-1883");
         connectionDetails.setConnectedNodeId("06cnn");
@@ -147,49 +139,22 @@ class ClientDetailsCsvWriterTaskTest {
 
         completableFuture.get();
 
-
         assertArrayEquals(EXPORT_CSV_HEADER, csvReader.readNext());
 
         final String[] expectedRow = {
-                "test",
-                "true",
-                "120",
-                "2020-07-17T14:36:58.641286+02:00",
-                "50",
-                "true",
-                "256000000",
-                "1000",
-                "DISCARD",
-                "127.0.0.1",
-                "5.35.166.178",
-                "40101",
-                "127.125.124.124",
-                "1883",
-                "key1=value1;key2=value1;",
-                "MQTT 3.1.1",
-                "tcp-listener-1883",
-                "06cnn",
-                "120",
-                "user-1",
-                "pass-1",
-                "true",
-                "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-                "TLSv1.2",
-                "CertCN",
-                "my-org",
-                "org-unit",
-                "132132312321",
-                "2020-07-17T14:36:58.641286+02:00",
-                "2020-07-17T14:36:58.641286+02:00",
-                "DE",
-                "BY"
+                "test", "true", "120", "2020-07-17T14:36:58.641286+02:00", "50", "true", "256000000", "1000", "DISCARD",
+                "127.0.0.1", "5.35.166.178", "40101", "127.125.124.124", "1883", "key1=value1;key2=value1;",
+                "MQTT 3.1.1", "tcp-listener-1883", "06cnn", "120", "user-1", "pass-1", "true",
+                "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "TLSv1.2", "CertCN", "my-org", "org-unit", "132132312321",
+                "2020-07-17T14:36:58.641286+02:00", "2020-07-17T14:36:58.641286+02:00", "DE", "BY"
         };
 
         assertArrayEquals(expectedRow, csvReader.readNext());
     }
 
     @Test
-    void all_client_details_no_restrictions() throws IOException, CsvValidationException, ExecutionException, InterruptedException {
+    void all_client_details_no_restrictions()
+            throws IOException, CsvValidationException, ExecutionException, InterruptedException {
         final ClientDetails clientDetails = new ClientDetails();
         clientDetails.setId("test");
         clientDetails.setConnected(true);
@@ -197,7 +162,6 @@ class ClientDetailsCsvWriterTaskTest {
         clientDetails.setConnectedAt(OffsetDateTime.parse("2020-07-17T14:36:58.641286+02:00"));
         clientDetails.setMessageQueueSize(50L);
         clientDetails.setWillPresent(true);
-
         clientDetails.setRestrictions(null);
 
         final ConnectionDetails connectionDetails = new ConnectionDetails();
@@ -220,8 +184,6 @@ class ClientDetailsCsvWriterTaskTest {
 
         proxyInformation.setTlvs(tlvs);
         connectionDetails.setProxyInformation(proxyInformation);
-
-
         connectionDetails.setMqttVersion("MQTT 3.1.1");
         connectionDetails.setConnectedListenerId("tcp-listener-1883");
         connectionDetails.setConnectedNodeId("06cnn");
@@ -255,53 +217,24 @@ class ClientDetailsCsvWriterTaskTest {
 
         when(clientDetailsFuture.isDone()).thenReturn(true);
 
-
         completableFuture.get();
-
 
         assertArrayEquals(EXPORT_CSV_HEADER, csvReader.readNext());
 
         final String[] expectedRow = {
-                "test",
-                "true",
-                "120",
-                "2020-07-17T14:36:58.641286+02:00",
-                "50",
-                "true",
-                "",
-                "",
-                "",
-                "127.0.0.1",
-                "5.35.166.178",
-                "40101",
-                "127.125.124.124",
-                "1883",
-                "key1=value1;key2=value1;",
-                "MQTT 3.1.1",
-                "tcp-listener-1883",
-                "06cnn",
-                "120",
-                "user-1",
-                "pass-1",
-                "true",
-                "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-                "TLSv1.2",
-                "CertCN",
-                "my-org",
-                "org-unit",
-                "132132312321",
-                "2020-07-17T14:36:58.641286+02:00",
-                "2020-07-17T14:36:58.641286+02:00",
-                "DE",
-                "BY"
+                "test", "true", "120", "2020-07-17T14:36:58.641286+02:00", "50", "true", "", "", "", "127.0.0.1",
+                "5.35.166.178", "40101", "127.125.124.124", "1883", "key1=value1;key2=value1;", "MQTT 3.1.1",
+                "tcp-listener-1883", "06cnn", "120", "user-1", "pass-1", "true",
+                "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "TLSv1.2", "CertCN", "my-org", "org-unit", "132132312321",
+                "2020-07-17T14:36:58.641286+02:00", "2020-07-17T14:36:58.641286+02:00", "DE", "BY"
         };
 
         assertArrayEquals(expectedRow, csvReader.readNext());
     }
 
-
     @Test
-    void all_client_details_no_connection_details() throws IOException, CsvValidationException, ExecutionException, InterruptedException {
+    void all_client_details_no_connection_details()
+            throws IOException, CsvValidationException, ExecutionException, InterruptedException {
         final ClientDetails clientDetails = new ClientDetails();
         clientDetails.setId("test");
         clientDetails.setConnected(true);
@@ -309,64 +242,30 @@ class ClientDetailsCsvWriterTaskTest {
         clientDetails.setConnectedAt(OffsetDateTime.parse("2020-07-17T14:36:58.641286+02:00"));
         clientDetails.setMessageQueueSize(50L);
         clientDetails.setWillPresent(true);
-
         clientDetails.setRestrictions(null);
-
-
         clientDetails.setConnection(null);
 
         clientDetailsQueue.add(clientDetails);
 
         final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsCsvWriterTask);
 
-
         when(clientDetailsFuture.isDone()).thenReturn(true);
 
         completableFuture.get();
 
-
         assertArrayEquals(EXPORT_CSV_HEADER, csvReader.readNext());
 
         final String[] expectedRow = {
-                "test",
-                "true",
-                "120",
-                "2020-07-17T14:36:58.641286+02:00",
-                "50",
-                "true",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "test", "true", "120", "2020-07-17T14:36:58.641286+02:00", "50", "true", "", "", "", "", "", "", "", "",
+                "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""
         };
 
         assertArrayEquals(expectedRow, csvReader.readNext());
     }
 
     @Test
-    void all_client_details_50_times_success() throws IOException, CsvValidationException, InterruptedException, ExecutionException {
+    void all_client_details_50_times_success()
+            throws IOException, CsvValidationException, InterruptedException, ExecutionException {
         final ClientDetails clientDetails = new ClientDetails();
         clientDetails.setId("test");
         clientDetails.setConnected(true);
@@ -401,8 +300,6 @@ class ClientDetailsCsvWriterTaskTest {
 
         proxyInformation.setTlvs(tlvs);
         connectionDetails.setProxyInformation(proxyInformation);
-
-
         connectionDetails.setMqttVersion("MQTT 3.1.1");
         connectionDetails.setConnectedListenerId("tcp-listener-1883");
         connectionDetails.setConnectedNodeId("06cnn");
@@ -445,57 +342,32 @@ class ClientDetailsCsvWriterTaskTest {
 
         completableFuture.get();
 
-
         assertArrayEquals(EXPORT_CSV_HEADER, csvReader.readNext());
 
         final String[] expectedRow = {
-                "test",
-                "true",
-                "120",
-                "2020-07-17T14:36:58.641286+02:00",
-                "50",
-                "true",
-                "256000000",
-                "1000",
-                "DISCARD",
-                "127.0.0.1",
-                "5.35.166.178",
-                "40101",
-                "127.125.124.124",
-                "1883",
-                "key1=value1;key2=value1;",
-                "MQTT 3.1.1",
-                "tcp-listener-1883",
-                "06cnn",
-                "120",
-                "user-1",
-                "pass-1",
-                "true",
-                "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-                "TLSv1.2",
-                "CertCN",
-                "my-org",
-                "org-unit",
-                "132132312321",
-                "2020-07-17T14:36:58.641286+02:00",
-                "2020-07-17T14:36:58.641286+02:00",
-                "DE",
-                "BY"
+                "test", "true", "120", "2020-07-17T14:36:58.641286+02:00", "50", "true", "256000000", "1000", "DISCARD",
+                "127.0.0.1", "5.35.166.178", "40101", "127.125.124.124", "1883", "key1=value1;key2=value1;",
+                "MQTT 3.1.1", "tcp-listener-1883", "06cnn", "120", "user-1", "pass-1", "true",
+                "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "TLSv1.2", "CertCN", "my-org", "org-unit", "132132312321",
+                "2020-07-17T14:36:58.641286+02:00", "2020-07-17T14:36:58.641286+02:00", "DE", "BY"
         };
         for (int i = 0; i < 50; i++) {
             assertArrayEquals(expectedRow, csvReader.readNext());
         }
     }
 
-    
     @Test
-    void wait_for_client_details() throws IOException, CsvException, InterruptedException {
+    void wait_for_client_details() throws IOException, CsvException {
         final ClientDetails allClientDetails = TestClientDetails.getAllClientDetails();
         clientDetailsQueue = new LinkedBlockingQueue<>(1);
-        clientDetailsCsvWriterTask = new ClientDetailsCsvWriterTask(clientDetailsFuture, clientDetailsQueue, csvFile,
-                CSVWriter.DEFAULT_SEPARATOR, CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+        clientDetailsCsvWriterTask = new ClientDetailsCsvWriterTask(
+                clientDetailsFuture,
+                clientDetailsQueue,
+                csvFile,
+                CSVWriter.DEFAULT_SEPARATOR,
+                CSVWriter.DEFAULT_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
-
 
         final CompletableFuture<Void> detailsProducerFuture = CompletableFuture.runAsync(() -> {
             try {
@@ -503,14 +375,14 @@ class ClientDetailsCsvWriterTaskTest {
                     Thread.sleep(10);
                     clientDetailsQueue.put(allClientDetails);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new CompletionException(e);
             }
             when(clientDetailsFuture.isDone()).thenReturn(true);
         });
 
-
-        final CompletableFuture<Void> clientDetailsCsvWriterFuture = CompletableFuture.runAsync(clientDetailsCsvWriterTask);
+        final CompletableFuture<Void> clientDetailsCsvWriterFuture =
+                CompletableFuture.runAsync(clientDetailsCsvWriterTask);
 
         detailsProducerFuture.join();
         clientDetailsCsvWriterFuture.join();
@@ -518,6 +390,5 @@ class ClientDetailsCsvWriterTaskTest {
         final int writtenCsvLines = csvReader.readAll().size();
 
         assertEquals(51, writtenCsvLines);
-
     }
 }

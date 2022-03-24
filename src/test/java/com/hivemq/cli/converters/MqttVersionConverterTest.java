@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
 import com.hivemq.client.mqtt.MqttVersion;
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MqttVersionConverterTest {
 
-    private MqttVersionConverter mqttVersionConverter;
+    private @NotNull MqttVersionConverter mqttVersionConverter;
 
     @BeforeEach
     void setUp() {
@@ -53,16 +54,14 @@ class MqttVersionConverterTest {
     @ParameterizedTest()
     @ValueSource(strings = {"0", "1", "-1"})
     void convert_VERSION_UNSUPPORTED_FAILURE(final @NotNull String s) {
-        Exception e = assertThrows(Exception.class, () -> mqttVersionConverter.convert(s));
-
+        final Exception e = assertThrows(Exception.class, () -> mqttVersionConverter.convert(s));
         assertEquals(MqttVersionConverter.UNSUPPORTED_MQTT_VERSION, e.getMessage());
     }
 
     @ParameterizedTest()
     @ValueSource(strings = {"A", "15.d", "ABC.3", "3,1", "3.1"})
     void convert_VERSION_BAD_NUMBER(final @NotNull String s) {
-        Exception e = assertThrows(Exception.class, () -> mqttVersionConverter.convert(s));
-
+        final Exception e = assertThrows(Exception.class, () -> mqttVersionConverter.convert(s));
         assertEquals(MqttVersionConverter.BAD_NUMBER_FORMAT, e.getMessage());
     }
 }

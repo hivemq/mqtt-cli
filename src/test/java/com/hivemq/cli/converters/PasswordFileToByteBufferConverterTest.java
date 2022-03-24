@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
 import org.jetbrains.annotations.NotNull;
@@ -20,12 +21,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class PasswordFileToByteBufferConverterTest {
 
-    PasswordFileToByteBufferConverter passwordFileToByteBufferConverter;
+    private @NotNull PasswordFileToByteBufferConverter passwordFileToByteBufferConverter;
 
     @BeforeEach
     void setUp() {
@@ -35,9 +38,7 @@ class PasswordFileToByteBufferConverterTest {
     @Test
     void single_line() throws Exception {
         final File file = getFile("password_with_single_line.txt");
-
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();
-
         final byte[] actual = passwordFileToByteBufferConverter.convert(file.getPath()).array();
 
         assertArrayEquals(expected, actual);
@@ -46,9 +47,7 @@ class PasswordFileToByteBufferConverterTest {
     @Test
     void single_newLine() throws Exception {
         final File file = getFile("password_with_new_line.txt");
-
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();
-
         final byte[] actual = passwordFileToByteBufferConverter.convert(file.getPath()).array();
 
         assertArrayEquals(expected, actual);
@@ -57,16 +56,15 @@ class PasswordFileToByteBufferConverterTest {
     @Test
     void multi_newLine() throws Exception {
         final File file = getFile("password_with_multi_new_line.txt");
-
         final byte[] expected = "Z$a8o7PQ3wnoA%=F%Bx*cevXRym44y+NRFWiEA3C".getBytes();
-
         final byte[] actual = passwordFileToByteBufferConverter.convert(file.getPath()).array();
 
         assertArrayEquals(expected, actual);
     }
 
-
     private File getFile(final @NotNull String fileName) {
-        return new File(getClass().getResource("/" + getClass().getSimpleName() + "/" + fileName).getPath());
+        final URL resource = getClass().getResource("/" + getClass().getSimpleName() + "/" + fileName);
+        assertNotNull(resource);
+        return new File(resource.getPath());
     }
 }
