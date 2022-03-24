@@ -26,9 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
 
-/**
- * @author Yannick Weber
- */
 class SwarmRunStartCommandShutdownHookTest {
 
     private @NotNull ScenariosApi scenariosApi;

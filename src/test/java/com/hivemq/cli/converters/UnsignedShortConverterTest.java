@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -24,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UnsignedShortConverterTest {
 
-    private UnsignedShortConverter unsignedShortConverter;
+    private @NotNull UnsignedShortConverter unsignedShortConverter;
 
     @BeforeEach
     void setUp() {
@@ -33,23 +35,26 @@ class UnsignedShortConverterTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"test", "132.4", "0.5", "abc123", "123abc", "a.3", "3.b"})
-    void testInvalidString(String s) {
+    void testInvalidString(final @NotNull String s) {
         final Exception e = assertThrows(Exception.class, () -> unsignedShortConverter.convert(s));
+
         assertEquals(UnsignedShortConverter.WRONG_INPUT_MESSAGE, e.getMessage());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"-1", "65536", "-2147483648", "2147483647", "-1522155", "-5125125125"})
-    void testNegativeNumber(String s) {
+    void testNegativeNumber(final @NotNull String s) {
         final Exception e = assertThrows(java.lang.Exception.class, () -> unsignedShortConverter.convert(s));
+
         assertEquals(UnsignedShortConverter.WRONG_INPUT_MESSAGE, e.getMessage());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"0", "1", "65535", "5325", "23512"})
-    void testSuccess(String s) throws Exception {
-        long got = unsignedShortConverter.convert(s);
-        long expected = Long.parseLong(s);
+    void testSuccess(final @NotNull String s) throws Exception {
+        final long got = unsignedShortConverter.convert(s);
+        final long expected = Long.parseLong(s);
+
         assertEquals(expected, got);
     }
 }

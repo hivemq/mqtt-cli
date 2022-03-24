@@ -31,9 +31,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-/**
- * @author Yannick Weber
- */
 class SwarmStatusCommandTest {
 
     private @NotNull RunsApi runsApi;
@@ -49,7 +46,6 @@ class SwarmStatusCommandTest {
         commanderApi = mock(CommanderApi.class);
         errorTransformer = mock(SwarmApiErrorTransformer.class);
         swarmStatusCommand = new SwarmStatusCommand(gson, () -> runsApi, () -> commanderApi, errorTransformer, System.out);
-
         apiClient = mock(ApiClient.class);
         when(runsApi.getApiClient()).thenReturn(apiClient);
         when(commanderApi.getApiClient()).thenReturn(apiClient);
@@ -60,6 +56,7 @@ class SwarmStatusCommandTest {
         final CommanderStateResponse commanderStateResponse = mock(CommanderStateResponse.class);
         when(commanderStateResponse.getCommanderStatus()).thenReturn(null);
         when(commanderApi.getCommanderStatus()).thenReturn(commanderStateResponse);
+
         assertEquals(-1, swarmStatusCommand.call());
         verify(commanderApi).getCommanderStatus();
         verify(apiClient, times(2)).setBasePath("http://localhost:8080");
@@ -67,7 +64,6 @@ class SwarmStatusCommandTest {
 
     @Test
     void withRun_requestRun() throws Exception {
-
         final CommanderStateResponse commanderStateResponse = mock(CommanderStateResponse.class);
         when(commanderStateResponse.getCommanderStatus()).thenReturn("RUNNING");
         when(commanderStateResponse.getRunId()).thenReturn("1");
@@ -86,7 +82,6 @@ class SwarmStatusCommandTest {
 
     @Test
     void withRun_requestRunException_error() throws Exception {
-
         final CommanderStateResponse commanderStateResponse = mock(CommanderStateResponse.class);
         when(commanderStateResponse.getCommanderStatus()).thenReturn("RUNNING");
         when(commanderStateResponse.getRunId()).thenReturn("1");
@@ -106,7 +101,6 @@ class SwarmStatusCommandTest {
 
     @Test
     void withoutRun_notRequestRun() throws Exception {
-
         final CommanderStateResponse commanderStateResponse = mock(CommanderStateResponse.class);
         when(commanderStateResponse.getCommanderStatus()).thenReturn("RUNNING");
         when(commanderStateResponse.getRunId()).thenReturn(null);

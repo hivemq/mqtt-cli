@@ -25,9 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * @author Yannick Weber
- */
 class SwarmApiErrorTransformerTest {
 
     private @NotNull SwarmApiErrorTransformer swarmApiErrorTransformer;
@@ -44,6 +41,7 @@ class SwarmApiErrorTransformerTest {
         when(apiException.getCode()).thenReturn(400);
         when(apiException.getResponseBody()).thenReturn("");
         final Error error = swarmApiErrorTransformer.transformError(apiException);
+
         assertEquals("Unspecified Error.", error.getDetail());
     }
 
@@ -54,6 +52,7 @@ class SwarmApiErrorTransformerTest {
         when(apiException.getResponseBody()).thenReturn(
                 "{\"errors\":[{\"title\":\"Requested Resource Not Found.\",\"detail\":\"Run with id '3' was not found.\"}]}");
         final Error error = swarmApiErrorTransformer.transformError(apiException);
+
         assertEquals("Run with id '3' was not found.", error.getDetail());
     }
 
@@ -62,6 +61,7 @@ class SwarmApiErrorTransformerTest {
         final ApiException apiException = mock(ApiException.class);
         when(apiException.getCode()).thenReturn(500);
         final Error error = swarmApiErrorTransformer.transformError(apiException);
+
         assertEquals("Internal Server Error.", error.getDetail());
     }
 
@@ -70,6 +70,7 @@ class SwarmApiErrorTransformerTest {
         final ApiException apiException = mock(ApiException.class);
         when(apiException.getCode()).thenReturn(0);
         final Error error = swarmApiErrorTransformer.transformError(apiException);
+
         assertEquals("Connection Refused. Check if the Commander REST-endpoint is enabled.", error.getDetail());
 
     }
@@ -79,6 +80,7 @@ class SwarmApiErrorTransformerTest {
         final ApiException apiException = mock(ApiException.class);
         when(apiException.getCode()).thenReturn(404);
         final Error error = swarmApiErrorTransformer.transformError(apiException);
+
         assertEquals("Not found. Check if the commander is running in REST-mode.", error.getDetail());
     }
 
@@ -88,6 +90,7 @@ class SwarmApiErrorTransformerTest {
         when(apiException.getCode()).thenReturn(400);
         when(apiException.getResponseBody()).thenReturn("invalid json");
         final Error error = swarmApiErrorTransformer.transformError(apiException);
+
         assertEquals("invalid json", error.getDetail());
     }
 }
