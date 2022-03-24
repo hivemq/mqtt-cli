@@ -42,7 +42,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ExportClientsCommandTest {
+class ExportClientsCommandIT {
 
     public static final int HTTP_PORT = 8888;
 
