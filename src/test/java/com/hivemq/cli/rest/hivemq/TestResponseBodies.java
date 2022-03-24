@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.rest.hivemq;
+
+import org.jetbrains.annotations.NotNull;
 
 public class TestResponseBodies {
 
-    public static final String CLIENT_IDS_WITH_CURSOR =
+    public static final @NotNull String CLIENT_IDS_WITH_CURSOR =
+            //@formatter:off
             "{\n" +
                     "  \"items\": [\n" +
                     "    {\n" +
@@ -55,22 +59,28 @@ public class TestResponseBodies {
                     "    \"next\": \"/api/v1/hivemq/clients?cursor=bmV4dHJlc3VsdGFzZGprYXNkamFzbGRqYXM_\"\n" +
                     "  }\n" +
                     "}";
+            //@formatter:on
 
-    public static final String CLIENT_IDS_SINGLE_RESULT =
+    public static final @NotNull String CLIENT_IDS_SINGLE_RESULT =
+            //@formatter:off
             "{\n" +
                     "  \"items\": [\n" +
                     "    {\n" +
-                    "      \"id\": \"client-ݰ\"\n" +
+                    "      \"id\": \"client-π\"\n" +
                     "    }\n" +
                     "  ]\n" +
                     "}";
+            //@formatter:on
 
-    public static final String CLIENT_IDS_EMPTY =
+    public static final @NotNull String CLIENT_IDS_EMPTY =
+            //@formatter:off
             "{\n" +
                     "  \"items\": []\n" +
                     "}";
+            //@formatter:on
 
-    public static final String CLIENT_IDS_INVALID_CURSOR =
+    public static final @NotNull String CLIENT_IDS_INVALID_CURSOR =
+            //@formatter:off
             "{\n" +
                     "  \"errors\": [\n" +
                     "    {\n" +
@@ -79,8 +89,10 @@ public class TestResponseBodies {
                     "    }\n" +
                     "  ]\n" +
                     "}";
+            //@formatter:on
 
-    public static final String CLIENT_IDS_CURSOR_NOT_VALID_ANYMORE =
+    public static final @NotNull String CLIENT_IDS_CURSOR_NOT_VALID_ANYMORE =
+            //@formatter:off
             "{\n" +
                     "  \"errors\": [\n" +
                     "    {\n" +
@@ -89,8 +101,10 @@ public class TestResponseBodies {
                     "    }\n" +
                     "  ]\n" +
                     "}";
+            //@formatter:on
 
-    public static final String CLIENT_IDS_REPLICATION =
+    public static final @NotNull String CLIENT_IDS_REPLICATION =
+            //@formatter:off
             "{\n" +
                     "  \"errors\": [\n" +
                     "    {\n" +
@@ -99,8 +113,10 @@ public class TestResponseBodies {
                     "    }\n" +
                     "  ]\n" +
                     "}";
+            //@formatter:on
 
-    public static final String CLIENT_DETAILS_ALL =
+    public static final @NotNull String CLIENT_DETAILS_ALL =
+            //@formatter:off
             "{\n" +
                     "  \"client\": {\n" +
                     "    \"id\": \"client-1\",\n" +
@@ -156,8 +172,10 @@ public class TestResponseBodies {
                     "    }\n" +
                     "  }\n" +
                     "}";
+            //@formatter:on
 
-    public static final String CLIENT_DETAILS_CONNECTED =
+    public static final @NotNull String CLIENT_DETAILS_CONNECTED =
+            //@formatter:off
             "{\n" +
                     "  \"client\": {\n" +
                     "    \"id\": \"client-1\",\n" +
@@ -181,8 +199,10 @@ public class TestResponseBodies {
                     "    }\n" +
                     "  }\n" +
                     "}";
+            //@formatter:on
 
-    public static final String CLIENT_DETAILS_PERSISTENT_OFFLINE =
+    public static final @NotNull String CLIENT_DETAILS_PERSISTENT_OFFLINE =
+            //@formatter:off
             "{\n" +
                     "  \"client\": {\n" +
                     "    \"id\": \"client-1\",\n" +
@@ -198,8 +218,10 @@ public class TestResponseBodies {
                     "    }\n" +
                     "  }\n" +
                     "}";
+            //@formatter:on
 
-    public static final String CLIENT_DETAILS_NOT_FOUND =
+    public static final @NotNull String CLIENT_DETAILS_NOT_FOUND =
+            //@formatter:off
             "{\n" +
                     "  \"errors\": [\n" +
                     "    {\n" +
@@ -208,4 +230,5 @@ public class TestResponseBodies {
                     "    }\n" +
                     "  ]\n" +
                     "}";
+            //@formatter:on
 }

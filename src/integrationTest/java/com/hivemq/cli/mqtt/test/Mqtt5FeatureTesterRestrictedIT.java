@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt.test;
 
 import com.hivemq.cli.mqtt.test.results.*;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
@@ -30,18 +28,23 @@ import static com.hivemq.cli.mqtt.test.results.TestResult.PUBLISH_FAILED;
 import static com.hivemq.cli.mqtt.test.results.TestResult.SUBSCRIBE_FAILED;
 import static org.junit.jupiter.api.Assertions.*;
 
-class Mqtt3FeatureTesterRestrictedTest {
+class Mqtt5FeatureTesterRestrictedIT {
 
-    static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"))
-                    .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/restricted-config.xml"));
+    private static final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
+                    "mqtt/test/restricted-config.xml"));
 
-    static Mqtt3FeatureTester mqtt3FeatureTester;
+    private @NotNull Mqtt5FeatureTester mqtt5FeatureTester;
 
     @BeforeAll
     static void beforeAll() {
         hivemq.start();
-        mqtt3FeatureTester = new Mqtt3FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
+    }
+
+    @BeforeEach
+    void setUp() {
+        mqtt5FeatureTester =
+                new Mqtt5FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
     }
 
     @AfterAll
@@ -51,8 +54,9 @@ class Mqtt3FeatureTesterRestrictedTest {
 
     @Test
     void wildcard_subscriptions_failed() {
-        mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
-        final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = mqtt3FeatureTester.testWildcardSubscriptions();
+        final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult =
+                mqtt5FeatureTester.testWildcardSubscriptions();
+
         assertEquals(SUBSCRIBE_FAILED, wildcardSubscriptionsTestResult.getHashWildcardTest());
         assertEquals(SUBSCRIBE_FAILED, wildcardSubscriptionsTestResult.getPlusWildcardTest());
         assertFalse(wildcardSubscriptionsTestResult.isSuccess());
@@ -60,35 +64,39 @@ class Mqtt3FeatureTesterRestrictedTest {
 
     @Test
     void shared_subscriptions_failed() {
-        mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
-        final SharedSubscriptionTestResult sharedSubscriptionTestResult = mqtt3FeatureTester.testSharedSubscription();
+        final SharedSubscriptionTestResult sharedSubscriptionTestResult = mqtt5FeatureTester.testSharedSubscription();
+
         assertEquals(SharedSubscriptionTestResult.SUBSCRIBE_FAILED, sharedSubscriptionTestResult);
     }
 
     @Test
     void retain_failed() {
-        mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
-        final TestResult testResult = mqtt3FeatureTester.testRetain();
+        mqtt5FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
+        final TestResult testResult = mqtt5FeatureTester.testRetain();
+
         assertEquals(PUBLISH_FAILED, testResult);
     }
 
     @Test
     void payload_size_1MB_failed_max_500KB() {
-        mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
-        final PayloadTestResults payloadTestResults = mqtt3FeatureTester.testPayloadSize(100_000);
+        mqtt5FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
+        final PayloadTestResults payloadTestResults = mqtt5FeatureTester.testPayloadSize(100_000);
+
         assertTrue(payloadTestResults.getPayloadSize() < 100_000);
     }
 
     @Test
     @Disabled("HiveMQ currently ignores topic length restriction in its config")
     void topic_length_failed_max_30() {
-        final TopicLengthTestResults topicLengthTestResults = mqtt3FeatureTester.testTopicLength();
+        final TopicLengthTestResults topicLengthTestResults = mqtt5FeatureTester.testTopicLength();
+
         assertEquals(30, topicLengthTestResults.getMaxTopicLength());
     }
 
     @Test
     void clientId_length_failed_max_30() {
-        final ClientIdLengthTestResults clientIdLengthTestResults = mqtt3FeatureTester.testClientIdLength();
+        final ClientIdLengthTestResults clientIdLengthTestResults = mqtt5FeatureTester.testClientIdLength();
+
         assertEquals(30, clientIdLengthTestResults.getMaxClientIdLength());
     }
 }

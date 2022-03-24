@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.cli;
 
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
+import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 @Disabled("Tests are only used to check output")
-class TestBrokerCommandQos0Test {
+class TestBrokerCommandRestrictedIT {
 
     static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"))
-                    .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/qos0-config.xml"));
-
-    static Mqtt3FeatureTester mqtt3FeatureTester;
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
+                    "mqtt/test/restricted-config.xml"));
 
     @BeforeAll
     static void beforeAll() {
         hivemq.start();
-        mqtt3FeatureTester = new Mqtt3FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
+    }
+
+    @BeforeEach
+    void setUp() {
+        TestLoggerUtils.resetLogger();
     }
 
     @AfterAll
@@ -49,13 +49,13 @@ class TestBrokerCommandQos0Test {
 
     @Test
     @ExpectSystemExitWithStatus(0)
-    void qos0_restricted_mqtt3_features() {
-        MqttCLIMain.main(new String[]{"test", "-V", "3", "-p", String.valueOf(hivemq.getMqttPort())});
+    void restricted_mqtt3_features() {
+        MqttCLIMain.main("test", "-V", "3", "-p", String.valueOf(hivemq.getMqttPort()));
     }
 
     @Test
     @ExpectSystemExitWithStatus(0)
-    void qos0_restricted_mqtt5_features() {
-        MqttCLIMain.main(new String[]{"test", "-V", "3", "-p", String.valueOf(hivemq.getMqttPort())});
+    void restricted_mqtt5_features() {
+        MqttCLIMain.main("test", "-V", "5", "-a", "-p", String.valueOf(hivemq.getMqttPort()));
     }
 }

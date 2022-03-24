@@ -13,39 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.hivemq.export.clients;
 
-import com.hivemq.cli.commands.hivemq.export.clients.ClientIdsRetrieverTask;
-import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hivemq.cli.rest.ClientsApiResponses.INVALID_CURSOR_VALUE;
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_INVALID_CURSOR;
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_SINGLE_RESULT;
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_WITH_CURSOR;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
 class ClientIdsRetrieverTaskTest {
 
-    HiveMQRestService hiveMQRestService;
-    MockWebServer server;
-    BlockingQueue<String> clientIdsQueue;
-    ClientIdsRetrieverTask clientIdsRetrieverTask;
-
+    private @NotNull MockWebServer server;
+    private @NotNull BlockingQueue<String> clientIdsQueue;
+    private @NotNull HiveMQRestService hiveMQRestService;
+    private @NotNull ClientIdsRetrieverTask clientIdsRetrieverTask;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -59,24 +51,20 @@ class ClientIdsRetrieverTaskTest {
     }
 
     @Test
-    void single_page_success() throws ApiException, InterruptedException {
-        final MockResponse response = new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_IDS_SINGLE_RESULT);
+    void single_page_success() {
+        final MockResponse response = new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_SINGLE_RESULT);
 
         server.enqueue(response);
 
         clientIdsRetrieverTask.run();
 
         assertEquals(1, clientIdsQueue.size());
-        assertEquals("client-ݰ", clientIdsQueue.poll());
+        assertEquals("client-π", clientIdsQueue.poll());
     }
 
     @Test
-    void more_pages_success() throws ApiException, InterruptedException {
-        final MockResponse response = new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_IDS_WITH_CURSOR);
+    void more_pages_success() {
+        final MockResponse response = new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_WITH_CURSOR);
 
         server.enqueue(response);
         server.enqueue(response);
@@ -84,9 +72,7 @@ class ClientIdsRetrieverTaskTest {
         server.enqueue(response);
         server.enqueue(response);
 
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_IDS_SINGLE_RESULT));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_SINGLE_RESULT));
 
         clientIdsRetrieverTask.run();
 
@@ -95,9 +81,8 @@ class ClientIdsRetrieverTaskTest {
 
     @Test
     void unrecoverable_exception_success() {
-        final MockResponse response = new MockResponse()
-                .setResponseCode(INVALID_CURSOR_VALUE)
-                .setBody(CLIENT_IDS_INVALID_CURSOR);
+        final MockResponse response =
+                new MockResponse().setResponseCode(INVALID_CURSOR_VALUE).setBody(CLIENT_IDS_INVALID_CURSOR);
 
         server.enqueue(response);
 
@@ -110,17 +95,11 @@ class ClientIdsRetrieverTaskTest {
         clientIdsQueue = new LinkedBlockingQueue<>(1);
         clientIdsRetrieverTask = new ClientIdsRetrieverTask(hiveMQRestService, clientIdsQueue);
 
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_IDS_WITH_CURSOR));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_WITH_CURSOR));
 
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_IDS_SINGLE_RESULT));
-
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_SINGLE_RESULT));
 
         final CompletableFuture<Void> clientIdsRetrieverFuture = CompletableFuture.runAsync(clientIdsRetrieverTask);
-
         final AtomicLong polledClientIds = new AtomicLong();
         final CompletableFuture<Void> clientIdsConsumerFuture = CompletableFuture.runAsync(() -> {
             try {
@@ -142,5 +121,4 @@ class ClientIdsRetrieverTaskTest {
         assertEquals(0, clientIdsQueue.size());
         assertEquals(11, polledClientIds.get());
     }
-
 }
