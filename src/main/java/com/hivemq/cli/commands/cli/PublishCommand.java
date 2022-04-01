@@ -18,10 +18,10 @@ package com.hivemq.cli.commands.cli;
 
 import com.google.common.base.Throwables;
 import com.hivemq.cli.MqttCLIMain;
+import com.hivemq.cli.commands.MqttAction;
 import com.hivemq.cli.commands.Publish;
 import com.hivemq.cli.commands.options.MessagePayloadOptions;
 import com.hivemq.cli.converters.*;
-import com.hivemq.cli.commands.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
@@ -45,21 +45,6 @@ import java.util.Arrays;
 @CommandLine.Command(name = "pub", versionProvider = MqttCLIMain.CLIVersionProvider.class, aliases = "publish",
         description = "Publish a message to a list of topics.")
 public class PublishCommand extends AbstractConnectFlags implements MqttAction, Publish {
-
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
-
-    private @Nullable MqttClientSslConfig sslConfig;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public PublishCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
-
-    @Inject
-    public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        this.mqttClientExecutor = mqttClientExecutor;
-    }
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
@@ -122,6 +107,21 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
             description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
             order = 1)
     private boolean logToLogfile;
+
+    private final @NotNull MqttClientExecutor mqttClientExecutor;
+
+    private @Nullable MqttClientSslConfig sslConfig;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public PublishCommand() {
+        //noinspection ConstantConditions
+        this(null);
+    }
+
+    @Inject
+    public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+        this.mqttClientExecutor = mqttClientExecutor;
+    }
 
     @Override
     public void run() {

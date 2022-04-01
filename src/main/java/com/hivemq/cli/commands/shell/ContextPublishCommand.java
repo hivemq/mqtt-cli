@@ -41,17 +41,6 @@ import java.util.Objects;
 @CommandLine.Command(name = "pub", aliases = "publish", description = "Publish a message to a list of topics")
 public class ContextPublishCommand extends ShellContextCommand implements Runnable, Publish {
 
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextPublishCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
-
-    @Inject
-    public ContextPublishCommand(final @NotNull MqttClientExecutor executor) {
-        super(executor);
-    }
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
@@ -102,6 +91,17 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
             description = "A user property of the publish message")
     private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public ContextPublishCommand() {
+        //noinspection ConstantConditions
+        this(null);
+    }
+
+    @Inject
+    public ContextPublishCommand(final @NotNull MqttClientExecutor executor) {
+        super(executor);
+    }
 
     @Override
     public void run() {

@@ -48,22 +48,6 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
 
     private static final int IDLE_TIME = 1000;
 
-    private final @NotNull DefaultCLIProperties defaultCLIProperties;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextSubscribeCommand() {
-        //noinspection ConstantConditions
-        this(null, null);
-    }
-
-    @Inject
-    public ContextSubscribeCommand(
-            final @NotNull MqttClientExecutor mqttClientExecutor,
-            final @NotNull DefaultCLIProperties defaultCLIProperties) {
-        super(mqttClientExecutor);
-        this.defaultCLIProperties = defaultCLIProperties;
-    }
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     private boolean usageHelpRequested;
@@ -109,6 +93,22 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Runn
     @CommandLine.Option(names = {"-T", "--showTopics"}, defaultValue = "false",
             description = "Prepend the specific topic name to the received publish", order = 1)
     private boolean showTopics;
+
+    private final @NotNull DefaultCLIProperties defaultCLIProperties;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public ContextSubscribeCommand() {
+        //noinspection ConstantConditions
+        this(null, null);
+    }
+
+    @Inject
+    public ContextSubscribeCommand(
+            final @NotNull MqttClientExecutor mqttClientExecutor,
+            final @NotNull DefaultCLIProperties defaultCLIProperties) {
+        super(mqttClientExecutor);
+        this.defaultCLIProperties = defaultCLIProperties;
+    }
 
     @Override
     public void run() {

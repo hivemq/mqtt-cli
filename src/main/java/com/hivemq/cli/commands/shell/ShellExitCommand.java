@@ -25,12 +25,13 @@ import javax.inject.Inject;
 @CommandLine.Command(name = "exit", description = "Exit the shell")
 public class ShellExitCommand implements Runnable, CliCommand {
 
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     @Inject
     public ShellExitCommand() {
     }
-
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     @Override
     public void run() {

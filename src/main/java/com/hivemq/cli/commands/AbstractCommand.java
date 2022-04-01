@@ -23,9 +23,6 @@ import picocli.CommandLine;
         optionListHeading = "%n@|bold Options|@:%n", commandListHeading = "%n@|boldCommands|@:%n", separator = " ")
 public abstract class AbstractCommand implements CliCommand {
 
-    private boolean debug;
-    private boolean verbose;
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode", order = 0)
     private void activateDebugMode(final boolean debug) {
@@ -44,8 +41,10 @@ public abstract class AbstractCommand implements CliCommand {
         } else {
             this.verbose = false;
         }
-
     }
+
+    private boolean debug;
+    private boolean verbose;
 
     public boolean isDebug() {
         return debug;

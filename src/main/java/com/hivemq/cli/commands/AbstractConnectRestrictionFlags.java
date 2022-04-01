@@ -37,31 +37,37 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
                     Mqtt5ConnectRestrictions.DEFAULT_SEND_MAXIMUM + ")", order = 3)
     private @Nullable Integer sendMaximum;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--maxPacketSize"},
             description = "The maximum packet size the client accepts from the server. (default: " +
                     Mqtt5ConnectRestrictions.DEFAULT_MAXIMUM_PACKET_SIZE + ")", order = 3)
     private @Nullable Integer maximumPacketSize;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--sendMaxPacketSize"},
             description = "The maximum packet size the client sends to the server. (default: " +
                     Mqtt5ConnectRestrictions.DEFAULT_SEND_MAXIMUM_PACKET_SIZE + ")", order = 3)
     private @Nullable Integer sendMaximumPacketSize;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--topicAliasMax"},
             description = "The maximum amount of topic aliases the client accepts from the server. (default: " +
                     Mqtt5ConnectRestrictions.DEFAULT_TOPIC_ALIAS_MAXIMUM + ")", order = 3)
     private @Nullable Integer topicAliasMaximum;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--sendTopicAliasMax"},
             description = "The maximum amount of topic aliases the client sends to the server. (default: " +
                     Mqtt5ConnectRestrictions.DEFAULT_SEND_TOPIC_ALIAS_MAXIMUM + ")", order = 3)
     private @Nullable Integer sendTopicAliasMaximum;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--reqProblemInfo"}, negatable = true,
             description = "The client requests problem information from the server. (default: " +
                     Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION + ")", order = 3)
     private @Nullable Boolean requestProblemInformation;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--reqResponseInfo"}, negatable = true,
             description = "The client requests response information from the server. (default: " +
                     Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION + ")", order = 3)

@@ -55,7 +55,7 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
         MqttClientExecutor.getClientDataMap().remove(getKeyFromConfig(context.getClientConfig()));
     }
 
-    private String getKeyFromConfig(final @NotNull MqttClientConfig clientConfig) {
+    private @NotNull String getKeyFromConfig(final @NotNull MqttClientConfig clientConfig) {
         return MqttUtils.buildKey(clientConfig.getClientIdentifier().map(Object::toString).orElse(""),
                 clientConfig.getServerHost());
     }
