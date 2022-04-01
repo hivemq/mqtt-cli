@@ -19,9 +19,9 @@ package com.hivemq.cli.commands.shell;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.Disconnect;
+import com.hivemq.cli.commands.MqttAction;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.UnsignedIntConverter;
-import com.hivemq.cli.commands.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
@@ -37,23 +37,6 @@ import java.util.Objects;
 
 @CommandLine.Command(name = "dis", aliases = "disconnect", description = "Disconnect an MQTT client")
 public class ShellDisconnectCommand implements MqttAction, Disconnect {
-
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
-    private final @NotNull DefaultCLIProperties defaultCLIProperties;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ShellDisconnectCommand() {
-        //noinspection ConstantConditions
-        this(null, null);
-    }
-
-    @Inject
-    ShellDisconnectCommand(
-            final @NotNull MqttClientExecutor mqttClientExecutor,
-            final @NotNull DefaultCLIProperties defaultCLIProperties) {
-        this.mqttClientExecutor = mqttClientExecutor;
-        this.defaultCLIProperties = defaultCLIProperties;
-    }
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
@@ -86,6 +69,23 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
             description = "A user property of the disconnect message")
     private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
+
+    private final @NotNull MqttClientExecutor mqttClientExecutor;
+    private final @NotNull DefaultCLIProperties defaultCLIProperties;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public ShellDisconnectCommand() {
+        //noinspection ConstantConditions
+        this(null, null);
+    }
+
+    @Inject
+    ShellDisconnectCommand(
+            final @NotNull MqttClientExecutor mqttClientExecutor,
+            final @NotNull DefaultCLIProperties defaultCLIProperties) {
+        this.mqttClientExecutor = mqttClientExecutor;
+        this.defaultCLIProperties = defaultCLIProperties;
+    }
 
     @Override
     public void run() {

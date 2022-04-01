@@ -37,17 +37,6 @@ import java.util.Objects;
 @CommandLine.Command(name = "dis", aliases = "disconnect", description = "Disconnects this MQTT client")
 public class ContextDisconnectCommand extends ShellContextCommand implements Runnable, Disconnect {
 
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextDisconnectCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
-
-    @Inject
-    public ContextDisconnectCommand(final @NotNull MqttClientExecutor executor) {
-        super(executor);
-    }
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     private boolean usageHelpRequested;
@@ -66,9 +55,21 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     @CommandLine.Option(names = {"-r", "--reason"}, description = "The reason of the disconnect")
     private @Nullable String reasonString;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
             description = "A user property of the disconnect message")
     private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public ContextDisconnectCommand() {
+        //noinspection ConstantConditions
+        this(null);
+    }
+
+    @Inject
+    public ContextDisconnectCommand(final @NotNull MqttClientExecutor executor) {
+        super(executor);
+    }
 
     @Override
     public void run() {

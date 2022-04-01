@@ -96,7 +96,7 @@ public class ClientDetailsRetrieverTask implements Runnable {
 
         @Override
         public void onSuccess(
-                final ClientItem result,
+                final @NotNull ClientItem result,
                 final int statusCode,
                 final @NotNull Map<String, List<String>> responseHeaders) {
             final ClientDetails clientDetails = result.getClient();
@@ -111,7 +111,9 @@ public class ClientDetailsRetrieverTask implements Runnable {
 
         @Override
         public void onFailure(
-                final ApiException e, final int statusCode, final @NotNull Map<String, List<String>> responseHeaders) {
+                final @NotNull ApiException e,
+                final int statusCode,
+                final @NotNull Map<String, List<String>> responseHeaders) {
             //ignore 404 because MQTT client could be non-persistent and disconnected by now
             if (e.getCode() != 404) {
                 Logger.trace(e, "Failed to retrieve client details");

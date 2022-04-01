@@ -35,48 +35,59 @@ import java.util.Arrays;
 @CommandLine.Command
 public abstract class AbstractWillFlags extends MqttCommand implements Will {
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wt", "--willTopic"}, description = "The topic of the will message", order = 3)
     private @Nullable String willTopic;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wm", "--willMessage"}, converter = ByteBufferConverter.class,
             description = "The payload of the will message", order = 3)
     private @Nullable ByteBuffer willMessage;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wq", "--willQualityOfService"}, defaultValue = "0",
             converter = MqttQosConverter.class,
             description = "Quality of service level for the will message (default: 0)", order = 3)
     private @Nullable MqttQos willQos;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wr", "--willRetain"}, negatable = true,
             description = "Will message as retained message (default: false)", order = 3)
     private @Nullable Boolean willRetain;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-We", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class,
             description = "The lifetime of the will message in seconds (default: no message expiry)", order = 3)
     private @Nullable Long willMessageExpiryInterval;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, description =
             "The Server delays publishing the client's will message until the will delay has passed (default: " +
                     Mqtt5WillPublish.DEFAULT_DELAY_INTERVAL + ")", order = 3)
     private @Nullable Long willDelayInterval;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wpf", "--willPayloadFormatIndicator"},
             converter = PayloadFormatIndicatorConverter.class,
             description = "The payload format indicator of the will message", order = 3)
     private @Nullable Mqtt5PayloadFormatIndicator willPayloadFormatIndicator;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wct", "--willContentType"},
             description = "A description of the will message's content", order = 3)
     private @Nullable String willContentType;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wrt", "--willResponseTopic"},
             description = "The topic name for the response message", order = 3)
     private @Nullable String willResponseTopic;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wcd", "--willCorrelationData"}, converter = ByteBufferConverter.class,
             description = "The correlation data of the will message", order = 3)
     private @Nullable ByteBuffer willCorrelationData;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wup", "--willUserProperty"}, converter = Mqtt5UserPropertyConverter.class,
             description = "A user property of the will message", order = 3)
     private @Nullable Mqtt5UserProperty @Nullable [] willUserProperties;

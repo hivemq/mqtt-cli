@@ -62,7 +62,7 @@ class PasswordFileToByteBufferConverterTest {
         assertArrayEquals(expected, actual);
     }
 
-    private File getFile(final @NotNull String fileName) {
+    private @NotNull File getFile(final @NotNull String fileName) {
         final URL resource = getClass().getResource("/" + getClass().getSimpleName() + "/" + fileName);
         assertNotNull(resource);
         return new File(resource.getPath());
