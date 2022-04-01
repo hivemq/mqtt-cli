@@ -37,17 +37,6 @@ import java.util.Objects;
         description = "Unsubscribe this MQTT client from a list of topics")
 public class ContextUnsubscribeCommand extends ShellContextCommand implements Runnable, Unsubscribe {
 
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextUnsubscribeCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
-
-    @Inject
-    public ContextUnsubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
-    }
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     private boolean usageHelpRequested;
@@ -60,6 +49,17 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
             description = "A user property for the unsubscribe message")
     private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public ContextUnsubscribeCommand() {
+        //noinspection ConstantConditions
+        this(null);
+    }
+
+    @Inject
+    public ContextUnsubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+        super(mqttClientExecutor);
+    }
 
     @Override
     public void run() {

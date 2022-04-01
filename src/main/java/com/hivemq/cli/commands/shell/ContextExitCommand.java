@@ -25,6 +25,10 @@ import javax.inject.Inject;
 @CommandLine.Command(name = "exit", description = "Exit the current context")
 public class ContextExitCommand extends ShellContextCommand implements Runnable {
 
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    private boolean usageHelpRequested;
+
     @SuppressWarnings("unused") //needed for pico cli - reflection code generation
     public ContextExitCommand() {
         //noinspection ConstantConditions
@@ -35,10 +39,6 @@ public class ContextExitCommand extends ShellContextCommand implements Runnable 
     public ContextExitCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         super(mqttClientExecutor);
     }
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
 
     @Override
     public void run() {

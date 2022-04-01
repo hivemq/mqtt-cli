@@ -34,20 +34,6 @@ import java.util.stream.Collectors;
         description = "List all connected clients with their respective identifiers")
 public class ListClientsCommand implements Runnable, CliCommand {
 
-    //TODO: This is unused
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ListClientsCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
-
-    @Inject
-    ListClientsCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        this.mqttClientExecutor = mqttClientExecutor;
-    }
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     private boolean usageHelpRequested;
@@ -73,6 +59,11 @@ public class ListClientsCommand implements Runnable, CliCommand {
     @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false",
             description = "list subscribed topics of clients")
     private boolean listSubscriptions;
+
+    @Inject
+    //needed for pico cli - reflection code generation
+    public ListClientsCommand() {
+    }
 
     @Override
     public void run() {
