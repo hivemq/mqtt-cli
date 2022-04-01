@@ -19,10 +19,10 @@ package com.hivemq.cli.commands.cli;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
+import com.hivemq.cli.commands.MqttAction;
 import com.hivemq.cli.commands.Subscribe;
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.cli.converters.MqttQosConverter;
-import com.hivemq.cli.commands.MqttAction;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttUtils;
@@ -48,26 +48,6 @@ import java.util.Objects;
 public class SubscribeCommand extends AbstractConnectFlags implements MqttAction, Subscribe {
 
     private static final int IDLE_TIME = 5000;
-
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
-    private final @NotNull DefaultCLIProperties defaultCLIProperties;
-
-    private @Nullable MqttClient subscribeClient;
-    private @Nullable MqttClientSslConfig sslConfig;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public SubscribeCommand() {
-        //noinspection ConstantConditions
-        this(null, null);
-    }
-
-    @Inject
-    public SubscribeCommand(
-            final @NotNull MqttClientExecutor mqttClientExecutor,
-            final @NotNull DefaultCLIProperties defaultCLIProperties) {
-        this.mqttClientExecutor = mqttClientExecutor;
-        this.defaultCLIProperties = defaultCLIProperties;
-    }
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
@@ -122,6 +102,26 @@ public class SubscribeCommand extends AbstractConnectFlags implements MqttAction
             description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
             order = 1)
     private boolean logToLogfile;
+
+    private final @NotNull MqttClientExecutor mqttClientExecutor;
+    private final @NotNull DefaultCLIProperties defaultCLIProperties;
+
+    private @Nullable MqttClient subscribeClient;
+    private @Nullable MqttClientSslConfig sslConfig;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public SubscribeCommand() {
+        //noinspection ConstantConditions
+        this(null, null);
+    }
+
+    @Inject
+    public SubscribeCommand(
+            final @NotNull MqttClientExecutor mqttClientExecutor,
+            final @NotNull DefaultCLIProperties defaultCLIProperties) {
+        this.mqttClientExecutor = mqttClientExecutor;
+        this.defaultCLIProperties = defaultCLIProperties;
+    }
 
     @Override
     public void run() {

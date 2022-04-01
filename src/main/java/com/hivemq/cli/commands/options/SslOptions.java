@@ -164,7 +164,7 @@ public class SslOptions {
         }
     }
 
-    private TrustManagerFactory buildTrustManagerFactory(final @NotNull Collection<X509Certificate> certCollection)
+    private @NotNull TrustManagerFactory buildTrustManagerFactory(final @NotNull Collection<X509Certificate> certCollection)
             throws Exception {
         final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
         ks.load(null, null);
@@ -185,7 +185,7 @@ public class SslOptions {
         return trustManagerFactory;
     }
 
-    private KeyManagerFactory buildKeyManagerFactory(
+    private @NotNull KeyManagerFactory buildKeyManagerFactory(
             final @NotNull X509Certificate @NotNull [] certs, final @NotNull PrivateKey key)
             throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException,
             UnrecoverableKeyException {

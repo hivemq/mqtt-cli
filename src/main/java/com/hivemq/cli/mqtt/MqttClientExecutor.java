@@ -242,7 +242,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    void mqtt5Unsubscribe(@NotNull final Mqtt5Client client, @NotNull final Unsubscribe unsubscribe) {
+    void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull Unsubscribe unsubscribe) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
 
         for (final String topic : unsubscribe.getTopics()) {
@@ -271,7 +271,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    void mqtt3Unsubscribe(@NotNull final Mqtt3Client client, @NotNull final Unsubscribe unsubscribe) {
+    void mqtt3Unsubscribe(final @NotNull Mqtt3Client client, final @NotNull Unsubscribe unsubscribe) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
 
         for (final String topic : unsubscribe.getTopics()) {
@@ -295,7 +295,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    void mqtt5Disconnect(@NotNull final Mqtt5Client client, @NotNull final Disconnect disconnect) {
+    void mqtt5Disconnect(final @NotNull Mqtt5Client client, final @NotNull Disconnect disconnect) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
         final Mqtt5DisconnectBuilder disconnectBuilder = Mqtt5Disconnect.builder();
 
@@ -320,7 +320,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    void mqtt3Disconnect(@NotNull final Mqtt3Client client, @NotNull final Disconnect disconnect) {
+    void mqtt3Disconnect(final @NotNull Mqtt3Client client, final @NotNull Disconnect disconnect) {
         Logger.debug("{} Sending DISCONNECT", LoggerUtils.getClientPrefix(client.getConfig()));
 
         client.toBlocking().disconnect();

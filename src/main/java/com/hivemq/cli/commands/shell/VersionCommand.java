@@ -26,13 +26,13 @@ import javax.inject.Inject;
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class VersionCommand implements Runnable {
 
-    @Inject
-    VersionCommand() {
-    }
-
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
     private @NotNull CommandLine.Model.CommandSpec spec;
+
+    @Inject
+    VersionCommand() {
+    }
 
     @Override
     public void run() {

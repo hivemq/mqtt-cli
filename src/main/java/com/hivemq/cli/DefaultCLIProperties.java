@@ -156,10 +156,6 @@ public class DefaultCLIProperties {
         return storePropertiesFile;
     }
 
-    /* **************************************************
-     * Getter for properties in the concrete data types *
-     ****************************************************/
-
     public @NotNull MqttVersion getMqttVersion() {
         final String versionString = propertyToValue.get(MQTT_VERSION);
         switch (versionString) {

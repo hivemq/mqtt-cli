@@ -66,19 +66,6 @@ public class ShellCommand implements Runnable {
     private static @Nullable CommandLine contextCommandLine;
     private static boolean exitShell = false;
 
-    private final @NotNull DefaultCLIProperties defaultCLIProperties;
-
-    private @Nullable String logfilePath;
-
-    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
-    @CommandLine.Spec
-    private @NotNull CommandLine.Model.CommandSpec spec;
-
-    @Inject
-    ShellCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
-        this.defaultCLIProperties = defaultCLIProperties;
-    }
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--version", "-V"}, versionHelp = true, description = "display version info")
     private boolean versionInfoRequested;
@@ -92,6 +79,19 @@ public class ShellCommand implements Runnable {
             description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
             order = 1)
     private boolean logToLogfile;
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
+    @CommandLine.Spec
+    private @NotNull CommandLine.Model.CommandSpec spec;
+
+    private final @NotNull DefaultCLIProperties defaultCLIProperties;
+
+    private @Nullable String logfilePath;
+
+    @Inject
+    ShellCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
+        this.defaultCLIProperties = defaultCLIProperties;
+    }
 
     @Override
     public void run() {

@@ -28,12 +28,12 @@ import javax.inject.Inject;
 @CommandLine.Command(name = "cls", aliases = "clear", description = "Clear the screen")
 public class ClearScreenCommand implements CliCommand, Runnable {
 
-    @Inject
-    ClearScreenCommand() {}
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     private boolean usageHelpRequested;
+
+    @Inject
+    ClearScreenCommand() {}
 
     @Override
     public void run() {

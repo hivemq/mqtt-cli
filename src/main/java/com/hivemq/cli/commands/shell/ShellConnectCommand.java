@@ -41,6 +41,20 @@ import java.util.Arrays;
         abbreviateSynopsis = true)
 public class ShellConnectCommand extends AbstractCommonFlags implements Runnable, Connect {
 
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
+            description = "The lifetime of the session of the connected client'")
+    private @Nullable Long sessionExpiryInterval;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
+            description = "A user property of the connect message")
+    private @Nullable Mqtt5UserProperty @Nullable [] connectUserProperties;
+
     private final @NotNull MqttClientExecutor mqttClientExecutor;
 
     private @Nullable MqttClientSslConfig sslConfig;
@@ -55,20 +69,6 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     public ShellConnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;
     }
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
-            description = "The lifetime of the session of the connected client'")
-    private @Nullable Long sessionExpiryInterval;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property of the connect message")
-    private @Nullable Mqtt5UserProperty @Nullable [] connectUserProperties;
 
     public void run() {
         setDefaultOptions();

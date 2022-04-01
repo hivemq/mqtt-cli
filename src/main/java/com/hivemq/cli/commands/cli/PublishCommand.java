@@ -45,21 +45,6 @@ import java.util.Arrays;
         description = "Publish a message to a list of topics.")
 public class PublishCommand extends AbstractConnectFlags implements MqttAction, Publish {
 
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
-
-    private @Nullable MqttClientSslConfig sslConfig;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public PublishCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
-
-    @Inject
-    public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        this.mqttClientExecutor = mqttClientExecutor;
-    }
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
     private boolean versionInfoRequested;
@@ -122,6 +107,21 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
             description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
             order = 1)
     private boolean logToLogfile;
+
+    private final @NotNull MqttClientExecutor mqttClientExecutor;
+
+    private @Nullable MqttClientSslConfig sslConfig;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public PublishCommand() {
+        //noinspection ConstantConditions
+        this(null);
+    }
+
+    @Inject
+    public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+        this.mqttClientExecutor = mqttClientExecutor;
+    }
 
     @Override
     public void run() {

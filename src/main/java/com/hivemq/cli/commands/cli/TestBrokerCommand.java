@@ -50,21 +50,6 @@ public class TestBrokerCommand implements Runnable {
 
     private static final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
 
-    private final @NotNull DefaultCLIProperties defaultCLIProperties;
-
-    private @Nullable MqttClientSslConfig sslConfig;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public TestBrokerCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
-
-    @Inject
-    public TestBrokerCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
-        this.defaultCLIProperties = defaultCLIProperties;
-    }
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
     private boolean versionInfoRequested;
@@ -112,6 +97,21 @@ public class TestBrokerCommand implements Runnable {
 
     @CommandLine.Mixin
     private final @NotNull SslOptions sslOptions = new SslOptions();
+
+    private final @NotNull DefaultCLIProperties defaultCLIProperties;
+
+    private @Nullable MqttClientSslConfig sslConfig;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public TestBrokerCommand() {
+        //noinspection ConstantConditions
+        this(null);
+    }
+
+    @Inject
+    public TestBrokerCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
+        this.defaultCLIProperties = defaultCLIProperties;
+    }
 
     @Override
     public void run() {
@@ -179,10 +179,6 @@ public class TestBrokerCommand implements Runnable {
             System.out.println("OK");
         }
 
-        /* **********************
-         * Connect Restrictions *
-         ************************/
-
         final Mqtt5ConnAckRestrictions restrictions = connAck.getRestrictions();
 
         System.out.println("\t- Connect restrictions: ");
@@ -222,10 +218,6 @@ public class TestBrokerCommand implements Runnable {
 
 
         if (testAll) {
-            /* **************
-             * Do all tests *
-             ****************/
-
             // Print max topic length
             System.out.print("\t- Maximum topic length: ");
             final TopicLengthTestResults topicLengthTestResults = mqtt5Tester.testTopicLength();

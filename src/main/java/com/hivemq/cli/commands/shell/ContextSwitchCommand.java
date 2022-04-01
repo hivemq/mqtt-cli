@@ -31,17 +31,6 @@ import java.util.Objects;
 @CommandLine.Command(name = "switch", description = "Switch the current context")
 public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
 
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextSwitchCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
-
-    @Inject
-    public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
-    }
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
     private boolean usageHelpRequested;
@@ -57,6 +46,17 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost",
             description = "The hostname of the message broker (default 'localhost')")
     private @Nullable String host;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public ContextSwitchCommand() {
+        //noinspection ConstantConditions
+        this(null);
+    }
+
+    @Inject
+    public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
+        super(mqttClientExecutor);
+    }
 
     @Override
     public void run() {
