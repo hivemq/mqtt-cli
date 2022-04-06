@@ -704,7 +704,7 @@ public class Mqtt3FeatureTester {
         if (username != null && password != null) {
             return Mqtt3SimpleAuth.builder().username(username).password(password).build();
         } else if (username != null) {
-            Mqtt3SimpleAuth.builder().username(username).build();
+            return Mqtt3SimpleAuth.builder().username(username).build();
         } else if (password != null) {
             throw new IllegalArgumentException("Password-Only Authentication is not allowed in MQTT 3");
         }
