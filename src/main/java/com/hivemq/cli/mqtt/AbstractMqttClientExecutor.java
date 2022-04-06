@@ -425,7 +425,7 @@ abstract class AbstractMqttClientExecutor {
         if (connect.getUser() != null && connect.getPassword() != null) {
             return Mqtt3SimpleAuth.builder().username(connect.getUser()).password(connect.getPassword()).build();
         } else if (connect.getUser() != null) {
-            Mqtt3SimpleAuth.builder().username(connect.getUser()).build();
+            return Mqtt3SimpleAuth.builder().username(connect.getUser()).build();
         } else if (connect.getPassword() != null) {
             throw new IllegalArgumentException("Password-Only Authentication is not allowed in MQTT 3");
         }
