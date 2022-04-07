@@ -696,7 +696,6 @@ public class Mqtt3FeatureTester {
     }
 
     private @NotNull Mqtt3ClientBuilder getClientBuilder() {
-
         return Mqtt3Client.builder().serverHost(host).serverPort(port).simpleAuth(buildAuth()).sslConfig(sslConfig);
     }
 
