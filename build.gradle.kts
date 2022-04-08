@@ -21,17 +21,18 @@ plugins {
     java
     application
     id("com.github.johnrengelman.shadow")
-    id("com.github.hierynomus.license")
+    id("io.github.sgtsilvio.gradle.defaults")
     id("nebula.ospackage")
     id("edu.sc.seis.launch4j")
+    id("org.openapi.generator")
+    id("com.google.cloud.tools.jib")
     id("com.palantir.graal")
+    id("com.github.hierynomus.license")
     id("de.thetaphi.forbiddenapis")
     id("com.github.breadmoirai.github-release")
     id("org.ajoberstar.git-publish")
     id("org.owasp.dependencycheck")
     id("com.github.ben-manes.versions")
-    id("org.openapi.generator")
-    id("com.google.cloud.tools.jib")
 }
 
 /* ******************** metadata ******************** */
@@ -51,10 +52,6 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(8))
     }
-}
-
-tasks.compileJava {
-    options.encoding = "UTF-8"
 }
 
 tasks.jar {
@@ -210,16 +207,10 @@ sourceSets.main {
 
 tasks.test {
     useJUnitPlatform()
-    reports {
-        junitXml.isOutputPerTestCase = true
-    }
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junit-jupiter.version")}")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:${property("junit-jupiter.version")}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junit-jupiter.version")}")
-
+    testImplementation("org.junit.jupiter:junit-jupiter:${property("junitJupiter.version")}")
     testImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
     testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
     testImplementation("com.squareup.okhttp3:mockwebserver:${property("ok-http.version")}")
@@ -594,7 +585,7 @@ jib {
     }
 }
 
-/* ******************** Platform distribution ******************** */
+/* ******************** platform distribution ******************** */
 
 distributions.shadow {
     distributionBaseName.set("mqtt-cli")
