@@ -210,7 +210,7 @@ tasks.test {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:${property("junitJupiter.version")}")
+    testImplementation("org.junit.jupiter:junit-jupiter:${property("junit-jupiter.version")}")
     testImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
     testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
     testImplementation("com.squareup.okhttp3:mockwebserver:${property("ok-http.version")}")
