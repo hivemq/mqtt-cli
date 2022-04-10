@@ -6,7 +6,7 @@ redirect_from: /docs/logging.html
 # Logging
 ***
 * All non-shell commands offer an ``-l`` option by which logging to a logfile under ``~/.mqtt-cli/logs`` can be activated
-* The logfile and loglevel can be configured in the [MQTT-CLI configuration](configuration)
+* The logfile and loglevel can be configured in the [MQTT-CLI configuration](configuration.md)
 * By specifying the ``-l`` option for the ``shell`` command the whole shell-session will be logged to a logfile shown at start
 
 ## Direct logging for publish & subscribe
