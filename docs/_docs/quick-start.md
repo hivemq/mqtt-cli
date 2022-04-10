@@ -8,7 +8,7 @@ redirect_from: /docs/quick_start.html
 ***
 ## Usage
 
-To install MQTT CLI on your system please follow the [Installation instructions](installation).
+To install MQTT CLI on your system please follow the [Installation instructions](installation.md).
 
 The easiest way to start the CLI is by typing:
 ``` $ mqtt ```
@@ -40,12 +40,12 @@ $ mqtt [flags] [METHOD] [OPTION [OPTION]]
 
 ## Supported commands at start
 
-* [Publish](publish)
-* [Subscribe](subscribe)
-* [Shell](shell)
-* [Test](test) 
-* [HiveMQ](hivemq)
-* [Swarm](swarm) 
+* [Publish](publish.md)
+* [Subscribe](subscribe.md)
+* [Shell](shell.md)
+* [Test](test.md) 
+* [HiveMQ](hivemq.md)
+* [Swarm](swarm.md) 
 
 ***
 
@@ -59,7 +59,7 @@ This command:
 * publishes a message to a defined topic, 
 * disconnects the mqtt client from the broker
 
-> See [Publish](publish) for a detailed overview of the publish command
+> See [Publish](publish.md) for a detailed overview of the publish command
 
 ***
 
@@ -74,7 +74,7 @@ This command:
 * stays connected to retrieve messages published to the given topic
 * exits and disconnects the client on **Ctrl + C** 
 
-> See [Subscribe](subscribe) for a detailed overview of the subscribe command
+> See [Subscribe](subscribe.md) for a detailed overview of the subscribe command
 
 ***
 
@@ -86,7 +86,7 @@ $ mqtt shell
 mqtt>
 ```
 
-The shell mode enables you to execute more complex MQTT behaviour - see [Shell](shell) 
+The shell mode enables you to execute more complex MQTT behaviour - see [Shell](shell.md) 
 
 ## Testing a MQTT broker
 
