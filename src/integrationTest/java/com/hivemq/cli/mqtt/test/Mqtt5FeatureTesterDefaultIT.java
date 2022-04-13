@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt.test;
 
 import com.hivemq.cli.mqtt.test.results.*;
@@ -25,23 +26,29 @@ import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.utility.DockerImageName;
 
 import static com.hivemq.cli.mqtt.test.results.TestResult.OK;
 import static org.junit.jupiter.api.Assertions.*;
 
-class Mqtt5FeatureTesterDefaultTest {
+class Mqtt5FeatureTesterDefaultIT {
 
-    static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"));
+    private static final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
 
-    static Mqtt5FeatureTester mqtt5FeatureTester;
+    private @NotNull Mqtt5FeatureTester mqtt5FeatureTester;
 
     @BeforeAll
     static void beforeAll() {
         hivemq.start();
-        mqtt5FeatureTester = new Mqtt5FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
+    }
+
+    @BeforeEach
+    void setUp() {
+        mqtt5FeatureTester =
+                new Mqtt5FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
     }
 
     @AfterAll
@@ -50,7 +57,7 @@ class Mqtt5FeatureTesterDefaultTest {
     }
 
     @Test
-    void connect_success() throws Exception {
+    void connect_success() {
         final Mqtt5ConnAck connAck = mqtt5FeatureTester.testConnect();
         assertNotNull(connAck);
         assertEquals(Mqtt5ConnAckReasonCode.SUCCESS, connAck.getReasonCode());
@@ -65,7 +72,8 @@ class Mqtt5FeatureTesterDefaultTest {
 
     @Test
     void wildcard_subscriptions_success() {
-        final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = mqtt5FeatureTester.testWildcardSubscriptions();
+        final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult =
+                mqtt5FeatureTester.testWildcardSubscriptions();
         assertEquals(OK, wildcardSubscriptionsTestResult.getHashWildcardTest());
         assertEquals(OK, wildcardSubscriptionsTestResult.getPlusWildcardTest());
         assertTrue(wildcardSubscriptionsTestResult.isSuccess());
@@ -130,7 +138,8 @@ class Mqtt5FeatureTesterDefaultTest {
 
     @Test
     void asciiChars_success() {
-        final AsciiCharsInClientIdTestResults asciiCharsInClientIdTestResults = mqtt5FeatureTester.testAsciiCharsInClientId();
+        final AsciiCharsInClientIdTestResults asciiCharsInClientIdTestResults =
+                mqtt5FeatureTester.testAsciiCharsInClientId();
         for (final Tuple<Character, String> testResult : asciiCharsInClientIdTestResults.getTestResults()) {
             assertEquals(Mqtt5ConnAckReasonCode.SUCCESS.toString(), testResult.getValue());
         }

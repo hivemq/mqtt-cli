@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.swarm.run;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.Files;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.swarm.AbstractSwarmCommand;
 import com.hivemq.cli.commands.swarm.error.Error;
@@ -34,32 +34,26 @@ import javax.inject.Provider;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Yannick Weber
- */
-@CommandLine.Command(name = "start",
-        description = "Start HiveMQ Swarm runs.",
-        synopsisHeading = "%n@|bold Usage:|@  ",
-        descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n",
-        mixinStandardHelpOptions = true,
+@CommandLine.Command(name = "start", description = "Start HiveMQ Swarm runs.", synopsisHeading = "%n@|bold Usage:|@  ",
+        descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
+        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class SwarmRunStartCommand extends AbstractSwarmCommand {
 
     @CommandLine.Option(names = {"-f", "--file"}, description = "The scenario file. " +
             "If a scenario file is given this command uploads, executes and deletes the scenario afterwards.",
-            required = true,
-            order = 3)
+            required = true, order = 3)
     private @Nullable File scenario;
 
-    @CommandLine.Option(names = {"-d", "--detach"}, defaultValue = "false", description = "Run the command in detached mode. " +
-            "In detached mode the command uploads and executes the scenario and does not wait until the scenario is finished. " +
-            "The scenario is not deleted afterwards.", order = 4)
+    @CommandLine.Option(names = {"-d", "--detach"}, defaultValue = "false",
+            description = "Run the command in detached mode. " +
+                    "In detached mode the command uploads and executes the scenario and does not wait until the scenario is finished. " +
+                    "The scenario is not deleted afterwards.", order = 4)
     private @NotNull Boolean detached = false;
 
     private final @NotNull RunsApi runsApi;
@@ -129,7 +123,7 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
 
         final byte[] bytes;
         try {
-            bytes = Files.toByteArray(scenario);
+            bytes = Files.readAllBytes(scenario.toPath());
         } catch (final IOException e) {
             Logger.error("Could not read '{}'.", scenario.getAbsolutePath());
             System.err.println("Could not read '" + scenario.getAbsolutePath() + "'.");
@@ -163,7 +157,7 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
         final Integer scenarioId = uploadResponse.getScenarioId();
         if (scenarioId == null) {
             Logger.error("Upload scenario response did not contain a scenario-id:\n {}", uploadResponse.toString());
-            System.err.println("Upload scenario response did not contain a scenario-id:\n " + uploadResponse.toString());
+            System.err.println("Upload scenario response did not contain a scenario-id:\n " + uploadResponse);
             return -1;
         }
         out.println("Successfully uploaded scenario. Scenario-id: " + scenarioId);
@@ -184,15 +178,19 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
         final Integer runId = startRunResponse.getRunId();
         if (runId == null) {
             Logger.error("Start run response did not contain a run-id:\n {}", startRunResponse.toString());
-            System.err.println("Start run response did not contain a run-id:\n " + startRunResponse.toString());
+            System.err.println("Start run response did not contain a run-id:\n " + startRunResponse);
             return -1;
         }
         out.println("Run id: " + runId);
         out.println("Run status: " + startRunResponse.getRunStatus());
 
         if (!detached) {
-            Runtime.getRuntime().addShutdownHook(
-                    new SwarmRunStartCommandShutdownHook(runsApi, scenariosApi, errorTransformer, runId, scenarioId));
+            Runtime.getRuntime()
+                    .addShutdownHook(new SwarmRunStartCommandShutdownHook(runsApi,
+                            scenariosApi,
+                            errorTransformer,
+                            runId,
+                            scenarioId));
             try {
                 pollUntilFinished(runId);
             } catch (final ApiException apiException) {
@@ -222,9 +220,8 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
     }
 
     private boolean isTerminated(final @NotNull RunResponse run) {
-        return "FINISHED".equals(run.getRunStatus())
-                || "STOPPED".equals(run.getRunStatus())
-                || "FAILED".equals(run.getRunStatus());
+        return "FINISHED".equals(run.getRunStatus()) || "STOPPED".equals(run.getRunStatus()) ||
+                "FAILED".equals(run.getRunStatus());
     }
 
     private @NotNull String getScenarioName(final @NotNull File scenario) {
@@ -251,10 +248,7 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmRunStartCommand{" +
-                "commanderUrl='" + commanderUrl + '\'' +
-                ", scenario=" + (scenario != null ? scenario.getAbsolutePath() : null) +
-                ", detached=" + detached +
-                '}';
+        return "SwarmRunStartCommand{" + "commanderUrl='" + commanderUrl + '\'' + ", scenario=" +
+                (scenario != null ? scenario.getAbsolutePath() : null) + ", detached=" + detached + '}';
     }
 }

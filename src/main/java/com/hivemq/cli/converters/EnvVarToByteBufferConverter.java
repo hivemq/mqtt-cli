@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import java.nio.ByteBuffer;
 
 public class EnvVarToByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
 
-    static final String ENVIRONMENT_VARIABLE_IS_NULL = "The given environment variable is not defined.";
+    static final @NotNull String ENVIRONMENT_VARIABLE_IS_NULL = "The given environment variable is not defined.";
 
     @Override
-    public ByteBuffer convert(String value) throws Exception {
+    public @NotNull ByteBuffer convert(final @NotNull String value) throws Exception {
         final ByteBufferConverter converter = new ByteBufferConverter();
         final String envVar = System.getenv(value);
 

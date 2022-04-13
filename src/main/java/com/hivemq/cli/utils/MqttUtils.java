@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -25,37 +26,45 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MqttUtils {
 
-    private static final String CLIENT_ID_CHARSET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final @NotNull String CLIENT_ID_CHARSET =
+            "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     public enum IdentifierWarning {
-        TOO_LONG, TOO_SHORT, CONTAINS_INVALID_CHAR
+        TOO_LONG,
+        TOO_SHORT,
+        CONTAINS_INVALID_CHAR
     }
 
     // Arrange the size of qos array to match the topics array size
     // The returned qos array will be filled with the default value represented by the first element in the given qos array
-    // if the sizes dont match up. Else this method throws an IllegalArgument exception
-    public static MqttQos[] arrangeQosToMatchTopics(final String[] topics, MqttQos[] qos) {
+    // if the sizes do not match up. Else this method throws an IllegalArgument exception
+    public static @NotNull MqttQos @NotNull [] arrangeQosToMatchTopics(
+            final @NotNull String @NotNull [] topics, final @NotNull MqttQos @NotNull [] qos) {
         if (topics.length != qos.length && qos.length == 1) {
             final MqttQos defaultQos = qos[0];
-            qos = new MqttQos[topics.length];
-            Arrays.fill(qos, defaultQos);
-            return qos;
+            final MqttQos[] newQos = new MqttQos[topics.length];
+            Arrays.fill(newQos, defaultQos);
+            return newQos;
         } else if (topics.length == qos.length) {
             return qos;
         }
-        throw new IllegalArgumentException("Topics do not match up to the QoS given. Topics Size {" + topics.length + "}, QoS Size {" + qos.length + "}");
+        throw new IllegalArgumentException(
+                "Topics do not match up to the QoS given. Topics Size {" + topics.length + "}, QoS Size {" +
+                        qos.length + "}");
     }
 
-    public static @Nullable Mqtt5UserProperties convertToMqtt5UserProperties(final @Nullable Mqtt5UserProperty... userProperties) {
+    public static @Nullable Mqtt5UserProperties convertToMqtt5UserProperties(final @Nullable Mqtt5UserProperty @Nullable ... userProperties) {
         if (userProperties == null) {
             return null;
-        }
-        else {
-            return Mqtt5UserProperties.of(userProperties);
+        } else {
+            final List<Mqtt5UserProperty> nonNullUserProperties =
+                    Arrays.stream(userProperties).filter(Objects::nonNull).collect(Collectors.toList());
+            return Mqtt5UserProperties.of(nonNullUserProperties);
         }
     }
 
@@ -68,11 +77,8 @@ public class MqttUtils {
     }
 
     public static @NotNull String buildKey(final @NotNull String identifier, final @NotNull String host) {
-            return "client {" +
-                    "identifier='" + identifier + '\'' +
-                    ", host='" + host + '\'' +
-                    '}';
-        }
+        return "client {" + "identifier='" + identifier + '\'' + ", host='" + host + '\'' + '}';
+    }
 
     // See http://docs.oasis-open.org/mqtt/mqtt/v5.0/cs02/mqtt-v5.0-cs02.html#_Toc514345331
     public static @NotNull String buildRandomClientID(final int length) {
@@ -89,18 +95,16 @@ public class MqttUtils {
     }
 
     public static List<IdentifierWarning> getIdentifierWarnings(final @NotNull String identifier) {
-
-        List<IdentifierWarning> identifierWarnings = new ArrayList<>();
+        final List<IdentifierWarning> identifierWarnings = new ArrayList<>();
 
         if (identifier.length() > 23) {
             identifierWarnings.add(IdentifierWarning.TOO_LONG);
-        }
-        else if (identifier.length() < 1) {
+        } else if (identifier.length() < 1) {
             identifierWarnings.add(IdentifierWarning.TOO_SHORT);
         }
 
-        final boolean containsInvalidChar =  identifier.chars()
-                .anyMatch((currChar) -> CLIENT_ID_CHARSET.indexOf((char) currChar) == -1);
+        final boolean containsInvalidChar =
+                identifier.chars().anyMatch((currChar) -> CLIENT_ID_CHARSET.indexOf((char) currChar) == -1);
 
         if (containsInvalidChar) {
             identifierWarnings.add(IdentifierWarning.CONTAINS_INVALID_CHAR);
@@ -109,11 +113,7 @@ public class MqttUtils {
         return identifierWarnings;
     }
 
-    public static @NotNull String getClientIdCharset() {
-        return CLIENT_ID_CHARSET;
-    }
-
-    public static char[] getInvalidIdChars(final @NotNull String identifier) {
+    public static char @NotNull [] getInvalidIdChars(final @NotNull String identifier) {
         return identifier.chars()
                 .filter((currChar) -> CLIENT_ID_CHARSET.indexOf((char) currChar) == -1)
                 .distinct()

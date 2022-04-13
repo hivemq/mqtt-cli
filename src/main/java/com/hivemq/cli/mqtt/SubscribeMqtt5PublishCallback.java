@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.Subscribe;
@@ -44,28 +45,34 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
         isBase64 = subscribe.isBase64();
         isJsonOutput = subscribe.isJsonOutput();
         showTopics = subscribe.showTopics();
-        this.client  = client;
+        this.client = client;
     }
 
     @Override
     public void accept(final @NotNull Mqtt5Publish mqtt5Publish) {
-
         String message;
 
-        if (isJsonOutput) { message = new JsonMqttPublish(mqtt5Publish, isBase64).toString(); }
-        else { message = MqttPublishUtils.formatPayload(mqtt5Publish.getPayloadAsBytes(), isBase64); }
+        if (isJsonOutput) {
+            message = new JsonMqttPublish(mqtt5Publish, isBase64).toString();
+        } else {
+            message = MqttPublishUtils.formatPayload(mqtt5Publish.getPayloadAsBytes(), isBase64);
+        }
 
-        if (showTopics) { message = mqtt5Publish.getTopic() + ": " + message; }
+        if (showTopics) {
+            message = mqtt5Publish.getTopic() + ": " + message;
+        }
 
-        if (outputFile != null) { MqttPublishUtils.printToFile(outputFile, message); }
-        if (printToStdout) { System.out.println(message); }
+        if (outputFile != null) {
+            MqttPublishUtils.printToFile(outputFile, message);
+        }
+        if (printToStdout) {
+            System.out.println(message);
+        }
 
-        Logger.debug("{} received PUBLISH ('{}') {}",
+        Logger.debug(
+                "{} received PUBLISH ('{}') {}",
                 LoggerUtils.getClientPrefix(client.getConfig()),
                 new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
                 mqtt5Publish);
-
     }
-
-
 }

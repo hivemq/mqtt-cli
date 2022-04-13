@@ -13,72 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.hivemq.export.clients;
 
-import com.hivemq.cli.commands.hivemq.export.clients.ClientDetailsRetrieverTask;
 import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_DETAILS_ALL;
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_DETAILS_CONNECTED;
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_DETAILS_PERSISTENT_OFFLINE;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ClientDetailsRetrieverTaskTest {
 
-    HiveMQRestService hiveMQRestService;
-    CompletableFuture<Void> clientIdsFuture;
-    MockWebServer server;
-    BlockingQueue<String> clientIdsQueue;
-    BlockingQueue<ClientDetails> clientDetailsQueue;
-    ClientDetailsRetrieverTask clientDetailsRetrieverTask;
+    private @NotNull MockWebServer server;
+    private @NotNull CompletableFuture<Void> clientIdsFuture;
+    private @NotNull BlockingQueue<String> clientIdsQueue;
+    private @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+    private @NotNull HiveMQRestService hiveMQRestService;
+    private @NotNull ClientDetailsRetrieverTask clientDetailsRetrieverTask;
 
     @BeforeEach
-    @SuppressWarnings("unchecked")
     void setUp() throws IOException {
-        server = new MockWebServer();
-        server.start();
-
+        //noinspection unchecked
         clientIdsFuture = mock(CompletableFuture.class);
         when(clientIdsFuture.isDone()).thenReturn(false);
+
+        server = new MockWebServer();
+        server.start();
 
         clientIdsQueue = new LinkedBlockingQueue<>();
         clientDetailsQueue = new LinkedBlockingQueue<>();
         hiveMQRestService = new HiveMQRestService(server.url("/").toString(), 500);
-
-        clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
+        clientDetailsRetrieverTask =
+                new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
     }
-
 
     @Test
     void one_detail_success() throws ExecutionException, InterruptedException {
         clientIdsQueue.add("client-1");
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_DETAILS_ALL)
-        );
-
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_DETAILS_ALL));
 
         final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
         when(clientIdsFuture.isDone()).thenReturn(true);
 
         completableFuture.get();
-
 
         assertEquals(1, clientDetailsQueue.size());
     }
@@ -86,16 +74,12 @@ class ClientDetailsRetrieverTaskTest {
     @Test
     void one_persistent_details_success() throws ExecutionException, InterruptedException {
         clientIdsQueue.add("client-1");
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_DETAILS_PERSISTENT_OFFLINE)
-        );
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_DETAILS_PERSISTENT_OFFLINE));
 
         final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
         when(clientIdsFuture.isDone()).thenReturn(true);
 
         completableFuture.get();
-
 
         assertEquals(1, clientDetailsQueue.size());
     }
@@ -103,46 +87,33 @@ class ClientDetailsRetrieverTaskTest {
     @Test
     void one_connected_details_success() throws ExecutionException, InterruptedException {
         clientIdsQueue.add("client-1");
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_DETAILS_CONNECTED)
-        );
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_DETAILS_CONNECTED));
 
         final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
         when(clientIdsFuture.isDone()).thenReturn(true);
 
         completableFuture.get();
 
-
         assertEquals(1, clientDetailsQueue.size());
     }
-
-
 
     @Test
     void details_50_success() throws ExecutionException, InterruptedException {
         for (int i = 0; i < 25; i++) {
             clientIdsQueue.add("client-" + i);
-            server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(CLIENT_DETAILS_PERSISTENT_OFFLINE)
-            );
+            server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_DETAILS_PERSISTENT_OFFLINE));
         }
 
         final CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
 
         for (int i = 25; i < 50; i++) {
             clientIdsQueue.add("client-" + i);
-            server.enqueue(new MockResponse()
-                    .setResponseCode(200)
-                    .setBody(CLIENT_DETAILS_PERSISTENT_OFFLINE)
-            );
+            server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_DETAILS_PERSISTENT_OFFLINE));
         }
 
         when(clientIdsFuture.isDone()).thenReturn(true);
 
         completableFuture.get();
-
 
         assertEquals(50, clientDetailsQueue.size());
     }
@@ -150,54 +121,44 @@ class ClientDetailsRetrieverTaskTest {
     @Test
     void blocking_client_ids_queue_success() {
         clientIdsQueue = new LinkedBlockingQueue<>(1);
-        clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
-
+        clientDetailsRetrieverTask =
+                new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
 
         final CompletableFuture<Void> clientIdsProducerFuture = CompletableFuture.runAsync(() -> {
             try {
                 for (int i = 0; i < 25; i++) {
                     Thread.sleep(50);
                     clientIdsQueue.put("client-" + i);
-                    server.enqueue(new MockResponse()
-                            .setResponseCode(200)
-                            .setBody(CLIENT_DETAILS_ALL)
-                    );
+                    server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_DETAILS_ALL));
                 }
             } catch (final Exception ex) {
                 throw new CompletionException(ex);
             }
             when(clientIdsFuture.isDone()).thenReturn(true);
         });
-
         final CompletableFuture<Void> clientDetailsFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
 
         clientIdsProducerFuture.join();
         clientDetailsFuture.join();
 
-
         assertEquals(25, clientDetailsQueue.size());
-
     }
 
     @Test
     void blocking_client_details_queue_success() throws InterruptedException {
         clientDetailsQueue = new LinkedBlockingQueue<>(1);
-        clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
+        clientDetailsRetrieverTask =
+                new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
 
         for (int i = 0; i < 25; i++) {
             Thread.sleep(50);
             clientIdsQueue.put("client-" + i);
-            server.enqueue(new MockResponse()
-                    .setResponseCode(200)
-                    .setBody(CLIENT_DETAILS_ALL)
-            );
+            server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_DETAILS_ALL));
         }
         when(clientIdsFuture.isDone()).thenReturn(true);
 
-
-
-        final CompletableFuture<Void> clientDetailsRetrieverFuture = CompletableFuture.runAsync(clientDetailsRetrieverTask);
-
+        final CompletableFuture<Void> clientDetailsRetrieverFuture =
+                CompletableFuture.runAsync(clientDetailsRetrieverTask);
 
         final AtomicInteger receivedClientDetails = new AtomicInteger(0);
         final CompletableFuture<Void> receivedClientDetailsFuture = CompletableFuture.runAsync(() -> {
@@ -218,6 +179,5 @@ class ClientDetailsRetrieverTaskTest {
         receivedClientDetailsFuture.join();
 
         assertEquals(25, receivedClientDetails.get());
-
     }
 }

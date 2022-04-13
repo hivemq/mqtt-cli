@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.converters;
 
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -22,20 +24,20 @@ import java.io.FileNotFoundException;
 
 class FileConverter implements CommandLine.ITypeConverter<File> {
 
-    static final String FILE_NOT_FOUND = "The given file was not found.";
-    static final String NOT_A_FILE = "The given path does not lead to a valid file.";
+    static final @NotNull String FILE_NOT_FOUND = "The given file was not found.";
+    static final @NotNull String NOT_A_FILE = "The given path does not lead to a valid file.";
 
     @Override
-    public File convert(String value) throws Exception {
-
+    public @NotNull File convert(final @NotNull String value) throws Exception {
         final File file = new File(value);
 
-        if (!file.exists())
+        if (!file.exists()) {
             throw new FileNotFoundException(FILE_NOT_FOUND);
+        }
 
-        if (!file.isFile())
+        if (!file.isFile()) {
             throw new IllegalArgumentException(NOT_A_FILE);
-
+        }
 
         return file;
     }

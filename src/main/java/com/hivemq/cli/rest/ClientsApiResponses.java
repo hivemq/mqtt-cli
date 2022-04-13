@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.rest;
 
 public class ClientsApiResponses {
+
     public static final int INVALID_CURSOR_VALUE = 400;
     public static final int CURSOR_NOT_VALID_ANYMORE = 410;
     public static final int HIVEMQ_IN_REPLICATION = 503;

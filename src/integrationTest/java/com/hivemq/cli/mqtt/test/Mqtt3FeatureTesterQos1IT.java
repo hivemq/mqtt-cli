@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt.test;
 
 import com.hivemq.cli.mqtt.test.results.QosTestResult;
@@ -21,24 +22,30 @@ import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Mqtt5FeatureTesterQos0Test {
+class Mqtt3FeatureTesterQos1IT {
 
-    static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"))
-                    .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/qos0-config.xml"));
+    private static final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
+                    "mqtt/test/qos1-config.xml"));
 
-    static Mqtt5FeatureTester mqtt5FeatureTester;
+    private @NotNull Mqtt3FeatureTester mqtt3FeatureTester;
 
     @BeforeAll
     static void beforeAll() {
         hivemq.start();
-        mqtt5FeatureTester = new Mqtt5FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
+    }
+
+    @BeforeEach
+    void setUp() {
+        mqtt3FeatureTester =
+                new Mqtt3FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
     }
 
     @AfterAll
@@ -48,19 +55,19 @@ class Mqtt5FeatureTesterQos0Test {
 
     @Test
     void qos_0_success() {
-        final QosTestResult qosTestResult = mqtt5FeatureTester.testQos(MqttQos.AT_MOST_ONCE, 10);
+        final QosTestResult qosTestResult = mqtt3FeatureTester.testQos(MqttQos.AT_MOST_ONCE, 10);
         assertEquals(10, qosTestResult.getReceivedPublishes());
     }
 
     @Test
-    void qos_1_failed() {
-        final QosTestResult qosTestResult = mqtt5FeatureTester.testQos(MqttQos.AT_LEAST_ONCE, 10);
-        assertEquals(0, qosTestResult.getReceivedPublishes());
+    void qos_1_success() {
+        final QosTestResult qosTestResult = mqtt3FeatureTester.testQos(MqttQos.AT_LEAST_ONCE, 10);
+        assertEquals(10, qosTestResult.getReceivedPublishes());
     }
 
     @Test
     void qos_2_failed() {
-        final QosTestResult qosTestResult = mqtt5FeatureTester.testQos(MqttQos.EXACTLY_ONCE, 10);
+        final QosTestResult qosTestResult = mqtt3FeatureTester.testQos(MqttQos.EXACTLY_ONCE, 10);
         assertEquals(0, qosTestResult.getReceivedPublishes());
     }
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.swarm.run;
 
 import com.google.gson.Gson;
@@ -37,6 +38,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -47,20 +49,16 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-/**
- * @author Yannick Weber
- */
 public class SwarmRunStopCommandIT {
 
-    public static final @NotNull String IMAGE_NAME = "hivemq/hivemq-swarm";
-    public static final int REST_PORT = 8080;
+    private static final @NotNull String IMAGE_NAME = "hivemq/hivemq-swarm";
+    private static final int REST_PORT = 8080;
 
     private final @NotNull Network network = Network.newNetwork();
-
-    private final @NotNull GenericContainer<?> swarm = new GenericContainer<>(IMAGE_NAME)
-            .withNetwork(network)
+    private final @NotNull GenericContainer<?> swarm = new GenericContainer<>(IMAGE_NAME).withNetwork(network)
             .withNetworkAliases("swarm")
             .withEnv("SWARM_COMMANDER_AGENTS", "localhost:3881")
             .withEnv("SWARM_COMMANDER_MODE", "rest")
@@ -75,9 +73,8 @@ public class SwarmRunStopCommandIT {
             .withLogConsumer(outputFrame -> System.out.print("SWARM: " + outputFrame.getUtf8String()))
             .withExposedPorts(REST_PORT);
 
-    final public @NotNull HiveMQTestContainerExtension hivemq = new HiveMQTestContainerExtension()
-            .withNetwork(network)
-            .withNetworkAliases("hivemq");
+    private final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension().withNetwork(network).withNetworkAliases("hivemq");
 
     private @NotNull CommandLine commandLine;
     private @NotNull RunsApi runsApi;
@@ -97,15 +94,13 @@ public class SwarmRunStopCommandIT {
 
         out = mock(PrintStream.class);
 
-        final byte[] bytes = Files.readAllBytes(
-                Paths.get(getClass().getResource("/SwarmRunStopCommandIT/blockScenario.xml").getPath()));
-        final String scenarioString =
-                new String(bytes, StandardCharsets.UTF_8).replace("localhost", "broker");
+        final URL resource = getClass().getResource("/SwarmRunStopCommandIT/blockScenario.xml");
+        assertNotNull(resource);
+        final byte[] bytes = Files.readAllBytes(Paths.get(resource.getPath()));
+        final String scenarioString = new String(bytes, StandardCharsets.UTF_8).replace("localhost", "broker");
         scenarioBase64 = Base64.getEncoder().encodeToString(scenarioString.getBytes(StandardCharsets.UTF_8));
 
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .build();
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS).build();
 
         final ApiClient apiClient = Configuration.getDefaultApiClient();
         apiClient.setBasePath("http://localhost:" + swarm.getMappedPort(8080));
@@ -117,9 +112,9 @@ public class SwarmRunStopCommandIT {
 
         final Gson gson = new Gson();
         final SwarmApiErrorTransformer errorTransformer = new SwarmApiErrorTransformer(gson);
-        commandLine = new CommandLine(new SwarmRunStopCommand(() -> runsApi, () -> commanderApi, errorTransformer, out));
+        commandLine =
+                new CommandLine(new SwarmRunStopCommand(() -> runsApi, () -> commanderApi, errorTransformer, out));
         commandLine.setCaseInsensitiveEnumValuesAllowed(true);
-
     }
 
     @AfterEach
@@ -131,54 +126,53 @@ public class SwarmRunStopCommandIT {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void stopRun() throws Exception {
-
         // no current run
         final int execute0 = commandLine.execute(
-                "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT)
-        );
+                "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT));
         assertEquals(0, execute0);
         verify(out, times(1)).println("No run in progress.");
-
 
         final Mqtt5BlockingClient client = Mqtt5Client.builder().serverPort(hivemq.getMqttPort()).buildBlocking();
         client.connect();
         final Mqtt5BlockingClient.Mqtt5Publishes publishes = client.publishes(MqttGlobalPublishFilter.ALL);
         client.toAsync().subscribeWith().topicFilter("#").send();
 
-        final UploadScenarioRequest uploadScenarioRequest = new UploadScenarioRequest()
-                .scenarioType("XML").scenario(scenarioBase64).scenarioName("my-scenario");
+        final UploadScenarioRequest uploadScenarioRequest =
+                new UploadScenarioRequest().scenarioType("XML").scenario(scenarioBase64).scenarioName("my-scenario");
         final UploadScenarioResponse uploadScenarioResponse = scenariosApi.uploadScenario(uploadScenarioRequest);
 
         final StartRunRequest startRunRequest = new StartRunRequest();
-        startRunRequest.setScenarioId(uploadScenarioResponse.getScenarioId().toString());
+        final Integer scenarioId = uploadScenarioResponse.getScenarioId();
+        assertNotNull(scenarioId);
+        startRunRequest.setScenarioId(scenarioId.toString());
         runsApi.startRun(startRunRequest);
 
         // the scenario is started
         publishes.receive();
 
-
         // stop the scenario
+        //TODO: not sure why here a logger reset is necessary (local machine)
+        TestLoggerUtils.resetLogger();
         final int execute = commandLine.execute(
                 "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT),
-                "-r" + 1
-        );
+                "-r" + 1);
         assertEquals(0, execute);
 
-        await().atMost(Duration.ofSeconds(3))
-                .until(() -> {
-                    final CommanderStateResponse commanderStatus = commanderApi.getCommanderStatus();
-                    System.out.println(commanderStatus);
-                    return "READY".equals(commanderStatus.getCommanderStatus());
-                });
+        await().atMost(Duration.ofSeconds(3)).until(() -> {
+            final CommanderStateResponse commanderStatus = commanderApi.getCommanderStatus();
+            System.out.println(commanderStatus);
+            return "READY".equals(commanderStatus.getCommanderStatus());
+        });
 
         final RunResponse run = runsApi.getRun("1");
         assertEquals("STOPPED", run.getRunStatus());
 
         // stop a run that does not exist
+        //TODO: however here a logger reset is not necessary (local machine)
+        //TestLoggerUtils.resetLogger();
         final int execute2 = commandLine.execute(
                 "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT),
-                "-r" + 1
-        );
+                "-r" + 1);
         assertEquals(-1, execute2);
     }
 }

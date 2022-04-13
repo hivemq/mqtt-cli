@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.mqtt.test;
 
 import com.hivemq.cli.mqtt.test.results.*;
@@ -25,6 +26,7 @@ import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.utility.DockerImageName;
 
@@ -32,17 +34,22 @@ import static com.hivemq.cli.mqtt.test.results.TestResult.OK;
 import static com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode.SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
 
-class Mqtt3FeatureTesterDefaultTest {
+class Mqtt3FeatureTesterDefaultIT {
 
-    static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"));
+    private static final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
 
-    static Mqtt3FeatureTester mqtt3FeatureTester;
+    private @NotNull Mqtt3FeatureTester mqtt3FeatureTester;
 
     @BeforeAll
     static void beforeAll() {
         hivemq.start();
-        mqtt3FeatureTester = new Mqtt3FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
+    }
+
+    @BeforeEach
+    void setUp() {
+        mqtt3FeatureTester =
+                new Mqtt3FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
     }
 
     @AfterAll
@@ -51,7 +58,7 @@ class Mqtt3FeatureTesterDefaultTest {
     }
 
     @Test
-    void connect_success() throws Exception {
+    void connect_success() {
         final Mqtt3ConnAck connAck = mqtt3FeatureTester.testConnect();
         assertNotNull(connAck);
         assertEquals(SUCCESS, connAck.getReturnCode());
@@ -66,7 +73,8 @@ class Mqtt3FeatureTesterDefaultTest {
 
     @Test
     void wildcard_subscriptions_success() {
-        final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult = mqtt3FeatureTester.testWildcardSubscriptions();
+        final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult =
+                mqtt3FeatureTester.testWildcardSubscriptions();
         assertEquals(OK, wildcardSubscriptionsTestResult.getHashWildcardTest());
         assertEquals(OK, wildcardSubscriptionsTestResult.getPlusWildcardTest());
         assertTrue(wildcardSubscriptionsTestResult.isSuccess());
@@ -131,11 +139,11 @@ class Mqtt3FeatureTesterDefaultTest {
 
     @Test
     void asciiChars_success() {
-        final AsciiCharsInClientIdTestResults asciiCharsInClientIdTestResults = mqtt3FeatureTester.testAsciiCharsInClientId();
+        final AsciiCharsInClientIdTestResults asciiCharsInClientIdTestResults =
+                mqtt3FeatureTester.testAsciiCharsInClientId();
         for (final Tuple<Character, String> testResult : asciiCharsInClientIdTestResults.getTestResults()) {
             assertEquals(Mqtt3ConnAckReturnCode.SUCCESS.toString(), testResult.getValue());
         }
         assertTrue(asciiCharsInClientIdTestResults.getUnsupportedChars().isEmpty());
-
     }
 }

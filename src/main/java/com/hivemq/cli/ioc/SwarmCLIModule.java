@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.ioc;
 
 import com.google.gson.Gson;
@@ -40,9 +41,6 @@ import javax.inject.Singleton;
 import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Yannick Weber
- */
 @Module
 public class SwarmCLIModule {
 
@@ -57,12 +55,9 @@ public class SwarmCLIModule {
             final @NotNull SwarmRunStartCommand swarmRunStartCommand,
             final @NotNull SwarmRunStopCommand swarmRunStopCommand,
             final @NotNull SwarmRunCommand swarmRunCommand) {
-
-        return new CommandLine(swarmCLICommand)
+        return new CommandLine(swarmCLICommand) //
                 .addSubcommand(swarmStatusCommand)
-                .addSubcommand(
-                        new CommandLine(swarmRunCommand)
-                        .addSubcommand(swarmRunStartCommand)
+                .addSubcommand(new CommandLine(swarmRunCommand).addSubcommand(swarmRunStartCommand)
                         .addSubcommand(swarmRunStopCommand))
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
@@ -78,10 +73,7 @@ public class SwarmCLIModule {
     @Provides
     @Named("swarm-cli")
     public @NotNull ApiClient provideApiClient() {
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .build();
-
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS).build();
         final ApiClient apiClient = Configuration.getDefaultApiClient();
         apiClient.setHttpClient(okHttpClient);
 
@@ -107,5 +99,4 @@ public class SwarmCLIModule {
     public @NotNull ScenariosApi provideScenariosApi(final @NotNull @Named("swarm-cli") ApiClient apiClient) {
         return new ScenariosApi(apiClient);
     }
-
 }

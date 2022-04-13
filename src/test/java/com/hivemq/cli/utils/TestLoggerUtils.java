@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
 import org.tinylog.configuration.Configuration;
 
 import java.lang.reflect.Field;
 
-/**
- * @author Christoph Schäbel
- */
 public class TestLoggerUtils {
 
     /**
@@ -33,10 +31,8 @@ public class TestLoggerUtils {
             frozen = Configuration.class.getDeclaredField("frozen");
             frozen.setAccessible(true);
             frozen.set(null, false);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (final NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
-
     }
-
 }

@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class Tuple<A, B> {
-    private @NotNull final A key;
-    private @Nullable final B value;
+
+    private final @NotNull A key;
+    private final @Nullable B value;
 
     public Tuple(final @NotNull A key, final @Nullable B value) {
         this.key = key;
@@ -36,10 +38,7 @@ public class Tuple<A, B> {
     }
 
     @Override
-    public String toString() {
-        return "Tuple{" +
-                "key=" + key +
-                ", value=" + value +
-                '}';
+    public @NotNull String toString() {
+        return "Tuple{" + "key=" + key + ", value=" + value + '}';
     }
 }

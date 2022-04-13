@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.options;
 
 import com.hivemq.cli.converters.ByteBufferConverter;
@@ -24,16 +25,21 @@ import java.nio.ByteBuffer;
 
 public class MessagePayloadOptions {
 
-    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class, description = "The message to publish", order = 1)
-    public void setMessageFromCommandline(final @NotNull ByteBuffer messageFromFile) {
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class,
+            description = "The message to publish", order = 1)
+    private void setMessageFromCommandline(final @NotNull ByteBuffer messageFromFile) {
         messageBuffer = messageFromFile;
     }
 
-    @CommandLine.Option(names = {"-m:file", "--message-file"}, converter = FileToByteBufferConverter.class, description = "The message read in from a file", order = 1)
-    public void setMessageFromFile(final @NotNull ByteBuffer messageFromFile) {
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-m:file", "--message-file"}, converter = FileToByteBufferConverter.class,
+            description = "The message read in from a file", order = 1)
+    private void setMessageFromFile(final @NotNull ByteBuffer messageFromFile) {
         messageBuffer = messageFromFile;
     }
 
+    @SuppressWarnings("NotNullFieldNotInitialized")
     private @NotNull ByteBuffer messageBuffer;
 
     public @NotNull ByteBuffer getMessageBuffer() {

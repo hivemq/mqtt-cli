@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.commands.swarm.error.Error;
@@ -24,9 +25,6 @@ import com.hivemq.cli.openapi.swarm.StopRunRequest;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
-/**
- * @author Yannick Weber
- */
 public class SwarmRunStartCommandShutdownHook extends Thread {
 
     private final @NotNull RunsApi runsApi;

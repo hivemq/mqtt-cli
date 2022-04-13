@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.utils.LoggerUtils;
+import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.MaskingCallback;
 import org.jline.reader.ParsedLine;
@@ -37,59 +40,58 @@ import picocli.shell.jline3.PicocliJLineCompleter;
 
 import javax.inject.Inject;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
-@CommandLine.Command(name = "shell", aliases = "sh",
-        versionProvider = MqttCLIMain.CLIVersionProvider.class,
+@CommandLine.Command(name = "shell", aliases = "sh", versionProvider = MqttCLIMain.CLIVersionProvider.class,
         description = "Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.",
-        footer = {"", "@|bold Press Ctl-C to exit.|@"},
-        synopsisHeading = "%n@|bold Usage|@:  ",
-        descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options|@:%n",
-        commandListHeading = "%n@|bold Commands|@:%n",
-        separator = " ")
-
+        footer = {"", "@|bold Press Ctl-C to exit.|@"}, synopsisHeading = "%n@|bold Usage|@:  ",
+        descriptionHeading = "%n", optionListHeading = "%n@|bold Options|@:%n",
+        commandListHeading = "%n@|bold Commands|@:%n", separator = " ")
 public class ShellCommand implements Runnable {
 
-    private static final String DEFAULT_PROMPT = "mqtt> ";
-    private static String prompt = DEFAULT_PROMPT;
+    private static final @NotNull String DEFAULT_PROMPT = "mqtt> ";
+    private static @NotNull String prompt = DEFAULT_PROMPT;
 
+    //TODO: This is never set
     public static boolean DEBUG;
     public static boolean VERBOSE;
-    private String logfilePath;
 
-    public static PrintWriter TERMINAL_WRITER;
+    public static @Nullable PrintWriter TERMINAL_WRITER;
 
-    private static LineReaderImpl currentReader;
-    private static LineReaderImpl shellReader;
-    private static LineReaderImpl contextReader;
-
-    private static CommandLine currentCommandLine;
-    private static CommandLine shellCommandLine;
-    private static CommandLine contextCommandLine;
-
+    private static @Nullable LineReaderImpl currentReader;
+    private static @Nullable LineReaderImpl shellReader;
+    private static @Nullable LineReaderImpl contextReader;
+    private static @Nullable CommandLine currentCommandLine;
+    private static @Nullable CommandLine shellCommandLine;
+    private static @Nullable CommandLine contextCommandLine;
     private static boolean exitShell = false;
 
-    private final DefaultCLIProperties defaultCLIProperties;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--version", "-V"}, versionHelp = true, description = "display version info")
+    private boolean versionInfoRequested;
 
-    @SuppressWarnings("NullableProblems")
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--help", "-h"}, usageHelp = true, description = "display this help message")
+    private boolean usageHelpRequested;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
+            description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
+            order = 1)
+    private boolean logToLogfile;
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
     private @NotNull CommandLine.Model.CommandSpec spec;
+
+    private final @NotNull DefaultCLIProperties defaultCLIProperties;
+
+    private @Nullable String logfilePath;
 
     @Inject
     ShellCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
         this.defaultCLIProperties = defaultCLIProperties;
     }
-
-    @CommandLine.Option(names = {"--version", "-V"}, versionHelp = true, description = "display version info")
-    boolean versionInfoRequested;
-
-    @CommandLine.Option(names = {"--help", "-h"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false", description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)", order = 1)
-    private boolean logToLogfile;
 
     @Override
     public void run() {
@@ -99,17 +101,12 @@ public class ShellCommand implements Runnable {
         interact();
     }
 
-
     private void interact() {
-        shellCommandLine = MqttCLIMain.MQTTCLI.shell();
+        shellCommandLine = Objects.requireNonNull(MqttCLIMain.MQTTCLI).shell();
         contextCommandLine = MqttCLIMain.MQTTCLI.shellContext();
 
         try {
-            final Terminal terminal = TerminalBuilder.builder()
-                    .name("MQTT Terminal")
-                    .system(true)
-                    .build();
-
+            final Terminal terminal = TerminalBuilder.builder().name("MQTT Terminal").system(true).build();
             shellReader = (LineReaderImpl) LineReaderBuilder.builder()
                     .terminal(terminal)
                     .completer(new PicocliJLineCompleter(shellCommandLine.getCommandSpec()))
@@ -124,21 +121,22 @@ public class ShellCommand implements Runnable {
 
             readFromShell();
 
-
             TERMINAL_WRITER = terminal.writer();
             TERMINAL_WRITER.println(shellCommandLine.getUsageMessage());
             TERMINAL_WRITER.flush();
 
-            TERMINAL_WRITER.printf("Using default values from properties file %s:\n", defaultCLIProperties.getFile().getPath());
-            TERMINAL_WRITER.printf("Host: %s, Port: %d, Mqtt-Version %s, Logfile-Debug-Level: %s\n",
+            TERMINAL_WRITER.printf(
+                    "Using default values from properties file %s:\n",
+                    Objects.requireNonNull(defaultCLIProperties.getFile()).getPath());
+            TERMINAL_WRITER.printf(
+                    "Host: %s, Port: %d, Mqtt-Version %s, Logfile-Debug-Level: %s\n",
                     defaultCLIProperties.getHost(),
                     defaultCLIProperties.getPort(),
                     defaultCLIProperties.getMqttVersion(),
                     defaultCLIProperties.getLogfileDebugLevel());
             if (logfilePath != null) {
                 TERMINAL_WRITER.printf("Writing Logfile to %s\n", logfilePath);
-            }
-            else {
+            } else {
                 TERMINAL_WRITER.printf("No Logfile used - Activate logging with the 'mqtt sh -l' option\n");
             }
 
@@ -147,11 +145,11 @@ public class ShellCommand implements Runnable {
             String line;
             while (!exitShell) {
                 try {
-                    line = currentReader.readLine(prompt, null, (MaskingCallback) null, null);
+                    line = Objects.requireNonNull(currentReader).readLine(prompt, null, (MaskingCallback) null, null);
                     final ParsedLine pl = currentReader.getParser().parse(line, prompt.length());
                     final String[] arguments = pl.words().toArray(new String[0]);
                     if (arguments.length != 0) {
-                        currentCommandLine.execute(arguments);
+                        Objects.requireNonNull(currentCommandLine).execute(arguments);
                     }
                 } catch (final UserInterruptException e) {
                     Logger.trace("--- User interrupted shell ---");
@@ -173,9 +171,12 @@ public class ShellCommand implements Runnable {
     static void readFromContext() {
         currentReader = contextReader;
         currentCommandLine = contextCommandLine;
-        prompt = new AttributedStringBuilder()
-                .style(AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW))
-                .append(ShellContextCommand.contextClient.getConfig().getClientIdentifier().get().toString())
+        prompt = new AttributedStringBuilder().style(AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW))
+                .append(Objects.requireNonNull(ShellContextCommand.contextClient)
+                        .getConfig()
+                        .getClientIdentifier()
+                        .orElse(MqttClientIdentifier.of(""))
+                        .toString())
                 .style(AttributedStyle.DEFAULT)
                 .append("@")
                 .style(AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW))
@@ -186,25 +187,21 @@ public class ShellCommand implements Runnable {
     }
 
     static void readFromShell() {
-
         currentReader = shellReader;
         currentCommandLine = shellCommandLine;
-        prompt = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT)
-                .append(DEFAULT_PROMPT)
-                .toAnsi();
+        prompt = new AttributedStringBuilder().style(AttributedStyle.DEFAULT).append(DEFAULT_PROMPT).toAnsi();
     }
 
-    static void usage(Object command) {
-        currentCommandLine.usage(command, System.out);
+    static void usage(final @NotNull Object command) {
+        CommandLine.usage(command, System.out);
     }
 
-    static String getUsageMessage() {
-        return currentCommandLine.getUsageMessage();
+    static @NotNull String getUsageMessage() {
+        return Objects.requireNonNull(currentCommandLine).getUsageMessage();
     }
 
     static void clearScreen() {
-        currentReader.clearScreen();
+        Objects.requireNonNull(currentReader).clearScreen();
     }
 
     static boolean isVerbose() {
@@ -216,13 +213,8 @@ public class ShellCommand implements Runnable {
     }
 
     @Override
-    public String toString() {
-        return  getClass().getSimpleName() + "{" +
-                "logfilePath=" + logfilePath +
-                ", debug=" + DEBUG +
-                ", verbose=" + VERBOSE +
-                "}";
+    public @NotNull String toString() {
+        return getClass().getSimpleName() + "{" + "logfilePath=" + logfilePath + ", debug=" + DEBUG + ", verbose=" +
+                VERBOSE + "}";
     }
-
-
 }

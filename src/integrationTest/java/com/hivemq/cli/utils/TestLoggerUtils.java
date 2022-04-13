@@ -13,9 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.impl;
 
-public interface MqttAction extends Runnable {
+package com.hivemq.cli.utils;
 
-    String getKey();
+import org.tinylog.configuration.Configuration;
+
+import java.lang.reflect.Field;
+
+public class TestLoggerUtils {
+
+    /**
+     * Used to reset the logger after tests
+     */
+    public static void resetLogger() {
+        final Field frozen;
+        try {
+            frozen = Configuration.class.getDeclaredField("frozen");
+            frozen.setAccessible(true);
+            frozen.set(null, false);
+        } catch (final NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 }

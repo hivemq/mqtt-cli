@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
@@ -25,13 +26,30 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Objects;
 
-@CommandLine.Command(name = "switch",
-        description = "Switch the current context")
+@CommandLine.Command(name = "switch", description = "Switch the current context")
 public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
 
-    //needed for pico cli - reflection code generation
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    private boolean usageHelpRequested;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
+    private @Nullable String contextName;
+
+    @CommandLine.Option(names = {"-i", "--identifier"},
+            description = "The client identifier UTF-8 String (default randomly generated string)")
+    private @Nullable String identifier;
+
+    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost",
+            description = "The hostname of the message broker (default 'localhost')")
+    private @Nullable String host;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
     public ContextSwitchCommand() {
+        //noinspection ConstantConditions
         this(null);
     }
 
@@ -40,25 +58,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
         super(mqttClientExecutor);
     }
 
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
-    @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
-    @Nullable
-    private String contextName;
-
-    @CommandLine.Option(names = {"-i", "--identifier"}, description = "The client identifier UTF-8 String (default randomly generated string)")
-    @Nullable
-    private String identifier;
-
-    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost", description = "The hostname of the message broker (default 'localhost')")
-    @Nullable
-    private String host;
-
-
     @Override
     public void run() {
-
         if (contextName == null && identifier == null) {
             ShellCommand.usage(this);
             return;
@@ -67,8 +68,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
         if (contextName != null) {
             try {
                 extractKeyFromContextName(contextName);
-            }
-            catch (final IllegalArgumentException ex) {
+            } catch (final IllegalArgumentException ex) {
                 Logger.error(ex, Throwables.getRootCause(ex).getMessage());
                 return;
             }
@@ -99,33 +99,17 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     }
 
     @Override
-    public String getKey() {
-        return "client {" +
-                "identifier='" + getIdentifier() + '\'' +
-                ", host='" + getHost() + '\'' +
-                '}';
+    public @NotNull String getKey() {
+        return "client {" + "identifier='" + getIdentifier() + '\'' + ", host='" + host + '\'' + '}';
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{" +
-                "identifier=" + identifier +
-                ", host=" + host +
-                '}';
-    }
-
-    @NotNull
-    public String getHost() {
-        return host;
+    public @NotNull String toString() {
+        return getClass().getSimpleName() + "{" + "identifier=" + identifier + ", host=" + host + '}';
     }
 
     @Override
-    @NotNull
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(final String identifier) {
-        this.identifier = identifier;
+    public @NotNull String getIdentifier() {
+        return Objects.requireNonNull(identifier);
     }
 }

@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.converters;
 
+package com.hivemq.cli.converters;
 
 import com.hivemq.cli.utils.PasswordUtils;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMDecryptorProvider;
-import org.bouncycastle.openssl.PEMEncryptedKeyPair;
-import org.bouncycastle.openssl.PEMException;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.*;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JceOpenSSLPKCS8DecryptorProviderBuilder;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
@@ -39,17 +35,18 @@ import java.security.PrivateKey;
 import java.security.Security;
 
 public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<PrivateKey> {
-    static final String UNRECOGNIZED_KEY = "The private key could not be recognized.";
-    static final String MALFORMED_KEY = "The private key could not be read.";
+
+    static final @NotNull String UNRECOGNIZED_KEY = "The private key could not be recognized.";
+    static final @NotNull String MALFORMED_KEY = "The private key could not be read.";
 
     @Override
-    public PrivateKey convert(final @NotNull String s) throws Exception {
+    public @NotNull PrivateKey convert(final @NotNull String s) throws Exception {
         final FileConverter fileConverter = new FileConverter();
         final File keyFile = fileConverter.convert(s);
         return getPrivateKeyFromFile(keyFile);
     }
 
-    private PrivateKey getPrivateKeyFromFile(final @NotNull File keyFile) throws Exception {
+    private @NotNull PrivateKey getPrivateKeyFromFile(final @NotNull File keyFile) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         // read the keyfile
         final PEMParser pemParser = new PEMParser(new FileReader(keyFile));
@@ -57,7 +54,7 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
         final Object object;
         try {
             object = pemParser.readObject();
-        } catch (PEMException pe) {
+        } catch (final PEMException pe) {
             throw new Exception(MALFORMED_KEY);
         }
 
@@ -73,15 +70,15 @@ public class FileToPrivateKeyConverter implements CommandLine.ITypeConverter<Pri
         } else if (object instanceof PKCS8EncryptedPrivateKeyInfo) {
             final char[] password = PasswordUtils.readPassword("Enter private key password:");
             final PKCS8EncryptedPrivateKeyInfo encryptedPrivateKey = (PKCS8EncryptedPrivateKeyInfo) object;
-            final InputDecryptorProvider decryptorProvider = new JceOpenSSLPKCS8DecryptorProviderBuilder().build(password);
+            final InputDecryptorProvider decryptorProvider =
+                    new JceOpenSSLPKCS8DecryptorProviderBuilder().build(password);
             final PrivateKeyInfo privateKeyInfo = encryptedPrivateKey.decryptPrivateKeyInfo(decryptorProvider);
             privateKey = converter.getPrivateKey(privateKeyInfo);
         } else if (object instanceof PEMKeyPair) {
             privateKey = converter.getPrivateKey(((PEMKeyPair) object).getPrivateKeyInfo());
         } else if (object instanceof PrivateKeyInfo) {
             privateKey = converter.getPrivateKey((PrivateKeyInfo) object);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(UNRECOGNIZED_KEY);
         }
 

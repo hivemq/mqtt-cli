@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
@@ -30,78 +31,72 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Objects;
 
-@CommandLine.Command(name = "unsub",
-        aliases = "unsubscribe",
+@CommandLine.Command(name = "unsub", aliases = "unsubscribe",
         description = "Unsubscribe this MQTT client from a list of topics")
-
 public class ContextUnsubscribeCommand extends ShellContextCommand implements Runnable, Unsubscribe {
 
-    //needed for pico cli - reflection code generation
-    public ContextUnsubscribeCommand(){
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    private boolean usageHelpRequested;
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via required
+    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
+    private @NotNull String @NotNull [] topics;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
+            description = "A user property for the unsubscribe message")
+    private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
+    public ContextUnsubscribeCommand() {
+        //noinspection ConstantConditions
         this(null);
     }
 
     @Inject
-    public ContextUnsubscribeCommand(@NotNull MqttClientExecutor mqttClientExecutor) {
+    public ContextUnsubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         super(mqttClientExecutor);
     }
 
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
-    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
-    @NotNull private String[] topics;
-
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property for the unsubscribe message")
-    @Nullable
-    private Mqtt5UserProperty[] userProperties;
-
     @Override
     public void run() {
-
         Logger.trace("Command {} ", this);
 
         logUnusedUnsubscribeOptions();
 
         try {
-            mqttClientExecutor.unsubscribe(contextClient, this);
-        }
-        catch (final Exception ex) {
+            mqttClientExecutor.unsubscribe(Objects.requireNonNull(contextClient), this);
+        } catch (final Exception ex) {
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
     }
 
     private void logUnusedUnsubscribeOptions() {
-        if (contextClient.getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
+        if (Objects.requireNonNull(contextClient).getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
             if (userProperties != null) {
-                Logger.warn("Unsubscribe user properties were set but are unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn(
+                        "Unsubscribe user properties were set but are unused in MQTT Version {}",
+                        MqttVersion.MQTT_3_1_1);
             }
         }
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{" +
-                "key=" + getKey() +
-                ", topics=" + Arrays.toString(topics) +
-                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") +
-                '}';
+    public @NotNull String toString() {
+        return getClass().getSimpleName() + "{" + "key=" + getKey() + ", topics=" + Arrays.toString(topics) +
+                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") + '}';
     }
 
     @Override
-    @NotNull
-    public String[] getTopics() {
+    public @NotNull String @NotNull [] getTopics() {
         return topics;
     }
 
     @Override
-    @Nullable
-    public Mqtt5UserProperties getUserProperties() {
+    public @Nullable Mqtt5UserProperties getUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(userProperties);
-    }
-
-    public void setUserProperties(final Mqtt5UserProperty... userProperties) {
-        this.userProperties = userProperties;
     }
 }

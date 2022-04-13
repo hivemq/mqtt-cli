@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
@@ -36,34 +37,38 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.Arrays;
 
-@CommandLine.Command(name = "con",
-        aliases = "connect",
-        description = "Connect an MQTT client",
+@CommandLine.Command(name = "con", aliases = "connect", description = "Connect an MQTT client",
         abbreviateSynopsis = true)
-
 public class ShellConnectCommand extends AbstractCommonFlags implements Runnable, Connect {
 
-    private final MqttClientExecutor mqttClientExecutor;
-    @Nullable private MqttClientSslConfig sslConfig;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
-    //needed for pico cli - reflection code generation
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
+            description = "The lifetime of the session of the connected client'")
+    private @Nullable Long sessionExpiryInterval;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
+            description = "A user property of the connect message")
+    private @Nullable Mqtt5UserProperty @Nullable [] connectUserProperties;
+
+    private final @NotNull MqttClientExecutor mqttClientExecutor;
+
+    private @Nullable MqttClientSslConfig sslConfig;
+
+    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
     public ShellConnectCommand() {
+        //noinspection ConstantConditions
         this(null);
     }
 
     @Inject
-    public ShellConnectCommand(@NotNull final MqttClientExecutor mqttClientExecutor) {
+    public ShellConnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;
     }
-
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
-    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class, description = "The lifetime of the session of the connected client'")
-    @Nullable private Long sessionExpiryInterval;
-
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class, description = "A user property of the connect message")
-    @Nullable private Mqtt5UserProperty[] connectUserProperties;
 
     public void run() {
         setDefaultOptions();
@@ -83,16 +88,13 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
     }
 
     private @Nullable MqttClient connect() {
-
         Logger.trace("Command {} ", this);
 
         try {
             return mqttClientExecutor.connect(this);
-        }
-        catch (final ConnectionFailedException cex) {
+        } catch (final ConnectionFailedException cex) {
             Logger.error(cex, cex.getCause().getMessage());
-        }
-        catch (final Exception ex) {
+        } catch (final Exception ex) {
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());
         }
         return null;
@@ -103,25 +105,19 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
         super.logUnusedOptions();
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
             if (sessionExpiryInterval != null) {
-                Logger.warn("Connect session expiry interval was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Connect session expiry interval was set but is unused in MQTT Version {}",
+                        MqttVersion.MQTT_3_1_1);
             }
 
             if (connectUserProperties != null) {
-                Logger.warn("Connect user properties were set but are unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
+                Logger.warn("Connect user properties were set but are unused in MQTT Version {}",
+                        MqttVersion.MQTT_3_1_1);
             }
         }
     }
 
-    String connectOptions() {
-        return commonOptions() +
-                (sessionExpiryInterval != null ? (", sessionExpiryInterval=" + sessionExpiryInterval) : "") +
-                (connectUserProperties != null ? (", userProperties=" + Arrays.toString(connectUserProperties)) : "") +
-                connectRestrictionOptions();
-    }
-
-
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return getClass().getSimpleName() + "{" + connectOptions() + "}";
     }
 
@@ -135,20 +131,25 @@ public class ShellConnectCommand extends AbstractCommonFlags implements Runnable
         return ShellCommand.isVerbose();
     }
 
-    @Nullable
-    public Long getSessionExpiryInterval() {
+    @Override
+    public @Nullable Long getSessionExpiryInterval() {
         return sessionExpiryInterval;
     }
 
-    @Nullable
-    public Mqtt5UserProperties getConnectUserProperties() {
+    @Override
+    public @Nullable Mqtt5UserProperties getConnectUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(connectUserProperties);
     }
 
-    @Nullable
     @Override
-    public MqttClientSslConfig getSslConfig() {
+    public @Nullable MqttClientSslConfig getSslConfig() {
         return sslConfig;
     }
 
+    private @NotNull String connectOptions() {
+        return commonOptions() +
+                (sessionExpiryInterval != null ? (", sessionExpiryInterval=" + sessionExpiryInterval) : "") +
+                (connectUserProperties != null ? (", userProperties=" + Arrays.toString(connectUserProperties)) : "") +
+                connectRestrictionOptions();
+    }
 }

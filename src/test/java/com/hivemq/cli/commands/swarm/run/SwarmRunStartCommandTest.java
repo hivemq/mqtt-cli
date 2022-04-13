@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.commands.swarm.error.Error;
@@ -36,9 +37,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * @author Yannick Weber
- */
 class SwarmRunStartCommandTest {
 
     private @NotNull RunsApi runsApi;
@@ -60,8 +58,7 @@ class SwarmRunStartCommandTest {
     @Test
     void invalidUrl_error() {
         final File scenario = mock(File.class);
-        final SwarmRunStartCommand command = new SwarmRunStartCommand(
-                "invalid",
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("invalid",
                 scenario,
                 true,
                 runsApi,
@@ -75,8 +72,7 @@ class SwarmRunStartCommandTest {
 
     @Test
     void fileNull_error() {
-        final SwarmRunStartCommand command = new SwarmRunStartCommand(
-                "http://localhost:8080",
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 null,
                 true,
                 runsApi,
@@ -92,8 +88,7 @@ class SwarmRunStartCommandTest {
     void scenarioUnreadable_error() {
         final File scenario = mock(File.class);
         when(scenario.canRead()).thenReturn(false);
-        final SwarmRunStartCommand command = new SwarmRunStartCommand(
-                "http://localhost:8080",
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario,
                 true,
                 runsApi,
@@ -110,8 +105,7 @@ class SwarmRunStartCommandTest {
         final File scenario = mock(File.class);
         when(scenario.canRead()).thenReturn(true);
         when(scenario.exists()).thenReturn(false);
-        final SwarmRunStartCommand command = new SwarmRunStartCommand(
-                "http://localhost:8080",
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario,
                 true,
                 runsApi,
@@ -128,8 +122,7 @@ class SwarmRunStartCommandTest {
         final Path scenario = tempDir.resolve("scenario.xml");
         Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
-        final SwarmRunStartCommand command = new SwarmRunStartCommand(
-                "http://localhost:8080",
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),
                 true,
                 runsApi,
@@ -161,8 +154,7 @@ class SwarmRunStartCommandTest {
         final Path scenario = tempDir.resolve("scenario.vm");
         Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
-        final SwarmRunStartCommand command = new SwarmRunStartCommand(
-                "http://localhost:8080",
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),
                 true,
                 runsApi,
@@ -190,12 +182,12 @@ class SwarmRunStartCommandTest {
     }
 
     @Test
-    void uploadScenarioSuccessButCantStart_error(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
+    void uploadScenarioSuccessButCantStart_error(final @TempDir @NotNull Path tempDir)
+            throws IOException, ApiException {
         final Path scenario = tempDir.resolve("scenario.vm");
         Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
-        final SwarmRunStartCommand command = new SwarmRunStartCommand(
-                "http://localhost:8080",
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),
                 true,
                 runsApi,
@@ -224,8 +216,7 @@ class SwarmRunStartCommandTest {
         final Path scenario = tempDir.resolve("scenario.vm");
         Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
-        final SwarmRunStartCommand command = new SwarmRunStartCommand(
-                "http://localhost:8080",
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),
                 false,
                 runsApi,
@@ -262,8 +253,7 @@ class SwarmRunStartCommandTest {
         final Path scenario = tempDir.resolve("scenario.vm");
         Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
 
-        final SwarmRunStartCommand command = new SwarmRunStartCommand(
-                "http://localhost:8080",
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),
                 true,
                 runsApi,

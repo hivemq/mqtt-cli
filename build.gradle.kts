@@ -84,17 +84,17 @@ repositories {
 
 dependencies {
     implementation("io.swagger:swagger-annotations:${property("swagger.version")}")
-    implementation("com.google.code.findbugs:jsr305:${property("findBugs.version")}")
-    implementation("com.squareup.okhttp3:okhttp:${property("okHttp.version")}")
-    implementation("com.squareup.okhttp3:logging-interceptor:${property("okHttp.version")}")
-    implementation("io.gsonfire:gson-fire:${property("gsonFire.version")}")
-    implementation("org.apache.commons:commons-lang3:${property("commonsLang.version")}")
+    implementation("com.google.code.findbugs:jsr305:${property("find-bugs.version")}")
+    implementation("com.squareup.okhttp3:okhttp:${property("ok-http.version")}")
+    implementation("com.squareup.okhttp3:logging-interceptor:${property("ok-http.version")}")
+    implementation("io.gsonfire:gson-fire:${property("gson-fire.version")}")
+    implementation("org.apache.commons:commons-lang3:${property("commons-lang.version")}")
     implementation("javax.annotation:javax.annotation-api:${property("javax.version")}")
 
     implementation("org.jline:jline:${property("jline.version")}")
     implementation("org.jline:jline-terminal-jansi:${property("jline.version")}")
     implementation("com.google.dagger:dagger:${property("dagger.version")}")
-    compileOnly("org.graalvm.nativeimage:svm:${property("substrateVm.version")}")
+    compileOnly("org.graalvm.nativeimage:svm:${property("substrate-vm.version")}")
     annotationProcessor("com.google.dagger:dagger-compiler:${property("dagger.version")}")
 
     implementation("info.picocli:picocli:${property("picocli.version")}")
@@ -102,17 +102,17 @@ dependencies {
     implementation("info.picocli:picocli-codegen:${property("picocli.version")}")
     implementation("com.google.guava:guava:${property("guava.version")}")
     implementation("com.google.code.gson:gson:${property("gson.version")}")
-    implementation("commons-io:commons-io:${property("commonsIo.version")}")
+    implementation("commons-io:commons-io:${property("commons-io.version")}")
     implementation("org.tinylog:tinylog-api:${property("tinylog.version")}")
     implementation("org.tinylog:tinylog-impl:${property("tinylog.version")}")
-    implementation("org.jetbrains:annotations:${property("jetbrainsAnnotations.version")}")
+    implementation("org.jetbrains:annotations:${property("jetbrains-annotations.version")}")
     implementation("org.bouncycastle:bcprov-jdk15on:${property("bouncycastle.version")}")
     implementation("org.bouncycastle:bcpkix-jdk15on:${property("bouncycastle.version")}")
-    implementation("com.hivemq:hivemq-mqtt-client:${property("hivemqclient.version")}")
+    implementation("com.hivemq:hivemq-mqtt-client:${property("hivemq-client.version")}")
     implementation("io.netty:netty-handler:${property("netty.version")}")
     implementation("io.netty:netty-codec-http:${property("netty.version")}")
     implementation("io.netty:netty-transport-native-epoll:${property("netty.version")}:linux-x86_64")
-    implementation("com.opencsv:opencsv:${property("openCsv.version")}")
+    implementation("com.opencsv:opencsv:${property("open-csv.version")}")
 }
 
 /* ******************** OpenAPI ******************** */
@@ -210,14 +210,51 @@ tasks.test {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:${property("junitJupiter.version")}")
+    testImplementation("org.junit.jupiter:junit-jupiter:${property("junit-jupiter.version")}")
     testImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
     testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
-    testImplementation("com.squareup.okhttp3:mockwebserver:${property("okHttp.version")}")
-    testImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemqTestcontainer.version")}")
-    testImplementation("com.ginsberg:junit5-system-exit:${property("systemExit.version")}")
-    testImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
+    testImplementation("com.squareup.okhttp3:mockwebserver:${property("ok-http.version")}")
+    testImplementation("com.ginsberg:junit5-system-exit:${property("system-exit.version")}")
 }
+
+/* ******************** integration Tests ******************** */
+
+sourceSets.create("integrationTest") {
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+}
+
+val integrationTestImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.testImplementation.get())
+}
+val integrationTestRuntimeOnly: Configuration by configurations.getting {
+    extendsFrom(configurations.testRuntimeOnly.get())
+}
+
+dependencies {
+    integrationTestImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemq-testcontainer.version")}")
+    integrationTestImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
+}
+
+tasks.named<JavaCompile>("compileIntegrationTestJava") {
+    javaCompiler.set(javaToolchains.compilerFor {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    })
+}
+
+val integrationTest by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Runs integration tests."
+    useJUnitPlatform()
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+    shouldRunAfter(tasks.test)
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    })
+}
+
+tasks.check { dependsOn(integrationTest) }
 
 /* ******************** compliance ******************** */
 
@@ -350,6 +387,8 @@ tasks.forbiddenApisMain {
 }
 
 tasks.forbiddenApisTest { enabled = false }
+
+tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 
 /* ******************** graal ******************** */
 

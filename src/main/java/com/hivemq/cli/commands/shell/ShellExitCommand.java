@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.CliCommand;
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-@CommandLine.Command(name = "exit",
-        description = "Exit the shell")
-
+@CommandLine.Command(name = "exit", description = "Exit the shell")
 public class ShellExitCommand implements Runnable, CliCommand {
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     @Inject
     public ShellExitCommand() {
     }
-
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
 
     @Override
     public void run() {
@@ -38,7 +39,7 @@ public class ShellExitCommand implements Runnable, CliCommand {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return getClass().getSimpleName();
     }
 

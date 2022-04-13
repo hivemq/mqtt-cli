@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli;
 
+package com.hivemq.cli;
 
 import com.hivemq.cli.converters.EnvVarToByteBufferConverter;
 import com.hivemq.cli.converters.FileToCertificatesConverter;
@@ -26,12 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import org.tinylog.Level;
 
 import javax.inject.Singleton;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -41,85 +36,82 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Represents the default properties which are used throughout the CLI.
- * This class pre defines values for every default property which can be overwritten by using the properties file given
- * in the constructor.
- *
+ * Represents the default properties which are used throughout the CLI. This class pre defines values for every default
+ * property which can be overwritten by using the properties file given in the constructor.
+ * <p>
  * The CLI uses the default location of the properties file at `~/.mqtt-cli/config.properties` which will be written by
  * the 'init' method if not present or else the file defined properties will overwrite the pre defined properties.
- *
- * @author Till Seeberger
  */
 @Singleton
 public class DefaultCLIProperties {
 
-    private static final String MQTT_VERSION = "mqtt.version";
-    private static final String HOST = "mqtt.host";
-    private static final String PORT = "mqtt.port";
-    private static final String LOGFILE_DEBUG_LEVEL = "logfile.level";
-    private static final String CLIENT_ID_PREFIX = "client.id.prefix";
-    private static final String CLIENT_ID_LENGTH = "client.id.length";
-    private static final String SUBSCRIBE_OUTPUT_FILE = "client.subscribe.output";
-    private static final String LOGFILE_PATH = "logfile.path";
-    private static final String USERNAME = "auth.username";
-    private static final String PASSWORD = "auth.password";
-    private static final String PASSWORD_FILE = "auth.password.file";
-    private static final String PASSWORD_ENV = "auth.password.env";
-    private static final String CLIENT_CERTIFICATE = "auth.client.cert";
-    private static final String CLIENT_PRIVATE_KEY = "auth.client.key";
-    private static final String SERVER_CERTIFICATE = "auth.server.cafile";
-    private static final String WEBSOCKET_PATH = "ws.path";
+    private static final @NotNull String MQTT_VERSION = "mqtt.version";
+    private static final @NotNull String HOST = "mqtt.host";
+    private static final @NotNull String PORT = "mqtt.port";
+    private static final @NotNull String LOGFILE_DEBUG_LEVEL = "logfile.level";
+    private static final @NotNull String CLIENT_ID_PREFIX = "client.id.prefix";
+    private static final @NotNull String CLIENT_ID_LENGTH = "client.id.length";
+    private static final @NotNull String SUBSCRIBE_OUTPUT_FILE = "client.subscribe.output";
+    private static final @NotNull String LOGFILE_PATH = "logfile.path";
+    private static final @NotNull String USERNAME = "auth.username";
+    private static final @NotNull String PASSWORD = "auth.password";
+    private static final @NotNull String PASSWORD_FILE = "auth.password.file";
+    private static final @NotNull String PASSWORD_ENV = "auth.password.env";
+    private static final @NotNull String CLIENT_CERTIFICATE = "auth.client.cert";
+    private static final @NotNull String CLIENT_PRIVATE_KEY = "auth.client.key";
+    private static final @NotNull String SERVER_CERTIFICATE = "auth.server.cafile";
+    private static final @NotNull String WEBSOCKET_PATH = "ws.path";
 
-    private Map<String, String> propertyToValue = new HashMap<String, String>() {{
-       put(MQTT_VERSION, "5");
-       put(HOST, "localhost");
-       put(PORT, "1883");
-       put(LOGFILE_DEBUG_LEVEL, "debug");
-       put(CLIENT_ID_PREFIX, "mqtt");
-       put(CLIENT_ID_LENGTH, "8");
-       put(SUBSCRIBE_OUTPUT_FILE, null);
-       put(LOGFILE_PATH, System.getProperty("user.home") + File.separator +
-                        ".mqtt-cli" + File.separator +
-                        "logs" + File.separator);
-       put(USERNAME, null);
-       put(PASSWORD, null);
-       put(PASSWORD_FILE, null);
-       put(PASSWORD_ENV, null);
-       put(CLIENT_CERTIFICATE, null);
-       put(CLIENT_PRIVATE_KEY, null);
-       put(SERVER_CERTIFICATE, null);
-       put(WEBSOCKET_PATH, "/mqtt");
+    private final @NotNull Map<String, String> propertyToValue = new HashMap<String, String>() {{
+        put(MQTT_VERSION, "5");
+        put(HOST, "localhost");
+        put(PORT, "1883");
+        put(LOGFILE_DEBUG_LEVEL, "debug");
+        put(CLIENT_ID_PREFIX, "mqtt");
+        put(CLIENT_ID_LENGTH, "8");
+        put(SUBSCRIBE_OUTPUT_FILE, null);
+        put(
+                LOGFILE_PATH,
+                System.getProperty("user.home") + File.separator + ".mqtt-cli" + File.separator + "logs" +
+                        File.separator);
+        put(USERNAME, null);
+        put(PASSWORD, null);
+        put(PASSWORD_FILE, null);
+        put(PASSWORD_ENV, null);
+        put(CLIENT_CERTIFICATE, null);
+        put(CLIENT_PRIVATE_KEY, null);
+        put(SERVER_CERTIFICATE, null);
+        put(WEBSOCKET_PATH, "/mqtt");
     }};
 
-    private File storePropertiesFile;
+    private final @NotNull File storePropertiesFile;
 
     /**
      * A singleton instance of this class holds reference to a properties file which will be written or created with the
      * 'init' method
+     *
      * @param filePath the path to where the properties file shall be written oder read from
      */
     public DefaultCLIProperties(final @NotNull String filePath) {
         storePropertiesFile = new File(filePath);
     }
 
-
     /**
-     * Initializes the default properties from the file.
-     * If the file does not yet exist it will be created and populated with the pre defined values.
-     * Else the properties from the given file will be read which will override the pre defined values if given.
-     * @throws IOException the creation or reading of the properties file failed
+     * Initializes the default properties from the file. If the file does not yet exist it will be created and populated
+     * with the pre defined values. Else the properties from the given file will be read which will override the pre
+     * defined values if given.
+     *
+     * @throws IOException              the creation or reading of the properties file failed
      * @throws IllegalArgumentException the path to the properties file is not valid
      */
     void init() throws IOException, IllegalArgumentException {
         if (!storePropertiesFile.exists()) {
             createFile();
-        }
-        else if (!storePropertiesFile.isFile()) {
-            throw new IllegalArgumentException("The given file path does not lead to a valid properties file ('"
-                    + storePropertiesFile.getPath() +
-                    "')");
-        }
-        else {
+        } else if (!storePropertiesFile.isFile()) {
+            throw new IllegalArgumentException(
+                    "The given file path does not lead to a valid properties file ('" + storePropertiesFile.getPath() +
+                            "')");
+        } else {
             readFromFile();
         }
     }
@@ -133,13 +125,12 @@ public class DefaultCLIProperties {
 
         fileProperties.stringPropertyNames()
                 .stream()
-                .filter(name -> propertyToValue.containsKey(name))
+                .filter(propertyToValue::containsKey)
                 .distinct()
                 .forEach(name -> propertyToValue.put(name, fileProperties.getProperty(name)));
     }
 
     private void createFile() throws IOException {
-
         storePropertiesFile.getParentFile().mkdirs();
         assert storePropertiesFile.createNewFile();
         try (final OutputStream output = new FileOutputStream(storePropertiesFile)) {
@@ -152,7 +143,8 @@ public class DefaultCLIProperties {
     private Properties getProperties() {
         final Properties properties = new Properties();
 
-        propertyToValue.entrySet().stream()
+        propertyToValue.entrySet()
+                .stream()
                 .filter(entry -> entry.getValue() != null)
                 .distinct()
                 .forEach(entry -> properties.put(entry.getKey(), entry.getValue()));
@@ -160,27 +152,22 @@ public class DefaultCLIProperties {
         return properties;
     }
 
-    @Nullable
-    public File getFile() {
+    public @Nullable File getFile() {
         return storePropertiesFile;
     }
 
-    /****************
-     * Getter for properties in the concrete data types *
-     ***************/
-
-    @NotNull
-    public MqttVersion getMqttVersion() {
+    public @NotNull MqttVersion getMqttVersion() {
         final String versionString = propertyToValue.get(MQTT_VERSION);
         switch (versionString) {
-            case "5": return MqttVersion.MQTT_5_0;
-            case "3": return MqttVersion.MQTT_3_1_1;
+            case "5":
+                return MqttVersion.MQTT_5_0;
+            case "3":
+                return MqttVersion.MQTT_3_1_1;
         }
         throw new IllegalArgumentException("'" + versionString + "' is not a valid MQTT version");
     }
 
-    @NotNull
-    public String getHost() {
+    public @NotNull String getHost() {
         return propertyToValue.get(HOST);
     }
 
@@ -188,23 +175,25 @@ public class DefaultCLIProperties {
         return Integer.parseInt(propertyToValue.get(PORT));
     }
 
-    @NotNull
-    public Level getLogfileDebugLevel() {
+    public @NotNull Level getLogfileDebugLevel() {
         final String debugLevel = propertyToValue.get(LOGFILE_DEBUG_LEVEL);
         switch (debugLevel.toLowerCase()) {
             case "trace":
             case "verbose":
                 return Level.TRACE;
-            case "debug": return Level.DEBUG;
-            case "info": return Level.INFO;
-            case "warn": return Level.WARN;
-            case "error": return Level.ERROR;
+            case "debug":
+                return Level.DEBUG;
+            case "info":
+                return Level.INFO;
+            case "warn":
+                return Level.WARN;
+            case "error":
+                return Level.ERROR;
         }
         throw new IllegalArgumentException("'" + debugLevel + "' is not a valid debug level");
     }
 
-    @NotNull
-    public String getClientPrefix() {
+    public @NotNull String getClientPrefix() {
         return propertyToValue.get(CLIENT_ID_PREFIX);
     }
 
@@ -212,23 +201,19 @@ public class DefaultCLIProperties {
         return Integer.parseInt(propertyToValue.get(CLIENT_ID_LENGTH));
     }
 
-    @Nullable
-    public String getClientSubscribeOutputFile() {
+    public @Nullable String getClientSubscribeOutputFile() {
         return propertyToValue.get(SUBSCRIBE_OUTPUT_FILE);
     }
 
-    @NotNull
-    public String getLogfilePath() {
+    public @NotNull String getLogfilePath() {
         return propertyToValue.get(LOGFILE_PATH);
     }
 
-    @Nullable
-    public String getUsername() {
+    public @Nullable String getUsername() {
         return propertyToValue.get(USERNAME);
     }
 
-    @Nullable
-    public ByteBuffer getPassword() throws Exception {
+    public @Nullable ByteBuffer getPassword() throws Exception {
         final String passwordText = propertyToValue.get(PASSWORD);
         final String passwordFile = propertyToValue.get(PASSWORD_FILE);
         final String passwordFromEnv = propertyToValue.get(PASSWORD_ENV);
@@ -249,8 +234,7 @@ public class DefaultCLIProperties {
         return password;
     }
 
-    @Nullable
-    public Collection<X509Certificate> getClientCertificateChain() throws Exception {
+    public @Nullable Collection<X509Certificate> getClientCertificateChain() throws Exception {
         final String clientCertificate = propertyToValue.get(CLIENT_CERTIFICATE);
         if (clientCertificate == null) {
             return null;
@@ -258,8 +242,7 @@ public class DefaultCLIProperties {
         return new FileToCertificatesConverter().convert(clientCertificate);
     }
 
-    @Nullable
-    public PrivateKey getClientPrivateKey() throws Exception {
+    public @Nullable PrivateKey getClientPrivateKey() throws Exception {
         final String clientPrivateKey = propertyToValue.get(CLIENT_PRIVATE_KEY);
         if (clientPrivateKey == null) {
             return null;
@@ -267,8 +250,7 @@ public class DefaultCLIProperties {
         return new FileToPrivateKeyConverter().convert(clientPrivateKey);
     }
 
-    @Nullable
-    public Collection<X509Certificate> getServerCertificateChain() throws Exception {
+    public @Nullable Collection<X509Certificate> getServerCertificateChain() throws Exception {
         final String serverCertificate = propertyToValue.get(SERVER_CERTIFICATE);
         if (serverCertificate == null) {
             return null;
@@ -276,8 +258,7 @@ public class DefaultCLIProperties {
         return new FileToCertificatesConverter().convert(serverCertificate);
     }
 
-    @NotNull
-    public String getWebsocketPath() {
+    public @NotNull String getWebsocketPath() {
         return propertyToValue.get(WEBSOCKET_PATH);
     }
 

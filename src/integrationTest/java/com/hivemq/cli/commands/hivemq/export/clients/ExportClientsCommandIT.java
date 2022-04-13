@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.hivemq.export.clients;
 
 import com.hivemq.cli.utils.TestLoggerUtils;
@@ -41,14 +42,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ExportClientsCommandTest {
+class ExportClientsCommandIT {
 
     public static final int HTTP_PORT = 8888;
 
     @RegisterExtension
     final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4").withTag("4.4.0"))
-                    .withHiveMQConfig(MountableFile.forClasspathResource("hivemq.configs/rest-api-config.xml"))
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4")).withHiveMQConfig(
+                            MountableFile.forClasspathResource("hivemq.configs/rest-api-config.xml"))
                     .withExposedPorts(HiveMQTestContainerExtension.MQTT_PORT, HTTP_PORT);
 
     private @NotNull File file;
@@ -66,18 +67,13 @@ class ExportClientsCommandTest {
 
     @Test
     void client_detail_1_success() throws IOException, CsvException {
-        final Mqtt5BlockingClient client = Mqtt5Client.builder()
-                .serverPort(hivemq.getMqttPort())
-                .buildBlocking();
+        final Mqtt5BlockingClient client = Mqtt5Client.builder().serverPort(hivemq.getMqttPort()).buildBlocking();
 
         client.connect();
 
-
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
-        final int returnCode = cmd.execute(
-                "-f=" + file.getAbsolutePath(),
-                "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT)
-        );
+        final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
+                "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT));
 
         assertEquals(0, returnCode);
 
@@ -90,21 +86,15 @@ class ExportClientsCommandTest {
 
     @Test
     void client_details_25_success() throws IOException, CsvException {
-
         final Mqtt5BlockingClient[] clients = new Mqtt5BlockingClient[25];
         for (int i = 0; i < 25; i++) {
-            clients[i] = Mqtt5Client.builder()
-                    .serverPort(hivemq.getMqttPort())
-                    .buildBlocking();
+            clients[i] = Mqtt5Client.builder().serverPort(hivemq.getMqttPort()).buildBlocking();
             clients[i].connect();
         }
 
-
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
-        final int returnCode = cmd.execute(
-                "-f=" + file.getAbsolutePath(),
-                "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT)
-        );
+        final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
+                "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT));
 
         assertEquals(0, returnCode);
 
@@ -119,33 +109,23 @@ class ExportClientsCommandTest {
 
     @Test
     void csv_options() throws IOException, CsvException {
-        final Mqtt5BlockingClient client = Mqtt5Client.builder()
-                .serverPort(hivemq.getMqttPort())
-                .buildBlocking();
+        final Mqtt5BlockingClient client = Mqtt5Client.builder().serverPort(hivemq.getMqttPort()).buildBlocking();
 
         client.connect();
 
-
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
-        final int returnCode = cmd.execute(
-                "-f=" + file.getAbsolutePath(),
+        final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
                 "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT),
                 "--csvSeparator=;",
                 "--csvQuoteChar=\\",
-                "--csvEscChar=/"
-        );
+                "--csvEscChar=/");
 
         assertEquals(0, returnCode);
 
-        final CSVParser parser = new CSVParserBuilder()
-                .withSeparator(';')
-                .withEscapeChar('/')
-                .withQuoteChar('\\')
-                .build();
+        final CSVParser parser =
+                new CSVParserBuilder().withSeparator(';').withEscapeChar('/').withQuoteChar('\\').build();
 
-        final CSVReader csvReader = new CSVReaderBuilder(new FileReader(file))
-                .withCSVParser(parser)
-                .build();
+        final CSVReader csvReader = new CSVReaderBuilder(new FileReader(file)).withCSVParser(parser).build();
 
         final List<String[]> lines = csvReader.readAll();
         assertEquals(2, lines.size());
@@ -157,20 +137,15 @@ class ExportClientsCommandTest {
     void rate_limit() throws IOException, CsvException {
         final Mqtt5BlockingClient[] clients = new Mqtt5BlockingClient[25];
         for (int i = 0; i < 10; i++) {
-            clients[i] = Mqtt5Client.builder()
-                    .serverPort(hivemq.getMqttPort())
-                    .buildBlocking();
+            clients[i] = Mqtt5Client.builder().serverPort(hivemq.getMqttPort()).buildBlocking();
             clients[i].connect();
         }
 
-
         final long startTime = System.nanoTime();
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
-        final int returnCode = cmd.execute(
-                "-f=" + file.getAbsolutePath(),
+        final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
                 "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT),
-                "-r=5"
-        );
+                "-r=5");
         final long stopTime = System.nanoTime();
 
         assertTrue(((stopTime - startTime) / 1_000_000_000) >= 2);
@@ -187,18 +162,13 @@ class ExportClientsCommandTest {
 
     @Test
     void connection_refused() {
-        final Mqtt5BlockingClient client = Mqtt5Client.builder()
-                .serverPort(hivemq.getMqttPort())
-                .buildBlocking();
+        final Mqtt5BlockingClient client = Mqtt5Client.builder().serverPort(hivemq.getMqttPort()).buildBlocking();
 
         client.connect();
 
-
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
-        final int returnCode = cmd.execute(
-                "-f=" + file.getAbsolutePath(),
-                "-url=http://" + hivemq.getContainerIpAddress() + ":" + 8889
-        );
+        final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
+                "-url=http://" + hivemq.getContainerIpAddress() + ":" + 8889);
 
         assertEquals(-1, returnCode);
 

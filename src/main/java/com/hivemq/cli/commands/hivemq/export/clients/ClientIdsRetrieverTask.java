@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.hivemq.export.clients;
 
 import com.hivemq.cli.openapi.hivemq.Client;
@@ -30,21 +31,17 @@ import java.util.regex.Pattern;
 
 public class ClientIdsRetrieverTask implements Runnable {
 
-    private static final Pattern CURSOR_PATTERN = Pattern.compile("cursor=([^&]*)");
+    private static final @NotNull Pattern CURSOR_PATTERN = Pattern.compile("cursor=([^&]*)");
+
     private final @NotNull BlockingQueue<String> clientIdsQueue;
-    private @NotNull HiveMQRestService hivemqRestService;
+    private final @NotNull HiveMQRestService hivemqRestService;
+
     private long receivedClientIds = 0;
 
-    public ClientIdsRetrieverTask(final @NotNull HiveMQRestService hivemqRestService,
-                                  final @NotNull BlockingQueue<String> clientIdsQueue) {
-
+    public ClientIdsRetrieverTask(
+            final @NotNull HiveMQRestService hivemqRestService, final @NotNull BlockingQueue<String> clientIdsQueue) {
         this.hivemqRestService = hivemqRestService;
         this.clientIdsQueue = clientIdsQueue;
-    }
-
-
-    public long getReceivedClientIds() {
-        return receivedClientIds;
     }
 
     @Override
@@ -78,11 +75,14 @@ public class ClientIdsRetrieverTask implements Runnable {
                     hasNextCursor = false;
                 }
             }
-        }
-        catch(final Exception ex) {
+        } catch (final Exception ex) {
             Logger.error(ex, "Retrieval of client ids failed");
             throw new CompletionException(ex);
         }
         Logger.debug("Finished retrieving {} client ids", receivedClientIds);
+    }
+
+    public long getReceivedClientIds() {
+        return receivedClientIds;
     }
 }

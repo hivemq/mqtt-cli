@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.hivemq.export.clients;
 
 import com.hivemq.cli.openapi.ApiCallback;
@@ -25,28 +26,25 @@ import org.tinylog.Logger;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ClientDetailsRetrieverTask implements Runnable {
 
-    final @NotNull HiveMQRestService hivemqRestService;
-    final @NotNull CompletableFuture<Void> clientIdsFuture;
-    final @NotNull BlockingQueue<String> clientIdsQueue;
-    final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
-    final @NotNull Semaphore clientDetailsInProgress;
-    final @NotNull AtomicBoolean failed = new AtomicBoolean(false);
+    private final static int MAX_CONCURRENT_REQUESTS = 100;
 
-    final static int MAX_CONCURRENT_REQUESTS = 100;
+    private final @NotNull HiveMQRestService hivemqRestService;
+    private final @NotNull CompletableFuture<Void> clientIdsFuture;
+    private final @NotNull BlockingQueue<String> clientIdsQueue;
+    private final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+    private final @NotNull Semaphore clientDetailsInProgress;
+    private final @NotNull AtomicBoolean failed = new AtomicBoolean(false);
 
-    public ClientDetailsRetrieverTask(final @NotNull HiveMQRestService hivemqRestService,
-                                      final @NotNull CompletableFuture<Void> clientIdsFuture,
-                                      final @NotNull BlockingQueue<String> clientIdsQueue,
-                                      final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue) {
+    public ClientDetailsRetrieverTask(
+            final @NotNull HiveMQRestService hivemqRestService,
+            final @NotNull CompletableFuture<Void> clientIdsFuture,
+            final @NotNull BlockingQueue<String> clientIdsQueue,
+            final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue) {
         this.hivemqRestService = hivemqRestService;
         this.clientIdsFuture = clientIdsFuture;
         this.clientIdsQueue = clientIdsQueue;
@@ -58,7 +56,6 @@ public class ClientDetailsRetrieverTask implements Runnable {
     public void run() {
         try {
             while (!clientIdsFuture.isDone() || !clientIdsQueue.isEmpty()) {
-
                 if (failed.get()) {
                     Logger.error("Retrieval of client details failed");
                     throw new CompletionException(new RuntimeException("Retrieval of client details failed"));
@@ -66,7 +63,8 @@ public class ClientDetailsRetrieverTask implements Runnable {
 
                 final String clientId = clientIdsQueue.poll(50, TimeUnit.MILLISECONDS);
                 if (clientId != null) {
-                    final ClientItemApiCallback clientItemApiCallback = new ClientItemApiCallback(clientDetailsQueue, clientDetailsInProgress, failed);
+                    final ClientItemApiCallback clientItemApiCallback =
+                            new ClientItemApiCallback(clientDetailsQueue, clientDetailsInProgress, failed);
                     clientDetailsInProgress.acquire();
                     hivemqRestService.getClientDetails(clientId, clientItemApiCallback);
                 }
@@ -82,19 +80,40 @@ public class ClientDetailsRetrieverTask implements Runnable {
     }
 
     private static class ClientItemApiCallback implements ApiCallback<ClientItem> {
+
         private final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
         private final @NotNull Semaphore clientDetailsInProgress;
         private final @NotNull AtomicBoolean failed;
 
-        public ClientItemApiCallback(final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
-                                     final @NotNull Semaphore clientDetailsInProgress, final @NotNull AtomicBoolean failed) {
+        public ClientItemApiCallback(
+                final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
+                final @NotNull Semaphore clientDetailsInProgress,
+                final @NotNull AtomicBoolean failed) {
             this.clientDetailsQueue = clientDetailsQueue;
             this.clientDetailsInProgress = clientDetailsInProgress;
             this.failed = failed;
         }
 
         @Override
-        public void onFailure(ApiException e, int statusCode, @NotNull Map<String, List<String>> responseHeaders) {
+        public void onSuccess(
+                final @NotNull ClientItem result,
+                final int statusCode,
+                final @NotNull Map<String, List<String>> responseHeaders) {
+            final ClientDetails clientDetails = result.getClient();
+            if (clientDetails != null) {
+                try {
+                    clientDetailsQueue.put(clientDetails);
+                } catch (final InterruptedException ignored) {
+                }
+            }
+            clientDetailsInProgress.release();
+        }
+
+        @Override
+        public void onFailure(
+                final @NotNull ApiException e,
+                final int statusCode,
+                final @NotNull Map<String, List<String>> responseHeaders) {
             //ignore 404 because MQTT client could be non-persistent and disconnected by now
             if (e.getCode() != 404) {
                 Logger.trace(e, "Failed to retrieve client details");
@@ -104,24 +123,11 @@ public class ClientDetailsRetrieverTask implements Runnable {
         }
 
         @Override
-        public void onSuccess(ClientItem result, int statusCode, @NotNull Map<String, List<String>> responseHeaders) {
-            final ClientDetails clientDetails = result.getClient();
-            if (clientDetails != null) {
-                try {
-                    clientDetailsQueue.put(clientDetails);
-                } catch (InterruptedException ignored) {
-                }
-            }
-
-            clientDetailsInProgress.release();
+        public void onUploadProgress(final long bytesWritten, final long contentLength, final boolean done) {
         }
 
         @Override
-        public void onUploadProgress(long bytesWritten, long contentLength, boolean done) {
-        }
-
-        @Override
-        public void onDownloadProgress(long bytesRead, long contentLength, boolean done) {
+        public void onDownloadProgress(final long bytesRead, final long contentLength, final boolean done) {
         }
     }
 }
