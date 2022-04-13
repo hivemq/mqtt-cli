@@ -56,7 +56,6 @@ class Mqtt5FeatureTesterRestrictedIT {
     void wildcard_subscriptions_failed() {
         final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult =
                 mqtt5FeatureTester.testWildcardSubscriptions();
-
         assertEquals(SUBSCRIBE_FAILED, wildcardSubscriptionsTestResult.getHashWildcardTest());
         assertEquals(SUBSCRIBE_FAILED, wildcardSubscriptionsTestResult.getPlusWildcardTest());
         assertFalse(wildcardSubscriptionsTestResult.isSuccess());
@@ -67,7 +66,6 @@ class Mqtt5FeatureTesterRestrictedIT {
     @Test
     void shared_subscriptions_failed() {
         final SharedSubscriptionTestResult sharedSubscriptionTestResult = mqtt5FeatureTester.testSharedSubscription();
-
         assertEquals(SharedSubscriptionTestResult.SUBSCRIBE_FAILED, sharedSubscriptionTestResult);
     }
 
@@ -75,7 +73,6 @@ class Mqtt5FeatureTesterRestrictedIT {
     void retain_failed() {
         mqtt5FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final TestResult testResult = mqtt5FeatureTester.testRetain();
-
         assertEquals(PUBLISH_FAILED, testResult);
     }
 
@@ -83,7 +80,6 @@ class Mqtt5FeatureTesterRestrictedIT {
     void payload_size_1MB_failed_max_500KB() {
         mqtt5FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final PayloadTestResults payloadTestResults = mqtt5FeatureTester.testPayloadSize(100_000);
-
         assertTrue(payloadTestResults.getPayloadSize() < 100_000);
     }
 
@@ -91,14 +87,12 @@ class Mqtt5FeatureTesterRestrictedIT {
     @Disabled("HiveMQ currently ignores topic length restriction in its config")
     void topic_length_failed_max_30() {
         final TopicLengthTestResults topicLengthTestResults = mqtt5FeatureTester.testTopicLength();
-
         assertEquals(30, topicLengthTestResults.getMaxTopicLength());
     }
 
     @Test
     void clientId_length_failed_max_30() {
         final ClientIdLengthTestResults clientIdLengthTestResults = mqtt5FeatureTester.testClientIdLength();
-
         assertEquals(30, clientIdLengthTestResults.getMaxClientIdLength());
     }
 }

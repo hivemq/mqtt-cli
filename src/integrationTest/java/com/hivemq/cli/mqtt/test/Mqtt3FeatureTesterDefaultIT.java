@@ -60,7 +60,6 @@ class Mqtt3FeatureTesterDefaultIT {
     @Test
     void connect_success() {
         final Mqtt3ConnAck connAck = mqtt3FeatureTester.testConnect();
-
         assertNotNull(connAck);
         assertEquals(SUCCESS, connAck.getReturnCode());
     }
@@ -69,7 +68,6 @@ class Mqtt3FeatureTesterDefaultIT {
     void connect_failed() {
         final Mqtt3FeatureTester featureTester = new Mqtt3FeatureTester("localhost", 1883, null, null, null, 30);
         featureTester.setMaxTopicLength(30);
-
         assertThrows(ConnectionFailedException.class, featureTester::testConnect);
     }
 
@@ -77,7 +75,6 @@ class Mqtt3FeatureTesterDefaultIT {
     void wildcard_subscriptions_success() {
         final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult =
                 mqtt3FeatureTester.testWildcardSubscriptions();
-
         assertEquals(OK, wildcardSubscriptionsTestResult.getHashWildcardTest());
         assertEquals(OK, wildcardSubscriptionsTestResult.getPlusWildcardTest());
         assertTrue(wildcardSubscriptionsTestResult.isSuccess());
@@ -86,42 +83,36 @@ class Mqtt3FeatureTesterDefaultIT {
     @Test
     void shared_subscriptions_success() {
         final SharedSubscriptionTestResult sharedSubscriptionTestResult = mqtt3FeatureTester.testSharedSubscription();
-
         assertEquals(SharedSubscriptionTestResult.OK, sharedSubscriptionTestResult);
     }
 
     @Test
     void retain_success() {
         final TestResult testResult = mqtt3FeatureTester.testRetain();
-
         assertEquals(OK, testResult);
     }
 
     @Test
     void qos_0_success() {
         final QosTestResult qosTestResult = mqtt3FeatureTester.testQos(MqttQos.AT_MOST_ONCE, 10);
-
         assertEquals(10, qosTestResult.getReceivedPublishes());
     }
 
     @Test
     void qos_1_success() {
         final QosTestResult qosTestResult = mqtt3FeatureTester.testQos(MqttQos.AT_LEAST_ONCE, 10);
-
         assertEquals(10, qosTestResult.getReceivedPublishes());
     }
 
     @Test
     void qos_2_success() {
         final QosTestResult qosTestResult = mqtt3FeatureTester.testQos(MqttQos.EXACTLY_ONCE, 10);
-
         assertEquals(10, qosTestResult.getReceivedPublishes());
     }
 
     @Test
     void payload_size_1MB_success() {
         final PayloadTestResults payloadTestResults = mqtt3FeatureTester.testPayloadSize(100_000);
-
         assertEquals(100_000, payloadTestResults.getPayloadSize());
         for (final Tuple<Integer, TestResult> testResult : payloadTestResults.getTestResults()) {
             assertEquals(OK, testResult.getValue());
@@ -131,7 +122,6 @@ class Mqtt3FeatureTesterDefaultIT {
     @Test
     void topic_length_success() {
         final TopicLengthTestResults topicLengthTestResults = mqtt3FeatureTester.testTopicLength();
-
         assertEquals(65535, topicLengthTestResults.getMaxTopicLength());
         for (final Tuple<Integer, TestResult> testResult : topicLengthTestResults.getTestResults()) {
             assertEquals(OK, testResult.getValue());
@@ -141,7 +131,6 @@ class Mqtt3FeatureTesterDefaultIT {
     @Test
     void clientId_length_success() {
         final ClientIdLengthTestResults clientIdLengthTestResults = mqtt3FeatureTester.testClientIdLength();
-
         assertEquals(65535, clientIdLengthTestResults.getMaxClientIdLength());
         for (final Tuple<Integer, String> testResult : clientIdLengthTestResults.getTestResults()) {
             assertEquals(Mqtt3ConnAckReturnCode.SUCCESS.toString(), testResult.getValue());
@@ -152,7 +141,6 @@ class Mqtt3FeatureTesterDefaultIT {
     void asciiChars_success() {
         final AsciiCharsInClientIdTestResults asciiCharsInClientIdTestResults =
                 mqtt3FeatureTester.testAsciiCharsInClientId();
-
         for (final Tuple<Character, String> testResult : asciiCharsInClientIdTestResults.getTestResults()) {
             assertEquals(Mqtt3ConnAckReturnCode.SUCCESS.toString(), testResult.getValue());
         }
