@@ -56,21 +56,18 @@ class Mqtt5FeatureTesterQos0IT {
     @Test
     void qos_0_success() {
         final QosTestResult qosTestResult = mqtt5FeatureTester.testQos(MqttQos.AT_MOST_ONCE, 10);
-
         assertEquals(10, qosTestResult.getReceivedPublishes());
     }
 
     @Test
     void qos_1_failed() {
         final QosTestResult qosTestResult = mqtt5FeatureTester.testQos(MqttQos.AT_LEAST_ONCE, 10);
-
         assertEquals(0, qosTestResult.getReceivedPublishes());
     }
 
     @Test
     void qos_2_failed() {
         final QosTestResult qosTestResult = mqtt5FeatureTester.testQos(MqttQos.EXACTLY_ONCE, 10);
-
         assertEquals(0, qosTestResult.getReceivedPublishes());
     }
 }

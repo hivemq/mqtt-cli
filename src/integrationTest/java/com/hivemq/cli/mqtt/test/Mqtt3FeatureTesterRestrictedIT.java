@@ -57,7 +57,6 @@ class Mqtt3FeatureTesterRestrictedIT {
         mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final WildcardSubscriptionsTestResult wildcardSubscriptionsTestResult =
                 mqtt3FeatureTester.testWildcardSubscriptions();
-
         assertEquals(SUBSCRIBE_FAILED, wildcardSubscriptionsTestResult.getHashWildcardTest());
         assertEquals(SUBSCRIBE_FAILED, wildcardSubscriptionsTestResult.getPlusWildcardTest());
         assertFalse(wildcardSubscriptionsTestResult.isSuccess());
@@ -69,7 +68,6 @@ class Mqtt3FeatureTesterRestrictedIT {
     void shared_subscriptions_failed() {
         mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final SharedSubscriptionTestResult sharedSubscriptionTestResult = mqtt3FeatureTester.testSharedSubscription();
-
         assertEquals(SharedSubscriptionTestResult.SUBSCRIBE_FAILED, sharedSubscriptionTestResult);
     }
 
@@ -77,7 +75,6 @@ class Mqtt3FeatureTesterRestrictedIT {
     void retain_failed() {
         mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final TestResult testResult = mqtt3FeatureTester.testRetain();
-
         assertEquals(PUBLISH_FAILED, testResult);
     }
 
@@ -85,7 +82,6 @@ class Mqtt3FeatureTesterRestrictedIT {
     void payload_size_1MB_failed_max_500KB() {
         mqtt3FeatureTester.setMaxQos(MqttQos.AT_LEAST_ONCE);
         final PayloadTestResults payloadTestResults = mqtt3FeatureTester.testPayloadSize(100_000);
-
         assertTrue(payloadTestResults.getPayloadSize() < 100_000);
     }
 
@@ -93,14 +89,12 @@ class Mqtt3FeatureTesterRestrictedIT {
     @Disabled("HiveMQ currently ignores topic length restriction in its config")
     void topic_length_failed_max_30() {
         final TopicLengthTestResults topicLengthTestResults = mqtt3FeatureTester.testTopicLength();
-
         assertEquals(30, topicLengthTestResults.getMaxTopicLength());
     }
 
     @Test
     void clientId_length_failed_max_30() {
         final ClientIdLengthTestResults clientIdLengthTestResults = mqtt3FeatureTester.testClientIdLength();
-
         assertEquals(30, clientIdLengthTestResults.getMaxClientIdLength());
     }
 }
