@@ -61,7 +61,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, defaultValue = "false",
             description = "The message will be retained (default: false)")
-    private @Nullable Boolean retain;
+    private boolean retain;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class,

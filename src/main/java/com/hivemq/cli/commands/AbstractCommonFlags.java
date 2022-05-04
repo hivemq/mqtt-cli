@@ -62,9 +62,9 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     private @Nullable Integer keepAlive;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true,
+    @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true, defaultValue = "true",
             description = "Define a clean start for the connection (default: true)", order = 2)
-    private @Nullable Boolean cleanStart;
+    private boolean cleanStart;
 
     @CommandLine.Mixin
     private final @NotNull SslOptions sslOptions = new SslOptions();
@@ -111,7 +111,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     public @NotNull String commonOptions() {
         return super.toString() + (user != null ? (", user=" + user) : "") +
                 (keepAlive != null ? (", keepAlive=" + keepAlive) : "") +
-                (cleanStart != null ? (", cleanStart=" + cleanStart) : "") + ", sslOptions=" + sslOptions +
+                //(cleanStart != null ? (", cleanStart=" + cleanStart) : "") + ", sslOptions=" + sslOptions +
                 ", useWebSocket=" + useWebSocket + (webSocketPath != null ? (", webSocketPath=" + webSocketPath) : "") +
                 getWillOptions();
     }

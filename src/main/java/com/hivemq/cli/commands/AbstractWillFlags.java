@@ -51,9 +51,9 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
     private @Nullable MqttQos willQos;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-Wr", "--willRetain"}, negatable = true,
+    @CommandLine.Option(names = {"-Wr", "--willRetain"}, negatable = true, defaultValue = "false",
             description = "Will message as retained message (default: false)", order = 3)
-    private @Nullable Boolean willRetain;
+    private boolean willRetain;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-We", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class,
@@ -98,7 +98,7 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
         }
         return ", willTopic=" + willTopic + (willQos != null ? (", willQos=" + willQos) : "") +
                 (willMessage != null ? (", willMessage=" + willMessage) : "") +
-                (willRetain != null ? (", willRetain=" + willRetain) : "") +
+                //(willRetain != null ? (", willRetain=" + willRetain) : "") +
                 (willMessageExpiryInterval != null ? (", willMessageExpiryInterval=" + willMessageExpiryInterval) :
                         "") + (willDelayInterval != null ? (", willDelayInterval=" + willDelayInterval) : "") +
                 (willPayloadFormatIndicator != null ? (", willPayloadFormatIndicator=" + willPayloadFormatIndicator) :
@@ -108,7 +108,7 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
                 (willUserProperties != null ? (", willUserProperties=" + Arrays.toString(willUserProperties)) : "");
     }
 
-    public void logUnusedOptions() {
+    void logUnusedOptions() {
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
             if (willMessageExpiryInterval != null) {
                 Logger.warn("Will Message Expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
@@ -188,5 +188,4 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
     public @Nullable Mqtt5UserProperties getWillUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(willUserProperties);
     }
-
 }

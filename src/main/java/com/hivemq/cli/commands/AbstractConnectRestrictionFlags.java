@@ -65,13 +65,13 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     @CommandLine.Option(names = {"--reqProblemInfo"}, negatable = true,
             description = "The client requests problem information from the server. (default: " +
                     Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION + ")", order = 3)
-    private @Nullable Boolean requestProblemInformation;
+    private boolean requestProblemInformation = Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--reqResponseInfo"}, negatable = true,
             description = "The client requests response information from the server. (default: " +
                     Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION + ")", order = 3)
-    private @Nullable Boolean requestResponseInformation;
+    private boolean requestResponseInformation = Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION;
 
     @Override
     public void logUnusedOptions() {
@@ -102,14 +102,14 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
                 Logger.warn("Restriction send topic alias maximum was set but is unused in MQTT Version {}",
                         MqttVersion.MQTT_3_1_1);
             }
-            if (requestProblemInformation != null) {
+            /*if (requestProblemInformation != null) {
                 Logger.warn("Restriction request problem information was set but is unused in MQTT Version {}",
                         MqttVersion.MQTT_3_1_1);
             }
             if (requestResponseInformation != null) {
                 Logger.warn("Restriction request response information was set but is unused in MQTT Version {}",
                         MqttVersion.MQTT_3_1_1);
-            }
+            }*/
         }
     }
 
@@ -119,11 +119,11 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
                 (maximumPacketSize != null ? (", maximumPacketSize=" + maximumPacketSize) : "") +
                 (sendMaximumPacketSize != null ? (", sendMaximumPacketSize=" + sendMaximumPacketSize) : "") +
                 (topicAliasMaximum != null ? (", topicAliasMaximum=" + topicAliasMaximum) : "") +
-                (sendTopicAliasMaximum != null ? (", sendTopicAliasMaximum=" + sendTopicAliasMaximum) : "") +
+                (sendTopicAliasMaximum != null ? (", sendTopicAliasMaximum=" + sendTopicAliasMaximum) : "") /*+
                 (requestProblemInformation != null ? (", requestProblemInformation=" + requestProblemInformation) :
                         "") +
                 (requestResponseInformation != null ? (", requestResponseInformation=" + requestResponseInformation) :
-                        "");
+                        "")*/;
     }
 
     @Override
