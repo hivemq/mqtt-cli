@@ -19,12 +19,16 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
+import com.hivemq.cli.utils.IntersectionUtil;
 import com.hivemq.cli.utils.MqttUtils;
+import com.hivemq.cli.utils.Tuple;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.datatypes.MqttSharedTopicFilter;
+import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
@@ -42,14 +46,17 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.tinylog.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 abstract class AbstractMqttClientExecutor {
 
@@ -109,6 +116,18 @@ abstract class AbstractMqttClientExecutor {
         for (int i = 0; i < subscribe.getTopics().length; i++) {
             final String topic = subscribe.getTopics()[i];
 
+            // This check only works as subscribes are implemented blocking.
+            // Otherwise, we would need to check the topics before they are iterated as they are added to the client data after a successful subscribe.
+            final Tuple<MqttTopicFilter, MqttSharedTopicFilter> duplicateTopics =
+                    checkForSharedTopicDuplicate(clientKeyToClientData.get(subscribe.getKey()), topic);
+            if (duplicateTopics != null) {
+                Logger.warn(
+                        "WARN: A subscribed shared topic and normal topic intersect ({} and {}). " +
+                                "This can lead to duplicate message output as multiple message callbacks are registered.",
+                        duplicateTopics.getKey(),
+                        duplicateTopics.getValue());
+            }
+
             final int qosI = i < subscribe.getQos().length ? i : subscribe.getQos().length - 1;
             final MqttQos qos = subscribe.getQos()[qosI];
 
@@ -121,6 +140,44 @@ abstract class AbstractMqttClientExecutor {
                     break;
             }
         }
+    }
+
+    @VisibleForTesting
+    @Nullable Tuple<MqttTopicFilter, MqttSharedTopicFilter> checkForSharedTopicDuplicate(
+            final @NotNull ClientData clientData, final @NotNull String topic) {
+        final Set<MqttTopicFilter> subscribedFilters = clientData.getSubscribedTopics();
+        final MqttTopicFilter newFilter = MqttTopicFilter.of(topic);
+        if (subscribedFilters.stream().anyMatch(MqttTopicFilter::isShared)) {
+            if (newFilter.isShared()) {
+                final Set<MqttTopicFilter> normalFilters =
+                        subscribedFilters.stream().filter(t -> !t.isShared()).collect(Collectors.toSet());
+                for (final MqttTopicFilter normalFilter : normalFilters) {
+                    final MqttSharedTopicFilter sharedFilter = ((MqttSharedTopicFilter) newFilter);
+                    if (IntersectionUtil.intersects(normalFilter, sharedFilter.getTopicFilter())) {
+                        return Tuple.of(normalFilter, sharedFilter);
+                    }
+                }
+            } else {
+                final Set<MqttTopicFilter> sharedTopics =
+                        subscribedFilters.stream().filter(MqttTopicFilter::isShared).collect(Collectors.toSet());
+                for (final MqttTopicFilter sharedTopic : sharedTopics) {
+                    final MqttSharedTopicFilter sharedFilter = ((MqttSharedTopicFilter) sharedTopic);
+                    if (IntersectionUtil.intersects(newFilter, sharedFilter.getTopicFilter())) {
+                        return Tuple.of(newFilter, sharedFilter);
+                    }
+                }
+            }
+        } else {
+            if (newFilter.isShared()) {
+                for (final MqttTopicFilter subscribedFilter : subscribedFilters) {
+                    final MqttSharedTopicFilter sharedFilter = ((MqttSharedTopicFilter) newFilter);
+                    if (IntersectionUtil.intersects(sharedFilter.getTopicFilter(), subscribedFilter)) {
+                        return Tuple.of(subscribedFilter, sharedFilter);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void publish(final @NotNull PublishCommand publishCommand) {
