@@ -126,6 +126,14 @@ val hivemqOpenApi: Configuration by configurations.creating {
     }
 }
 
+val hivemqOpenApiUpdater: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("open-api"))
+    }
+}
+
 val swarmOpenApi: Configuration by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
@@ -134,17 +142,23 @@ val swarmOpenApi: Configuration by configurations.creating {
     }
 }
 
-dependencies {
-    if (gradle.includedBuilds.any { it.name == "hivemq-enterprise" }) {
-        hivemqOpenApi("com.hivemq:hivemq-enterprise")
-    } else {
-        hivemqOpenApi(files("specs/hivemq-openapi.yaml"))
+val swarmOpenApiUpdater: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("open-api"))
     }
+}
 
+dependencies {
+    hivemqOpenApi(files("specs/hivemq-openapi.yaml"))
+    swarmOpenApi(files("specs/hivemq-swarm-openapi.yaml"))
+
+    if (gradle.includedBuilds.any { it.name == "hivemq-enterprise" }) {
+        hivemqOpenApiUpdater("com.hivemq:hivemq-enterprise")
+    }
     if (gradle.includedBuilds.any { it.name == "hivemq-swarm" }) {
-        swarmOpenApi("com.hivemq:hivemq-swarm")
-    } else {
-        swarmOpenApi(files("specs/hivemq-swarm-openapi.yaml"))
+        swarmOpenApiUpdater("com.hivemq:hivemq-swarm")
     }
 }
 
@@ -602,8 +616,9 @@ tasks.startShadowScripts {
 /* ******************** HiveMQ composite build ******************** */
 
 tasks.register<Sync>("updateSpecs") {
-    from(hivemqOpenApi) { rename { "hivemq-openapi.yaml" } }
-    from(swarmOpenApi) { rename { "hivemq-swarm-openapi.yaml" } }
+    group = "cli"
+    from(hivemqOpenApiUpdater) { rename { "hivemq-openapi.yaml" } }
+    from(swarmOpenApiUpdater) { rename { "hivemq-swarm-openapi.yaml" } }
     into("specs")
 }
 
