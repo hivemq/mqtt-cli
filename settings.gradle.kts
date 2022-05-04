@@ -16,10 +16,6 @@ pluginManagement {
         id("org.owasp.dependencycheck") version "${extra["plugin.owasp-dependencycheck.version"]}"
         id("com.github.ben-manes.versions") version "${extra["plugin.ben-manes.versions.version"]}"
     }
-
-    if (file("../hivemq/plugins").exists()) {
-        includeBuild("../hivemq/plugins")
-    }
 }
 
 if (file("../hivemq-enterprise").exists()) {
