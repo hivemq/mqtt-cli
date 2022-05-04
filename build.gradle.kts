@@ -9,14 +9,6 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
 
-buildscript {
-    if (gradle.includedBuilds.any { it.name == "plugins" }) {
-        plugins {
-            id("com.hivemq.version-updater")
-        }
-    }
-}
-
 plugins {
     java
     application
