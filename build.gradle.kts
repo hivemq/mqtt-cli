@@ -94,6 +94,7 @@ dependencies {
     implementation("info.picocli:picocli:${property("picocli.version")}")
     implementation("info.picocli:picocli-shell-jline3:${property("picoclishell.version")}")
     implementation("info.picocli:picocli-codegen:${property("picocli.version")}")
+    annotationProcessor("info.picocli:picocli-codegen:${property("picocli.version")}")
     implementation("com.google.guava:guava:${property("guava.version")}")
     implementation("com.google.code.gson:gson:${property("gson.version")}")
     implementation("commons-io:commons-io:${property("commons-io.version")}")
@@ -388,36 +389,63 @@ tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 
 /* ******************** graal ******************** */
 
+dependencies {
+    //runtimeOnly("org.apache.logging.log4j:log4j-core:2.17.2")
+    //runtimeOnly("log4j:log4j:1.2.17")
+    //runtimeOnly("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
+    //runtimeOnly("org.eclipse.jetty:jetty-server:11.0.8")
+    //runtimeOnly("org.eclipse.jetty:jetty-alpn-parent:11.0.8")
+    //runtimeOnly("org.mortbay.jetty.alpn:alpn-boot:8.1.13.v20181017")
+    //runtimeOnly("org.eclipse.jetty.npn:npn-api:8.1.2.v20120308")
+    //implementation("io.netty:netty-handler-proxy:${property("netty.version")}")
+    //implementation("io.netty:netty-tcnative:2.0.51.Final")
+}
+
 graal {
-    graalVersion("19.2.1")
+    graalVersion("22.0.0.2")
+    javaVersion("11")
     outputName(project.name)
     mainClass(application.mainClass.get())
-    option("-H:+PrintClassInitialization")
-    option("-H:ReflectionConfigurationFiles=tools/reflection.json")
-    option("-H:-UseServiceLoaderFeature")
+    option("-Dio.netty.noUnsafe=true")
     option("-H:IncludeResources=\"org/jline/utils/*.*")
     option("-H:IncludeResources=\"org/jline/terminal/*.*")
     option("--allow-incomplete-classpath")
-    option("--report-unsupported-elements-at-runtime")
-    option("--initialize-at-build-time")
+    option("-H:+ReportExceptionStackTraces")
+    option("--no-fallback")
+    option("--enable-https")
     option(
         "--initialize-at-run-time=" +
-                "io.netty.channel.unix.Errors," +
-                "io.netty.channel.unix.IovArray," +
-                "io.netty.channel.unix.Limits," +
-                "io.netty.channel.unix.Socket," +
-                "io.netty.channel.epoll.EpollEventArray," +
-                "io.netty.channel.epoll.EpollEventLoop," +
-                "io.netty.channel.epoll.Native," +
-                "io.netty.handler.ssl.ConscryptAlpnSslEngine," +
-                "io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator," +
-                "io.netty.handler.ssl.JettyNpnSslEngine," +
-                "io.netty.handler.ssl.ReferenceCountedOpenSslEngine," +
-                "io.netty.handler.ssl.ReferenceCountedOpenSslContext," +
-                "io.netty.handler.codec.http.HttpObjectEncoder," +
-                "io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder," +
-                "com.hivemq.client.internal.mqtt.codec.encoder.MqttPingReqEncoder," +
-                "com.hivemq.client.internal.mqtt.codec.encoder.mqtt3.Mqtt3DisconnectEncoder"
+                "io.netty," +
+                "io.netty.bootstrap," +
+                "io.netty.channel," +
+                "io.netty.handler.ssl," +
+                "io.netty.handler.proxy," +
+                "io.netty.handler.codec," +
+                "io.netty.handler.codec.http," +
+                "io.netty.internal.tcnative," +
+                "io.netty.resolver," +
+                "io.netty.util.concurrent"
+    )
+    option(
+        "--initialize-at-build-time=" +
+                /*"org.tinylog.configuration.Configuration," +
+                "org.tinylog.provider.ProviderRegistry," +
+                "org.tinylog.runtime.RuntimeProvider," +
+                "org.tinylog.runtime.ModernJavaRuntime," +
+                "org.tinylog.writers.ConsoleWriter," +*/
+                "org.jctools.queues.BaseMpscLinkedArrayQueue," +
+                "org.jctools.queues.BaseSpscLinkedArrayQueue," +
+                "org.jctools.util.UnsafeAccess," +
+                "io.netty.util.ReferenceCountUtil," +
+                "io.netty.util.ResourceLeakDetector," +
+                "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueue," +
+                "io.netty.util.internal.shaded.org.jctools.queues.BaseSpscLinkedArrayQueue," +
+                "io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess," +
+                "io.netty.util.internal.SystemPropertyUtil," +
+                "io.netty.util.internal.PlatformDependent," +
+                "io.netty.util.internal.PlatformDependent0," +
+                "io.netty.util.internal.logging.JdkLogger," +
+                "io.netty.buffer.AbstractByteBufAllocator"
     )
 }
 

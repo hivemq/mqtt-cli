@@ -147,5 +147,4 @@ public abstract class MqttCommand extends AbstractCommand implements Context {
     public @NotNull String getIdentifier() {
         return Objects.requireNonNull(identifier);
     }
-
 }

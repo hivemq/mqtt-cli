@@ -70,7 +70,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-r", "--retain"}, negatable = true,
             description = "The message will be retained (default: false)", order = 1)
-    private @Nullable Boolean retain;
+    private boolean retain;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class,
@@ -189,7 +189,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         return getClass().getSimpleName() + "{" + connectOptions() + ", topics=" + Arrays.toString(topics) + ", qos=" +
                 Arrays.toString(qos) + ", message=" +
                 new String(message.getMessageBuffer().array(), StandardCharsets.UTF_8) +
-                (retain != null ? (", retain=" + retain) : "") +
+                //(retain != null ? (", retain=" + retain) : "") +
                 (messageExpiryInterval != null ? (", messageExpiryInterval=" + messageExpiryInterval) : "") +
                 (payloadFormatIndicator != null ? (", payloadFormatIndicator=" + payloadFormatIndicator) : "") +
                 (contentType != null ? (", contentType=" + contentType) : "") +
