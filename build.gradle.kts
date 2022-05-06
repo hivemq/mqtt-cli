@@ -389,16 +389,39 @@ tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 
 /* ******************** graal ******************** */
 
-dependencies {
-    //runtimeOnly("org.apache.logging.log4j:log4j-core:2.17.2")
-    //runtimeOnly("log4j:log4j:1.2.17")
-    //runtimeOnly("org.conscrypt:conscrypt-openjdk-uber:2.5.2")
-    //runtimeOnly("org.eclipse.jetty:jetty-server:11.0.8")
-    //runtimeOnly("org.eclipse.jetty:jetty-alpn-parent:11.0.8")
-    //runtimeOnly("org.mortbay.jetty.alpn:alpn-boot:8.1.13.v20181017")
-    //runtimeOnly("org.eclipse.jetty.npn:npn-api:8.1.2.v20120308")
-    //implementation("io.netty:netty-handler-proxy:${property("netty.version")}")
-    //implementation("io.netty:netty-tcnative:2.0.51.Final")
+val createTinylogReflectionConfig by tasks.registering(Exec::class) {
+    group = "graal"
+    description = "Run application to generate the configuration for native image generation"
+    dependsOn(tasks.classes, tasks.extractGraalTooling)
+
+    val customGeneratedPath =
+        project.buildDir.toPath().resolve("classes/java/main/META-INF/native-image/custom-generated")
+
+    doFirst {
+        mkdir(customGeneratedPath)
+    }
+
+    val gradleHome = project.gradle.gradleUserHomeDir.toPath()
+
+    commandLine(
+        "$gradleHome/caches/com.palantir.graal/" +
+                "${project.property("graal.version")}/" +
+                "${project.property("java-native.version")}/" +
+                "graalvm-ce-java${project.property("java-native.version")}-${project.property("graal.version")}/" +
+                "Contents/Home/bin/java",
+        "-agentlib:native-image-agent=config-output-dir=$customGeneratedPath",
+        "-cp",
+        sourceSets.main.get().runtimeClasspath.asPath,
+        "com.hivemq.cli.graal.NativeMain"
+    )
+}
+
+tasks.jar {
+    dependsOn(createTinylogReflectionConfig)
+}
+
+tasks.named("nativeImage") {
+    dependsOn(createTinylogReflectionConfig)
 }
 
 graal {
@@ -407,10 +430,9 @@ graal {
     outputName(project.name)
     mainClass(application.mainClass.get())
     option("-Dio.netty.noUnsafe=true")
-    option("-H:IncludeResources=\"org/jline/utils/*.*")
-    option("-H:IncludeResources=\"org/jline/terminal/*.*")
     option("--allow-incomplete-classpath")
     option("-H:+ReportExceptionStackTraces")
+    option("-H:+TraceServiceLoaderFeature")
     option("--no-fallback")
     option("--enable-https")
     option(
@@ -424,15 +446,23 @@ graal {
                 "io.netty.handler.codec.http," +
                 "io.netty.internal.tcnative," +
                 "io.netty.resolver," +
-                "io.netty.util.concurrent"
+                "io.netty.util.concurrent," +
+                "org.tinylog," +
+                "org.tinylog.configuration," +
+                "org.tinylog.format," +
+                "org.tinylog.provider," +
+                "org.tinylog.runtime," +
+                "org.tinylog.converters," +
+                "org.tinylog.core," +
+                "org.tinylog.path," +
+                "org.tinylog.pattern," +
+                "org.tinylog.policies," +
+                "org.tinylog.throwable," +
+                "org.tinylog.writers," +
+                "org.tinylog.writers.raw"
     )
     option(
         "--initialize-at-build-time=" +
-                /*"org.tinylog.configuration.Configuration," +
-                "org.tinylog.provider.ProviderRegistry," +
-                "org.tinylog.runtime.RuntimeProvider," +
-                "org.tinylog.runtime.ModernJavaRuntime," +
-                "org.tinylog.writers.ConsoleWriter," +*/
                 "org.jctools.queues.BaseMpscLinkedArrayQueue," +
                 "org.jctools.queues.BaseSpscLinkedArrayQueue," +
                 "org.jctools.util.UnsafeAccess," +
