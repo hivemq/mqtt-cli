@@ -18,9 +18,9 @@ package com.hivemq.cli.utils;
 
 import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import org.junit.jupiter.api.Test;
-import org.tinylog.Logger;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IntersectionUtilTest {
 

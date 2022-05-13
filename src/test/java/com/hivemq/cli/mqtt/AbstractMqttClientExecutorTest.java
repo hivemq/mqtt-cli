@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,12 +48,10 @@ class AbstractMqttClientExecutorTest {
 
     private final @NotNull MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
 
-    private @NotNull ClientData clientData;
     private @NotNull Connect connect;
 
     @BeforeEach
     void setUp() {
-        clientData = mock(ClientData.class);
         connect = mock(Connect.class);
         when(connect.getKey()).thenReturn("0");
         when(connect.getHost()).thenReturn("localhost");
@@ -70,12 +69,11 @@ class AbstractMqttClientExecutorTest {
     @Test
     void checkForSharedTopicDuplicate_noExisting_normalNew() {
         final Set<MqttTopicFilter> existingFilter = new HashSet<>();
-        when(clientData.getSubscribedTopics()).thenReturn(existingFilter);
 
         final String newTopic = "a";
-        final Tuple<MqttTopicFilter, MqttSharedTopicFilter> duplicateTuple =
-                mqttClientExecutor.checkForSharedTopicDuplicate(clientData, newTopic);
-        assertNull(duplicateTuple);
+        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertTrue(duplicateList.isEmpty());
     }
 
     @Test
@@ -83,12 +81,13 @@ class AbstractMqttClientExecutorTest {
         final Set<MqttTopicFilter> existingFilter = new HashSet<>();
         existingFilter.add(MqttTopicFilter.of("a"));
         existingFilter.add(MqttTopicFilter.of("b"));
-        when(clientData.getSubscribedTopics()).thenReturn(existingFilter);
 
         final String newTopic = "a";
-        final Tuple<MqttTopicFilter, MqttSharedTopicFilter> duplicateTuple =
-                mqttClientExecutor.checkForSharedTopicDuplicate(clientData, newTopic);
-        assertNull(duplicateTuple);
+        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertFalse(duplicateList.isEmpty());
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getKey());
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
     }
 
     @Test
@@ -96,14 +95,13 @@ class AbstractMqttClientExecutorTest {
         final Set<MqttTopicFilter> existingFilter = new HashSet<>();
         existingFilter.add(MqttTopicFilter.of("a"));
         existingFilter.add(MqttTopicFilter.of("b"));
-        when(clientData.getSubscribedTopics()).thenReturn(existingFilter);
 
         final String newTopic = "$share/group/a";
-        final Tuple<MqttTopicFilter, MqttSharedTopicFilter> duplicateTuple =
-                mqttClientExecutor.checkForSharedTopicDuplicate(clientData, newTopic);
-        assertNotNull(duplicateTuple);
-        assertEquals(MqttTopicFilter.of("a"), duplicateTuple.getKey());
-        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateTuple.getValue());
+        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertFalse(duplicateList.isEmpty());
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getKey());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getValue());
     }
 
     @Test
@@ -111,14 +109,13 @@ class AbstractMqttClientExecutorTest {
         final Set<MqttTopicFilter> existingFilter = new HashSet<>();
         existingFilter.add(MqttSharedTopicFilter.of("group", "a"));
         existingFilter.add(MqttTopicFilter.of("b"));
-        when(clientData.getSubscribedTopics()).thenReturn(existingFilter);
 
         final String newTopic = "a";
-        final Tuple<MqttTopicFilter, MqttSharedTopicFilter> duplicateTuple =
-                mqttClientExecutor.checkForSharedTopicDuplicate(clientData, newTopic);
-        assertNotNull(duplicateTuple);
-        assertEquals(MqttTopicFilter.of("a"), duplicateTuple.getKey());
-        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateTuple.getValue());
+        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertFalse(duplicateList.isEmpty());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getKey());
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
     }
 
     @Test
@@ -126,12 +123,68 @@ class AbstractMqttClientExecutorTest {
         final Set<MqttTopicFilter> existingFilter = new HashSet<>();
         existingFilter.add(MqttSharedTopicFilter.of("group", "a"));
         existingFilter.add(MqttTopicFilter.of("b"));
-        when(clientData.getSubscribedTopics()).thenReturn(existingFilter);
 
         final String newTopic = "$share/group/a";
-        final Tuple<MqttTopicFilter, MqttSharedTopicFilter> duplicateTuple =
-                mqttClientExecutor.checkForSharedTopicDuplicate(clientData, newTopic);
-        assertNull(duplicateTuple);
+        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertFalse(duplicateList.isEmpty());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getKey());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getValue());
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_multipleDisjointSharedExisting_normalNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttSharedTopicFilter.of("group", "a"));
+        existingFilter.add(MqttSharedTopicFilter.of("group", "b"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "a";
+        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertEquals(1, duplicateList.size());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getKey());
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_multipleIntersectingSharedExisting_normalNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttSharedTopicFilter.of("group", "a"));
+        existingFilter.add(MqttSharedTopicFilter.of("group", "+"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "a";
+        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertEquals(2, duplicateList.size());
+        assertTrue(duplicateList.stream().anyMatch(tuple -> {
+            assertNotNull(tuple.getValue());
+            return tuple.getKey().equals(MqttSharedTopicFilter.of("group", "+"));
+        }));
+        assertTrue(duplicateList.stream().anyMatch(tuple -> {
+            assertNotNull(tuple.getValue());
+            return tuple.getKey().equals(MqttSharedTopicFilter.of("group", "a"));
+        }));
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(1).getValue());
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_multipleIntersectingNormalExisting_SharedNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttTopicFilter.of("a"));
+        existingFilter.add(MqttTopicFilter.of("+"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "$share/group/a";
+        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertEquals(2, duplicateList.size());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getValue());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(1).getValue());
+        assertTrue(duplicateList.stream().anyMatch(tuple -> tuple.getKey().equals(MqttTopicFilter.of("a"))));
+        assertTrue(duplicateList.stream().anyMatch(tuple -> tuple.getKey().equals(MqttTopicFilter.of("+"))));
     }
 
     @Test

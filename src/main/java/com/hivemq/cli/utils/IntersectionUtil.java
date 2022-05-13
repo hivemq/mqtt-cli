@@ -36,15 +36,9 @@ public class IntersectionUtil {
             return true;
         }
 
-        // Topics have no wildcards and are equal (fast evaluation)
+        // Topics have no wildcards and are not equal (fast evaluation)
         if (!filterA.containsWildcards() && !filterB.containsWildcards()) {
-            if (filterA.matches(filterB)) {
-                Logger.debug(
-                        "Topic filter \"{}\" matches \"{}\" (without wildcards) and therefore they intersect.",
-                        filterA.toString(),
-                        filterB.toString());
-                return true;
-            } else {
+            if (!filterA.matches(filterB)) {
                 Logger.debug(
                         "Topic filters \"{}\" and \"{}\" (without wildcards) do not match and therefore are disjoint.",
                         filterA.toString(),

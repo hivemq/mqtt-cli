@@ -51,12 +51,9 @@ import org.tinylog.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 abstract class AbstractMqttClientExecutor {
 
@@ -118,15 +115,15 @@ abstract class AbstractMqttClientExecutor {
 
             // This check only works as subscribes are implemented blocking.
             // Otherwise, we would need to check the topics before they are iterated as they are added to the client data after a successful subscribe.
-            final Tuple<MqttTopicFilter, MqttSharedTopicFilter> duplicateTopics =
-                    checkForSharedTopicDuplicate(clientKeyToClientData.get(subscribe.getKey()), topic);
-            if (duplicateTopics != null) {
-                Logger.warn(
-                        "WARN: A subscribed shared topic and normal topic intersect ({} and {}). " +
-                                "This can lead to duplicate message output as multiple message callbacks are registered.",
-                        duplicateTopics.getKey(),
-                        duplicateTopics.getValue());
-            }
+            final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateTopics = checkForSharedTopicDuplicate(
+                    clientKeyToClientData.get(subscribe.getKey()).getSubscribedTopics(),
+                    topic);
+
+            duplicateTopics.forEach(tuple -> Logger.warn(
+                    "WARN: A newly subscribed topic intersects with an already existing topic subscription ({} and {}). " +
+                            "This can lead to duplicate message output as multiple message callbacks are registered.",
+                    tuple.getValue(),
+                    tuple.getKey()));
 
             final int qosI = i < subscribe.getQos().length ? i : subscribe.getQos().length - 1;
             final MqttQos qos = subscribe.getQos()[qosI];
@@ -143,41 +140,31 @@ abstract class AbstractMqttClientExecutor {
     }
 
     @VisibleForTesting
-    @Nullable Tuple<MqttTopicFilter, MqttSharedTopicFilter> checkForSharedTopicDuplicate(
-            final @NotNull ClientData clientData, final @NotNull String topic) {
-        final Set<MqttTopicFilter> subscribedFilters = clientData.getSubscribedTopics();
-        final MqttTopicFilter newFilter = MqttTopicFilter.of(topic);
-        if (subscribedFilters.stream().anyMatch(MqttTopicFilter::isShared)) {
-            if (newFilter.isShared()) {
-                final Set<MqttTopicFilter> normalFilters =
-                        subscribedFilters.stream().filter(t -> !t.isShared()).collect(Collectors.toSet());
-                for (final MqttTopicFilter normalFilter : normalFilters) {
-                    final MqttSharedTopicFilter sharedFilter = ((MqttSharedTopicFilter) newFilter);
-                    if (IntersectionUtil.intersects(normalFilter, sharedFilter.getTopicFilter())) {
-                        return Tuple.of(normalFilter, sharedFilter);
-                    }
-                }
-            } else {
-                final Set<MqttTopicFilter> sharedTopics =
-                        subscribedFilters.stream().filter(MqttTopicFilter::isShared).collect(Collectors.toSet());
-                for (final MqttTopicFilter sharedTopic : sharedTopics) {
-                    final MqttSharedTopicFilter sharedFilter = ((MqttSharedTopicFilter) sharedTopic);
-                    if (IntersectionUtil.intersects(newFilter, sharedFilter.getTopicFilter())) {
-                        return Tuple.of(newFilter, sharedFilter);
-                    }
-                }
-            }
+    @NotNull List<Tuple<MqttTopicFilter, MqttTopicFilter>> checkForSharedTopicDuplicate(
+            final @NotNull Set<MqttTopicFilter> subscribedFilters, final @NotNull String topic) {
+        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> intersections = new ArrayList<>();
+        final MqttTopicFilter newUnidentifiedFilter = MqttTopicFilter.of(topic);
+
+        final MqttTopicFilter newFilter;
+        if (newUnidentifiedFilter.isShared()) {
+            newFilter = ((MqttSharedTopicFilter) newUnidentifiedFilter).getTopicFilter();
         } else {
-            if (newFilter.isShared()) {
-                for (final MqttTopicFilter subscribedFilter : subscribedFilters) {
-                    final MqttSharedTopicFilter sharedFilter = ((MqttSharedTopicFilter) newFilter);
-                    if (IntersectionUtil.intersects(sharedFilter.getTopicFilter(), subscribedFilter)) {
-                        return Tuple.of(subscribedFilter, sharedFilter);
-                    }
-                }
+            newFilter = newUnidentifiedFilter;
+        }
+
+        for (final MqttTopicFilter subscribedFilter : subscribedFilters) {
+            final MqttTopicFilter existingFilter;
+            if (subscribedFilter.isShared()) {
+                existingFilter = ((MqttSharedTopicFilter) subscribedFilter).getTopicFilter();
+            } else {
+                existingFilter = subscribedFilter;
+            }
+
+            if (IntersectionUtil.intersects(existingFilter, newFilter)) {
+                intersections.add(Tuple.of(subscribedFilter, newUnidentifiedFilter));
             }
         }
-        return null;
+        return intersections;
     }
 
     public void publish(final @NotNull PublishCommand publishCommand) {
@@ -319,8 +306,7 @@ abstract class AbstractMqttClientExecutor {
 
         final ClientData clientData = new ClientData(client);
 
-        final String key = MqttUtils.buildKey(
-                client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
+        final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
                 client.getConfig().getServerHost());
 
         clientKeyToClientData.put(key, clientData);
@@ -355,8 +341,7 @@ abstract class AbstractMqttClientExecutor {
 
         final ClientData clientData = new ClientData(client);
 
-        final String key = MqttUtils.buildKey(
-                client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
+        final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
                 client.getConfig().getServerHost());
 
         clientKeyToClientData.put(key, clientData);
@@ -508,8 +493,7 @@ abstract class AbstractMqttClientExecutor {
         if (connect instanceof Subscribe) {
             return new SubscribeMqtt5PublishCallback((Subscribe) connect, client);
         } else {
-            return mqtt5Publish -> Logger.debug(
-                    "received PUBLISH: {}, MESSAGE: '{}'",
+            return mqtt5Publish -> Logger.debug("received PUBLISH: {}, MESSAGE: '{}'",
                     mqtt5Publish,
                     new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
@@ -520,8 +504,7 @@ abstract class AbstractMqttClientExecutor {
         if (connect instanceof Subscribe) {
             return new SubscribeMqtt3PublishCallback((Subscribe) connect, client);
         } else {
-            return mqtt3Publish -> Logger.debug(
-                    "received PUBLISH: {}, MESSAGE: '{}'",
+            return mqtt3Publish -> Logger.debug("received PUBLISH: {}, MESSAGE: '{}'",
                     mqtt3Publish,
                     new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
