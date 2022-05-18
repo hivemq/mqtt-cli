@@ -607,14 +607,13 @@ tasks.startShadowScripts {
 
 val updateVersionInFiles by tasks.registering {
     group = "version"
-    val filesToUpdate = arrayOf("docs/_docs/installation.md")
+    val filesToUpdate = files("docs/_docs/installation.md")
 
     doLast {
         filesToUpdate.forEach {
-            val file = project.file(it)
-            val text = file.readText()
+            val text = it.readText()
             val replacedText = text.replace("${prevVersion}(-SNAPSHOT)?".toRegex(), project.version.toString())
-            file.writeText(replacedText)
+            it.writeText(replacedText)
         }
     }
 }
