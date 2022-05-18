@@ -21,7 +21,6 @@ import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
 import com.hivemq.cli.utils.IntersectionUtil;
 import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.cli.utils.Tuple;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
@@ -115,15 +114,15 @@ abstract class AbstractMqttClientExecutor {
 
             // This check only works as subscribes are implemented blocking.
             // Otherwise, we would need to check the topics before they are iterated as they are added to the client data after a successful subscribe.
-            final List<Tuple<MqttTopicFilter, MqttTopicFilter>> duplicateTopics = checkForSharedTopicDuplicate(
-                    clientKeyToClientData.get(subscribe.getKey()).getSubscribedTopics(),
-                    topic);
+            final List<MqttTopicFilter> intersectingFilters =
+                    checkForSharedTopicDuplicate(clientKeyToClientData.get(subscribe.getKey()).getSubscribedTopics(),
+                            topic);
 
-            duplicateTopics.forEach(tuple -> Logger.warn(
-                    "WARN: A newly subscribed topic intersects with an already existing topic subscription ({} and {}). " +
-                            "This can lead to duplicate message output as multiple message callbacks are registered.",
-                    tuple.getValue(),
-                    tuple.getKey()));
+            if (!intersectingFilters.isEmpty()) {
+                Logger.warn("WARN: New subscription to '{}' intersects with already existing subscription(s) {}",
+                        topic,
+                        intersectingFilters);
+            }
 
             final int qosI = i < subscribe.getQos().length ? i : subscribe.getQos().length - 1;
             final MqttQos qos = subscribe.getQos()[qosI];
@@ -140,9 +139,9 @@ abstract class AbstractMqttClientExecutor {
     }
 
     @VisibleForTesting
-    @NotNull List<Tuple<MqttTopicFilter, MqttTopicFilter>> checkForSharedTopicDuplicate(
+    @NotNull List<MqttTopicFilter> checkForSharedTopicDuplicate(
             final @NotNull Set<MqttTopicFilter> subscribedFilters, final @NotNull String topic) {
-        final List<Tuple<MqttTopicFilter, MqttTopicFilter>> intersections = new ArrayList<>();
+        final List<MqttTopicFilter> intersectingFilters = new ArrayList<>();
         final MqttTopicFilter newUnidentifiedFilter = MqttTopicFilter.of(topic);
 
         final MqttTopicFilter newFilter;
@@ -161,10 +160,10 @@ abstract class AbstractMqttClientExecutor {
             }
 
             if (IntersectionUtil.intersects(existingFilter, newFilter)) {
-                intersections.add(Tuple.of(subscribedFilter, newUnidentifiedFilter));
+                intersectingFilters.add(subscribedFilter);
             }
         }
-        return intersections;
+        return intersectingFilters;
     }
 
     public void publish(final @NotNull PublishCommand publishCommand) {
