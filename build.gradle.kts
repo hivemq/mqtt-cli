@@ -29,6 +29,7 @@ plugins {
 
 /* ******************** metadata ******************** */
 
+val prevVersion = "4.7.3"
 version = "4.8.0-SNAPSHOT"
 group = "com.hivemq"
 description = "MQTT CLI is a tool that provides a feature rich command line interface for connecting, " +
@@ -113,12 +114,9 @@ dependencies {
 val hivemqOpenApi: Configuration by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
-    attributes {
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("open-api"))
-    }
 }
 
-val hivemqOpenApiUpdater: Configuration by configurations.creating {
+val hivemqOpenApiFromProject: Configuration by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
     attributes {
@@ -129,12 +127,9 @@ val hivemqOpenApiUpdater: Configuration by configurations.creating {
 val swarmOpenApi: Configuration by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
-    attributes {
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named("open-api"))
-    }
 }
 
-val swarmOpenApiUpdater: Configuration by configurations.creating {
+val swarmOpenApiFromProject: Configuration by configurations.creating {
     isCanBeConsumed = false
     isCanBeResolved = true
     attributes {
@@ -146,12 +141,8 @@ dependencies {
     hivemqOpenApi(files("specs/hivemq-openapi.yaml"))
     swarmOpenApi(files("specs/hivemq-swarm-openapi.yaml"))
 
-    if (gradle.includedBuilds.any { it.name == "hivemq-enterprise" }) {
-        hivemqOpenApiUpdater("com.hivemq:hivemq-enterprise")
-    }
-    if (gradle.includedBuilds.any { it.name == "hivemq-swarm" }) {
-        swarmOpenApiUpdater("com.hivemq:hivemq-swarm")
-    }
+    hivemqOpenApiFromProject("com.hivemq:hivemq-enterprise")
+    swarmOpenApiFromProject("com.hivemq:hivemq-swarm")
 }
 
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
@@ -208,6 +199,13 @@ sourceSets.main {
         srcDir(generateHivemqOpenApi)
         srcDir(generateSwarmOpenApi)
     }
+}
+
+tasks.register<Sync>("updateOpenApiSpecs") {
+    group = "openapi"
+    from(hivemqOpenApiFromProject) { rename { "hivemq-openapi.yaml" } }
+    from(swarmOpenApiFromProject) { rename { "hivemq-swarm-openapi.yaml" } }
+    into("specs")
 }
 
 /* ******************** test ******************** */
@@ -605,17 +603,20 @@ tasks.startShadowScripts {
     applicationName = "mqtt"
 }
 
-/* ******************** HiveMQ composite build ******************** */
+/* ******************** version updating ******************** */
 
-tasks.register<Sync>("updateSpecs") {
-    group = "cli"
-    from(hivemqOpenApiUpdater) { rename { "hivemq-openapi.yaml" } }
-    from(swarmOpenApiUpdater) { rename { "hivemq-swarm-openapi.yaml" } }
-    into("specs")
-}
+val updateVersionInFiles by tasks.registering {
+    group = "version"
+    val filesToUpdate = arrayOf("docs/_docs/installation.md")
 
-plugins.withId("com.hivemq.version-updater") {
-    project.ext.set("versionUpdaterFiles", arrayOf("docs/_docs/installation.md"))
+    doLast {
+        filesToUpdate.forEach {
+            val file = project.file(it)
+            val text = file.readText()
+            val replacedText = text.replace("${prevVersion}(-SNAPSHOT)?".toRegex(), project.version.toString())
+            file.writeText(replacedText)
+        }
+    }
 }
 
 /* ******************** helpers ******************** */
