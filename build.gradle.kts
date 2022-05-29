@@ -216,7 +216,6 @@ tasks.test {
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:${property("junit-jupiter.version")}")
-    testImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
     testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
     testImplementation("com.squareup.okhttp3:mockwebserver:${property("ok-http.version")}")
     testImplementation("com.ginsberg:junit5-system-exit:${property("system-exit.version")}")
@@ -239,24 +238,16 @@ val integrationTestRuntimeOnly: Configuration by configurations.getting {
 dependencies {
     integrationTestImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemq-testcontainer.version")}")
     integrationTestImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
-}
-
-tasks.named<JavaCompile>("compileIntegrationTestJava") {
-    javaCompiler.set(javaToolchains.compilerFor {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    })
+    integrationTestImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
 }
 
 val integrationTest by tasks.registering(Test::class) {
     group = "verification"
     description = "Runs integration tests."
+    testClassesDirs = sourceSets[name].output.classesDirs
+    classpath = sourceSets[name].runtimeClasspath
     useJUnitPlatform()
-    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
-    classpath = sourceSets["integrationTest"].runtimeClasspath
     shouldRunAfter(tasks.test)
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    })
 }
 
 tasks.check { dependsOn(integrationTest) }
