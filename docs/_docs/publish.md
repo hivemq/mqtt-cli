@@ -12,10 +12,10 @@ Publishes a message to one or more topics.
 
 | Command                                              |Explanation                                                              |
 |------------------------------------------------------|-------------------------------------------------------------------------|
-| ``mqtt pub -t test -m "Hello" ``                     | Publish the message ``Hello`` with topic 'topic' using the default settings
+| ``mqtt pub -t test -m "Hello" ``                     | Publish the message ``Hello`` with topic 'test' using the default settings
 | ``mqtt pub -t test1 -t test2 -m "Hello Tests"``      | Publish the message ``Hello Tests`` with topics 'test1' and 'test2'
-| ``mqtt pub -t test -m "Hello" -h localhost -p 1884`` | Publish the message ``Hello`` with topic 'topic' to a broker at localhost:1884|
-| ``mqtt pub -t test -m:file payload.txt``             | Publish the message in payload.txt with topic 'topic' using the default settings
+| ``mqtt pub -t test -m "Hello" -h localhost -p 1884`` | Publish the message ``Hello`` with topic 'test' to a broker at localhost:1884|
+| ``mqtt pub -t test -m:file payload.txt``             | Publish the message in payload.txt with topic 'test' using the default settings
 
 <!---
 See also 
