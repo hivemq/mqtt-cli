@@ -17,10 +17,3 @@ pluginManagement {
         id("com.github.ben-manes.versions") version "${extra["plugin.ben-manes.versions.version"]}"
     }
 }
-
-if (file("../hivemq-enterprise").exists()) {
-    includeBuild("../hivemq-enterprise")
-}
-if (file("../hivemq-swarm").exists()) {
-    includeBuild("../hivemq-swarm")
-}
