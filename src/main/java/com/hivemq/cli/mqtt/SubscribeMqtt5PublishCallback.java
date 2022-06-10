@@ -50,29 +50,33 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
 
     @Override
     public void accept(final @NotNull Mqtt5Publish mqtt5Publish) {
-        String message;
+        try {
+            String message;
 
-        if (isJsonOutput) {
-            message = new JsonMqttPublish(mqtt5Publish, isBase64).toString();
-        } else {
-            message = MqttPublishUtils.formatPayload(mqtt5Publish.getPayloadAsBytes(), isBase64);
-        }
+            if (isJsonOutput) {
+                message = new JsonMqttPublish(mqtt5Publish, isBase64).toString();
+            } else {
+                message = MqttPublishUtils.formatPayload(mqtt5Publish.getPayloadAsBytes(), isBase64);
+            }
 
-        if (showTopics) {
-            message = mqtt5Publish.getTopic() + ": " + message;
-        }
+            if (showTopics) {
+                message = mqtt5Publish.getTopic() + ": " + message;
+            }
 
-        if (outputFile != null) {
-            MqttPublishUtils.printToFile(outputFile, message);
-        }
-        if (printToStdout) {
-            System.out.println(message);
-        }
+            if (outputFile != null) {
+                MqttPublishUtils.printToFile(outputFile, message);
+            }
+            if (printToStdout) {
+                System.out.println(message);
+            }
 
-        Logger.debug(
-                "{} received PUBLISH ('{}') {}",
-                LoggerUtils.getClientPrefix(client.getConfig()),
-                new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
-                mqtt5Publish);
+            Logger.debug(
+                    "{} received PUBLISH ('{}') {}",
+                    LoggerUtils.getClientPrefix(client.getConfig()),
+                    new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
+                    mqtt5Publish);
+        } catch (final Exception e) {
+            Logger.error("An error occurred while processing an incoming PUBLISH.", e);
+        }
     }
 }
