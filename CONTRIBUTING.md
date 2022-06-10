@@ -2,20 +2,20 @@
 
 ## Contributing to the HiveMQ Community Projects
 
-Welcome to the HiveMQ Community! Glad to see your interest in contributing to HiveMQ CLI.
+Welcome to the HiveMQ Community! Glad to see your interest in contributing to mqtt-cli.
 Please checkout our [Contribution Guide](https://github.com/hivemq/hivemq-community/blob/master/CONTRIBUTING.adoc) to 
 make sure your contribution will be accepted by the HiveMQ team.
 
 For information on how the HiveMQ Community is organized and how contributions will be accepted please have a look at 
 our [HiveMQ Community Repo](https://github.com/hivemq/hivemq-community). 
 
-## Contributing to HiveMQ CLI
+## Contributing to mqtt-cli
 
 ### External contributors
 
 If you would like to contribute code, do the following:
 - Fork the repository on GitHub
-- Open a pull request targeting the `develop` branch
+- Open a pull request targeting the `master` branch
 
 ### License
 
@@ -28,16 +28,10 @@ All files must contain the license header from the
 ### Branching model
 
 - `master`: release branch, protected
-  - `develop` is merged into `master` by creating a merge commit if a new version is released
-  - The release is tagged with the version `vX.Y.Z`
-- `develop`: snapshot branch, protected
-  - Contains features for the next release
-  - Feature/bugfix/... branches are merged into `develop` by rebasing and merging
 - Every feature/bugfix/... will have its own branch
-  - Branched off from `develop`
-  - Pull request targeting the `develop` branch
+  - Branched off from `master`
+  - Pull request targeting the `master` branch
   - Mandatory code review of the pull request
-- `gh-pages`: documentation branch, protected
 
 ### Branching guidelines
 
