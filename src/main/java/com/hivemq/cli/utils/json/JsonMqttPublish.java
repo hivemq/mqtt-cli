@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class JsonMqttPublish extends JsonFormatted {
 
     private final @NotNull String topic;
@@ -73,8 +74,9 @@ public class JsonMqttPublish extends JsonFormatted {
         }
 
         responseTopic = publish.getResponseTopic().map(MqttTopic::toString).orElse(null);
-        correlationData =
-                publish.getCorrelationData().map(cd -> new String(cd.array(), StandardCharsets.UTF_8)).orElse(null);
+        correlationData = publish.getCorrelationData() //
+                .map(cd -> StandardCharsets.UTF_8.decode(cd).toString()) //
+                .orElse(null);
 
         if (publish.getUserProperties().asList().size() > 0) {
             userProperties = new HashMap<>();

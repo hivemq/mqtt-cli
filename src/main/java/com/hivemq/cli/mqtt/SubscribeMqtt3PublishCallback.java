@@ -50,29 +50,33 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
 
     @Override
     public void accept(final @NotNull Mqtt3Publish mqtt3Publish) {
-        String message;
+        try {
+            String message;
 
-        if (isJsonOutput) {
-            message = new JsonMqttPublish(mqtt3Publish, isBase64).toString();
-        } else {
-            message = MqttPublishUtils.formatPayload(mqtt3Publish.getPayloadAsBytes(), isBase64);
-        }
+            if (isJsonOutput) {
+                message = new JsonMqttPublish(mqtt3Publish, isBase64).toString();
+            } else {
+                message = MqttPublishUtils.formatPayload(mqtt3Publish.getPayloadAsBytes(), isBase64);
+            }
 
-        if (showTopics) {
-            message = mqtt3Publish.getTopic() + ": " + message;
-        }
+            if (showTopics) {
+                message = mqtt3Publish.getTopic() + ": " + message;
+            }
 
-        if (outputFile != null) {
-            MqttPublishUtils.printToFile(outputFile, message);
-        }
-        if (printToStdout) {
-            System.out.println(message);
-        }
+            if (outputFile != null) {
+                MqttPublishUtils.printToFile(outputFile, message);
+            }
+            if (printToStdout) {
+                System.out.println(message);
+            }
 
-        Logger.debug(
-                "{} received PUBLISH ('{}') {}",
-                LoggerUtils.getClientPrefix(client.getConfig()),
-                new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
-                mqtt3Publish);
+            Logger.debug(
+                    "{} received PUBLISH ('{}') {}",
+                    LoggerUtils.getClientPrefix(client.getConfig()),
+                    new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
+                    mqtt3Publish);
+        } catch (final Exception e) {
+            Logger.error("An error occurred while processing an incoming PUBLISH.", e);
+        }
     }
 }
