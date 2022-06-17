@@ -17,3 +17,11 @@ pluginManagement {
         id("com.github.ben-manes.versions") version "${extra["plugin.ben-manes.versions.version"]}"
     }
 }
+
+
+    includeBuild("mqtt-cli-plugins")
+
+    if (file("../hivemq/plugins").exists()) {
+        includeBuild("../hivemq/plugins")
+    }
+}

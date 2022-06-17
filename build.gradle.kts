@@ -25,6 +25,8 @@ plugins {
     id("org.ajoberstar.git-publish")
     id("org.owasp.dependencycheck")
     id("com.github.ben-manes.versions")
+    id("org.graalvm.buildtools.native") version "0.9.11"
+    id("com.hivemq.cli.native-image")
 }
 
 /* ******************** metadata ******************** */
@@ -389,53 +391,48 @@ tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 
 /* ******************** graal ******************** */
 
-val createTinylogReflectionConfig by tasks.registering(Exec::class) {
-    group = "graal"
-    description = "Run application to generate the configuration for native image generation"
-    dependsOn(tasks.classes, tasks.extractGraalTooling)
+tasks.nativeCompile {
+    dependsOn(tasks.installNativeImageTooling)
+}
 
-    val customGeneratedPath =
-        project.buildDir.toPath().resolve("classes/java/main/META-INF/native-image/custom-generated")
+val agentRun by tasks.registering(JavaExec::class) {
+    group = "native"
 
-    doFirst {
-        mkdir(customGeneratedPath)
-    }
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(17))
+        vendor.set(JvmVendorSpec.GRAAL_VM)
+    })
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass.set(application.mainClass)
+}
 
-    val gradleHome = project.gradle.gradleUserHomeDir.toPath()
-
-    commandLine(
-        "$gradleHome/caches/com.palantir.graal/" +
-                "${project.property("graal.version")}/" +
-                "${project.property("java-native.version")}/" +
-                "graalvm-ce-java${project.property("java-native.version")}-${project.property("graal.version")}/" +
-                "Contents/Home/bin/java",
-        "-agentlib:native-image-agent=config-output-dir=$customGeneratedPath",
-        "-cp",
-        sourceSets.main.get().runtimeClasspath.asPath,
-        "com.hivemq.cli.graal.NativeMain"
+val nativeImageOptions by graalvmNative.binaries.named("main") {
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(17))
+        vendor.set(JvmVendorSpec.GRAAL_VM)
+    })
+    buildArgs.add("-Dio.netty.noUnsafe=true")
+    buildArgs.add("-H:+ReportExceptionStackTraces")
+    buildArgs.add("-H:+TraceServiceLoaderFeature")
+    buildArgs.add("--no-fallback")
+    buildArgs.add("--enable-https")
+    buildArgs.add(
+        "--initialize-at-build-time=" +
+                "org.jctools.queues.BaseMpscLinkedArrayQueue," +
+                "org.jctools.queues.BaseSpscLinkedArrayQueue," +
+                "org.jctools.util.UnsafeAccess," +
+                "io.netty.util.ReferenceCountUtil," +
+                "io.netty.util.ResourceLeakDetector," +
+                "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueue," +
+                "io.netty.util.internal.shaded.org.jctools.queues.BaseSpscLinkedArrayQueue," +
+                "io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess," +
+                "io.netty.util.internal.SystemPropertyUtil," +
+                "io.netty.util.internal.PlatformDependent," +
+                "io.netty.util.internal.PlatformDependent0," +
+                "io.netty.util.internal.logging.JdkLogger," +
+                "io.netty.buffer.AbstractByteBufAllocator"
     )
-}
-
-tasks.jar {
-    dependsOn(createTinylogReflectionConfig)
-}
-
-tasks.named("nativeImage") {
-    dependsOn(createTinylogReflectionConfig)
-}
-
-graal {
-    graalVersion("22.0.0.2")
-    javaVersion("11")
-    outputName(project.name)
-    mainClass(application.mainClass.get())
-    option("-Dio.netty.noUnsafe=true")
-    option("--allow-incomplete-classpath")
-    option("-H:+ReportExceptionStackTraces")
-    option("-H:+TraceServiceLoaderFeature")
-    option("--no-fallback")
-    option("--enable-https")
-    option(
+    buildArgs.add(
         "--initialize-at-run-time=" +
                 "io.netty," +
                 "io.netty.bootstrap," +
@@ -461,7 +458,44 @@ graal {
                 "org.tinylog.writers," +
                 "org.tinylog.writers.raw"
     )
-    option(
+
+    agent {
+        enabled.set(true)
+        instrumentedTask.set(tasks.named("agentRun", JavaExec::class))
+    }
+}
+
+graalvmNative.registerTestBinary("integrationTest") {
+    usingSourceSet(sourceSets.getByName("integrationTest"))
+    forTestTask(tasks.named<Test>("integrationTest"))
+}
+
+val nativeImageOptionsTest by graalvmNative.binaries.named("integrationTest") {
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(17))
+        vendor.set(JvmVendorSpec.GRAAL_VM)
+    })
+    buildArgs.add("-Dio.netty.noUnsafe=true")
+    buildArgs.add("--allow-incomplete-classpath")
+    buildArgs.add("-H:+ReportExceptionStackTraces")
+    buildArgs.add("-H:+TraceServiceLoaderFeature")
+    buildArgs.add("--no-fallback")
+    buildArgs.add("--enable-https")
+    /*buildArgs.add("--rerun-class-initialization-at-runtime=" +
+            "net.bytebuddy.ClassFileVersion," +
+            "net.bytebuddy.utility.dispatcher.JavaDispatcher," +
+            "net.bytebuddy.utility.Invoker\$Dispatcher")
+    buildArgs.add("--initialize-at-build-time=" +
+            "net.bytebuddy.description.method.MethodDescription\$InDefinedShape\$AbstractBase\$ForLoadedExecutable," +
+            "net.bytebuddy.description.type.TypeDescription\$AbstractBase," +
+            "net.bytebuddy.description.type.TypeDescription\$ForLoadedType," +
+            "net.bytebuddy.description.method.MethodDescription\$ForLoadedMethod," +
+            "net.bytebuddy.implementation.bind.annotation.Argument\$BindingMechanic," +
+            "net.bytebuddy.implementation.bind.annotation.Argument\$BindingMechanic\$1," +
+            "net.bytebuddy.implementation.bind.annotation.Argument\$BindingMechanic\$2," +
+            "net.bytebuddy.implementation.bind.annotation.Super\$Instantiation\$2")
+     */
+    buildArgs.add(
         "--initialize-at-build-time=" +
                 "org.jctools.queues.BaseMpscLinkedArrayQueue," +
                 "org.jctools.queues.BaseSpscLinkedArrayQueue," +
@@ -477,7 +511,77 @@ graal {
                 "io.netty.util.internal.logging.JdkLogger," +
                 "io.netty.buffer.AbstractByteBufAllocator"
     )
+    buildArgs.add(
+        "--initialize-at-run-time=" +
+                "io.netty," +
+                "io.netty.bootstrap," +
+                "io.netty.channel," +
+                "io.netty.handler.ssl," +
+                "io.netty.handler.proxy," +
+                "io.netty.handler.codec," +
+                "io.netty.handler.codec.http," +
+                "io.netty.internal.tcnative," +
+                "io.netty.resolver," +
+                "io.netty.util.concurrent," +
+                "org.tinylog," +
+                "org.tinylog.configuration," +
+                "org.tinylog.format," +
+                "org.tinylog.provider," +
+                "org.tinylog.runtime," +
+                "org.tinylog.converters," +
+                "org.tinylog.core," +
+                "org.tinylog.path," +
+                "org.tinylog.pattern," +
+                "org.tinylog.policies," +
+                "org.tinylog.throwable," +
+                "org.tinylog.writers," +
+                "org.tinylog.writers.raw"
+    )
+    agent {
+        //instrumentedTask.set(tasks.named("agentRun", JavaExec::class))
+        enabled.set(true)
+    }
 }
+
+tasks.nativeTestCompile.configure {
+    options.set(nativeImageOptionsTest)
+}
+
+graalvmNative {
+    binaries {
+        nativeImageOptions
+        nativeImageOptionsTest
+    }
+}
+
+/*
+val createCustomReflectionConfig by tasks.registering(Exec::class) {
+    group = "graal"
+    description = "Run application to generate the configuration for native image generation"
+    dependsOn(tasks.classes, tasks.extractGraalTooling)
+
+    val customGeneratedPath =
+        project.buildDir.toPath().resolve("classes/java/main/META-INF/native-image/custom-generated")
+
+    doFirst {
+        mkdir(customGeneratedPath)
+    }
+
+    val gradleHome = project.gradle.gradleUserHomeDir.toPath()
+
+    commandLine(
+        "$gradleHome/caches/com.palantir.graal/" +
+                "${project.property("graal.version")}/" +
+                "${project.property("java-native.version")}/" +
+                "graalvm-ce-java${project.property("java-native.version")}-${project.property("graal.version")}/" +
+                "Contents/Home/bin/java",
+        "-agentlib:native-image-agent=config-output-dir=$customGeneratedPath",
+        "-cp",
+        sourceSets.main.get().runtimeClasspath.asPath,
+        "com.hivemq.cli.graal.NativeMain"
+    )
+}
+ */
 
 /* ******************** homebrew package & formula ******************** */
 
