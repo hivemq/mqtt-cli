@@ -2,7 +2,7 @@
 
 ## Contributing to the HiveMQ Community Projects
 
-Welcome to the HiveMQ Community! Glad to see your interest in contributing to mqtt-cli.
+Welcome to the HiveMQ Community! Glad to see your interest in contributing to MQTT CLI.
 Please checkout our [Contribution Guide](https://github.com/hivemq/hivemq-community/blob/master/CONTRIBUTING.adoc) to 
 make sure your contribution will be accepted by the HiveMQ team.
 
