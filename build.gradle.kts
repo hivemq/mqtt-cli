@@ -404,6 +404,7 @@ val agentRun by tasks.registering(JavaExec::class) {
     })
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set(application.mainClass)
+    mainClass.set("com.hivemq.cli.graal.NativeMain")
 }
 
 val nativeImageOptions by graalvmNative.binaries.named("main") {
@@ -465,6 +466,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
     }
 }
 
+/*
 graalvmNative.registerTestBinary("integrationTest") {
     usingSourceSet(sourceSets.getByName("integrationTest"))
     forTestTask(tasks.named<Test>("integrationTest"))
@@ -547,10 +549,12 @@ tasks.nativeTestCompile.configure {
     options.set(nativeImageOptionsTest)
 }
 
+ */
+
 graalvmNative {
     binaries {
         nativeImageOptions
-        nativeImageOptionsTest
+        //nativeImageOptionsTest
     }
 }
 
