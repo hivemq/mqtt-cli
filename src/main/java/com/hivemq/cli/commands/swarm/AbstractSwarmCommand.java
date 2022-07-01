@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.swarm;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
@@ -27,8 +26,7 @@ public abstract class AbstractSwarmCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8080",
             description = "The URL of the HiveMQ Swarm REST API endpoint (default: http://localhost:8080)", order = 1)
-    @VisibleForTesting
-    public @NotNull String commanderUrl = "http://localhost:8080";
+    protected @NotNull String commanderUrl = "http://localhost:8080";
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-l"}, defaultValue = "false",

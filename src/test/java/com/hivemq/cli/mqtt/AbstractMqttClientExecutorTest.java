@@ -17,8 +17,11 @@
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.cli.commands.*;
+import com.hivemq.cli.utils.Tuple;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.datatypes.MqttSharedTopicFilter;
+import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
@@ -32,7 +35,10 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -40,7 +46,9 @@ import static org.mockito.Mockito.when;
 
 class AbstractMqttClientExecutorTest {
 
-    @NotNull Connect connect;
+    private final @NotNull MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
+
+    private @NotNull Connect connect;
 
     @BeforeEach
     void setUp() {
@@ -59,12 +67,130 @@ class AbstractMqttClientExecutorTest {
     }
 
     @Test
+    void checkForSharedTopicDuplicate_noExisting_normalNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+
+        final String newTopic = "a";
+        final List<MqttTopicFilter> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertTrue(duplicateList.isEmpty());
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_normalExisting_normalNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttTopicFilter.of("a"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "a";
+        final List<MqttTopicFilter> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertFalse(duplicateList.isEmpty());
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0));
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_normalExisting_sharedNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttTopicFilter.of("a"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "$share/group/a";
+        final List<MqttTopicFilter> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertFalse(duplicateList.isEmpty());
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0));
+        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getValue());
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_sharedExisting_normalNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttSharedTopicFilter.of("group", "a"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "a";
+        final List<MqttTopicFilter> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertFalse(duplicateList.isEmpty());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0));
+        //assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_sharedExisting_sharedNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttSharedTopicFilter.of("group", "a"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "$share/group/a";
+        final List<MqttTopicFilter> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertFalse(duplicateList.isEmpty());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0));
+        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getValue());
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_multipleDisjointSharedExisting_normalNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttSharedTopicFilter.of("group", "a"));
+        existingFilter.add(MqttSharedTopicFilter.of("group", "b"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "a";
+        final List<MqttTopicFilter> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertEquals(1, duplicateList.size());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0));
+        //assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_multipleIntersectingSharedExisting_normalNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttSharedTopicFilter.of("group", "a"));
+        existingFilter.add(MqttSharedTopicFilter.of("group", "+"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "a";
+        final List<MqttTopicFilter> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertEquals(2, duplicateList.size());
+        assertTrue(duplicateList.stream().anyMatch(topicFilter -> {
+            //assertNotNull(topicFilter.getValue());
+            return topicFilter.equals(MqttSharedTopicFilter.of("group", "+"));
+        }));
+        assertTrue(duplicateList.stream().anyMatch(topicFilter -> {
+            //assertNotNull(topicFilter.getValue());
+            return topicFilter.equals(MqttSharedTopicFilter.of("group", "a"));
+        }));
+        //assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
+        //assertEquals(MqttTopicFilter.of("a"), duplicateList.get(1).getValue());
+    }
+
+    @Test
+    void checkForSharedTopicDuplicate_multipleIntersectingNormalExisting_SharedNew() {
+        final Set<MqttTopicFilter> existingFilter = new HashSet<>();
+        existingFilter.add(MqttTopicFilter.of("a"));
+        existingFilter.add(MqttTopicFilter.of("+"));
+        existingFilter.add(MqttTopicFilter.of("b"));
+
+        final String newTopic = "$share/group/a";
+        final List<MqttTopicFilter> duplicateList =
+                mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
+        assertEquals(2, duplicateList.size());
+        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getValue());
+        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(1).getValue());
+        assertTrue(duplicateList.stream().anyMatch(topicFilter -> topicFilter.equals(MqttTopicFilter.of("a"))));
+        assertTrue(duplicateList.stream().anyMatch(topicFilter -> topicFilter.equals(MqttTopicFilter.of("+"))));
+    }
+
+    @Test
     void simpleAuth_whenNoAuthIsConfigured_thenNoAuthIsSet_Mqtt5() {
         when(connect.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
 
-        final MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
         final Mqtt5Client mqtt5Client = (Mqtt5Client) mqttClientExecutor.connect(connect);
-
         assertFalse(mqtt5Client.getConfig().getSimpleAuth().isPresent());
     }
 
@@ -72,9 +198,7 @@ class AbstractMqttClientExecutorTest {
     void simpleAuth_whenNoAuthIsConfigured_thenNoAuthIsSet_Mqtt3() {
         when(connect.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
 
-        final MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
         final Mqtt3Client mqtt5Client = (Mqtt3Client) mqttClientExecutor.connect(connect);
-
         assertFalse(mqtt5Client.getConfig().getSimpleAuth().isPresent());
     }
 
@@ -83,13 +207,10 @@ class AbstractMqttClientExecutorTest {
         when(connect.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
         when(connect.getUser()).thenReturn("Test");
 
-        final MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
         mqttClientExecutor.connect(connect);
 
         assertNotNull(mqttClientExecutor.getMqtt5ConnectMessage());
-
         final Optional<Mqtt5SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt5ConnectMessage().getSimpleAuth();
-
         assertTrue(simpleAuth.isPresent());
         assertTrue(simpleAuth.get().getUsername().isPresent());
         assertEquals("Test", simpleAuth.get().getUsername().get().toString());
@@ -100,13 +221,10 @@ class AbstractMqttClientExecutorTest {
         when(connect.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
         when(connect.getUser()).thenReturn("Test");
 
-        final MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
         mqttClientExecutor.connect(connect);
 
         assertNotNull(mqttClientExecutor.getMqtt3ConnectMessage());
-
         final Optional<Mqtt3SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt3ConnectMessage().getSimpleAuth();
-
         assertTrue(simpleAuth.isPresent());
         assertEquals("Test", simpleAuth.get().getUsername().toString());
     }
@@ -116,13 +234,10 @@ class AbstractMqttClientExecutorTest {
         when(connect.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
         when(connect.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
 
-        final MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
         mqttClientExecutor.connect(connect);
 
         assertNotNull(mqttClientExecutor.getMqtt5ConnectMessage());
-
         final Optional<Mqtt5SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt5ConnectMessage().getSimpleAuth();
-
         assertTrue(simpleAuth.isPresent());
         assertTrue(simpleAuth.get().getPassword().isPresent());
         assertEquals("Test", StandardCharsets.US_ASCII.decode(simpleAuth.get().getPassword().get()).toString());
@@ -132,8 +247,6 @@ class AbstractMqttClientExecutorTest {
     void simpleAuth_whenPasswordIsConfigured_setPassword_Mqtt3() {
         when(connect.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
         when(connect.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
-
-        final MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
         assertThrows(IllegalArgumentException.class, () -> mqttClientExecutor.connect(connect));
     }
 
@@ -143,13 +256,10 @@ class AbstractMqttClientExecutorTest {
         when(connect.getUser()).thenReturn("Test");
         when(connect.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
 
-        final MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
         mqttClientExecutor.connect(connect);
 
         assertNotNull(mqttClientExecutor.getMqtt5ConnectMessage());
-
         final Optional<Mqtt5SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt5ConnectMessage().getSimpleAuth();
-
         assertTrue(simpleAuth.isPresent());
         assertTrue(simpleAuth.get().getUsername().isPresent());
         assertEquals("Test", simpleAuth.get().getUsername().get().toString());
@@ -163,13 +273,10 @@ class AbstractMqttClientExecutorTest {
         when(connect.getUser()).thenReturn("Test");
         when(connect.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
 
-        final MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
         mqttClientExecutor.connect(connect);
 
         assertNotNull(mqttClientExecutor.getMqtt3ConnectMessage());
-
         final Optional<Mqtt3SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt3ConnectMessage().getSimpleAuth();
-
         assertTrue(simpleAuth.isPresent());
         assertEquals("Test", simpleAuth.get().getUsername().toString());
         assertTrue(simpleAuth.get().getPassword().isPresent());

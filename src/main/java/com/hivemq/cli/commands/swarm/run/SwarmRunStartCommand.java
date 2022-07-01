@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.swarm.run;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.swarm.AbstractSwarmCommand;
 import com.hivemq.cli.commands.swarm.error.Error;
@@ -26,6 +25,7 @@ import com.hivemq.cli.openapi.swarm.*;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -74,7 +74,7 @@ public class SwarmRunStartCommand extends AbstractSwarmCommand {
     }
 
     @VisibleForTesting
-    public SwarmRunStartCommand(
+    SwarmRunStartCommand(
             final @NotNull String commanderUrl,
             final @Nullable File scenario,
             final @NotNull Boolean detached,

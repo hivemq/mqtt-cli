@@ -24,9 +24,13 @@ public class Tuple<A, B> {
     private final @NotNull A key;
     private final @Nullable B value;
 
-    public Tuple(final @NotNull A key, final @Nullable B value) {
+    private Tuple(final @NotNull A key, final @Nullable B value) {
         this.key = key;
         this.value = value;
+    }
+
+    public static <A, B> @NotNull Tuple<A, B> of(final @NotNull A key, final @Nullable B value) {
+        return new Tuple<>(key, value);
     }
 
     public @NotNull A getKey() {

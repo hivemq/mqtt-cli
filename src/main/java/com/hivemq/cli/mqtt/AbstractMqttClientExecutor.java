@@ -19,12 +19,15 @@ package com.hivemq.cli.mqtt;
 import com.hivemq.cli.commands.*;
 import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
+import com.hivemq.cli.utils.IntersectionUtil;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.datatypes.MqttSharedTopicFilter;
+import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.auth.Mqtt3SimpleAuth;
 import com.hivemq.client.mqtt.mqtt3.message.connect.Mqtt3Connect;
@@ -42,12 +45,12 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5WillPublishBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.tinylog.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -109,6 +112,18 @@ abstract class AbstractMqttClientExecutor {
         for (int i = 0; i < subscribe.getTopics().length; i++) {
             final String topic = subscribe.getTopics()[i];
 
+            // This check only works as subscribes are implemented blocking.
+            // Otherwise, we would need to check the topics before they are iterated as they are added to the client data after a successful subscribe.
+            final List<MqttTopicFilter> intersectingFilters =
+                    checkForSharedTopicDuplicate(clientKeyToClientData.get(subscribe.getKey()).getSubscribedTopics(),
+                            topic);
+
+            if (!intersectingFilters.isEmpty()) {
+                Logger.warn("WARN: New subscription to '{}' intersects with already existing subscription(s) {}",
+                        topic,
+                        intersectingFilters);
+            }
+
             final int qosI = i < subscribe.getQos().length ? i : subscribe.getQos().length - 1;
             final MqttQos qos = subscribe.getQos()[qosI];
 
@@ -121,6 +136,34 @@ abstract class AbstractMqttClientExecutor {
                     break;
             }
         }
+    }
+
+    @VisibleForTesting
+    @NotNull List<MqttTopicFilter> checkForSharedTopicDuplicate(
+            final @NotNull Set<MqttTopicFilter> subscribedFilters, final @NotNull String topic) {
+        final List<MqttTopicFilter> intersectingFilters = new ArrayList<>();
+        final MqttTopicFilter newUnidentifiedFilter = MqttTopicFilter.of(topic);
+
+        final MqttTopicFilter newFilter;
+        if (newUnidentifiedFilter.isShared()) {
+            newFilter = ((MqttSharedTopicFilter) newUnidentifiedFilter).getTopicFilter();
+        } else {
+            newFilter = newUnidentifiedFilter;
+        }
+
+        for (final MqttTopicFilter subscribedFilter : subscribedFilters) {
+            final MqttTopicFilter existingFilter;
+            if (subscribedFilter.isShared()) {
+                existingFilter = ((MqttSharedTopicFilter) subscribedFilter).getTopicFilter();
+            } else {
+                existingFilter = subscribedFilter;
+            }
+
+            if (IntersectionUtil.intersects(existingFilter, newFilter)) {
+                intersectingFilters.add(subscribedFilter);
+            }
+        }
+        return intersectingFilters;
     }
 
     public void publish(final @NotNull PublishCommand publishCommand) {
@@ -262,8 +305,7 @@ abstract class AbstractMqttClientExecutor {
 
         final ClientData clientData = new ClientData(client);
 
-        final String key = MqttUtils.buildKey(
-                client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
+        final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
                 client.getConfig().getServerHost());
 
         clientKeyToClientData.put(key, clientData);
@@ -298,8 +340,7 @@ abstract class AbstractMqttClientExecutor {
 
         final ClientData clientData = new ClientData(client);
 
-        final String key = MqttUtils.buildKey(
-                client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
+        final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
                 client.getConfig().getServerHost());
 
         clientKeyToClientData.put(key, clientData);
@@ -451,8 +492,7 @@ abstract class AbstractMqttClientExecutor {
         if (connect instanceof Subscribe) {
             return new SubscribeMqtt5PublishCallback((Subscribe) connect, client);
         } else {
-            return mqtt5Publish -> Logger.debug(
-                    "received PUBLISH: {}, MESSAGE: '{}'",
+            return mqtt5Publish -> Logger.debug("received PUBLISH: {}, MESSAGE: '{}'",
                     mqtt5Publish,
                     new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
@@ -463,8 +503,7 @@ abstract class AbstractMqttClientExecutor {
         if (connect instanceof Subscribe) {
             return new SubscribeMqtt3PublishCallback((Subscribe) connect, client);
         } else {
-            return mqtt3Publish -> Logger.debug(
-                    "received PUBLISH: {}, MESSAGE: '{}'",
+            return mqtt3Publish -> Logger.debug("received PUBLISH: {}, MESSAGE: '{}'",
                     mqtt3Publish,
                     new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
