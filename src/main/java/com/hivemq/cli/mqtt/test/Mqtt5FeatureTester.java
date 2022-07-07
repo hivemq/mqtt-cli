@@ -440,7 +440,7 @@ public class Mqtt5FeatureTester {
                 Logger.error(ex, "Publish with payload of size {} bytes failed", currentPayload.getBytes().length);
             }
             disconnectIfConnected(subscriber, publisher);
-            testResults.add(new Tuple<>(payloadSize, TestResult.PUBLISH_FAILED));
+            testResults.add(Tuple.of(payloadSize, TestResult.PUBLISH_FAILED));
             return false;
         }
 
@@ -449,12 +449,12 @@ public class Mqtt5FeatureTester {
             if (!receive.isPresent()) {
                 disconnectIfConnected(publisher, subscriber);
                 Logger.debug("Timed out while waiting for publish with {} bytes", currentPayload.getBytes().length);
-                testResults.add(new Tuple<>(payloadSize, TestResult.TIME_OUT));
+                testResults.add(Tuple.of(payloadSize, TestResult.TIME_OUT));
                 return false;
             } else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentPayload.getBytes())) {
                 disconnectIfConnected(publisher, subscriber);
                 Logger.debug("Received wrong payload for publish with {} bytes", currentPayload.getBytes().length);
-                testResults.add(new Tuple<>(payloadSize, TestResult.WRONG_PAYLOAD));
+                testResults.add(Tuple.of(payloadSize, TestResult.WRONG_PAYLOAD));
                 return false;
             }
         } catch (final InterruptedException e) {
@@ -462,14 +462,14 @@ public class Mqtt5FeatureTester {
                     e,
                     "Interrupted while waiting for subscriber to receive payload with length {} bytes",
                     currentPayload.getBytes().length);
-            testResults.add(new Tuple<>(payloadSize, TestResult.INTERRUPTED));
+            testResults.add(Tuple.of(payloadSize, TestResult.INTERRUPTED));
             disconnectIfConnected(subscriber, publisher);
             return false;
         }
 
         disconnectIfConnected(subscriber, publisher);
 
-        testResults.add(new Tuple<>(payloadSize, TestResult.OK));
+        testResults.add(Tuple.of(payloadSize, TestResult.OK));
         return true;
     }
 
@@ -525,7 +525,7 @@ public class Mqtt5FeatureTester {
             subscriber.toBlocking().subscribe(subscribe);
         } catch (final Exception ex) {
             Logger.error(ex, "Subscribe to topic of length {} bytes failed", currentTopicName.getBytes().length);
-            testResults.add(new Tuple<>(topicSize, TestResult.SUBSCRIBE_FAILED));
+            testResults.add(Tuple.of(topicSize, TestResult.SUBSCRIBE_FAILED));
             disconnectIfConnected(subscriber);
             return false;
         }
@@ -537,7 +537,7 @@ public class Mqtt5FeatureTester {
             publisher.toBlocking().publish(publish);
         } catch (final Exception ex) {
             Logger.error(ex, "Publish to topic of length {} failed", currentTopicName.getBytes().length);
-            testResults.add(new Tuple<>(topicSize, TestResult.PUBLISH_FAILED));
+            testResults.add(Tuple.of(topicSize, TestResult.PUBLISH_FAILED));
             disconnectIfConnected(publisher, subscriber);
             return false;
         }
@@ -547,12 +547,12 @@ public class Mqtt5FeatureTester {
             final Optional<Mqtt5Publish> receive = publishes.receive(timeOut, TimeUnit.SECONDS);
             if (!receive.isPresent()) {
                 Logger.debug("Timed out while waiting to receive a publish from topic {}", currentTopicName);
-                testResults.add(new Tuple<>(topicSize, TestResult.TIME_OUT));
+                testResults.add(Tuple.of(topicSize, TestResult.TIME_OUT));
                 disconnectIfConnected(subscriber, publisher);
                 return false;
             } else if (!Arrays.equals(receive.get().getPayloadAsBytes(), currentTopicName.getBytes())) {
                 Logger.debug("Received wrong payload for publish to topic {}", currentTopicName);
-                testResults.add(new Tuple<>(topicSize, TestResult.WRONG_PAYLOAD));
+                testResults.add(Tuple.of(topicSize, TestResult.WRONG_PAYLOAD));
                 disconnectIfConnected(subscriber, publisher);
                 return false;
             }
@@ -561,7 +561,7 @@ public class Mqtt5FeatureTester {
                     e,
                     "Interrupted while waiting to receive publish to topic with {} bytes",
                     currentTopicName.getBytes().length);
-            testResults.add(new Tuple<>(topicSize, TestResult.INTERRUPTED));
+            testResults.add(Tuple.of(topicSize, TestResult.INTERRUPTED));
             disconnectIfConnected(subscriber, publisher);
             return false;
         }
@@ -569,7 +569,7 @@ public class Mqtt5FeatureTester {
         disconnectIfConnected(subscriber, publisher);
 
         // Everything successful
-        testResults.add(new Tuple<>(topicSize, TestResult.OK));
+        testResults.add(Tuple.of(topicSize, TestResult.OK));
         return true;
     }
 
@@ -613,13 +613,13 @@ public class Mqtt5FeatureTester {
 
         try {
             final Mqtt5ConnAck connAck = currClient.toBlocking().connect();
-            connectResults.add(new Tuple<>(clientIdLength, connAck.getReasonCode().toString()));
+            connectResults.add(Tuple.of(clientIdLength, connAck.getReasonCode().toString()));
             if (connAck.getReasonCode() != Mqtt5ConnAckReasonCode.SUCCESS) {
                 Logger.debug("Received non-successful reason code {}", connAck.getReasonCode());
                 return false;
             }
         } catch (final Mqtt5ConnAckException connAckEx) {
-            connectResults.add(new Tuple<>(clientIdLength, connAckEx.getMqttMessage().getReasonCode().toString()));
+            connectResults.add(Tuple.of(clientIdLength, connAckEx.getMqttMessage().getReasonCode().toString()));
             disconnectIfConnected(currClient);
             return false;
         } catch (final Exception ex) {
@@ -627,7 +627,7 @@ public class Mqtt5FeatureTester {
                     ex,
                     "Connect with client id length {} bytes",
                     currClient.getConfig().getClientIdentifier().map(id -> id.toString().getBytes().length).orElse(0));
-            connectResults.add(new Tuple<>(clientIdLength, "UNDEFINED_FAILURE"));
+            connectResults.add(Tuple.of(clientIdLength, "UNDEFINED_FAILURE"));
             disconnectIfConnected(currClient);
             return false;
         }
@@ -680,10 +680,10 @@ public class Mqtt5FeatureTester {
             client.toBlocking().connect();
         } catch (final Mqtt5ConnAckException ex) {
             Logger.debug(ex, "Could not connect client identifier with ascii char '{}'", asciiChar);
-            connectResults.add(new Tuple<>(asciiChar, ex.getMqttMessage().getReasonCode().toString()));
+            connectResults.add(Tuple.of(asciiChar, ex.getMqttMessage().getReasonCode().toString()));
         } catch (final Exception ex) {
             Logger.error("Connect with Ascii char '{}' failed", asciiChar);
-            connectResults.add(new Tuple<>(asciiChar, null));
+            connectResults.add(Tuple.of(asciiChar, null));
         }
 
         disconnectIfConnected(client);
