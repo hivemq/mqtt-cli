@@ -17,38 +17,26 @@
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
-import com.hivemq.cli.commands.Unsubscribe;
-import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
+import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.client.mqtt.MqttVersion;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "unsub", aliases = "unsubscribe",
         description = "Unsubscribe this MQTT client from a list of topics")
-public class ContextUnsubscribeCommand extends ShellContextCommand implements Runnable, Unsubscribe {
+public class ContextUnsubscribeCommand extends ShellContextCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     private boolean usageHelpRequested;
 
-    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via required
-    @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
-    private @NotNull String @NotNull [] topics;
+    @CommandLine.Mixin
+    private final @NotNull UnsubscribeOptions unsubscribeOptions = new UnsubscribeOptions();
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property for the unsubscribe message")
-    private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
 
     @SuppressWarnings("unused") //needed for pico cli - reflection code generation
     public ContextUnsubscribeCommand() {
@@ -62,41 +50,24 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ru
     }
 
     @Override
-    public void run() {
+    public Integer call() {
+
         Logger.trace("Command {} ", this);
 
-        logUnusedUnsubscribeOptions();
+        if (contextClient == null) {
+            Logger.error("The client to unsubscribe with does not exist");
+            return 1;
+        }
+
+        unsubscribeOptions.logUnusedUnsubscribeOptions(contextClient.getConfig().getMqttVersion());
 
         try {
-            mqttClientExecutor.unsubscribe(Objects.requireNonNull(contextClient), this);
+            mqttClientExecutor.unsubscribe(contextClient, unsubscribeOptions);
         } catch (final Exception ex) {
-            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, "Unable to unsubscribe: {}", Throwables.getRootCause(ex).getMessage());
+            return 1;
         }
-    }
 
-    private void logUnusedUnsubscribeOptions() {
-        if (Objects.requireNonNull(contextClient).getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
-            if (userProperties != null) {
-                Logger.warn(
-                        "Unsubscribe user properties were set but are unused in MQTT Version {}",
-                        MqttVersion.MQTT_3_1_1);
-            }
-        }
-    }
-
-    @Override
-    public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "key=" + getKey() + ", topics=" + Arrays.toString(topics) +
-                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") + '}';
-    }
-
-    @Override
-    public @NotNull String @NotNull [] getTopics() {
-        return topics;
-    }
-
-    @Override
-    public @Nullable Mqtt5UserProperties getUserProperties() {
-        return MqttUtils.convertToMqtt5UserProperties(userProperties);
+        return 0;
     }
 }

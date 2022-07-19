@@ -42,11 +42,12 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "test",
         description = "Tests the specified broker on different MQTT feature support and prints the results",
         sortOptions = false)
-public class TestBrokerCommand implements Runnable {
+public class TestBrokerCommand implements Callable<Integer> {
 
     private static final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
 
@@ -114,7 +115,7 @@ public class TestBrokerCommand implements Runnable {
     }
 
     @Override
-    public void run() {
+    public Integer call() {
         LoggerUtils.turnOffConsoleLogging(logToLogfile);
 
         Logger.trace("Command {}", this);
@@ -131,7 +132,7 @@ public class TestBrokerCommand implements Runnable {
         } catch (final Exception e) {
             Logger.error(e, "Could not build SSL configuration");
             System.err.println("Could not build SSL config - " + Throwables.getRootCause(e).getMessage());
-            return;
+            return 1;
         }
 
         if (version != null) {
@@ -144,6 +145,8 @@ public class TestBrokerCommand implements Runnable {
             testMqtt3Features();
             testMqtt5Features();
         }
+
+        return 0;
     }
 
     public void testMqtt5Features() {

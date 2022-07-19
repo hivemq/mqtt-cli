@@ -16,14 +16,14 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.CliCommand;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "exit", description = "Exit the shell")
-public class ShellExitCommand implements Runnable, CliCommand {
+public class ShellExitCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
@@ -34,8 +34,9 @@ public class ShellExitCommand implements Runnable, CliCommand {
     }
 
     @Override
-    public void run() {
+    public Integer call() {
         ShellCommand.exitShell();
+        return 0;
     }
 
     @Override
@@ -43,14 +44,5 @@ public class ShellExitCommand implements Runnable, CliCommand {
         return getClass().getSimpleName();
     }
 
-    @Override
-    public boolean isVerbose() {
-        return ShellCommand.isVerbose();
-    }
-
-    @Override
-    public boolean isDebug() {
-        return ShellCommand.isDebug();
-    }
 }
 

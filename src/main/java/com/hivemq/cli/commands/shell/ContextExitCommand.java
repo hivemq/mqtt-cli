@@ -21,9 +21,10 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "exit", description = "Exit the current context")
-public class ContextExitCommand extends ShellContextCommand implements Runnable {
+public class ContextExitCommand extends ShellContextCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
@@ -41,8 +42,9 @@ public class ContextExitCommand extends ShellContextCommand implements Runnable 
     }
 
     @Override
-    public void run() {
+    public Integer call() {
         removeContext();
+        return 0;
     }
 
     @Override

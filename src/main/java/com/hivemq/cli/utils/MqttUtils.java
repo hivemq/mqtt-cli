@@ -44,7 +44,7 @@ public class MqttUtils {
     // The returned qos array will be filled with the default value represented by the first element in the given qos array
     // if the sizes do not match up. Else this method throws an IllegalArgument exception
     public static @NotNull MqttQos @NotNull [] arrangeQosToMatchTopics(
-            final @NotNull String @NotNull [] topics, final @NotNull MqttQos @NotNull [] qos) {
+            final @NotNull String @NotNull [] topics, final @NotNull MqttQos @NotNull [] qos) throws IllegalArgumentException {
         if (topics.length != qos.length && qos.length == 1) {
             final MqttQos defaultQos = qos[0];
             final MqttQos[] newQos = new MqttQos[topics.length];

@@ -17,48 +17,26 @@
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
-import com.hivemq.cli.commands.Disconnect;
-import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
-import com.hivemq.cli.converters.UnsignedIntConverter;
+import com.hivemq.cli.commands.options.DisconnectOptions;
+import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.client.mqtt.MqttVersion;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "dis", aliases = "disconnect", description = "Disconnects this MQTT client")
-public class ContextDisconnectCommand extends ShellContextCommand implements Runnable, Disconnect {
+public class ContextDisconnectCommand extends ShellContextCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
     private boolean usageHelpRequested;
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false",
-            description = "Disconnect all connected clients")
-    private boolean disconnectAll;
+    @CommandLine.Mixin
+    private final @NotNull DisconnectOptions disconnectOptions = new DisconnectOptions();
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
-            description = "The session expiry of the disconnect (default: 0)")
-    private @Nullable Long sessionExpiryInterval;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-r", "--reason"}, description = "The reason of the disconnect")
-    private @Nullable String reasonString;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property of the disconnect message")
-    private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
 
     @SuppressWarnings("unused") //needed for pico cli - reflection code generation
     public ContextDisconnectCommand() {
@@ -72,58 +50,34 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Run
     }
 
     @Override
-    public void run() {
+    public Integer call() {
+
         Logger.trace("Command {} ", this);
 
-        logUnusedDisconnectOptions();
+        if (contextClient != null) {
+            disconnectOptions.logUnusedDisconnectOptions(contextClient.getConfig().getMqttVersion());
+        }
 
         try {
-            if (disconnectAll) {
-                mqttClientExecutor.disconnectAllClients(this);
-            } else {
-                mqttClientExecutor.disconnect(this);
+            if (disconnectOptions.isDisconnectAll()) {
+                mqttClientExecutor.disconnectAllClients(disconnectOptions);
+            } else if (disconnectOptions.getClientIdentifier() != null && disconnectOptions.getHost() != null) {
+                final ClientKey clientKey = ClientKey.of(disconnectOptions.getClientIdentifier(), disconnectOptions.getHost());
+                mqttClientExecutor.disconnect(clientKey, disconnectOptions);
+            } else if (contextClient != null) {
+                mqttClientExecutor.disconnect(contextClient, disconnectOptions);
             }
         } catch (final Exception ex) {
-            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, "Unable to disconnect: {}" ,Throwables.getRootCause(ex).getMessage());
+            return 1;
         }
+
+        return 0;
     }
 
     @Override
     public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "key=" + getKey() + ", all=" + disconnectAll +
-                (sessionExpiryInterval != null ? (", sessionExpiryInterval=" + sessionExpiryInterval) : "") +
-                (reasonString != null ? (", reasonString=" + reasonString) : "") +
-                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") + "}";
+        return getClass().getSimpleName()  + disconnectOptions;
     }
 
-    @Override
-    public @Nullable Long getSessionExpiryInterval() {
-        return sessionExpiryInterval;
-    }
-
-    @Override
-    public @Nullable String getReasonString() {
-        return reasonString;
-    }
-
-    @Override
-    public @Nullable Mqtt5UserProperties getUserProperties() {
-        return MqttUtils.convertToMqtt5UserProperties(userProperties);
-    }
-
-    private void logUnusedDisconnectOptions() {
-        if (Objects.requireNonNull(contextClient).getConfig().getMqttVersion() == MqttVersion.MQTT_3_1_1) {
-            if (sessionExpiryInterval != null) {
-                Logger.warn("Session expiry interval set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
-            }
-
-            if (reasonString != null) {
-                Logger.warn("Reason string was set but is unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
-            }
-
-            if (userProperties != null) {
-                Logger.warn("User properties were set but are unused in Mqtt version {}", MqttVersion.MQTT_3_1_1);
-            }
-        }
-    }
 }

@@ -31,30 +31,26 @@ import java.util.Objects;
 
 public class AuthenticationOptions {
 
-    @CommandLine.Option(names = {"-u", "--user"}, description = "The username for authentication", order = 2)
+    @CommandLine.Option(names = {"-u", "--user"}, description = "The username for authentication")
     private @Nullable String user;
 
     @CommandLine.Option(names = {"-pw", "--password"}, arity = "0..1", interactive = true,
-            converter = ByteBufferConverter.class, description = "The password for authentication", order = 2)
+            converter = ByteBufferConverter.class, description = "The password for authentication")
     private @Nullable ByteBuffer password;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-pw:env"}, arity = "0..1", converter = EnvVarToByteBufferConverter.class,
             fallbackValue = "MQTT_CLI_PW",
-            description = "The password for authentication read in from an environment variable", order = 2)
+            description = "The password for authentication read in from an environment variable")
     private void setPasswordFromEnv(final @NotNull ByteBuffer passwordEnvironmentVariable) {
         password = passwordEnvironmentVariable;
     }
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-pw:file"}, converter = PasswordFileToByteBufferConverter.class,
-            description = "The password for authentication read in from a file", order = 2)
+            description = "The password for authentication read in from a file")
     private void setPasswordFromFile(final @NotNull ByteBuffer passwordFromFile) {
         password = passwordFromFile;
-    }
-
-    public AuthenticationOptions() {
-        setDefaultOptions();
     }
 
     public @Nullable String getUser() {return user;}
@@ -66,7 +62,7 @@ public class AuthenticationOptions {
         return "AuthenticationOptions{" + "user='" + user + '\'' + ", password=" + password + '}';
     }
 
-    private void setDefaultOptions() {
+    public void setDefaultOptions() {
         final DefaultCLIProperties properties = Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
         if (user == null) {
             user = properties.getUsername();

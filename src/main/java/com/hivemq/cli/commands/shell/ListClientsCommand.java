@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -28,11 +27,12 @@ import javax.inject.Inject;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "ls", aliases = "list",
         description = "List all connected clients with their respective identifiers")
-public class ListClientsCommand implements Runnable, CliCommand {
+public class ListClientsCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
@@ -66,7 +66,8 @@ public class ListClientsCommand implements Runnable, CliCommand {
     }
 
     @Override
-    public void run() {
+    public Integer call() {
+
         Logger.trace("Command {}", this);
 
         final List<ClientData> sortedClientData = getSortedClientData();
@@ -77,7 +78,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
             Objects.requireNonNull(writer).println("total " + sortedClientData.size());
 
             if (sortedClientData.size() == 0) {
-                return;
+                return 0;
             }
 
             final Set<MqttClient> clients =
@@ -148,22 +149,14 @@ public class ListClientsCommand implements Runnable, CliCommand {
                 }
             }
         }
+
+        return 0;
     }
 
     @Override
     public @NotNull String toString() {
         return getClass().getSimpleName() + "{" + "sortByTime=" + sortByTime + ", doNotSort=" + doNotSort +
                 ", reverse=" + reverse + ", listSubscriptions" + listSubscriptions + ", longOutput=" + longOutput + '}';
-    }
-
-    @Override
-    public boolean isVerbose() {
-        return ShellCommand.isVerbose();
-    }
-
-    @Override
-    public boolean isDebug() {
-        return ShellCommand.isDebug();
     }
 
     public @NotNull List<ClientData> getSortedClientData() {

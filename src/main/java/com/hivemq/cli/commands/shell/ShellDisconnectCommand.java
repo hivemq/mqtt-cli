@@ -18,57 +18,25 @@ package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
-import com.hivemq.cli.commands.Disconnect;
-import com.hivemq.cli.commands.MqttAction;
-import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
-import com.hivemq.cli.converters.UnsignedIntConverter;
+import com.hivemq.cli.commands.options.DisconnectOptions;
+import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.cli.utils.MqttUtils;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "dis", aliases = "disconnect", description = "Disconnect an MQTT client")
-public class ShellDisconnectCommand implements MqttAction, Disconnect {
+public class ShellDisconnectCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false",
-            description = "Disconnect all connected clients")
-    private boolean disconnectAll;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-i", "--identifier"},
-            description = "The client identifier UTF-8 String (default randomly generated string)")
-    private @Nullable String identifier;
-
-    @CommandLine.Option(names = {"-h", "--host"},
-            description = "The hostname of the message broker (default 'localhost')")
-    private @Nullable String host;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
-            description = "The session expiry of the disconnect (default: 0)")
-    private @Nullable Long sessionExpiryInterval;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-r", "--reason"}, description = "The reason of the disconnect")
-    private @Nullable String reasonString;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property of the disconnect message")
-    private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
+    @CommandLine.Mixin
+    private final @NotNull DisconnectOptions disconnectOptions = new DisconnectOptions();
 
     private final @NotNull MqttClientExecutor mqttClientExecutor;
     private final @NotNull DefaultCLIProperties defaultCLIProperties;
@@ -88,73 +56,34 @@ public class ShellDisconnectCommand implements MqttAction, Disconnect {
     }
 
     @Override
-    public void run() {
-        if (host == null) {
-            host = defaultCLIProperties.getHost();
+    public Integer call() {
+        if (disconnectOptions.getHost() == null) {
+            disconnectOptions.setHost(defaultCLIProperties.getHost());
         }
         Logger.trace("Command {} ", this);
 
         try {
-            if (disconnectAll) {
-                mqttClientExecutor.disconnectAllClients(this);
+            if (disconnectOptions.isDisconnectAll()) {
+                mqttClientExecutor.disconnectAllClients(disconnectOptions);
             } else {
-                if (identifier == null) {
+                if (disconnectOptions.getClientIdentifier() == null) {
                     Logger.error("Missing required option '--identifier=<identifier>'");
-                    return;
+                    return 1;
                 }
-                mqttClientExecutor.disconnect(this);
+                final ClientKey clientKey = ClientKey.of(disconnectOptions.getClientIdentifier(), disconnectOptions.getHost());
+                mqttClientExecutor.disconnect(clientKey, disconnectOptions);
             }
         } catch (final Exception ex) {
-            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
+            Logger.error(ex, "Unable to disconnect: {}", Throwables.getRootCause(ex).getMessage());
+            return 1;
         }
+
+        return 0;
     }
 
     @Override
-    public @NotNull String getIdentifier() {
-        return Objects.requireNonNull(identifier);
+    public String toString() {
+        return "ShellDisconnectCommand{" + "disconnectOptions=" + disconnectOptions + '}';
     }
 
-    @Override
-    public @NotNull String getKey() {
-        return "client {" + "identifier='" + getIdentifier() + '\'' + ", host='" + getHost() + '\'' + '}';
-    }
-
-    @Override
-    public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "disconnectAll=" + disconnectAll +
-                (identifier != null ? (", identifier=" + identifier) : "") + (host != null ? (", host=" + host) : "") +
-                (sessionExpiryInterval != null ? (", sessionExpiryInterval=" + host) : "") +
-                (reasonString != null ? (", reasonString=" + reasonString) : "") +
-                (userProperties != null ? (", userProperties=" + Arrays.toString(userProperties)) : "") + "}";
-
-    }
-
-    @Override
-    public @Nullable Long getSessionExpiryInterval() {
-        return sessionExpiryInterval;
-    }
-
-    @Override
-    public @Nullable String getReasonString() {
-        return reasonString;
-    }
-
-    public @NotNull String getHost() {
-        return Objects.requireNonNull(host);
-    }
-
-    @Override
-    public @Nullable Mqtt5UserProperties getUserProperties() {
-        return MqttUtils.convertToMqtt5UserProperties(userProperties);
-    }
-
-    @Override
-    public boolean isVerbose() {
-        return ShellCommand.isVerbose();
-    }
-
-    @Override
-    public boolean isDebug() {
-        return ShellCommand.isDebug();
-    }
 }

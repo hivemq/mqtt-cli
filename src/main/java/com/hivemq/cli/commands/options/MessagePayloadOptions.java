@@ -27,14 +27,14 @@ public class MessagePayloadOptions {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-m", "--message"}, converter = ByteBufferConverter.class,
-            description = "The message to publish", order = 1)
+            description = "The message to publish")
     private void setMessageFromCommandline(final @NotNull ByteBuffer messageFromFile) {
         messageBuffer = messageFromFile;
     }
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-m:file", "--message-file"}, converter = FileToByteBufferConverter.class,
-            description = "The message read in from a file", order = 1)
+            description = "The message read in from a file")
     private void setMessageFromFile(final @NotNull ByteBuffer messageFromFile) {
         messageBuffer = messageFromFile;
     }

@@ -17,7 +17,7 @@
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
-import com.hivemq.cli.commands.Context;
+import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
@@ -26,10 +26,10 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.Objects;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "switch", description = "Switch the current context")
-public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
+public class ContextSwitchCommand extends ShellContextCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
@@ -59,30 +59,34 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     }
 
     @Override
-    public void run() {
+    public Integer call() {
+
+        Logger.trace("Command {} ", this);
+
         if (contextName == null && identifier == null) {
             ShellCommand.usage(this);
-            return;
+            return 0;
         }
 
         if (contextName != null) {
             try {
                 extractKeyFromContextName(contextName);
             } catch (final IllegalArgumentException ex) {
-                Logger.error(ex, Throwables.getRootCause(ex).getMessage());
-                return;
+                Logger.error(ex, "Unable to switch context: {}", Throwables.getRootCause(ex).getMessage());
+                return 1;
             }
         }
 
-        Logger.trace("Command {} ", this);
-
-        final MqttClient client = mqttClientExecutor.getMqttClient(this);
+        final MqttClient client = mqttClientExecutor.getMqttClient(ClientKey.of(identifier, host));
 
         if (client != null) {
             updateContext(client);
         } else {
             Logger.error("Context {}@{} not found", identifier, host);
+            return 1;
         }
+
+        return 0;
     }
 
     private void extractKeyFromContextName(final String contextName) {
@@ -99,17 +103,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     }
 
     @Override
-    public @NotNull String getKey() {
-        return "client {" + "identifier='" + getIdentifier() + '\'' + ", host='" + host + '\'' + '}';
-    }
-
-    @Override
     public @NotNull String toString() {
         return getClass().getSimpleName() + "{" + "identifier=" + identifier + ", host=" + host + '}';
     }
 
-    @Override
-    public @NotNull String getIdentifier() {
-        return Objects.requireNonNull(identifier);
-    }
 }

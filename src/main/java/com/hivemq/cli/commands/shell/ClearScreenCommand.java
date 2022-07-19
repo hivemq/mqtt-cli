@@ -16,17 +16,17 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.CliCommand;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.concurrent.Callable;
 
 /**
  * Command that clears the screen.
  */
 @CommandLine.Command(name = "cls", aliases = "clear", description = "Clear the screen")
-public class ClearScreenCommand implements CliCommand, Runnable {
+public class ClearScreenCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
@@ -36,22 +36,13 @@ public class ClearScreenCommand implements CliCommand, Runnable {
     ClearScreenCommand() {}
 
     @Override
-    public void run() {
+    public Integer call() {
         ShellCommand.clearScreen();
+        return 0;
     }
 
     @Override
     public @NotNull String toString() {
         return this.getClass().getSimpleName();
-    }
-
-    @Override
-    public boolean isVerbose() {
-        return ShellCommand.isVerbose();
-    }
-
-    @Override
-    public boolean isDebug() {
-        return ShellCommand.isDebug();
     }
 }

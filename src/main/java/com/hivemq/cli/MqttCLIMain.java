@@ -49,7 +49,7 @@ public class MqttCLIMain {
             defaultCLIProperties.init();
         } catch (final Exception e) {
             System.err.println(e.getMessage());
-            System.exit(-1);
+            System.exit(1);
         }
 
         if (args.length == 0) {
@@ -93,7 +93,7 @@ public class MqttCLIMain {
     public static class CLIVersionProvider implements CommandLine.IVersionProvider {
 
         @Override
-        public @NotNull String @NotNull [] getVersion() throws Exception {
+        public @NotNull String @NotNull [] getVersion() {
             String version = getClass().getPackage().getImplementationVersion();
             if (version == null) {
                 version = "DEVELOPMENT";
