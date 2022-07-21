@@ -2,6 +2,7 @@ package com.hivemq.cli.commands.options;
 
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
 import com.hivemq.client.mqtt.MqttVersion;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,14 +27,18 @@ public class UnsubscribeOptions {
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
             description = "A user property for the unsubscribe message")
-    private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
+    private @NotNull Mqtt5UserProperty @Nullable [] userProperties;
 
-    public @Nullable String[] getTopics() {
+    public @NotNull String[] getTopics() {
         return topics;
     }
 
-    public @Nullable Mqtt5UserProperty[] getUserProperties() {
-        return userProperties;
+    public @NotNull Mqtt5UserProperties getUserProperties() {
+        if (userProperties != null && userProperties.length > 0) {
+            return Mqtt5UserProperties.of(userProperties);
+        } else {
+            return Mqtt5UserProperties.of();
+        }
     }
 
     public static @NotNull UnsubscribeOptions of(final @NotNull SubscribeOptions subscribeOptions) {
