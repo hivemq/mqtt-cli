@@ -39,6 +39,11 @@ public class MessagePayloadOptions {
         messageBuffer = messageFromFile;
     }
 
+    @Override
+    public String toString() {
+        return "MessagePayloadOptions{" + "messageBuffer=" + messageBuffer + '}';
+    }
+
     @SuppressWarnings("NotNullFieldNotInitialized")
     private @NotNull ByteBuffer messageBuffer;
 
