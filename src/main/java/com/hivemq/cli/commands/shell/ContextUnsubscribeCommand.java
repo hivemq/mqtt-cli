@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.shell;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -64,7 +65,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ca
         try {
             mqttClientExecutor.unsubscribe(contextClient, unsubscribeOptions);
         } catch (final Exception ex) {
-            Logger.error(ex, "Unable to unsubscribe: {}", Throwables.getRootCause(ex).getMessage());
+            LoggerUtils.logShellError("Unable to unsubscribe", ex);
             return 1;
         }
 

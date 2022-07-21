@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.cli;
 
-import com.google.common.base.Throwables;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.options.ConnectOptions;
 import com.hivemq.cli.commands.options.DebugOptions;
@@ -93,27 +92,30 @@ public class SubscribeCommand implements Callable<Integer> {
         connectOptions.logUnusedOptions();
         subscribeOptions.setDefaultOptions();
         subscribeOptions.logUnusedOptions(connectOptions.getVersion());
+        subscribeOptions.arrangeQosToMatchTopics();
 
         if (subscribeOptions.isOutputFileInvalid(subscribeOptions.getOutputFile())) {
             return 1;
         }
 
         try {
-            subscribeOptions.arrangeQosToMatchTopics();
             subscribeClient = mqttClientExecutor.connect(connectOptions, subscribeOptions);
-            mqttClientExecutor.subscribe(subscribeClient, subscribeOptions);
-        } catch (final ConnectionFailedException cex) {
-            Logger.error(cex, "Unable to connect: {}",cex.getCause().getMessage());
+        } catch (final Exception exception) {
+            LoggerUtils.logCommandError("Unable to connect", exception, debugOptions);
             return 1;
-        } catch (final Exception ex) {
-            Logger.error(ex, "Unable to subscribe: {}", Throwables.getRootCause(ex).getMessage());
+        }
+
+        try {
+            mqttClientExecutor.subscribe(subscribeClient, subscribeOptions);
+        } catch (final ConnectionFailedException exception) {
+            LoggerUtils.logCommandError("Unable to subscribe", exception, debugOptions);
             return 1;
         }
 
         try {
             stay();
-        } catch (final InterruptedException ex) {
-            Logger.error(ex, Throwables.getRootCause(ex).getMessage());
+        } catch (final InterruptedException exception) {
+            LoggerUtils.logCommandError("Unable to stay", exception, debugOptions);
             return 1;
         }
 

@@ -21,6 +21,7 @@ import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.options.DisconnectOptions;
 import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -74,7 +75,7 @@ public class ShellDisconnectCommand implements Callable<Integer> {
                 mqttClientExecutor.disconnect(clientKey, disconnectOptions);
             }
         } catch (final Exception ex) {
-            Logger.error(ex, "Unable to disconnect: {}", Throwables.getRootCause(ex).getMessage());
+            LoggerUtils.logShellError("Unable to disconnect", ex);
             return 1;
         }
 

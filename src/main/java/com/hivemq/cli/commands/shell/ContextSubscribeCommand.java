@@ -20,6 +20,7 @@ import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.options.SubscribeOptions;
 import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -72,6 +73,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
 
         subscribeOptions.setDefaultOptions();
         subscribeOptions.logUnusedOptions(contextClient.getConfig().getMqttVersion());
+        subscribeOptions.arrangeQosToMatchTopics();
 
         if (!stay) {
             subscribeOptions.setPrintToSTDOUT(false);
@@ -82,17 +84,17 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
         }
 
         try {
-            subscribeOptions.arrangeQosToMatchTopics();
             mqttClientExecutor.subscribe(Objects.requireNonNull(contextClient), subscribeOptions);
         } catch (final Exception ex) {
-            Logger.error(ex, "Unable to subscribe: {}", Throwables.getRootCause(ex).getMessage());
+            LoggerUtils.logShellError("Unable to subscribe", ex);
+            return 1;
         }
 
         if (stay) {
             try {
                 stay();
             } catch (final InterruptedException ex) {
-                Logger.error(ex, "Interrupted while staying after subscribe: {}",Throwables.getRootCause(ex).getMessage());
+                LoggerUtils.logShellError("Unable to stay", ex);
                 return 1;
             }
         }

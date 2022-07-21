@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.shell;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.options.PublishOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -54,12 +55,12 @@ public class ContextPublishCommand extends ShellContextCommand implements Callab
 
         if (contextClient != null) {
             publishOptions.logUnusedOptions(contextClient.getConfig().getMqttVersion());
+            publishOptions.arrangeQosToMatchTopics();
 
             try {
-                publishOptions.arrangeQosToMatchTopics();
                 mqttClientExecutor.publish(contextClient, publishOptions);
             } catch (final Exception ex) {
-                Logger.error(ex, "Unable to publish: {}", Throwables.getRootCause(ex).getMessage());
+                LoggerUtils.logShellError("Unable to publish", ex);
                 return 1;
             }
         }

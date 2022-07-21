@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.shell;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -72,7 +73,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
             try {
                 extractKeyFromContextName(contextName);
             } catch (final IllegalArgumentException ex) {
-                Logger.error(ex, "Unable to switch context: {}", Throwables.getRootCause(ex).getMessage());
+                LoggerUtils.logShellError("Unable to switch context", ex);
                 return 1;
             }
         }

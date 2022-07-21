@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.shell;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.options.ConnectOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import org.jetbrains.annotations.NotNull;
@@ -58,15 +59,13 @@ public class ShellConnectCommand implements Callable<Integer> {
         Logger.trace("Command {} ", this);
 
         connectOptions.setDefaultOptions();
+        connectOptions.logUnusedOptions();
 
         final MqttClient client;
         try {
             client = mqttClientExecutor.connect(connectOptions);
-        } catch (final ConnectionFailedException cex) {
-            Logger.error(cex, "Unable to connect: {}", cex.getCause().getMessage());
-            return 1;
-        } catch (final Exception ex) {
-            Logger.error(ex, "Unable to connect: {}", Throwables.getRootCause(ex).getMessage());
+        } catch (final Exception exception) {
+            LoggerUtils.logShellError("Unable to connect", exception);
             return 1;
         }
 

@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.cli;
 
-import com.google.common.base.Throwables;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.options.ConnectOptions;
 import com.hivemq.cli.commands.options.DebugOptions;
@@ -24,7 +23,6 @@ import com.hivemq.cli.commands.options.PublishOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -82,16 +80,20 @@ public class PublishCommand implements Callable<Integer> {
         connectOptions.setDefaultOptions();
         connectOptions.logUnusedOptions();
         publishOptions.logUnusedOptions(connectOptions.getVersion());
+        publishOptions.arrangeQosToMatchTopics();
+
+        final MqttClient client;
+        try {
+            client = mqttClientExecutor.connect(connectOptions, null);
+        } catch (final Exception exception) {
+            LoggerUtils.logCommandError("Unable to connect", exception, debugOptions);
+            return 1;
+        }
 
         try {
-            publishOptions.arrangeQosToMatchTopics();
-            final MqttClient client = mqttClientExecutor.connect(connectOptions, null);
             mqttClientExecutor.publish(client, publishOptions);
-        } catch (final ConnectionFailedException cex) {
-            Logger.error(cex, "Unable to connect: {}", cex.getCause().getMessage());
-            return 1;
-        } catch (final Exception ex) {
-            Logger.error(ex, "Unable to publish: {}", Throwables.getRootCause(ex).getMessage());
+        } catch (final Exception exception) {
+            LoggerUtils.logCommandError("Unable to publish", exception, debugOptions);
             return 1;
         }
 

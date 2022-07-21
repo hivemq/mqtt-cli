@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;

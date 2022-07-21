@@ -20,6 +20,7 @@ import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.options.DisconnectOptions;
 import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -68,7 +69,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
                 mqttClientExecutor.disconnect(contextClient, disconnectOptions);
             }
         } catch (final Exception ex) {
-            Logger.error(ex, "Unable to disconnect: {}" ,Throwables.getRootCause(ex).getMessage());
+            LoggerUtils.logShellError("Unable to disconnect", ex);
             return 1;
         }
 
