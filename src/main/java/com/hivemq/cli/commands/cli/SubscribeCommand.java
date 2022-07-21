@@ -55,6 +55,7 @@ public class SubscribeCommand implements Callable<Integer> {
             description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
 
+
     @CommandLine.Mixin
     private final @NotNull ConnectOptions connectOptions = new ConnectOptions();
 

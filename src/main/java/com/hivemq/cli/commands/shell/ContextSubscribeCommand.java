@@ -73,8 +73,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
         subscribeOptions.setDefaultOptions();
         subscribeOptions.logUnusedOptions(contextClient.getConfig().getMqttVersion());
 
-        if (stay) {
-            subscribeOptions.setPrintToSTDOUT(true);
+        if (!stay) {
+            subscribeOptions.setPrintToSTDOUT(false);
         }
 
         if (subscribeOptions.isOutputFileInvalid(subscribeOptions.getOutputFile())) {

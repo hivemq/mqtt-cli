@@ -18,7 +18,6 @@ package com.hivemq.cli.commands.shell;
 
 import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.options.ConnectOptions;
-import com.hivemq.cli.commands.options.DebugOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
