@@ -83,7 +83,7 @@ public class ShellDisconnectCommand implements Callable<Integer> {
 
     @Override
     public String toString() {
-        return "ShellDisconnectCommand{" + "disconnectOptions=" + disconnectOptions + '}';
+        return "ShellDisconnectCommand{" + "usageHelpRequested=" + usageHelpRequested + ", disconnectOptions=" +
+                disconnectOptions + '}';
     }
-
 }

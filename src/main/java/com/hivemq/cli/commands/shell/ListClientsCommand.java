@@ -153,12 +153,6 @@ public class ListClientsCommand implements Callable<Integer> {
         return 0;
     }
 
-    @Override
-    public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "sortByTime=" + sortByTime + ", doNotSort=" + doNotSort +
-                ", reverse=" + reverse + ", listSubscriptions" + listSubscriptions + ", longOutput=" + longOutput + '}';
-    }
-
     public @NotNull List<ClientData> getSortedClientData() {
         final List<ClientData> sortedClientData = new ArrayList<>(MqttClientExecutor.getClientDataMap().values());
 
@@ -182,5 +176,12 @@ public class ListClientsCommand implements Callable<Integer> {
 
         sortedClientData.sort(comparator);
         return sortedClientData;
+    }
+
+    @Override
+    public String toString() {
+        return "ListClientsCommand{" + "usageHelpRequested=" + usageHelpRequested + ", sortByTime=" + sortByTime +
+                ", doNotSort=" + doNotSort + ", reverse=" + reverse + ", longOutput=" + longOutput +
+                ", listSubscriptions=" + listSubscriptions + '}';
     }
 }

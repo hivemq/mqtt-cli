@@ -70,4 +70,10 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ca
 
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "ContextUnsubscribeCommand{" + "usageHelpRequested=" + usageHelpRequested + ", unsubscribeOptions=" +
+                unsubscribeOptions + '}';
+    }
 }

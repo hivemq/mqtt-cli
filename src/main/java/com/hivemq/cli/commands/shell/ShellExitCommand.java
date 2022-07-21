@@ -40,9 +40,8 @@ public class ShellExitCommand implements Callable<Integer> {
     }
 
     @Override
-    public @NotNull String toString() {
-        return getClass().getSimpleName();
+    public String toString() {
+        return "ShellExitCommand{" + "usageHelpRequested=" + usageHelpRequested + '}';
     }
-
 }
 

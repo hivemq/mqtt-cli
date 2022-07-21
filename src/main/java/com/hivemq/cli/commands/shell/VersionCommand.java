@@ -40,4 +40,9 @@ public class VersionCommand implements Callable<Integer> {
         spec.commandLine().printVersionHelp(System.out);
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "VersionCommand{" + "spec=" + spec + '}';
+    }
 }

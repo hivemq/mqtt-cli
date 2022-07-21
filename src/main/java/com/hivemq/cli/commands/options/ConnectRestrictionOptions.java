@@ -126,14 +126,12 @@ public class ConnectRestrictionOptions {
         }
     }
 
-    public @NotNull String toString() {
-        return (receiveMaximum != null ? (", receiveMaximum=" + receiveMaximum) : "") +
-                (sendMaximum != null ? (", sendMaximum=" + sendMaximum) : "") +
-                (maximumPacketSize != null ? (", maximumPacketSize=" + maximumPacketSize) : "") +
-                (sendMaximumPacketSize != null ? (", sendMaximumPacketSize=" + sendMaximumPacketSize) : "") +
-                (topicAliasMaximum != null ? (", topicAliasMaximum=" + topicAliasMaximum) : "") +
-                (sendTopicAliasMaximum != null ? (", sendTopicAliasMaximum=" + sendTopicAliasMaximum) : "") +
-                (requestProblemInformation != null ? (", requestProblemInformation=" + requestProblemInformation) : "") +
-                (requestResponseInformation != null ? (", requestResponseInformation=" + requestResponseInformation) : "");
+    @Override
+    public String toString() {
+        return "ConnectRestrictionOptions{" + "receiveMaximum=" + receiveMaximum + ", sendMaximum=" + sendMaximum +
+                ", maximumPacketSize=" + maximumPacketSize + ", sendMaximumPacketSize=" + sendMaximumPacketSize +
+                ", topicAliasMaximum=" + topicAliasMaximum + ", sendTopicAliasMaximum=" + sendTopicAliasMaximum +
+                ", requestProblemInformation=" + requestProblemInformation + ", requestResponseInformation=" +
+                requestResponseInformation + '}';
     }
 }

@@ -58,7 +58,7 @@ public class AuthenticationOptions {
     public @Nullable ByteBuffer getPassword() {return password;}
 
     @Override
-    public @NotNull String toString() {
+    public String toString() {
         return "AuthenticationOptions{" + "user='" + user + '\'' + ", password=" + password + '}';
     }
 

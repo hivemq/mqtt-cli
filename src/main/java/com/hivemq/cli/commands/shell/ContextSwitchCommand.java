@@ -103,8 +103,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
     }
 
     @Override
-    public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "identifier=" + identifier + ", host=" + host + '}';
+    public String toString() {
+        return "ContextSwitchCommand{" + "usageHelpRequested=" + usageHelpRequested + ", contextName='" + contextName +
+                '\'' + ", identifier='" + identifier + '\'' + ", host='" + host + '\'' + '}';
     }
-
 }

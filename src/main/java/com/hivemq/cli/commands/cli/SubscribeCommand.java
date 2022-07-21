@@ -125,4 +125,10 @@ public class SubscribeCommand implements Callable<Integer> {
         }
     }
 
+    @Override
+    public String toString() {
+        return "SubscribeCommand{" + "versionInfoRequested=" + versionInfoRequested + ", usageHelpRequested=" +
+                usageHelpRequested + ", logToLogfile=" + logToLogfile + ", connectOptions=" + connectOptions +
+                ", subscribeOptions=" + subscribeOptions + ", debugOptions=" + debugOptions + '}';
+    }
 }

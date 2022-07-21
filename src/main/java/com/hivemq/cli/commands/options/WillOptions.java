@@ -146,20 +146,12 @@ public class WillOptions {
     }
 
     @Override
-    public @NotNull String toString() {
-        if (willTopic == null) {
-            return "";
-        } else {
-            return ", willTopic=" + willTopic + (willQos != null ? (", willQos=" + willQos) : "") +
-                    (willMessage != null ? (", willMessage=" + willMessage) : "") +
-                    (willRetain != null ? (", willRetain=" + willRetain) : "") +
-                    (willMessageExpiryInterval != null ? (", willMessageExpiryInterval=" + willMessageExpiryInterval) : "") +
-                    (willDelayInterval != null ? (", willDelayInterval=" + willDelayInterval) : "") +
-                    (willPayloadFormatIndicator != null ? (", willPayloadFormatIndicator=" + willPayloadFormatIndicator) : "") +
-                    (willContentType != null ? (", willContentType=" + willContentType) : "") +
-                    (willResponseTopic != null ? (", willResponseTopic=" + willResponseTopic) : "") +
-                    (willCorrelationData != null ? (", willCorrelationData=" + willCorrelationData) : "") +
-                    (willUserProperties != null ? (", willUserProperties=" + Arrays.toString(willUserProperties)) : "");
-        }
+    public String toString() {
+        return "WillOptions{" + "willTopic='" + willTopic + '\'' + ", willMessage=" + willMessage + ", willQos=" +
+                willQos + ", willRetain=" + willRetain + ", willMessageExpiryInterval=" + willMessageExpiryInterval +
+                ", willDelayInterval=" + willDelayInterval + ", willPayloadFormatIndicator=" +
+                willPayloadFormatIndicator + ", willContentType='" + willContentType + '\'' + ", willResponseTopic='" +
+                willResponseTopic + '\'' + ", willCorrelationData=" + willCorrelationData + ", willUserProperties=" +
+                Arrays.toString(willUserProperties) + '}';
     }
 }

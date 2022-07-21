@@ -66,4 +66,8 @@ public class ShellContextCommand implements Callable<Integer> {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return "ShellContextCommand{}";
+    }
 }

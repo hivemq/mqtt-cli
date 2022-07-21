@@ -77,8 +77,8 @@ public class ShellConnectCommand implements Callable<Integer> {
     }
 
     @Override
-    public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + connectOptions + "}";
+    public String toString() {
+        return "ShellConnectCommand{" + "usageHelpRequested=" + usageHelpRequested + ", connectOptions=" +
+                connectOptions + '}';
     }
-
 }

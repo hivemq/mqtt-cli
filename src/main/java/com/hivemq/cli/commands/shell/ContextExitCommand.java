@@ -48,7 +48,7 @@ public class ContextExitCommand extends ShellContextCommand implements Callable<
     }
 
     @Override
-    public @NotNull String toString() {
-        return getClass().getSimpleName();
+    public String toString() {
+        return "ContextExitCommand{" + "usageHelpRequested=" + usageHelpRequested + '}';
     }
 }

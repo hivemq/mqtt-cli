@@ -16,6 +16,7 @@ import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class SubscribeOptions {
@@ -141,5 +142,13 @@ public class SubscribeOptions {
             Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
             outputFile = new File(defaultCLIProperties.getClientSubscribeOutputFile());
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SubscribeOptions{" + "topics=" + Arrays.toString(topics) + ", qos=" + Arrays.toString(qos) +
+                ", userProperties=" + Arrays.toString(userProperties) + ", outputFile=" + outputFile +
+                ", printToSTDOUT=" + printToSTDOUT + ", base64=" + base64 + ", jsonOutput=" + jsonOutput +
+                ", showTopics=" + showTopics + '}';
     }
 }

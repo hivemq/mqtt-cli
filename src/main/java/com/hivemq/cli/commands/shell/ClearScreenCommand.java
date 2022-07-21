@@ -42,7 +42,7 @@ public class ClearScreenCommand implements Callable<Integer> {
     }
 
     @Override
-    public @NotNull String toString() {
-        return this.getClass().getSimpleName();
+    public String toString() {
+        return "ClearScreenCommand{" + "usageHelpRequested=" + usageHelpRequested + '}';
     }
 }

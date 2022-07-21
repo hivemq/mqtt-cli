@@ -123,20 +123,14 @@ public class ConnectOptions {
     }
 
     @Override
-    public @NotNull String toString() {
-        return  "(host=" + host
-                + ", port=" + port
-                + ", version=" + version +
-                (identifier != null && !identifier.isEmpty() ? (", identifier=" + identifier) : "") +
-                (keepAlive != null ? (", keepAlive=" + keepAlive) : "") +
-                (cleanStart != null ? (", cleanStart=" + cleanStart) : "") +
-                (sessionExpiryInterval != null ? (", sessionExpiryInterval=" + sessionExpiryInterval) : "") +
-                (connectUserProperties != null ? (", userProperties=" + Arrays.toString(connectUserProperties)) : "") +
-                ", sslOptions=" + sslOptions +
-                ", useWebSocket=" + useWebSocket +
-                (webSocketPath != null ? (", webSocketPath=" + webSocketPath) : "") +
-                connectRestrictionOptions +
-                willOptions;
+    public String toString() {
+        return "ConnectOptions{" + "version=" + version + ", host='" + host + '\'' + ", port=" + port +
+                ", identifier='" + identifier + '\'' + ", identifierPrefix='" + identifierPrefix + '\'' +
+                ", keepAlive=" + keepAlive + ", cleanStart=" + cleanStart + ", sessionExpiryInterval=" +
+                sessionExpiryInterval + ", connectUserProperties=" + Arrays.toString(connectUserProperties) +
+                ", willOptions=" + willOptions + ", connectRestrictionOptions=" + connectRestrictionOptions +
+                ", authenticationOptions=" + authenticationOptions + ", sslOptions=" + sslOptions + ", useWebSocket=" +
+                useWebSocket + ", webSocketPath='" + webSocketPath + '\'' + '}';
     }
 
     public @Nullable Integer getKeepAlive() {

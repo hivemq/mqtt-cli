@@ -76,8 +76,8 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
     }
 
     @Override
-    public @NotNull String toString() {
-        return getClass().getSimpleName()  + disconnectOptions;
+    public String toString() {
+        return "ContextDisconnectCommand{" + "usageHelpRequested=" + usageHelpRequested + ", disconnectOptions=" +
+                disconnectOptions + '}';
     }
-
 }

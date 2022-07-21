@@ -52,10 +52,6 @@ public class ShellCommand implements Runnable {
     private static final @NotNull String DEFAULT_PROMPT = "mqtt> ";
     private static @NotNull String prompt = DEFAULT_PROMPT;
 
-    //TODO: This is never set
-    public static boolean DEBUG;
-    public static boolean VERBOSE;
-
     public static @Nullable PrintWriter TERMINAL_WRITER;
 
     private static @Nullable LineReaderImpl currentReader;
@@ -204,17 +200,8 @@ public class ShellCommand implements Runnable {
         Objects.requireNonNull(currentReader).clearScreen();
     }
 
-    static boolean isVerbose() {
-        return VERBOSE;
-    }
-
-    static boolean isDebug() {
-        return DEBUG;
-    }
-
     @Override
     public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "logfilePath=" + logfilePath + ", debug=" + DEBUG + ", verbose=" +
-                VERBOSE + "}";
+        return getClass().getSimpleName() + "{" + "logfilePath=" + logfilePath + "}";
     }
 }

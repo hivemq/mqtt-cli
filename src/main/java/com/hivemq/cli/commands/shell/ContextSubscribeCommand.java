@@ -140,7 +140,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
 
     @Override
     public String toString() {
-        return "ContextSubscribeCommand{" + "subscribeOptions=" + subscribeOptions + ", stay=" + stay + '}';
+        return "ContextSubscribeCommand{" + "subscribeOptions=" + subscribeOptions + ", usageHelpRequested=" +
+                usageHelpRequested + ", stay=" + stay + '}';
     }
-
 }

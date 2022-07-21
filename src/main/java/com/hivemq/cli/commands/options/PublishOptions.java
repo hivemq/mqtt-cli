@@ -137,18 +137,13 @@ public class  PublishOptions {
         qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
     }
 
-    public @NotNull String toString() {
-        return getClass().getSimpleName() + "{topics=" + Arrays.toString(topics) +
-                ", qos=" +
-                Arrays.toString(qos) + ", message=" +
-                new String(message.getMessageBuffer().array(), StandardCharsets.UTF_8) +
-                (retain != null ? (", retain=" + retain) : "") +
-                (messageExpiryInterval != null ? (", messageExpiryInterval=" + messageExpiryInterval) : "") +
-                (payloadFormatIndicator != null ? (", payloadFormatIndicator=" + payloadFormatIndicator) : "") +
-                (contentType != null ? (", contentType=" + contentType) : "") +
-                (responseTopic != null ? (", responseTopic=" + responseTopic) : "") + (correlationData != null ?
-                (", correlationData=" + new String(correlationData.array(), StandardCharsets.UTF_8)) : "") +
-                (userProperties != null ? (", userProperties=" + getUserProperties()) : "") + '}';
+    @Override
+    public String toString() {
+        return "PublishOptions{" + "topics=" + Arrays.toString(topics) + ", qos=" + Arrays.toString(qos) +
+                ", message=" + message + ", retain=" + retain + ", messageExpiryInterval=" + messageExpiryInterval +
+                ", payloadFormatIndicator=" + payloadFormatIndicator + ", contentType='" + contentType + '\'' +
+                ", responseTopic='" + responseTopic + '\'' + ", correlationData=" + correlationData +
+                ", userProperties=" + Arrays.toString(userProperties) + '}';
     }
 }
 

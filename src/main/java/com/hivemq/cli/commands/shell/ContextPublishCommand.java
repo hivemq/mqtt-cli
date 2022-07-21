@@ -69,8 +69,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Callab
 
     @Override
     public String toString() {
-        return "ContextPublishCommand{" + "publishOptions=" +
+        return "ContextPublishCommand{" + "usageHelpRequested=" + usageHelpRequested + ", publishOptions=" +
                 publishOptions + '}';
     }
-
 }
