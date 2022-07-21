@@ -33,6 +33,14 @@ public class MessagePayloadOptions {
     }
 
     @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-m:empty", "--message-empty"}, defaultValue = "false",description = "Sets the message to an empty payload")
+    private void setMessageToEmpty(final boolean isEmpty) {
+        if (isEmpty) {
+            messageBuffer = ByteBuffer.allocate(0);
+        }
+    }
+
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-m:file", "--message-file"}, converter = FileToByteBufferConverter.class,
             description = "The message read in from a file", order = 1)
     private void setMessageFromFile(final @NotNull ByteBuffer messageFromFile) {
