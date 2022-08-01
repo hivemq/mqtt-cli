@@ -115,7 +115,7 @@ abstract class AbstractMqttClientExecutor {
             // This check only works as subscribes are implemented blocking.
             // Otherwise, we would need to check the topics before they are iterated as they are added to the client data after a successful subscribe.
             final List<MqttTopicFilter> intersectingFilters =
-                    checkForSharedTopicDuplicate(clientKeyToClientData.get(subscribe.getKey()).getSubscribedTopics(),
+                    checkForSharedTopicDuplicate(clientKeyToClientData.get(getClientDataKey(client)).getSubscribedTopics(),
                             topic);
 
             if (!intersectingFilters.isEmpty()) {
@@ -507,5 +507,11 @@ abstract class AbstractMqttClientExecutor {
                     mqtt3Publish,
                     new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
+    }
+
+    private @NotNull String getClientDataKey(final @NotNull MqttClient client) {
+        final String clientId = client.getConfig().getClientIdentifier().map(Objects::toString).orElse("null");
+        final String serverHost = client.getConfig().getServerHost();
+        return "client {" + "identifier='" + clientId + '\'' + ", host='" + serverHost + '\'' + '}';
     }
 }
