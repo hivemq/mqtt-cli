@@ -112,10 +112,13 @@ abstract class AbstractMqttClientExecutor {
         for (int i = 0; i < subscribe.getTopics().length; i++) {
             final String topic = subscribe.getTopics()[i];
 
+            final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
+                    client.getConfig().getServerHost());
+
             // This check only works as subscribes are implemented blocking.
             // Otherwise, we would need to check the topics before they are iterated as they are added to the client data after a successful subscribe.
             final List<MqttTopicFilter> intersectingFilters =
-                    checkForSharedTopicDuplicate(clientKeyToClientData.get(getClientDataKey(client)).getSubscribedTopics(),
+                    checkForSharedTopicDuplicate(clientKeyToClientData.get(key).getSubscribedTopics(),
                             topic);
 
             if (!intersectingFilters.isEmpty()) {
