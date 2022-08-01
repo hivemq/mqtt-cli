@@ -511,10 +511,4 @@ abstract class AbstractMqttClientExecutor {
                     new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
     }
-
-    private @NotNull String getClientDataKey(final @NotNull MqttClient client) {
-        final String clientId = client.getConfig().getClientIdentifier().map(Objects::toString).orElse("null");
-        final String serverHost = client.getConfig().getServerHost();
-        return "client {" + "identifier='" + clientId + '\'' + ", host='" + serverHost + '\'' + '}';
-    }
 }
