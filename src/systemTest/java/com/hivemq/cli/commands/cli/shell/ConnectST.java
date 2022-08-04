@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.Set;
+
 public class ConnectST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
@@ -52,7 +54,8 @@ public class ConnectST {
 
     @Test
     void test_unsuccessful_connect() {
-        cliShellTestExtension.executeCommandWithErrorWithTimeout("con -h localhost -p 22 -i cliTest",
-                "Connection refused: localhost/127.0.0.1:22");
+        cliShellTestExtension.executeCommandWithErrorWithTimeout("con -h localhost -p 22 -i cliTest", Set.of(
+                "Connection refused: localhost/127.0.0.1:22",
+                "readAddress(..) failed: Connection reset by peer"));
     }
 }
