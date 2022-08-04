@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.Set;
+
 public class PublishST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
@@ -67,9 +69,9 @@ public class PublishST {
                 "con -h " + hivemq.getContainerIpAddress() + " -p " + hivemq.getMqttPort() + " -i cliTest",
                 "cliTest@" + hivemq.getHost() + ">");
 
-        cliShellTestExtension.executeCommandWithErrorWithTimeout(
-                "pub -t test",
-                "Error: Missing required argument (specify one of these): (-m:file <messageFromFile> | -m <messageFromCommandline>)");
+        cliShellTestExtension.executeCommandWithErrorWithTimeout("pub -t test", Set.of(
+                "Error: Missing required argument (specify one of these): (-m <messageFromCommandline> | -m:file <messageFromFile>)",
+                "Error: Missing required argument (specify one of these): (-m:file <messageFromFile> | -m <messageFromCommandline>)"));
     }
 
     @Test
