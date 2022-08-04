@@ -292,12 +292,6 @@ val systemTest by tasks.registering(Test::class) {
     dependsOn(tasks.shadowJar)
     systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
             tasks.shadowJar.map { it.outputs.files.singleFile }.get()
-    testLogging {
-        showCauses = true
-        showExceptions = true
-        showStackTraces = true
-        showStandardStreams = true
-    }
 }
 
 val systemTestNative by tasks.registering(Test::class) {
