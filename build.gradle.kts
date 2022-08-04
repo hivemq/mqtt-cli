@@ -289,6 +289,7 @@ val systemTest by tasks.registering(Test::class) {
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(11))
     })
+    dependsOn(tasks.shadowJar)
     systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
             tasks.shadowJar.map { it.outputs.files.singleFile }.get()
 }
@@ -303,6 +304,7 @@ val systemTestNative by tasks.registering(Test::class) {
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(11))
     })
+    dependsOn(tasks.nativeCompile)
     systemProperties["cliExec"] =
         tasks.nativeCompile.map { it.outputs.files.singleFile }.get().resolve(project.name).absolutePath
 }
