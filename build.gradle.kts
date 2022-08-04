@@ -214,9 +214,6 @@ tasks.register<Sync>("updateOpenApiSpecs") {
 
 tasks.test {
     useJUnitPlatform()
-    testLogging {
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-    }
 }
 
 dependencies {
@@ -295,6 +292,12 @@ val systemTest by tasks.registering(Test::class) {
     dependsOn(tasks.shadowJar)
     systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
             tasks.shadowJar.map { it.outputs.files.singleFile }.get()
+    testLogging {
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        showStandardStreams = true
+    }
 }
 
 val systemTestNative by tasks.registering(Test::class) {
