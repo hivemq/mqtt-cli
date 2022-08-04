@@ -18,14 +18,13 @@ plugins {
     id("edu.sc.seis.launch4j")
     id("org.openapi.generator")
     id("com.google.cloud.tools.jib")
-    id("com.palantir.graal")
     id("com.github.hierynomus.license")
     id("de.thetaphi.forbiddenapis")
     id("com.github.breadmoirai.github-release")
     id("org.ajoberstar.git-publish")
     id("org.owasp.dependencycheck")
     id("com.github.ben-manes.versions")
-    id("org.graalvm.buildtools.native") version "0.9.13"
+    id("org.graalvm.buildtools.native")
     id("com.hivemq.cli.native-image")
 }
 
@@ -290,9 +289,25 @@ val systemTest by tasks.registering(Test::class) {
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(11))
     })
+    systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
+            tasks.shadowJar.map { it.outputs.files.singleFile }.get()
 }
 
-tasks.check { dependsOn(systemTest) }
+val systemTestNative by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Runs native system tests."
+    useJUnitPlatform()
+    testClassesDirs = sourceSets["systemTest"].output.classesDirs
+    classpath = sourceSets["systemTest"].runtimeClasspath
+    shouldRunAfter(tasks.test)
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    })
+    systemProperties["cliExec"] =
+        tasks.nativeCompile.map { it.outputs.files.singleFile }.get().resolve(project.name).absolutePath
+}
+
+tasks.check { dependsOn(systemTest, systemTestNative) }
 
 /* ******************** compliance ******************** */
 
@@ -430,6 +445,11 @@ tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 
 /* ******************** graal ******************** */
 
+cliNative {
+    graalVersion.set(property("graal.version").toString())
+    javaVersion.set(property("java-native.version").toString())
+}
+
 tasks.nativeCompile {
     dependsOn(tasks.installNativeImageTooling)
 }
@@ -438,25 +458,13 @@ val agentMainRun by tasks.registering(JavaExec::class) {
     group = "native"
 
     val launcher = javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(property("java-native.version").toString()))
+        languageVersion.set(JavaLanguageVersion.of(project.property("java-native.version").toString()))
         vendor.set(JvmVendorSpec.GRAAL_VM)
-    }
 
+    }
     javaLauncher.set(launcher)
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set("com.hivemq.cli.graal.NativeMain")
-}
-
-val agentSystemTestRun by tasks.registering(JavaExec::class) {
-    group = "native"
-
-    val launcher = javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(property("java-native.version").toString()))
-        vendor.set(JvmVendorSpec.GRAAL_VM)
-    }
-    javaLauncher.set(launcher)
-    classpath = sourceSets["systemTest"].runtimeClasspath
-    mainClass.set("com.hivemq.cli.utils.NativeReflectionMain")
 }
 
 val nativeImageOptions by graalvmNative.binaries.named("main") {

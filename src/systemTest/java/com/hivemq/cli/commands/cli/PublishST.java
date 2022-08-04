@@ -17,25 +17,25 @@
 package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.utils.CLITestExtension;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
+import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PublishST {
-
-    private static final @NotNull String mqttExec = "build/native/nativeCompile/mqtt-cli";
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
@@ -53,57 +53,64 @@ public class PublishST {
     }
 
     @Test
-    void test_successful_publish(@TempDir final @NotNull Path tempDir) throws IOException, InterruptedException {
-        final List<String> publishCommand = List.of(mqttExec,
-                "pub",
-                "-h",
-                hivemq.getContainerIpAddress(),
-                "-p",
-                String.valueOf(hivemq.getMqttPort()),
-                "-t",
-                "test",
-                "-m",
-                "test");
+    void test_successful_publish() throws Exception {
+        final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
+        publishCommand.add("pub");
+        publishCommand.add("-h");
+        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add("-p");
+        publishCommand.add(String.valueOf(hivemq.getMqttPort()));
+        publishCommand.add("-t");
+        publishCommand.add("test");
+        publishCommand.add("-m");
+        publishCommand.add("test");
+        publishCommand.add("-d");
 
-        final Path inputFile = tempDir.resolve("errorFile.txt");
-        assertTrue(inputFile.toFile().createNewFile());
+        final Mqtt5BlockingClient subscriber = Mqtt5Client.builder()
+                .identifier("subscriber")
+                .serverHost(hivemq.getContainerIpAddress())
+                .serverPort(hivemq.getMqttPort())
+                .buildBlocking();
+        subscriber.connect();
+        final CompletableFuture<Void> testReturn = new CompletableFuture<>();
+        subscriber.toAsync().subscribeWith().topicFilter("test").callback(ignored -> testReturn.complete(null)).send();
+        final Process pub = new ProcessBuilder(publishCommand).start();
 
-        final Process pub = new ProcessBuilder(publishCommand).redirectError(inputFile.toFile()).start();
-        assertEquals(0, pub.waitFor());
-        assertEquals(0, Files.readAllBytes(inputFile).length);
+        cliTestExtension.waitForOutputWithTimeout(pub, "received PUBLISH acknowledgement");
+        testReturn.get(3, TimeUnit.SECONDS);
     }
 
     @Test
     void test_publish_missing_topic() throws IOException, InterruptedException {
-        final List<String> publishCommand = List.of(mqttExec,
-                "pub",
-                "-h",
-                hivemq.getContainerIpAddress(),
-                "-p",
-                String.valueOf(hivemq.getMqttPort()));
+        final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
+        publishCommand.add("pub");
+        publishCommand.add("-h");
+        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add("-p");
+        publishCommand.add(String.valueOf(hivemq.getMqttPort()));
 
         final Process pub = new ProcessBuilder(publishCommand).start();
 
-        cliTestExtension.waitForError(pub, "Missing required option: '--topic <topics>'");
+        cliTestExtension.waitForErrorWithTimeout(pub, "Missing required option: '--topic <topics>'");
         assertEquals(pub.waitFor(), 2);
     }
 
     @Test
     void test_publish_missing_message() throws IOException, InterruptedException {
-        final List<String> publishCommand = List.of(mqttExec,
-                "pub",
-                "-h",
-                hivemq.getContainerIpAddress(),
-                "-p",
-                String.valueOf(hivemq.getMqttPort()),
-                "-t",
-                "test");
+        final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
+        publishCommand.add("pub");
+        publishCommand.add("-h");
+        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add("-p");
+        publishCommand.add(String.valueOf(hivemq.getMqttPort()));
+        publishCommand.add("-t");
+        publishCommand.add("test");
 
         final Process pub = new ProcessBuilder(publishCommand).start();
 
-        cliTestExtension.waitForError(
-                pub,
-                "Error: Missing required argument (specify one of these): (-m:file <messageFromFile> | -m <messageFromCommandline>)");
+        cliTestExtension.waitForErrorWithTimeout(pub, Set.of(
+                "Error: Missing required argument (specify one of these): (-m <messageFromCommandline> | -m:file <messageFromFile>)",
+                "Error: Missing required argument (specify one of these): (-m:file <messageFromFile> | -m <messageFromCommandline>)"));
         assertEquals(pub.waitFor(), 2);
     }
 }

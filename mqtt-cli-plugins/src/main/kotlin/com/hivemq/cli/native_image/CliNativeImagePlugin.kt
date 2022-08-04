@@ -24,6 +24,9 @@ class CliNativeImagePlugin : Plugin<Project> {
         val downloadTask = project.tasks.register<DownloadGraalJVMTask>("downloadGraalJvm") {
             group = "native"
             description = "Configures the correct download for Graal"
+            graalVersion.set(extension.graalVersion)
+            javaVersion.set(extension.javaVersion)
+            downloadBaseUrl.set(extension.graalBaseUrl)
         }
 
         val extractTask = project.tasks.register<Exec>("extractGraalJvm") {
@@ -36,7 +39,7 @@ class CliNativeImagePlugin : Plugin<Project> {
             outputs.dir(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
         }
 
-        val installTask = project.tasks.register<Exec>("installNativeImageTooling") {
+        project.tasks.register<Exec>("installNativeImageTooling") {
             group = "native"
             description = "Installs the native-image tooling and declares the Graal as auto provisioned"
             dependsOn(extractTask)

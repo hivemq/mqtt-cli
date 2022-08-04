@@ -28,6 +28,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SubscribeST {
 
-    private static final @NotNull String mqttExec = "build/native/nativeCompile/mqtt-cli";
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq-ce"));
 
@@ -54,15 +54,15 @@ public class SubscribeST {
 
     @Test
     void test_successful_subscribe() throws Exception {
-        final List<String> publishCommand = List.of(mqttExec,
-                "sub",
-                "-h",
-                hivemq.getContainerIpAddress(),
-                "-p",
-                String.valueOf(hivemq.getMqttPort()),
-                "-t",
-                "test",
-                "-d");
+        final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
+        publishCommand.add("sub");
+        publishCommand.add("-h");
+        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add("-p");
+        publishCommand.add(String.valueOf(hivemq.getMqttPort()));
+        publishCommand.add("-t");
+        publishCommand.add("test");
+        publishCommand.add("-d");
 
         final Process sub = new ProcessBuilder(publishCommand).start();
 
@@ -81,15 +81,15 @@ public class SubscribeST {
 
     @Test
     void test_subscribe_missing_topic() throws IOException, InterruptedException {
-        final List<String> publishCommand = List.of(mqttExec,
-                "sub",
-                "-h",
-                hivemq.getContainerIpAddress(),
-                "-p",
-                String.valueOf(hivemq.getMqttPort()));
+        final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
+        publishCommand.add("sub");
+        publishCommand.add("-h");
+        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add("-p");
+        publishCommand.add(String.valueOf(hivemq.getMqttPort()));
         final Process sub = new ProcessBuilder(publishCommand).start();
 
-        cliTestExtension.waitForError(sub, "Missing required option: '--topic <topics>'");
+        cliTestExtension.waitForErrorWithTimeout(sub, "Missing required option: '--topic <topics>'");
         assertEquals(sub.waitFor(), 2);
     }
 }

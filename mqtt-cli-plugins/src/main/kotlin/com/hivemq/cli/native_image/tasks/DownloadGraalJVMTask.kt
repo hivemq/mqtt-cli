@@ -3,35 +3,32 @@ package com.hivemq.cli.native_image.tasks
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.property
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import java.net.URL
+import javax.inject.Inject
 
-abstract class DownloadGraalJVMTask : DefaultTask() {
-
-    companion object {
-        private const val GRAAL_VERSION_DEFAULT = "22.1.0"
-        private val JAVA_VERSION_DEFAULT = JavaLanguageVersion.of("17")
-        private const val BASE_URL_DEFAULT = "https://github.com/graalvm/graalvm-ce-builds/releases/download"
-    }
+abstract class DownloadGraalJVMTask @Inject constructor(
+    objectFactory: ObjectFactory
+) : DefaultTask() {
 
     @get:Input
-    val graalVersion = project.objects.property<String>().convention(GRAAL_VERSION_DEFAULT)
+    val graalVersion = objectFactory.property<String>()
 
     @get:Input
-    val javaVersion = project.objects.property<JavaLanguageVersion>().convention(JAVA_VERSION_DEFAULT)
+    val javaVersion = objectFactory.property<String>()
 
     @get:Input
-    val downloadBaseUrl = project.objects.property<String>().convention(BASE_URL_DEFAULT)
+    val downloadBaseUrl = objectFactory.property<String>()
 
     @get:Internal
-    val jdksDirectory: DirectoryProperty = project.objects.directoryProperty().convention(
+    val jdksDirectory: DirectoryProperty = objectFactory.directoryProperty().convention(
         project.layout.dir(
             project.providers.provider {
                 project.gradle.gradleUserHomeDir.toPath()
@@ -43,10 +40,10 @@ abstract class DownloadGraalJVMTask : DefaultTask() {
     )
 
     @get:Internal
-    val graalFolderName = project.objects.property<String>().convention(createGraalFolderName())
+    val graalFolderName = objectFactory.property<String>().convention(createGraalFolderName())
 
     @get:Internal
-    val graalDownloadFileName = project.objects.property<String>().convention(createDownloadGraalFileName())
+    val graalDownloadFileName = objectFactory.property<String>().convention(createDownloadGraalFileName())
 
     @get:OutputFile
     val graalDownload: Provider<RegularFile> = jdksDirectory.file(graalDownloadFileName)
@@ -58,20 +55,26 @@ abstract class DownloadGraalJVMTask : DefaultTask() {
         }
     }
 
-    private fun createDownloadGraalFileName(): String {
-        return "${createGraalFileName()}.${getArchiveExtension()}"
+    private fun createDownloadGraalFileName(): Provider<String> {
+        return createGraalFileName().map { graalFileName ->
+            "${graalFileName}.${getArchiveExtension()}"
+        }
     }
 
-    private fun createGraalFileName(): String {
-        return "graalvm-ce-java${javaVersion.get()}-${getOperatingSystem()}-${getArchitecture()}-${graalVersion.get()}"
+    private fun createGraalFileName(): Provider<String> {
+        return javaVersion.zip(graalVersion) { javaVersion, graalVersion ->
+            "graalvm-ce-java${javaVersion}-${getOperatingSystem()}-${getArchitecture()}-${graalVersion}"
+        }
     }
 
-    private fun createGraalFolderName(): String {
-        return "graalvm-ce-java${javaVersion.get()}-${graalVersion.get()}"
+    private fun createGraalFolderName(): Provider<String> {
+        return javaVersion.zip(graalVersion) { javaVersion, graalVersion ->
+            "graalvm-ce-java${javaVersion}-${graalVersion}"
+        }
     }
 
     private fun createDownloadUrl(): String {
-        return "${downloadBaseUrl.get()}/vm-${graalVersion.get()}/" + createDownloadGraalFileName()
+        return "${downloadBaseUrl.get()}/vm-${graalVersion.get()}/" + createDownloadGraalFileName().get()
     }
 
     private fun getOperatingSystem(): String {

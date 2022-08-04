@@ -24,14 +24,18 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallback {
 
-    private static final @NotNull String mqttExec = "build/native/nativeCompile/mqtt-cli";
+    public static final @NotNull List<String> CLI_EXEC =
+            Arrays.stream(Objects.requireNonNull(System.getProperty("cliExec")).split(" "))
+                    .collect(Collectors.toList());
 
     private @Nullable Process cliShell;
     private final @NotNull CommandConsumer commandConsumer = new CommandConsumer();
@@ -39,7 +43,9 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
 
     @Override
     public void beforeEach(final @NotNull ExtensionContext context) throws Exception {
-        cliShell = new ProcessBuilder(mqttExec, "sh").start();
+        final ArrayList<String> shellCommand = new ArrayList<>(CLI_EXEC);
+        shellCommand.add("sh");
+        cliShell = new ProcessBuilder(shellCommand).start();
         waitForStartup(cliShell).get(3, TimeUnit.SECONDS);
     }
 
@@ -78,15 +84,24 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
     }
 
     public void executeCommandWithTimeout(final @NotNull String command, final @NotNull String expectedReturn) {
+        executeCommandWithTimeout(command, Set.of(expectedReturn));
+    }
+
+    public @NotNull CompletableFuture<Void> executeCommand(
+            final @NotNull String command, final @NotNull String expectedReturn) {
+        return executeCommand(command, Set.of(expectedReturn));
+    }
+
+    public void executeCommandWithTimeout(final @NotNull String command, final @NotNull Set<String> expectedReturns) {
         try {
-            executeCommand(command, expectedReturn).get(3, TimeUnit.SECONDS);
+            executeCommand(command, expectedReturns).get(3, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }
     }
 
     public @NotNull CompletableFuture<Void> executeCommand(
-            final @NotNull String command, final @NotNull String expectedReturn) {
+            final @NotNull String command, final @NotNull Set<String> expectedReturns) {
         if (cliShell == null) {
             throw new IllegalStateException();
         }
@@ -106,11 +121,14 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
         final InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
         final BufferedReader bufferedInputReader = new BufferedReader(inputStreamReader);
 
-        final CompletableFuture<Void> commandReturned = commandConsumer.waitFor(expectedReturn);
+        final ArrayList<CompletableFuture<Void>> commandFinished = new ArrayList<>();
+        for (final String expectedReturn : expectedReturns) {
+            commandFinished.add(commandConsumer.waitFor(expectedReturn));
+        }
         final StringBuilder commandBuilder = new StringBuilder();
 
         return CompletableFuture.runAsync(() -> {
-            while (!commandReturned.isDone()) {
+            while (commandFinished.stream().filter(CompletableFuture::isDone).findAny().isEmpty()) {
                 try {
                     final int inputChar;
                     inputChar = bufferedInputReader.read();
@@ -128,16 +146,26 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
     }
 
     public void executeCommandWithErrorWithTimeout(
-            final @NotNull String command, final @NotNull String expectedReturn) {
+            final @NotNull String command, final @NotNull String expectedError) {
+        executeCommandWithErrorWithTimeout(command, Set.of(expectedError));
+    }
+
+    public @NotNull CompletableFuture<Void> executeCommandWithError(
+            final @NotNull String command, final @NotNull String expectedError) {
+        return executeCommandWithError(command, Set.of(expectedError));
+    }
+
+    public void executeCommandWithErrorWithTimeout(
+            final @NotNull String command, final @NotNull Set<String> expectedErrors) {
         try {
-            executeCommandWithError(command, expectedReturn).get(3, TimeUnit.SECONDS);
+            executeCommandWithError(command, expectedErrors).get(3, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }
     }
 
     public @NotNull CompletableFuture<Void> executeCommandWithError(
-            final @NotNull String command, final @NotNull String expectedError) {
+            final @NotNull String command, final @NotNull Set<String> expectedErrors) {
         if (cliShell == null) {
             throw new IllegalStateException();
         }
@@ -157,11 +185,14 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
         final InputStreamReader errorStreamReader = new InputStreamReader(errorStream, StandardCharsets.UTF_8);
         final BufferedReader bufferedErrorReader = new BufferedReader(errorStreamReader);
 
-        final CompletableFuture<Void> errorReturned = errorConsumer.waitFor(expectedError);
+        final ArrayList<CompletableFuture<Void>> commandFinished = new ArrayList<>();
+        for (final String expectedError : expectedErrors) {
+            commandFinished.add(errorConsumer.waitFor(expectedError));
+        }
         final StringBuilder errorBuilder = new StringBuilder();
 
         return CompletableFuture.runAsync(() -> {
-            while (!errorReturned.isDone()) {
+            while (commandFinished.stream().filter(CompletableFuture::isDone).findAny().isEmpty()) {
                 try {
                     final int inputChar = bufferedErrorReader.read();
                     if (inputChar == -1) {

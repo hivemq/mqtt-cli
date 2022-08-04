@@ -23,12 +23,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 public class CLITestExtension {
+
+    public static final @NotNull List<String> CLI_EXEC =
+            Arrays.stream(Objects.requireNonNull(System.getProperty("cliExec")).split(" "))
+                    .collect(Collectors.toList());
 
     private final @NotNull CommandConsumer commandConsumer = new CommandConsumer();
     private final @NotNull CommandConsumer errorConsumer = new CommandConsumer();
@@ -70,24 +76,37 @@ public class CLITestExtension {
 
     public void waitForErrorWithTimeout(
             final @NotNull Process process, final @NotNull String expectedError) {
+        waitForErrorWithTimeout(process, Set.of(expectedError));
+    }
+
+    public @NotNull CompletableFuture<Void> waitForError(
+            final @NotNull Process process, final @NotNull String expectedError) {
+        return waitForError(process, Set.of(expectedError));
+    }
+
+    public void waitForErrorWithTimeout(
+            final @NotNull Process process, final @NotNull Set<String> expectedErrors) {
         try {
-            waitForError(process, expectedError).get(3, TimeUnit.SECONDS);
+            waitForError(process, expectedErrors).get(3, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }
     }
 
     public @NotNull CompletableFuture<Void> waitForError(
-            final @NotNull Process process, final @NotNull String expectedError) {
+            final @NotNull Process process, final @NotNull Set<String> expectedErrors) {
         final InputStream errorStream = process.getErrorStream();
         final InputStreamReader errorStreamReader = new InputStreamReader(errorStream, StandardCharsets.UTF_8);
         final BufferedReader bufferedErrorReader = new BufferedReader(errorStreamReader);
 
-        final CompletableFuture<Void> errorReturned = errorConsumer.waitFor(expectedError);
+        final ArrayList<CompletableFuture<Void>> commandFinished = new ArrayList<>();
+        for (final String expectedError : expectedErrors) {
+            commandFinished.add(errorConsumer.waitFor(expectedError));
+        }
         final StringBuilder errorBuilder = new StringBuilder();
 
         return CompletableFuture.runAsync(() -> {
-            while (!errorReturned.isDone()) {
+            while (commandFinished.stream().filter(CompletableFuture::isDone).findAny().isEmpty()) {
                 try {
                     final int inputChar = bufferedErrorReader.read();
                     if (inputChar == -1) {
