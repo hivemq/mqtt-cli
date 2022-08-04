@@ -200,6 +200,7 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
                     }
                     errorBuilder.append((char) inputChar);
                     errorConsumer.accept(errorBuilder.toString());
+                    System.out.println(errorBuilder);
                 } catch (final IOException e) {
                     throw new RuntimeException(e);
                 }
