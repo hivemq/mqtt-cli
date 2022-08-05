@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Exec
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 
 class CliNativeImagePlugin : Plugin<Project> {
@@ -45,11 +46,25 @@ class CliNativeImagePlugin : Plugin<Project> {
             dependsOn(extractTask)
 
             workingDir(extractTask.map { it.outputs.files.singleFile })
-            commandLine("./Contents/Home/bin/gu", "install", "native-image")
+            commandLine(getGuPath(), "install", "native-image")
 
             doLast {
                 extractTask.map { it.outputs.files.singleFile }.get().resolve("provisioned.ok").createNewFile()
             }
+        }
+    }
+
+    private fun getGuPath(): String {
+        return if (DefaultNativePlatform.getCurrentOperatingSystem().isLinux) {
+            "./bin/gu"
+        } else if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
+            "bin\\gu"
+        } else if (DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX) {
+            "./Contents/Home/bin/gu"
+        } else {
+            throw IllegalStateException(
+                "Unsupported operating system. (${DefaultNativePlatform.getCurrentOperatingSystem().displayName}"
+            )
         }
     }
 }
