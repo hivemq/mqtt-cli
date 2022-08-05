@@ -506,6 +506,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
                 "io.netty.handler.codec.http," +
                 "io.netty.internal.tcnative," +
                 "io.netty.resolver," +
+                "io.netty.util," +
                 "io.netty.util.concurrent," +
                 "org.tinylog," +
                 "org.tinylog.configuration," +
