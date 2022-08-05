@@ -452,9 +452,9 @@ cliNative {
     javaVersion.set(property("java-native.version").toString())
 }
 
-tasks.nativeCompile {
+/*tasks.nativeCompile {
     dependsOn(tasks.installNativeImageTooling)
-}
+}*/
 
 val agentMainRun by tasks.registering(JavaExec::class) {
     group = "native"
