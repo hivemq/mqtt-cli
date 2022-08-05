@@ -490,8 +490,8 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
                 "io.netty.util.internal.shaded.org.jctools.queues.BaseSpscLinkedArrayQueue," +
                 "io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess," +
                 "io.netty.util.internal.SystemPropertyUtil," +
-                "io.netty.util.internal.PlatformDependent," +
-                "io.netty.util.internal.PlatformDependent0," +
+                //"io.netty.util.internal.PlatformDependent," +
+                //"io.netty.util.internal.PlatformDependent0," +
                 "io.netty.util.internal.logging.JdkLogger," +
                 "io.netty.buffer.AbstractByteBufAllocator"
     )
