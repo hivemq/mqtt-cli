@@ -307,6 +307,12 @@ val systemTestNative by tasks.registering(Test::class) {
     dependsOn(tasks.nativeCompile)
     systemProperties["cliExec"] =
         tasks.nativeCompile.map { it.outputs.files.singleFile }.get().resolve(project.name).absolutePath
+    testLogging {
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        showStandardStreams = true
+    }
 }
 
 tasks.check { dependsOn(systemTest, systemTestNative) }
