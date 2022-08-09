@@ -8,15 +8,10 @@ concurrency:
 
 jobs:
   check:
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install docker
-        run: |
-          mkdir -p ~/.docker/machine/cache
-          curl -Lo ~/.docker/machine/cache/boot2docker.iso https://github.com/boot2docker/boot2docker/releases/download/v19.03.12/boot2docker.iso
-          brew install docker docker-machine
       - name: Setup Java
         uses: actions/setup-java@v2
         with:
