@@ -18,10 +18,8 @@ pluginManagement {
     }
 }
 
+includeBuild("mqtt-cli-plugins")
 
-    includeBuild("mqtt-cli-plugins")
-
-    if (file("../hivemq/plugins").exists()) {
-        includeBuild("../hivemq/plugins")
-    }
+if (file("../hivemq/plugins").exists()) {
+    includeBuild("../hivemq/plugins")
 }
