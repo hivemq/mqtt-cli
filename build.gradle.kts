@@ -453,14 +453,15 @@ tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 
 /* ******************** graal ******************** */
 
+//In order to run the native tasks the Graal environment must be installed first.
+//This can be done with the "installNativeImageTooling" Task.
+//Unfortunately, this is not able to be a task dependency as it uses the gradle java provisioning service which only
+//checks for java installations prior the execution.
+
 cliNative {
     graalVersion.set(property("graal.version").toString())
     javaVersion.set(property("java-native.version").toString())
 }
-
-/*tasks.nativeCompile {
-    dependsOn(tasks.installNativeImageTooling)
-}*/
 
 val agentMainRun by tasks.registering(JavaExec::class) {
     group = "native"
