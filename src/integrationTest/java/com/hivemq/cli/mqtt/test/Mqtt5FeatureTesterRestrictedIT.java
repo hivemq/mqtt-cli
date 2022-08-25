@@ -44,7 +44,7 @@ class Mqtt5FeatureTesterRestrictedIT {
     @BeforeEach
     void setUp() {
         mqtt5FeatureTester =
-                new Mqtt5FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
+                new Mqtt5FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 3);
     }
 
     @AfterAll

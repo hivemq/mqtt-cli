@@ -36,12 +36,14 @@ public class CLITestExtension {
             Arrays.stream(Objects.requireNonNull(System.getProperty("cliExec")).split(" "))
                     .collect(Collectors.toList());
 
+    private static final int TIMEOUT = 10;
+
     private final @NotNull CommandConsumer commandConsumer = new CommandConsumer();
     private final @NotNull CommandConsumer errorConsumer = new CommandConsumer();
 
     public void waitForOutputWithTimeout(final @NotNull Process process, final @NotNull String expectedReturn) {
         try {
-            waitForOutput(process, expectedReturn).get(3, TimeUnit.SECONDS);
+            waitForOutput(process, expectedReturn).get(TIMEOUT, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }
@@ -87,7 +89,7 @@ public class CLITestExtension {
     public void waitForErrorWithTimeout(
             final @NotNull Process process, final @NotNull Set<String> expectedErrors) {
         try {
-            waitForError(process, expectedErrors).get(3, TimeUnit.SECONDS);
+            waitForError(process, expectedErrors).get(TIMEOUT, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }

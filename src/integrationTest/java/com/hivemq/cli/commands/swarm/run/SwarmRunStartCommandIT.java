@@ -116,7 +116,7 @@ public class SwarmRunStartCommandIT {
         final String scenario =
                 MountableFile.forClasspathResource("SwarmRunStartCommandIT/my-scenario.xml").getResolvedPath();
         final int execute = commandLine.execute(
-                "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT),
+                "-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT),
                 "-f=" + scenario);
         assertEquals(0, execute);
 

@@ -22,10 +22,12 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class PublishST {
 
@@ -46,27 +48,30 @@ public class PublishST {
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_successful_publish() {
         cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getContainerIpAddress() + " -p " + hivemq.getMqttPort() + " -i cliTest",
+                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
                 "cliTest@" + hivemq.getHost() + ">");
 
         cliShellTestExtension.executeCommandWithTimeout("pub -t test -m test", "cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_publish_missing_topic() {
         cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getContainerIpAddress() + " -p " + hivemq.getMqttPort() + " -i cliTest",
+                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
                 "cliTest@" + hivemq.getHost() + ">");
 
         cliShellTestExtension.executeCommandWithErrorWithTimeout("pub", "Missing required option: '--topic <topics>'");
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_publish_missing_message() {
         cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getContainerIpAddress() + " -p " + hivemq.getMqttPort() + " -i cliTest",
+                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
                 "cliTest@" + hivemq.getHost() + ">");
 
         cliShellTestExtension.executeCommandWithErrorWithTimeout("pub -t test", Set.of(
@@ -75,6 +80,7 @@ public class PublishST {
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_missing_arguments() {
         cliShellTestExtension.executeCommandWithErrorWithTimeout("pub", "Unmatched argument at index 0: 'pub'");
     }

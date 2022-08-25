@@ -189,7 +189,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
         return getClass().getSimpleName() + "{" + connectOptions() + ", topics=" + Arrays.toString(topics) + ", qos=" +
                 Arrays.toString(qos) + ", message=" +
                 new String(message.getMessageBuffer().array(), StandardCharsets.UTF_8) +
-                //(retain != null ? (", retain=" + retain) : "") +
+                ", retain=" + retain +
                 (messageExpiryInterval != null ? (", messageExpiryInterval=" + messageExpiryInterval) : "") +
                 (payloadFormatIndicator != null ? (", payloadFormatIndicator=" + payloadFormatIndicator) : "") +
                 (contentType != null ? (", contentType=" + contentType) : "") +

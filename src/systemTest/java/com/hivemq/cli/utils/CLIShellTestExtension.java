@@ -37,6 +37,8 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
             Arrays.stream(Objects.requireNonNull(System.getProperty("cliExec")).split(" "))
                     .collect(Collectors.toList());
 
+    private static final int TIMEOUT = 10;
+
     private @Nullable Process cliShell;
     private final @NotNull CommandConsumer commandConsumer = new CommandConsumer();
     private final @NotNull CommandConsumer errorConsumer = new CommandConsumer();
@@ -46,7 +48,7 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
         final ArrayList<String> shellCommand = new ArrayList<>(CLI_EXEC);
         shellCommand.add("sh");
         cliShell = new ProcessBuilder(shellCommand).start();
-        waitForStartup(cliShell).get(3, TimeUnit.SECONDS);
+        waitForStartup(cliShell).get(TIMEOUT, TimeUnit.SECONDS);
     }
 
     @Override
@@ -94,7 +96,7 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
 
     public void executeCommandWithTimeout(final @NotNull String command, final @NotNull Set<String> expectedReturns) {
         try {
-            executeCommand(command, expectedReturns).get(3, TimeUnit.SECONDS);
+            executeCommand(command, expectedReturns).get(TIMEOUT, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }
@@ -158,7 +160,7 @@ public class CLIShellTestExtension implements BeforeEachCallback, AfterEachCallb
     public void executeCommandWithErrorWithTimeout(
             final @NotNull String command, final @NotNull Set<String> expectedErrors) {
         try {
-            executeCommandWithError(command, expectedErrors).get(3, TimeUnit.SECONDS);
+            executeCommandWithError(command, expectedErrors).get(TIMEOUT, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }

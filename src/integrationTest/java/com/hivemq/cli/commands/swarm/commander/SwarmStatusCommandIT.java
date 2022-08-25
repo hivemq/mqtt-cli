@@ -96,7 +96,7 @@ public class SwarmStatusCommandIT {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void getCommanderStatus() {
         final int execute = commandLine.execute(
-                "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT));
+                "-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT));
         assertEquals(0, execute);
         verify(out).println("Status: READY");
     }

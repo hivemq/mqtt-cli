@@ -128,7 +128,7 @@ public class SwarmRunStopCommandIT {
     void stopRun() throws Exception {
         // no current run
         final int execute0 = commandLine.execute(
-                "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT));
+                "-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT));
         assertEquals(0, execute0);
         verify(out, times(1)).println("No run in progress.");
 
@@ -154,7 +154,7 @@ public class SwarmRunStopCommandIT {
         //TODO: not sure why here a logger reset is necessary (local machine)
         TestLoggerUtils.resetLogger();
         final int execute = commandLine.execute(
-                "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT),
+                "-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT),
                 "-r" + 1);
         assertEquals(0, execute);
 
@@ -171,7 +171,7 @@ public class SwarmRunStopCommandIT {
         //TODO: however here a logger reset is not necessary (local machine)
         //TestLoggerUtils.resetLogger();
         final int execute2 = commandLine.execute(
-                "-url=http://" + swarm.getContainerIpAddress() + ":" + swarm.getMappedPort(REST_PORT),
+                "-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT),
                 "-r" + 1);
         assertEquals(-1, execute2);
     }

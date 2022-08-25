@@ -49,7 +49,7 @@ class Mqtt3FeatureTesterDefaultIT {
     @BeforeEach
     void setUp() {
         mqtt3FeatureTester =
-                new Mqtt3FeatureTester(hivemq.getContainerIpAddress(), hivemq.getMqttPort(), null, null, null, 3);
+                new Mqtt3FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 3);
     }
 
     @AfterAll
