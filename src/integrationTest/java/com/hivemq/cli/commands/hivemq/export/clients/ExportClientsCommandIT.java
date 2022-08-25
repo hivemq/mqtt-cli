@@ -73,7 +73,7 @@ class ExportClientsCommandIT {
 
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
-                "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT));
+                "-url=http://" + hivemq.getHost() + ":" + hivemq.getMappedPort(HTTP_PORT));
 
         assertEquals(0, returnCode);
 
@@ -94,7 +94,7 @@ class ExportClientsCommandIT {
 
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
-                "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT));
+                "-url=http://" + hivemq.getHost() + ":" + hivemq.getMappedPort(HTTP_PORT));
 
         assertEquals(0, returnCode);
 
@@ -115,7 +115,7 @@ class ExportClientsCommandIT {
 
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
-                "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT),
+                "-url=http://" + hivemq.getHost() + ":" + hivemq.getMappedPort(HTTP_PORT),
                 "--csvSeparator=;",
                 "--csvQuoteChar=\\",
                 "--csvEscChar=/");
@@ -144,7 +144,7 @@ class ExportClientsCommandIT {
         final long startTime = System.nanoTime();
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
-                "-url=http://" + hivemq.getContainerIpAddress() + ":" + hivemq.getMappedPort(HTTP_PORT),
+                "-url=http://" + hivemq.getHost() + ":" + hivemq.getMappedPort(HTTP_PORT),
                 "-r=5");
         final long stopTime = System.nanoTime();
 
@@ -168,7 +168,7 @@ class ExportClientsCommandIT {
 
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
         final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
-                "-url=http://" + hivemq.getContainerIpAddress() + ":" + 8889);
+                "-url=http://" + hivemq.getHost() + ":" + 8889);
 
         assertEquals(-1, returnCode);
 

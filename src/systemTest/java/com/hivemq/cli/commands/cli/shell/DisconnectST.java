@@ -22,8 +22,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
+
+import java.util.concurrent.TimeUnit;
 
 public class DisconnectST {
 
@@ -44,15 +47,17 @@ public class DisconnectST {
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_successful_disconnect() {
         cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getContainerIpAddress() + " -p " + hivemq.getMqttPort() + " -i cliTest",
+                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
                 "cliTest@" + hivemq.getHost() + ">");
 
         cliShellTestExtension.executeCommandWithTimeout("dis", "mqtt>");
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_unsuccessful_disconnect() {
         cliShellTestExtension.executeCommandWithErrorWithTimeout(
                 "dis",

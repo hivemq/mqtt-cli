@@ -22,8 +22,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
+
+import java.util.concurrent.TimeUnit;
 
 public class SubscribeST {
 
@@ -44,18 +47,20 @@ public class SubscribeST {
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_successful_subscribe() {
         cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getContainerIpAddress() + " -p " + hivemq.getMqttPort() + " -i cliTest",
+                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
                 "cliTest@" + hivemq.getHost() + ">");
 
         cliShellTestExtension.executeCommandWithTimeout("sub -t test", "cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_subscribe_missing_topic() {
         cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getContainerIpAddress() + " -p " + hivemq.getMqttPort() + " -i cliTest",
+                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
                 "cliTest@" + hivemq.getHost() + ">");
 
         cliShellTestExtension.executeCommandWithErrorWithTimeout(
@@ -64,6 +69,7 @@ public class SubscribeST {
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_missing_arguments() {
         cliShellTestExtension.executeCommandWithErrorWithTimeout("sub", "Unmatched argument at index 0: 'sub'");
     }

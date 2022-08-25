@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
@@ -53,11 +54,12 @@ public class PublishST {
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_successful_publish() throws Exception {
         final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
         publishCommand.add("pub");
         publishCommand.add("-h");
-        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add(hivemq.getHost());
         publishCommand.add("-p");
         publishCommand.add(String.valueOf(hivemq.getMqttPort()));
         publishCommand.add("-t");
@@ -68,7 +70,7 @@ public class PublishST {
 
         final Mqtt5BlockingClient subscriber = Mqtt5Client.builder()
                 .identifier("subscriber")
-                .serverHost(hivemq.getContainerIpAddress())
+                .serverHost(hivemq.getHost())
                 .serverPort(hivemq.getMqttPort())
                 .buildBlocking();
         subscriber.connect();
@@ -77,15 +79,16 @@ public class PublishST {
         final Process pub = new ProcessBuilder(publishCommand).start();
 
         cliTestExtension.waitForOutputWithTimeout(pub, "received PUBLISH acknowledgement");
-        testReturn.get(3, TimeUnit.SECONDS);
+        testReturn.get(10, TimeUnit.SECONDS);
     }
 
     @Test
-    void test_publish_missing_topic() throws IOException, InterruptedException {
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_publish_missing_topic() throws Exception {
         final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
         publishCommand.add("pub");
         publishCommand.add("-h");
-        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add(hivemq.getHost());
         publishCommand.add("-p");
         publishCommand.add(String.valueOf(hivemq.getMqttPort()));
 
@@ -96,11 +99,12 @@ public class PublishST {
     }
 
     @Test
-    void test_publish_missing_message() throws IOException, InterruptedException {
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_publish_missing_message() throws Exception {
         final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
         publishCommand.add("pub");
         publishCommand.add("-h");
-        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add(hivemq.getHost());
         publishCommand.add("-p");
         publishCommand.add(String.valueOf(hivemq.getMqttPort()));
         publishCommand.add("-t");

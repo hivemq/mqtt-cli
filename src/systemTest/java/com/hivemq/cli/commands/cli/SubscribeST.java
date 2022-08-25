@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
@@ -53,11 +54,12 @@ public class SubscribeST {
     }
 
     @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_successful_subscribe() throws Exception {
         final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
         publishCommand.add("sub");
         publishCommand.add("-h");
-        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add(hivemq.getHost());
         publishCommand.add("-p");
         publishCommand.add(String.valueOf(hivemq.getMqttPort()));
         publishCommand.add("-t");
@@ -68,7 +70,7 @@ public class SubscribeST {
 
         final Mqtt5BlockingClient publisher = Mqtt5Client.builder()
                 .identifier("publisher")
-                .serverHost(hivemq.getContainerIpAddress())
+                .serverHost(hivemq.getHost())
                 .serverPort(hivemq.getMqttPort())
                 .buildBlocking();
         publisher.connect();
@@ -76,15 +78,16 @@ public class SubscribeST {
         cliTestExtension.waitForOutputWithTimeout(sub, "received SUBACK");
         final CompletableFuture<Void> testReturn = cliTestExtension.waitForOutput(sub, "testReturn");
         publisher.publishWith().topic("test").payload("testReturn".getBytes(StandardCharsets.UTF_8)).send();
-        testReturn.get(3, TimeUnit.SECONDS);
+        testReturn.get(10, TimeUnit.SECONDS);
     }
 
     @Test
-    void test_subscribe_missing_topic() throws IOException, InterruptedException {
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_missing_topic() throws Exception {
         final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
         publishCommand.add("sub");
         publishCommand.add("-h");
-        publishCommand.add(hivemq.getContainerIpAddress());
+        publishCommand.add(hivemq.getHost());
         publishCommand.add("-p");
         publishCommand.add(String.valueOf(hivemq.getMqttPort()));
         final Process sub = new ProcessBuilder(publishCommand).start();

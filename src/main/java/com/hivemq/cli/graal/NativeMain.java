@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.graal;
 
 import com.google.gson.Gson;
@@ -27,14 +28,15 @@ public class NativeMain {
     private static final @NotNull Gson gson = new GsonBuilder().setPrettyPrinting().setLenient().create();
 
     /**
-     * This
+     * This helper class is used to generate missing reflection configuration which is not detected by the Graal agent when
+     * running the normal MqttCliMain method as all the executions are happening inside reflected classes.
      *
-     * @param args
+     * @param args Normal main inputs
      */
     public static void main(final @NotNull String... args) {
         Logger.info("Hello World!");
-        final Mqtt3Publish sdfsd = Mqtt3Publish.builder().topic("sdfsd").build();
-        final JsonMqttPublish jsonMqttPublish = new JsonMqttPublish(sdfsd, true);
+        final Mqtt3Publish publish = Mqtt3Publish.builder().topic("publish").build();
+        final JsonMqttPublish jsonMqttPublish = new JsonMqttPublish(publish, true);
         Logger.info(gson.toJson(jsonMqttPublish));
     }
 }

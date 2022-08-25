@@ -96,7 +96,7 @@ abstract class DownloadGraalJVMTask @Inject constructor(
             "amd64"
         } else if (DefaultNativePlatform.getCurrentArchitecture().isArm) {
             "aarch64"
-        } else if (DefaultNativePlatform.getCurrentArchitecture().name == "arm-v8") {
+        } else if (DefaultNativePlatform.getCurrentArchitecture().name == "arm-v8") { //used for M1 Apple devices
             "aarch64"
         } else {
             throw IllegalStateException("Unsupported system architecture. (${DefaultNativePlatform.getCurrentArchitecture().displayName})")
