@@ -632,3 +632,7 @@ val releaseBinary: Configuration by configurations.creating {
 artifacts {
     add(releaseBinary.name, tasks.shadowDistZip)
 }
+
+dependencyCheck {
+    scanConfigurations = listOf("runtimeClasspath")
+}
