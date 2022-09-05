@@ -47,9 +47,9 @@ public class  PublishOptions {
     private @NotNull MessagePayloadOptions message;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-r", "--retain"}, negatable = true,
+    @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, defaultValue = "false",
             description = "The message will be retained (default: false)")
-    private @Nullable Boolean retain;
+    private boolean retain;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class,

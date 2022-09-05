@@ -65,9 +65,9 @@ public class ConnectOptions {
     private @Nullable Integer keepAlive;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true,
+    @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true, defaultValue = "true",
             description = "Define a clean start for the connection (default: true)")
-    private @Nullable Boolean cleanStart;
+    private boolean cleanStart;
 
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
             description = "The lifetime of the session of the connected client")
