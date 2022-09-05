@@ -58,9 +58,7 @@ public class ConnectST {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_unsuccessful_connect() {
-        cliShellTestExtension.executeCommandWithErrorWithTimeout("con -h localhost -p 22 -i cliTest", Set.of(
-                "Connection refused: localhost/127.0.0.1:22",
-                "readAddress(..) failed: Connection reset by peer",
-                "Connection reset"));
+        cliShellTestExtension.executeCommandWithErrorWithTimeout("con -h localhost -p 22 -i cliTest",
+                "Unable to connect. Connection refused");
     }
 }

@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
+
 public class CLITestExtension {
 
     public static final @NotNull List<String> CLI_EXEC =
@@ -81,11 +83,6 @@ public class CLITestExtension {
         waitForErrorWithTimeout(process, Set.of(expectedError));
     }
 
-    public @NotNull CompletableFuture<Void> waitForError(
-            final @NotNull Process process, final @NotNull String expectedError) {
-        return waitForError(process, Set.of(expectedError));
-    }
-
     public void waitForErrorWithTimeout(
             final @NotNull Process process, final @NotNull Set<String> expectedErrors) {
         try {
@@ -101,14 +98,14 @@ public class CLITestExtension {
         final InputStreamReader errorStreamReader = new InputStreamReader(errorStream, StandardCharsets.UTF_8);
         final BufferedReader bufferedErrorReader = new BufferedReader(errorStreamReader);
 
-        final ArrayList<CompletableFuture<Void>> commandFinished = new ArrayList<>();
+        final ArrayList<CompletableFuture<Void>> errorReadFutures = new ArrayList<>();
         for (final String expectedError : expectedErrors) {
-            commandFinished.add(errorConsumer.waitFor(expectedError));
+            errorReadFutures.add(errorConsumer.waitFor(expectedError));
         }
         final StringBuilder errorBuilder = new StringBuilder();
 
         return CompletableFuture.runAsync(() -> {
-            while (commandFinished.stream().filter(CompletableFuture::isDone).findAny().isEmpty()) {
+            while (errorReadFutures.stream().filter(CompletableFuture::isDone).findAny().isEmpty()) {
                 try {
                     final int inputChar = bufferedErrorReader.read();
                     if (inputChar == -1) {

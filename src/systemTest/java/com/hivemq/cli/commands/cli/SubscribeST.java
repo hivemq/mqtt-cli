@@ -92,7 +92,7 @@ public class SubscribeST {
         publishCommand.add(String.valueOf(hivemq.getMqttPort()));
         final Process sub = new ProcessBuilder(publishCommand).start();
 
-        cliTestExtension.waitForErrorWithTimeout(sub, "Missing required option: '--topic <topics>'");
+        cliTestExtension.waitForErrorWithTimeout(sub, "Missing required option: '--topic=<topics>'");
         assertEquals(sub.waitFor(), 2);
     }
 }

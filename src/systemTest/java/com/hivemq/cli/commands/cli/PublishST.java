@@ -94,7 +94,7 @@ public class PublishST {
 
         final Process pub = new ProcessBuilder(publishCommand).start();
 
-        cliTestExtension.waitForErrorWithTimeout(pub, "Missing required option: '--topic <topics>'");
+        cliTestExtension.waitForErrorWithTimeout(pub, "Missing required option: '--topic=<topics>'");
         assertEquals(pub.waitFor(), 2);
     }
 
@@ -113,8 +113,9 @@ public class PublishST {
         final Process pub = new ProcessBuilder(publishCommand).start();
 
         cliTestExtension.waitForErrorWithTimeout(pub, Set.of(
-                "Error: Missing required argument (specify one of these): (-m <messageFromCommandline> | -m:file <messageFromFile>)",
-                "Error: Missing required argument (specify one of these): (-m:file <messageFromFile> | -m <messageFromCommandline>)"));
+                "Error: Missing required argument (specify one of these): (-m=<messageFromCommandline> | -m:file=<messageFromFile>)",
+                "Error: Missing required argument (specify one of these): (-m:file=<messageFromFile> | -m=<messageFromCommandline>)"));
+
         assertEquals(pub.waitFor(), 2);
     }
 }

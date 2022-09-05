@@ -25,27 +25,15 @@ import java.util.function.Consumer;
 
 public class CommandConsumer implements Consumer<String> {
 
-    private final @NotNull Map<String, CompletableFuture<Void>> patterns = new ConcurrentHashMap<>();
     private final @NotNull Map<String, CompletableFuture<Void>> contains = new ConcurrentHashMap<>();
 
     @Override
     public void accept(final @NotNull String commandLine) {
-        patterns.forEach((pattern, future) -> {
-            if (commandLine.trim().matches(pattern)) {
-                future.complete(null);
-            }
-        });
         contains.forEach((command, future) -> {
             if (commandLine.contains(command)) {
                 future.complete(null);
             }
         });
-    }
-
-    public @NotNull CompletableFuture<Void> waitForPattern(final @NotNull String pattern) {
-        final CompletableFuture<Void> future = new CompletableFuture<>();
-        patterns.put(pattern, future);
-        return future;
     }
 
     public @NotNull CompletableFuture<Void> waitFor(final @NotNull String command) {
