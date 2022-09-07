@@ -59,6 +59,6 @@ public class ConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_unsuccessful_connect() {
         cliShellTestExtension.executeCommandWithErrorWithTimeout("con -h localhost -p 22 -i cliTest",
-                "Unable to connect. Connection refused");
+                "Unable to connect.");
     }
 }

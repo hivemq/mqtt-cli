@@ -54,7 +54,7 @@ public class ShellConnectCommand implements Callable<Integer> {
         this.mqttClientExecutor = mqttClientExecutor;
     }
 
-    public Integer call() {
+    public @NotNull Integer call() {
 
         Logger.trace("Command {} ", this);
 
