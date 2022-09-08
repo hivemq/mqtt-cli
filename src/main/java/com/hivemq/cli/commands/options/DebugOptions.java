@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.options;
 
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 public class DebugOptions {
@@ -50,7 +52,7 @@ public class DebugOptions {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "DebugOptions{" + "isDebug=" + isDebug + ", isVerbose=" + isVerbose + '}';
     }
 }

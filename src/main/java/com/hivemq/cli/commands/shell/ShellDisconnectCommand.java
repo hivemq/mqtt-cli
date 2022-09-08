@@ -16,8 +16,8 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.DisconnectOptions;
 import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -32,21 +32,14 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "dis", aliases = "disconnect", description = "Disconnect an MQTT client")
 public class ShellDisconnectCommand implements Callable<Integer> {
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
     @CommandLine.Mixin
     private final @NotNull DisconnectOptions disconnectOptions = new DisconnectOptions();
 
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+
     private final @NotNull MqttClientExecutor mqttClientExecutor;
     private final @NotNull DefaultCLIProperties defaultCLIProperties;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ShellDisconnectCommand() {
-        //noinspection ConstantConditions
-        this(null, null);
-    }
 
     @Inject
     ShellDisconnectCommand(
@@ -57,7 +50,7 @@ public class ShellDisconnectCommand implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         if (disconnectOptions.getHost() == null) {
             disconnectOptions.setHost(defaultCLIProperties.getHost());
         }
@@ -71,20 +64,21 @@ public class ShellDisconnectCommand implements Callable<Integer> {
                     Logger.error("Missing required option '--identifier=<identifier>'");
                     return 1;
                 }
-                final ClientKey clientKey = ClientKey.of(disconnectOptions.getClientIdentifier(), disconnectOptions.getHost());
+                final ClientKey clientKey =
+                        ClientKey.of(disconnectOptions.getClientIdentifier(), disconnectOptions.getHost());
                 mqttClientExecutor.disconnect(clientKey, disconnectOptions);
             }
         } catch (final Exception ex) {
             LoggerUtils.logShellError("Unable to disconnect", ex);
             return 1;
         }
-
         return 0;
     }
 
     @Override
-    public String toString() {
-        return "ShellDisconnectCommand{" + "usageHelpRequested=" + usageHelpRequested + ", disconnectOptions=" +
-                disconnectOptions + '}';
+    public @NotNull String toString() {
+        return "ShellDisconnectCommand{" + "disconnectOptions=" + disconnectOptions + ", defaultOptions=" +
+                defaultOptions + ", mqttClientExecutor=" + mqttClientExecutor + ", defaultCLIProperties=" +
+                defaultCLIProperties + '}';
     }
 }

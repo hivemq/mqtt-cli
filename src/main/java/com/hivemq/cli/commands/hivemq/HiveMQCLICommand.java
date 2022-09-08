@@ -17,6 +17,7 @@
 package com.hivemq.cli.commands.hivemq;
 
 import com.hivemq.cli.MqttCLIMain;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -25,9 +26,11 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "hivemq", description = "HiveMQ Command Line Interpreter.",
         synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
+        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class HiveMQCLICommand implements Callable<Integer> {
+
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
@@ -40,5 +43,10 @@ public class HiveMQCLICommand implements Callable<Integer> {
     public @NotNull Integer call() {
         System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
         return 0;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "HiveMQCLICommand{" + "defaultOptions=" + defaultOptions + ", spec=" + spec + '}';
     }
 }

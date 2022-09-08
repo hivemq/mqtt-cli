@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.cli;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.options.ConnectOptions;
 import com.hivemq.cli.commands.options.DebugOptions;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.SubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -42,18 +43,9 @@ public class SubscribeCommand implements Callable<Integer> {
     private @Nullable MqttClient subscribeClient;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
-    private boolean versionInfoRequested;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
-
-    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-l"}, defaultValue = "false",
             description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
-
 
     @CommandLine.Mixin
     private final @NotNull ConnectOptions connectOptions = new ConnectOptions();
@@ -64,11 +56,8 @@ public class SubscribeCommand implements Callable<Integer> {
     @CommandLine.Mixin
     private final @NotNull DebugOptions debugOptions = new DebugOptions();
 
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public SubscribeCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -76,7 +65,7 @@ public class SubscribeCommand implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         String logLevel = "warn";
         if (debugOptions.isDebug()) {
             logLevel = "debug";
@@ -129,9 +118,10 @@ public class SubscribeCommand implements Callable<Integer> {
     }
 
     @Override
-    public String toString() {
-        return "SubscribeCommand{" + "versionInfoRequested=" + versionInfoRequested + ", usageHelpRequested=" +
-                usageHelpRequested + ", logToLogfile=" + logToLogfile + ", connectOptions=" + connectOptions +
-                ", subscribeOptions=" + subscribeOptions + ", debugOptions=" + debugOptions + '}';
+    public @NotNull String toString() {
+        return "SubscribeCommand{" + "mqttClientExecutor=" + mqttClientExecutor + ", subscribeClient=" +
+                subscribeClient + ", logToLogfile=" + logToLogfile + ", connectOptions=" + connectOptions +
+                ", subscribeOptions=" + subscribeOptions + ", debugOptions=" + debugOptions + ", defaultOptions=" +
+                defaultOptions + '}';
     }
 }

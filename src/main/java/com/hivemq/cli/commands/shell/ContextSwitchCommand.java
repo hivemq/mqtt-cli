@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.google.common.base.Throwables;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -27,14 +27,11 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "switch", description = "Switch the current context")
 public class ContextSwitchCommand extends ShellContextCommand implements Callable<Integer> {
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
 
     @SuppressWarnings("unused")
     @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
@@ -48,11 +45,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
             description = "The hostname of the message broker (default 'localhost')")
     private @Nullable String host;
 
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextSwitchCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -60,8 +54,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
     }
 
     @Override
-    public Integer call() {
-
+    public @NotNull Integer call() {
         Logger.trace("Command {} ", this);
 
         if (contextName == null && identifier == null) {
@@ -78,7 +71,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
             }
         }
 
-        final MqttClient client = mqttClientExecutor.getMqttClient(ClientKey.of(identifier, host));
+        final MqttClient client =
+                mqttClientExecutor.getMqttClient(ClientKey.of(identifier, Objects.requireNonNull(host)));
 
         if (client != null) {
             updateContext(client);
@@ -104,8 +98,8 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
     }
 
     @Override
-    public String toString() {
-        return "ContextSwitchCommand{" + "usageHelpRequested=" + usageHelpRequested + ", contextName='" + contextName +
-                '\'' + ", identifier='" + identifier + '\'' + ", host='" + host + '\'' + '}';
+    public @NotNull String toString() {
+        return "ContextSwitchCommand{" + "contextName='" + contextName + '\'' + ", identifier='" + identifier + '\'' +
+                ", host='" + host + '\'' + ", defaultOptions=" + defaultOptions + '}';
     }
 }

@@ -20,6 +20,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.options.AuthenticationOptions;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
@@ -45,19 +46,11 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "test",
-        description = "Tests the specified broker on different MQTT feature support and prints the results",
+        description = "Tests the specified broker on different MQTT feature support and prints the results.",
         sortOptions = false)
 public class TestBrokerCommand implements Callable<Integer> {
 
     private static final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
-    private boolean versionInfoRequested;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
 
     @CommandLine.Option(names = {"-h", "--host"},
             description = "The hostname of the message broker (default 'localhost')", order = 1)
@@ -99,15 +92,12 @@ public class TestBrokerCommand implements Callable<Integer> {
     @CommandLine.Mixin
     private final @NotNull SslOptions sslOptions = new SslOptions();
 
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+
     private final @NotNull DefaultCLIProperties defaultCLIProperties;
 
     private @Nullable MqttClientSslConfig sslConfig;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public TestBrokerCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
 
     @Inject
     public TestBrokerCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
@@ -115,7 +105,7 @@ public class TestBrokerCommand implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         LoggerUtils.turnOffConsoleLogging(logToLogfile);
 
         Logger.trace("Command {}", this);
@@ -411,9 +401,10 @@ public class TestBrokerCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "TestBrokerCommand{" + "MAX_PAYLOAD_TEST_SIZE=" + MAX_PAYLOAD_TEST_SIZE + ", host='" + host + '\'' +
-                ", port=" + port + ", version=" + version + ", testAll=" + testAll + ", timeOut=" + timeOut +
-                ", qosTries=" + qosTries + ", logToLogfile=" + logToLogfile + ", authenticationOptions=" +
-                authenticationOptions + ", sslOptions=" + sslOptions + ", sslConfig=" + sslConfig + '}';
+        return "TestBrokerCommand{" + "host='" + host + '\'' + ", port=" + port + ", version=" + version +
+                ", testAll=" + testAll + ", timeOut=" + timeOut + ", qosTries=" + qosTries + ", logToLogfile=" +
+                logToLogfile + ", authenticationOptions=" + authenticationOptions + ", sslOptions=" + sslOptions +
+                ", defaultOptions=" + defaultOptions + ", defaultCLIProperties=" + defaultCLIProperties +
+                ", sslConfig=" + sslConfig + '}';
     }
 }

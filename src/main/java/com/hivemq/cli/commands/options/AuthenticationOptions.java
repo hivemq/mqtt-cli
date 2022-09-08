@@ -53,12 +53,16 @@ public class AuthenticationOptions {
         password = passwordFromFile;
     }
 
-    public @Nullable String getUser() {return user;}
+    public @Nullable String getUser() {
+        return user;
+    }
 
-    public @Nullable ByteBuffer getPassword() {return password;}
+    public @Nullable ByteBuffer getPassword() {
+        return password;
+    }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "AuthenticationOptions{" + "user='" + user + '\'' + ", password=" + password + '}';
     }
 

@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.google.common.base.Throwables;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.DisconnectOptions;
 import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -31,19 +31,11 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "dis", aliases = "disconnect", description = "Disconnects this MQTT client")
 public class ContextDisconnectCommand extends ShellContextCommand implements Callable<Integer> {
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
-
     @CommandLine.Mixin
     private final @NotNull DisconnectOptions disconnectOptions = new DisconnectOptions();
 
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextDisconnectCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextDisconnectCommand(final @NotNull MqttClientExecutor executor) {
@@ -51,8 +43,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
     }
 
     @Override
-    public Integer call() {
-
+    public @NotNull Integer call() {
         Logger.trace("Command {} ", this);
 
         if (contextClient != null) {
@@ -63,7 +54,8 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
             if (disconnectOptions.isDisconnectAll()) {
                 mqttClientExecutor.disconnectAllClients(disconnectOptions);
             } else if (disconnectOptions.getClientIdentifier() != null && disconnectOptions.getHost() != null) {
-                final ClientKey clientKey = ClientKey.of(disconnectOptions.getClientIdentifier(), disconnectOptions.getHost());
+                final ClientKey clientKey =
+                        ClientKey.of(disconnectOptions.getClientIdentifier(), disconnectOptions.getHost());
                 mqttClientExecutor.disconnect(clientKey, disconnectOptions);
             } else if (contextClient != null) {
                 mqttClientExecutor.disconnect(contextClient, disconnectOptions);
@@ -77,8 +69,8 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
     }
 
     @Override
-    public String toString() {
-        return "ContextDisconnectCommand{" + "usageHelpRequested=" + usageHelpRequested + ", disconnectOptions=" +
-                disconnectOptions + '}';
+    public @NotNull String toString() {
+        return "ContextDisconnectCommand{" + "disconnectOptions=" + disconnectOptions + ", defaultOptions=" +
+                defaultOptions + '}';
     }
 }

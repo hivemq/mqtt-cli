@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -33,10 +34,6 @@ import java.util.stream.Collectors;
 @CommandLine.Command(name = "ls", aliases = "list",
         description = "List all connected clients with their respective identifiers")
 public class ListClientsCommand implements Callable<Integer> {
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-t"}, defaultValue = "false", description = "sort by creation time, newest first")
@@ -60,14 +57,15 @@ public class ListClientsCommand implements Callable<Integer> {
             description = "list subscribed topics of clients")
     private boolean listSubscriptions;
 
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+
     @Inject
-    //needed for pico cli - reflection code generation
     public ListClientsCommand() {
     }
 
     @Override
-    public Integer call() {
-
+    public @NotNull Integer call() {
         Logger.trace("Command {}", this);
 
         final List<ClientData> sortedClientData = getSortedClientData();
@@ -179,9 +177,9 @@ public class ListClientsCommand implements Callable<Integer> {
     }
 
     @Override
-    public String toString() {
-        return "ListClientsCommand{" + "usageHelpRequested=" + usageHelpRequested + ", sortByTime=" + sortByTime +
-                ", doNotSort=" + doNotSort + ", reverse=" + reverse + ", longOutput=" + longOutput +
-                ", listSubscriptions=" + listSubscriptions + '}';
+    public @NotNull String toString() {
+        return "ListClientsCommand{" + "sortByTime=" + sortByTime + ", doNotSort=" + doNotSort + ", reverse=" +
+                reverse + ", longOutput=" + longOutput + ", listSubscriptions=" + listSubscriptions +
+                ", defaultOptions=" + defaultOptions + '}';
     }
 }

@@ -18,9 +18,10 @@ package com.hivemq.cli.commands.swarm.commander;
 
 import com.google.gson.Gson;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.swarm.AbstractSwarmCommand;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
+import com.hivemq.cli.commands.swarm.run.SwarmOptions;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.swarm.CommanderApi;
 import com.hivemq.cli.openapi.swarm.CommanderStateResponse;
@@ -34,13 +35,13 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.PrintStream;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "status",
         description = "Check the status of HiveMQ Swarm. (READY, STARTING, RUNNING, STOPPING).",
         synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
-public class SwarmStatusCommand extends AbstractSwarmCommand {
+        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class)
+public class SwarmStatusCommand implements Callable<Integer> {
 
     public enum OutputFormat {
         JSON,
@@ -51,6 +52,12 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
     @CommandLine.Option(names = {"--format"}, defaultValue = "pretty",
             description = "The export output format (JSON, PRETTY). Default=PRETTY.", order = 2)
     private @NotNull OutputFormat format = OutputFormat.PRETTY;
+
+    @CommandLine.Mixin
+    private final @NotNull SwarmOptions swarmOptions = new SwarmOptions();
+
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     private final @NotNull Gson gson;
     private final @NotNull RunsApi runsApi;
@@ -78,15 +85,15 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
         Logger.trace("Command {}", this);
 
         // Check if given URL is valid
-        final HttpUrl httpUrl = HttpUrl.parse(commanderUrl);
+        final HttpUrl httpUrl = HttpUrl.parse(swarmOptions.getCommanderUrl());
         if (httpUrl == null) {
-            Logger.error("URL is not in a valid format: {}", commanderUrl);
-            System.err.println("URL is not in a valid format: " + commanderUrl);
+            Logger.error("URL is not in a valid format: {}", swarmOptions.getCommanderUrl());
+            System.err.println("URL is not in a valid format: " + swarmOptions.getCommanderUrl());
             return -1;
         }
 
-        runsApi.getApiClient().setBasePath(commanderUrl);
-        commanderApi.getApiClient().setBasePath(commanderUrl);
+        runsApi.getApiClient().setBasePath(swarmOptions.getCommanderUrl());
+        commanderApi.getApiClient().setBasePath(swarmOptions.getCommanderUrl());
 
         final CommanderStateResponse commanderStatus;
         try {
@@ -152,6 +159,8 @@ public class SwarmStatusCommand extends AbstractSwarmCommand {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmStatusCommand{" + "format=" + format + '}';
+        return "SwarmStatusCommand{" + "format=" + format + ", swarmOptions=" + swarmOptions + ", defaultOptions=" +
+                defaultOptions + ", gson=" + gson + ", runsApi=" + runsApi + ", commanderApi=" + commanderApi +
+                ", errorTransformer=" + errorTransformer + ", out=" + out + '}';
     }
 }

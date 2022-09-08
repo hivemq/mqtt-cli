@@ -16,12 +16,11 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.options.ConnectOptions;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -33,21 +32,13 @@ import java.util.concurrent.Callable;
         abbreviateSynopsis = true)
 public class ShellConnectCommand implements Callable<Integer> {
 
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
     @CommandLine.Mixin
     private final @NotNull ConnectOptions connectOptions = new ConnectOptions();
 
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ShellConnectCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
+    private final @NotNull MqttClientExecutor mqttClientExecutor;
 
     @Inject
     public ShellConnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -75,8 +66,8 @@ public class ShellConnectCommand implements Callable<Integer> {
     }
 
     @Override
-    public String toString() {
-        return "ShellConnectCommand{" + "usageHelpRequested=" + usageHelpRequested + ", connectOptions=" +
-                connectOptions + '}';
+    public @NotNull String toString() {
+        return "ShellConnectCommand{" + "connectOptions=" + connectOptions + ", defaultOptions=" + defaultOptions +
+                ", mqttClientExecutor=" + mqttClientExecutor + '}';
     }
 }

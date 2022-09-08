@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.options;
 
 import com.hivemq.cli.DefaultCLIProperties;
@@ -35,10 +36,6 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class SubscribeOptions {
-
-    public SubscribeOptions() {
-        setDefaultOptions();
-    }
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via required
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
@@ -79,6 +76,10 @@ public class SubscribeOptions {
             description = "Prepend the specific topic name to the received publish")
     private boolean showTopics;
 
+    public SubscribeOptions() {
+        setDefaultOptions();
+    }
+
     public @NotNull String @NotNull [] getTopics() {
         return topics;
     }
@@ -103,7 +104,7 @@ public class SubscribeOptions {
         return MqttUtils.convertToMqtt5UserProperties(userProperties);
     }
 
-    public @Nullable Mqtt5UserProperty[] getUserPropertiesRaw() {
+    public @Nullable Mqtt5UserProperty @Nullable [] getUserPropertiesRaw() {
         return userProperties;
     }
 
@@ -151,7 +152,8 @@ public class SubscribeOptions {
     }
 
     public void setDefaultOptions() {
-        final DefaultCLIProperties defaultCLIProperties = Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+        final DefaultCLIProperties defaultCLIProperties =
+                Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
 
         if (outputFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
             Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());
@@ -160,7 +162,7 @@ public class SubscribeOptions {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "SubscribeOptions{" + "topics=" + Arrays.toString(topics) + ", qos=" + Arrays.toString(qos) +
                 ", userProperties=" + Arrays.toString(userProperties) + ", outputFile=" + outputFile +
                 ", printToSTDOUT=" + printToSTDOUT + ", base64=" + base64 + ", jsonOutput=" + jsonOutput +

@@ -16,6 +16,8 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.commands.options.DefaultOptions;
+import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -27,21 +29,20 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "cls", aliases = "clear", description = "Clear the screen")
 public class ClearScreenCommand implements Callable<Integer> {
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     ClearScreenCommand() {}
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         ShellCommand.clearScreen();
         return 0;
     }
 
     @Override
-    public String toString() {
-        return "ClearScreenCommand{" + "usageHelpRequested=" + usageHelpRequested + '}';
+    public @NotNull String toString() {
+        return "ClearScreenCommand{" + "defaultOptions=" + defaultOptions + '}';
     }
 }

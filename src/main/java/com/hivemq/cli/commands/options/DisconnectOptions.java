@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.options;
 
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
@@ -103,7 +104,7 @@ public class DisconnectOptions {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "DisconnectOptions{" + "host='" + host + '\'' + ", identifier='" + clientIdentifier + '\'' +
                 ", disconnectAll=" + disconnectAll + ", sessionExpiryInterval=" + sessionExpiryInterval +
                 ", reasonString='" + reasonString + '\'' + ", userProperties=" + Arrays.toString(userProperties) + '}';

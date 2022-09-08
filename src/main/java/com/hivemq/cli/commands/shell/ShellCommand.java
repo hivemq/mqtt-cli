@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.shell;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import org.jetbrains.annotations.NotNull;
@@ -41,13 +42,14 @@ import picocli.shell.jline3.PicocliJLineCompleter;
 import javax.inject.Inject;
 import java.io.PrintWriter;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "shell", aliases = "sh", versionProvider = MqttCLIMain.CLIVersionProvider.class,
         description = "Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.",
         footer = {"", "@|bold Press Ctl-C to exit.|@"}, synopsisHeading = "%n@|bold Usage|@:  ",
         descriptionHeading = "%n", optionListHeading = "%n@|bold Options|@:%n",
         commandListHeading = "%n@|bold Commands|@:%n", separator = " ")
-public class ShellCommand implements Runnable {
+public class ShellCommand implements Callable<Integer> {
 
     private static final @NotNull String DEFAULT_PROMPT = "mqtt> ";
     private static @NotNull String prompt = DEFAULT_PROMPT;
@@ -63,18 +65,13 @@ public class ShellCommand implements Runnable {
     private static boolean exitShell = false;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--version", "-V"}, versionHelp = true, description = "display version info")
-    private boolean versionInfoRequested;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help", "-h"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
-
-    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-l"}, defaultValue = "false",
             description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
             order = 1)
     private boolean logToLogfile;
+
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
@@ -90,14 +87,14 @@ public class ShellCommand implements Runnable {
     }
 
     @Override
-    public void run() {
+    public @NotNull Integer call() {
         LoggerUtils.setupConsoleLogging(logToLogfile, "warn");
         logfilePath = Configuration.get("writer.file");
 
-        interact();
+        return interact();
     }
 
-    private void interact() {
+    private @NotNull Integer interact() {
         shellCommandLine = Objects.requireNonNull(MqttCLIMain.MQTTCLI).shell();
         contextCommandLine = MqttCLIMain.MQTTCLI.shellContext();
 
@@ -149,15 +146,18 @@ public class ShellCommand implements Runnable {
                     }
                 } catch (final UserInterruptException e) {
                     Logger.trace("--- User interrupted shell ---");
-                    return;
+                    return 0;
                 } catch (final Exception ex) {
                     Logger.error(ex, Throwables.getRootCause(ex).getMessage());
+                    return 1;
                 }
             }
             Logger.info("--- Shell-Mode exited ---");
         } catch (final Exception ex) {
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());
+            return 1;
         }
+        return 0;
     }
 
     static void exitShell() {
@@ -202,6 +202,7 @@ public class ShellCommand implements Runnable {
 
     @Override
     public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "logfilePath=" + logfilePath + "}";
+        return "ShellCommand{" + "logToLogfile=" + logToLogfile + ", defaultOptions=" + defaultOptions + ", spec=" +
+                spec + ", defaultCLIProperties=" + defaultCLIProperties + ", logfilePath='" + logfilePath + '\'' + '}';
     }
 }

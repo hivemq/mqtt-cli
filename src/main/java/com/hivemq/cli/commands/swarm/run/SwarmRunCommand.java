@@ -17,21 +17,27 @@
 package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.swarm.AbstractSwarmCommand;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "run", description = "HiveMQ Swarm Run Command Line Interpreter.",
         synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
-public class SwarmRunCommand extends AbstractSwarmCommand {
+        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class)
+public class SwarmRunCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
     private @NotNull CommandLine.Model.CommandSpec spec;
+
+    @CommandLine.Mixin
+    private final @NotNull SwarmOptions swarmOptions = new SwarmOptions();
+
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public SwarmRunCommand() {}
@@ -40,5 +46,11 @@ public class SwarmRunCommand extends AbstractSwarmCommand {
     public @NotNull Integer call() throws Exception {
         System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
         return 0;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "SwarmRunCommand{" + "spec=" + spec + ", swarmOptions=" + swarmOptions + ", defaultOptions=" +
+                defaultOptions + '}';
     }
 }

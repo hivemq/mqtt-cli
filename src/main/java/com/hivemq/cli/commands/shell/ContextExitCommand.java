@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
@@ -26,15 +27,8 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "exit", description = "Exit the current context")
 public class ContextExitCommand extends ShellContextCommand implements Callable<Integer> {
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextExitCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextExitCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -42,13 +36,13 @@ public class ContextExitCommand extends ShellContextCommand implements Callable<
     }
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         removeContext();
         return 0;
     }
 
     @Override
-    public String toString() {
-        return "ContextExitCommand{" + "usageHelpRequested=" + usageHelpRequested + '}';
+    public @NotNull String toString() {
+        return "ContextExitCommand{" + "defaultOptions=" + defaultOptions + '}';
     }
 }

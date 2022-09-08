@@ -17,6 +17,7 @@
 package com.hivemq.cli.commands.hivemq.export;
 
 import com.hivemq.cli.MqttCLIMain;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -29,6 +30,9 @@ import java.util.concurrent.Callable;
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class ExportCommand implements Callable<Integer> {
 
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
     private @NotNull CommandLine.Model.CommandSpec spec;
@@ -40,5 +44,10 @@ public class ExportCommand implements Callable<Integer> {
     public @NotNull Integer call() {
         System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
         return 0;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "ExportCommand{" + "defaultOptions=" + defaultOptions + ", spec=" + spec + '}';
     }
 }

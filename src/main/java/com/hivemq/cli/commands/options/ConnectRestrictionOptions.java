@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.options;
 
 import com.hivemq.client.mqtt.MqttVersion;
@@ -142,7 +143,7 @@ public class ConnectRestrictionOptions {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "ConnectRestrictionOptions{" + "receiveMaximum=" + receiveMaximum + ", sendMaximum=" + sendMaximum +
                 ", maximumPacketSize=" + maximumPacketSize + ", sendMaximumPacketSize=" + sendMaximumPacketSize +
                 ", topicAliasMaximum=" + topicAliasMaximum + ", sendTopicAliasMaximum=" + sendTopicAliasMaximum +

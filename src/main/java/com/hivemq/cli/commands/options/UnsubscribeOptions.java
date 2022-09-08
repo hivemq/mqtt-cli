@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.options;
 
 import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
@@ -24,16 +25,12 @@ import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class UnsubscribeOptions {
-
-    public UnsubscribeOptions() {
-    }
-
-    public UnsubscribeOptions(final @NotNull String @NotNull [] topics, final @Nullable Mqtt5UserProperty @Nullable [] userProperties) {
-        this.topics = topics;
-        this.userProperties = userProperties;
-    }
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
@@ -42,15 +39,26 @@ public class UnsubscribeOptions {
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
             description = "A user property for the unsubscribe message")
-    private @NotNull Mqtt5UserProperty @Nullable [] userProperties;
+    private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
 
-    public @NotNull String[] getTopics() {
+    public UnsubscribeOptions() {
+    }
+
+    public UnsubscribeOptions(
+            final @NotNull String @NotNull [] topics, final @Nullable Mqtt5UserProperty @Nullable [] userProperties) {
+        this.topics = topics;
+        this.userProperties = userProperties;
+    }
+
+    public @NotNull String @NotNull [] getTopics() {
         return topics;
     }
 
     public @NotNull Mqtt5UserProperties getUserProperties() {
         if (userProperties != null && userProperties.length > 0) {
-            return Mqtt5UserProperties.of(userProperties);
+            final List<Mqtt5UserProperty> nonNullProperties =
+                    Arrays.stream(userProperties).filter(Objects::nonNull).collect(Collectors.toList());
+            return Mqtt5UserProperties.of(nonNullProperties);
         } else {
             return Mqtt5UserProperties.of();
         }

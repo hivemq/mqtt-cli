@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.cli;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.options.ConnectOptions;
 import com.hivemq.cli.commands.options.DebugOptions;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.PublishOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -35,14 +36,6 @@ import java.util.concurrent.Callable;
 public class PublishCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
-    private boolean versionInfoRequested;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
-
-    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-l"}, defaultValue = "false",
             description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
@@ -56,6 +49,9 @@ public class PublishCommand implements Callable<Integer> {
     @CommandLine.Mixin
     private final @NotNull DebugOptions debugOptions = new DebugOptions();
 
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+
     private final @NotNull MqttClientExecutor mqttClientExecutor;
 
     @Inject
@@ -64,7 +60,7 @@ public class PublishCommand implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
 
         String logLevel = "warn";
         if (debugOptions.isDebug()) {
@@ -101,9 +97,9 @@ public class PublishCommand implements Callable<Integer> {
     }
 
     @Override
-    public String toString() {
-        return "PublishCommand{" + "versionInfoRequested=" + versionInfoRequested + ", usageHelpRequested=" +
-                usageHelpRequested + ", logToLogfile=" + logToLogfile + ", connectOptions=" + connectOptions +
-                ", publishOptions=" + publishOptions + ", debugOptions=" + debugOptions + '}';
+    public @NotNull String toString() {
+        return "PublishCommand{" + "logToLogfile=" + logToLogfile + ", connectOptions=" + connectOptions +
+                ", publishOptions=" + publishOptions + ", debugOptions=" + debugOptions + ", defaultOptions=" +
+                defaultOptions + ", mqttClientExecutor=" + mqttClientExecutor + '}';
     }
 }

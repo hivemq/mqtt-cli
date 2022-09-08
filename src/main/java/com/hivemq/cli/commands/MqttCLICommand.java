@@ -17,22 +17,30 @@
 package com.hivemq.cli.commands;
 
 import com.hivemq.cli.MqttCLIMain;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 
 @CommandLine.Command(name = "mqtt", description = "MQTT Command Line Interpreter.",
-        synopsisHeading = "%n@|bold Usage:|@  ", synopsisSubcommandLabel = "{ pub | sub | shell | test | hivemq }",
-        descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
+        synopsisHeading = "%n@|bold Usage:|@  ",
+        synopsisSubcommandLabel = "{ pub | sub | shell | test | hivemq | swarm }", descriptionHeading = "%n",
+        optionListHeading = "%n@|bold Options:|@%n", commandListHeading = "%n@|bold Commands:|@%n",
         versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class MqttCLICommand {
 
     @SuppressWarnings("unused")
     public static final @NotNull String VERSION_STRING = "1.0";
 
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+
     @Inject
     MqttCLICommand() {}
 
+    @Override
+    public @NotNull String toString() {
+        return "MqttCLICommand{" + "defaultOptions=" + defaultOptions + '}';
+    }
 }

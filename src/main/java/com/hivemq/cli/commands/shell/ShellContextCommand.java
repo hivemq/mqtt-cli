@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
@@ -37,12 +38,6 @@ public class ShellContextCommand implements Callable<Integer> {
 
     @NotNull MqttClientExecutor mqttClientExecutor;
 
-    //needed for pico cli - reflection code generation
-    public ShellContextCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
-
     @Inject
     public ShellContextCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
         this.mqttClientExecutor = mqttClientExecutor;
@@ -61,13 +56,13 @@ public class ShellContextCommand implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         Objects.requireNonNull(ShellCommand.TERMINAL_WRITER).println(ShellCommand.getUsageMessage());
         return 0;
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "ShellContextCommand{}";
     }
 }

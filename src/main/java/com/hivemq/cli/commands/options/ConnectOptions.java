@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.options;
 
 import com.google.common.base.Joiner;
@@ -69,6 +70,7 @@ public class ConnectOptions {
             description = "Define a clean start for the connection (default: true)")
     private boolean cleanStart;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
             description = "The lifetime of the session of the connected client")
     private @Nullable Long sessionExpiryInterval;
@@ -77,6 +79,13 @@ public class ConnectOptions {
     @CommandLine.Option(names = {"-Cup", "--connectUserProperty"}, converter = Mqtt5UserPropertyConverter.class,
             description = "A user property of the connect message'")
     private @Nullable Mqtt5UserProperty @Nullable [] connectUserProperties;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-ws"}, description = "Use WebSocket transport protocol (default: false)", order = 2)
+    private boolean useWebSocket;
+
+    @CommandLine.Option(names = {"-ws:path"}, description = "The path of the WebSocket", order = 2)
+    private @Nullable String webSocketPath;
 
     @CommandLine.Mixin
     private final @NotNull WillOptions willOptions = new WillOptions();
@@ -126,26 +135,8 @@ public class ConnectOptions {
         return connectRestrictionOptions;
     }
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-ws"}, description = "Use WebSocket transport protocol (default: false)", order = 2)
-    private boolean useWebSocket;
-
-    @CommandLine.Option(names = {"-ws:path"}, description = "The path of the WebSocket", order = 2)
-    private @Nullable String webSocketPath;
-
     public @Nullable MqttClientSslConfig buildSslConfig() throws Exception {
         return sslOptions.buildSslConfig();
-    }
-
-    @Override
-    public String toString() {
-        return "ConnectOptions{" + "version=" + version + ", host='" + host + '\'' + ", port=" + port +
-                ", identifier='" + identifier + '\'' + ", identifierPrefix='" + identifierPrefix + '\'' +
-                ", keepAlive=" + keepAlive + ", cleanStart=" + cleanStart + ", sessionExpiryInterval=" +
-                sessionExpiryInterval + ", connectUserProperties=" + Arrays.toString(connectUserProperties) +
-                ", willOptions=" + willOptions + ", connectRestrictionOptions=" + connectRestrictionOptions +
-                ", authenticationOptions=" + authenticationOptions + ", sslOptions=" + sslOptions + ", useWebSocket=" +
-                useWebSocket + ", webSocketPath='" + webSocketPath + '\'' + '}';
     }
 
     public @Nullable Integer getKeepAlive() {
@@ -165,7 +156,8 @@ public class ConnectOptions {
     }
 
     public void setDefaultOptions() {
-        final DefaultCLIProperties defaultCLIProperties = Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+        final DefaultCLIProperties defaultCLIProperties =
+                Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
 
         if (version == null) {
             version = defaultCLIProperties.getMqttVersion();
@@ -201,7 +193,6 @@ public class ConnectOptions {
     }
 
     public void logUnusedOptions() {
-
         if (getVersion() == MqttVersion.MQTT_3_1_1) {
             if (sessionExpiryInterval != null) {
                 Logger.warn("Connect session expiry interval was set but is unused in MQTT Version {}",
@@ -224,21 +215,18 @@ public class ConnectOptions {
         for (final MqttUtils.IdentifierWarning warning : warnings) {
             switch (warning) {
                 case TOO_LONG:
-                    Logger.warn(
-                            "Identifier '{}' may be too long (identifier length '{}' exceeds 23)",
+                    Logger.warn("Identifier '{}' may be too long (identifier length '{}' exceeds 23)",
                             identifier,
                             identifier.length());
                     break;
                 case TOO_SHORT:
-                    Logger.warn(
-                            "Identifier '{}' may be too short (identifier length '{}' is less than 1)",
+                    Logger.warn("Identifier '{}' may be too short (identifier length '{}' is less than 1)",
                             identifier,
                             identifier.length());
                     break;
                 case CONTAINS_INVALID_CHAR:
                     final char[] invalidChars = MqttUtils.getInvalidIdChars(identifier);
-                    Logger.warn(
-                            "Identifier '{}' may contain invalid characters ({})",
+                    Logger.warn("Identifier '{}' may contain invalid characters ({})",
                             identifier,
                             "'" + Joiner.on("', '").join(Chars.asList(invalidChars)) + "'");
                     break;
@@ -251,4 +239,14 @@ public class ConnectOptions {
         }
     }
 
+    @Override
+    public @NotNull String toString() {
+        return "ConnectOptions{" + "version=" + version + ", host='" + host + '\'' + ", port=" + port +
+                ", identifier='" + identifier + '\'' + ", identifierPrefix='" + identifierPrefix + '\'' +
+                ", keepAlive=" + keepAlive + ", cleanStart=" + cleanStart + ", sessionExpiryInterval=" +
+                sessionExpiryInterval + ", connectUserProperties=" + Arrays.toString(connectUserProperties) +
+                ", useWebSocket=" + useWebSocket + ", webSocketPath='" + webSocketPath + '\'' + ", willOptions=" +
+                willOptions + ", connectRestrictionOptions=" + connectRestrictionOptions + ", authenticationOptions=" +
+                authenticationOptions + ", sslOptions=" + sslOptions + '}';
+    }
 }

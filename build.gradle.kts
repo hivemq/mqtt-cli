@@ -463,6 +463,9 @@ cliNative {
     javaVersion.set(property("java-native.version").toString())
 }
 
+//reflection configuration files are currently created manually with the command: ./gradlew -Pagent agentMainRun --stacktrace
+//this yields an exception as the Graal plugin is currently quite buggy. The files are created nonetheless.
+//build/native/agent-output/agentMainRun/session-*****-*Date*T*Time*Z -> src/main/resources/META-INF/native-image
 val agentMainRun by tasks.registering(JavaExec::class) {
     group = "native"
 
@@ -535,6 +538,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
 graalvmNative {
     toolchainDetection.set(false)
     agent {
+        defaultMode.set("standard")
         tasksToInstrumentPredicate.set { t -> t == agentMainRun.get() }
     }
     binaries {

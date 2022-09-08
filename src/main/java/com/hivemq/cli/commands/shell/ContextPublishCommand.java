@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.google.common.base.Throwables;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.PublishOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -30,18 +30,11 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "pub", aliases = "publish", description = "Publish a message to a list of topics")
 public class ContextPublishCommand extends ShellContextCommand implements Callable<Integer> {
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
     @CommandLine.Mixin
     private final @NotNull PublishOptions publishOptions = new PublishOptions();
 
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextPublishCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextPublishCommand(final @NotNull MqttClientExecutor executor) {
@@ -49,8 +42,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Callab
     }
 
     @Override
-    public Integer call() {
-
+    public @NotNull Integer call() {
         Logger.trace("Command {} ", this);
 
         if (contextClient != null) {
@@ -69,8 +61,8 @@ public class ContextPublishCommand extends ShellContextCommand implements Callab
     }
 
     @Override
-    public String toString() {
-        return "ContextPublishCommand{" + "usageHelpRequested=" + usageHelpRequested + ", publishOptions=" +
-                publishOptions + '}';
+    public @NotNull String toString() {
+        return "ContextPublishCommand{" + "publishOptions=" + publishOptions + ", defaultOptions=" + defaultOptions +
+                '}';
     }
 }

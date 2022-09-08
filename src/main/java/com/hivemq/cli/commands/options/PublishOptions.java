@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.options;
 
 import com.hivemq.cli.converters.*;
@@ -28,10 +29,9 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-public class  PublishOptions {
+public class PublishOptions {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to publish to")
@@ -148,12 +148,12 @@ public class  PublishOptions {
         }
     }
 
-    public void arrangeQosToMatchTopics(){
+    public void arrangeQosToMatchTopics() {
         qos = MqttUtils.arrangeQosToMatchTopics(topics, qos);
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "PublishOptions{" + "topics=" + Arrays.toString(topics) + ", qos=" + Arrays.toString(qos) +
                 ", message=" + message + ", retain=" + retain + ", messageExpiryInterval=" + messageExpiryInterval +
                 ", payloadFormatIndicator=" + payloadFormatIndicator + ", contentType='" + contentType + '\'' +

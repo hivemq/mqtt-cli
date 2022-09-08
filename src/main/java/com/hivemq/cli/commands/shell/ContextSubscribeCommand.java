@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.google.common.base.Throwables;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.SubscribeOptions;
 import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -39,22 +39,16 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
 
     private static final int IDLE_TIME = 1000;
 
-    @CommandLine.Mixin
-    private final @NotNull SubscribeOptions subscribeOptions = new SubscribeOptions();
-
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
-
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-s", "--stay"}, defaultValue = "false",
             description = "The subscribe will block the console and wait for publish messages to print (default: false)")
     private boolean stay;
 
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextSubscribeCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
+    @CommandLine.Mixin
+    private final @NotNull SubscribeOptions subscribeOptions = new SubscribeOptions();
+
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -62,8 +56,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
     }
 
     @Override
-    public Integer call() {
-
+    public @NotNull Integer call() {
         Logger.trace("Command {} ", this);
 
         if (contextClient == null) {
@@ -141,8 +134,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
     }
 
     @Override
-    public String toString() {
-        return "ContextSubscribeCommand{" + "subscribeOptions=" + subscribeOptions + ", usageHelpRequested=" +
-                usageHelpRequested + ", stay=" + stay + '}';
+    public @NotNull String toString() {
+        return "ContextSubscribeCommand{" + "stay=" + stay + ", subscribeOptions=" + subscribeOptions +
+                ", defaultOptions=" + defaultOptions + '}';
     }
 }

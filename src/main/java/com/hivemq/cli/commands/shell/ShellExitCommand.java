@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.commands.options.DefaultOptions;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -25,23 +26,22 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "exit", description = "Exit the shell")
 public class ShellExitCommand implements Callable<Integer> {
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    boolean usageHelpRequested;
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ShellExitCommand() {
     }
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         ShellCommand.exitShell();
         return 0;
     }
 
     @Override
-    public String toString() {
-        return "ShellExitCommand{" + "usageHelpRequested=" + usageHelpRequested + '}';
+    public @NotNull String toString() {
+        return "ShellExitCommand{" + "defaultOptions=" + defaultOptions + '}';
     }
 }
 

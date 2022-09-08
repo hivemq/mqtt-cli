@@ -19,10 +19,12 @@ package com.hivemq.cli.commands.hivemq.export.clients;
 import com.google.common.base.Throwables;
 import com.google.gson.*;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.hivemq.export.AbstractExportCommand;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.rest.HiveMQRestService;
+import com.hivemq.cli.utils.LoggerUtils;
+import com.opencsv.CSVWriter;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,8 +41,66 @@ import java.util.concurrent.*;
 import java.util.function.BiFunction;
 
 @CommandLine.Command(name = "clients", description = "Export HiveMQ client details", sortOptions = false,
-        mixinStandardHelpOptions = true, versionProvider = MqttCLIMain.CLIVersionProvider.class)
-public class ExportClientsCommand extends AbstractExportCommand implements Callable<Integer> {
+        versionProvider = MqttCLIMain.CLIVersionProvider.class)
+public class ExportClientsCommand implements Callable<Integer> {
+
+    public enum OutputFormat {
+        csv
+    }
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
+    @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8888",
+            description = "The URL of the HiveMQ REST API endpoint (default http://localhost:8888)", order = 1)
+    private @NotNull String url;
+
+    @CommandLine.Option(names = {"-f", "--file"},
+            description = "The file to write the output to (defaults to a timestamped file in the current working directory)",
+            order = 2)
+    private @Nullable File file;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-r", "--rate"}, defaultValue = "1500",
+            description = "The rate limit of the rest calls to the HiveMQ API endpoint in requests per second (default 1500 rps)",
+            order = 3)
+    private double rateLimit;
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
+    @CommandLine.Option(names = {"--format"}, defaultValue = "csv",
+            description = "The export output format (default csv)", order = 4)
+    private @NotNull OutputFormat format;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--csvSeparator"}, defaultValue = "" + CSVWriter.DEFAULT_SEPARATOR,
+            description = "The separator for CSV export (default " + CSVWriter.DEFAULT_SEPARATOR + ")", order = 5)
+    private char csvSeparator;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--csvQuoteChar"}, defaultValue = "" + CSVWriter.DEFAULT_QUOTE_CHARACTER,
+            description = "The quote character for csv export (default " + CSVWriter.DEFAULT_QUOTE_CHARACTER + ")",
+            order = 6)
+    private char csvQuoteCharacter;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--csvEscChar"}, defaultValue = "" + CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+            description = "The escape character for csv export (default " + CSVWriter.DEFAULT_ESCAPE_CHARACTER + ")",
+            order = 7)
+    private char csvEscapeChar;
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
+    @CommandLine.Option(names = {"--csvLineEndChar"}, defaultValue = CSVWriter.DEFAULT_LINE_END,
+            description = "The line-end character for csv export (default \\n)", order = 8)
+    private @NotNull String csvLineEndCharacter;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
+            description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
+            order = 9)
+    private void initLogging(final boolean logToLogfile) {
+        LoggerUtils.turnOffConsoleLogging(logToLogfile);
+    }
+
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     private final static @NotNull String DEFAULT_FILE_NAME = "hivemq_client_details";
     private final static int CLIENT_IDS_QUEUE_LIMIT = 100_000;
@@ -137,6 +197,14 @@ public class ExportClientsCommand extends AbstractExportCommand implements Calla
         Logger.info("Finished export of client details");
 
         return exitCode;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "ExportClientsCommand{" + "url='" + url + '\'' + ", file=" + file + ", rateLimit=" + rateLimit +
+                ", format=" + format + ", csvSeparator=" + csvSeparator + ", csvQuoteCharacter=" + csvQuoteCharacter +
+                ", csvEscapeChar=" + csvEscapeChar + ", csvLineEndCharacter='" + csvLineEndCharacter + '\'' +
+                ", defaultOptions=" + defaultOptions + '}';
     }
 
     private static class PrintingTask implements Runnable {

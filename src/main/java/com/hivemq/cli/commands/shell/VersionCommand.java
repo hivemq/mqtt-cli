@@ -36,13 +36,13 @@ public class VersionCommand implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() {
+    public @NotNull Integer call() {
         spec.commandLine().printVersionHelp(System.out);
         return 0;
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "VersionCommand{" + "spec=" + spec + '}';
     }
 }

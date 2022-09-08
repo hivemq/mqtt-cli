@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.google.common.base.Throwables;
+import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -31,19 +31,11 @@ import java.util.concurrent.Callable;
         description = "Unsubscribe this MQTT client from a list of topics")
 public class ContextUnsubscribeCommand extends ShellContextCommand implements Callable<Integer> {
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
-
     @CommandLine.Mixin
     private final @NotNull UnsubscribeOptions unsubscribeOptions = new UnsubscribeOptions();
 
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextUnsubscribeCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
+    @CommandLine.Mixin
+    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextUnsubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -51,8 +43,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ca
     }
 
     @Override
-    public Integer call() {
-
+    public @NotNull Integer call() {
         Logger.trace("Command {} ", this);
 
         if (contextClient == null) {
@@ -73,8 +64,8 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ca
     }
 
     @Override
-    public String toString() {
-        return "ContextUnsubscribeCommand{" + "usageHelpRequested=" + usageHelpRequested + ", unsubscribeOptions=" +
-                unsubscribeOptions + '}';
+    public @NotNull String toString() {
+        return "ContextUnsubscribeCommand{" + "unsubscribeOptions=" + unsubscribeOptions + ", defaultOptions=" +
+                defaultOptions + '}';
     }
 }

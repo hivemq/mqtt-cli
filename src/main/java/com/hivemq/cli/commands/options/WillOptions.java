@@ -161,7 +161,7 @@ public class WillOptions {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "WillOptions{" + "willTopic='" + willTopic + '\'' + ", willMessage=" + willMessage + ", willQos=" +
                 willQos + ", willRetain=" + willRetain + ", willMessageExpiryInterval=" + willMessageExpiryInterval +
                 ", willDelayInterval=" + willDelayInterval + ", willPayloadFormatIndicator=" +

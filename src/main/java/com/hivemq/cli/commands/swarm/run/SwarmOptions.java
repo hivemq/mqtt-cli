@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.swarm;
+package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 import picocli.CommandLine;
 
-import java.util.concurrent.Callable;
-
-public abstract class AbstractSwarmCommand implements Callable<Integer> {
+public class SwarmOptions {
 
     @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8080",
             description = "The URL of the HiveMQ Swarm REST API endpoint (default: http://localhost:8080)", order = 1)
-    protected @NotNull String commanderUrl = "http://localhost:8080";
+    private @NotNull String commanderUrl = "http://localhost:8080";
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-l"}, defaultValue = "false",
@@ -35,8 +34,20 @@ public abstract class AbstractSwarmCommand implements Callable<Integer> {
         LoggerUtils.turnOffConsoleLogging(logToLogfile);
     }
 
+    public SwarmOptions() {
+    }
+
+    @VisibleForTesting
+    public SwarmOptions(final @NotNull String commanderUrl) {
+        this.commanderUrl = commanderUrl;
+    }
+
+    public @NotNull String getCommanderUrl() {
+        return commanderUrl;
+    }
+
     @Override
     public @NotNull String toString() {
-        return "AbstractSwarmCommand{" + "url='" + commanderUrl + '\'' + '}';
+        return "SwarmOptions{" + "url='" + commanderUrl + '\'' + '}';
     }
 }
