@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;

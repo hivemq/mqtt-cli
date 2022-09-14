@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
@@ -24,11 +23,8 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "exit", description = "Exit the current context")
+@CommandLine.Command(name = "exit", description = "Exit the current context", mixinStandardHelpOptions = true)
 public class ContextExitCommand extends ShellContextCommand implements Callable<Integer> {
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextExitCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -43,6 +39,6 @@ public class ContextExitCommand extends ShellContextCommand implements Callable<
 
     @Override
     public @NotNull String toString() {
-        return "ContextExitCommand{" + "defaultOptions=" + defaultOptions + '}';
+        return "ContextExitCommand{}";
     }
 }

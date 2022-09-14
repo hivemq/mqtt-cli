@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -26,11 +25,8 @@ import java.util.concurrent.Callable;
 /**
  * Command that clears the screen.
  */
-@CommandLine.Command(name = "cls", aliases = "clear", description = "Clear the screen")
+@CommandLine.Command(name = "cls", aliases = "clear", description = "Clear the screen", mixinStandardHelpOptions = true)
 public class ClearScreenCommand implements Callable<Integer> {
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     ClearScreenCommand() {}
@@ -43,6 +39,6 @@ public class ClearScreenCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ClearScreenCommand{" + "defaultOptions=" + defaultOptions + '}';
+        return "ClearScreenCommand{}";
     }
 }

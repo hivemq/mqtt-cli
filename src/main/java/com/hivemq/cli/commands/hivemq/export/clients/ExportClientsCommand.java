@@ -19,7 +19,6 @@ package com.hivemq.cli.commands.hivemq.export.clients;
 import com.google.common.base.Throwables;
 import com.google.gson.*;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.rest.HiveMQRestService;
@@ -41,7 +40,7 @@ import java.util.concurrent.*;
 import java.util.function.BiFunction;
 
 @CommandLine.Command(name = "clients", description = "Export HiveMQ client details", sortOptions = false,
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
+        versionProvider = MqttCLIMain.CLIVersionProvider.class, mixinStandardHelpOptions = true)
 public class ExportClientsCommand implements Callable<Integer> {
 
     public enum OutputFormat {
@@ -98,9 +97,6 @@ public class ExportClientsCommand implements Callable<Integer> {
     private void initLogging(final boolean logToLogfile) {
         LoggerUtils.turnOffConsoleLogging(logToLogfile);
     }
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     private final static @NotNull String DEFAULT_FILE_NAME = "hivemq_client_details";
     private final static int CLIENT_IDS_QUEUE_LIMIT = 100_000;
@@ -203,8 +199,7 @@ public class ExportClientsCommand implements Callable<Integer> {
     public @NotNull String toString() {
         return "ExportClientsCommand{" + "url='" + url + '\'' + ", file=" + file + ", rateLimit=" + rateLimit +
                 ", format=" + format + ", csvSeparator=" + csvSeparator + ", csvQuoteCharacter=" + csvQuoteCharacter +
-                ", csvEscapeChar=" + csvEscapeChar + ", csvLineEndCharacter='" + csvLineEndCharacter + '\'' +
-                ", defaultOptions=" + defaultOptions + '}';
+                ", csvEscapeChar=" + csvEscapeChar + ", csvLineEndCharacter='" + csvLineEndCharacter + '\'' + '}';
     }
 
     private static class PrintingTask implements Runnable {

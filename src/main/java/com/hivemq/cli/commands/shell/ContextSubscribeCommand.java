@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.SubscribeOptions;
 import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
@@ -34,7 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @CommandLine.Command(name = "sub", aliases = "subscribe",
-        description = "Subscribe this MQTT client to a list of topics")
+        description = "Subscribe this MQTT client to a list of topics", mixinStandardHelpOptions = true)
 public class ContextSubscribeCommand extends ShellContextCommand implements Callable<Integer> {
 
     private static final int IDLE_TIME = 1000;
@@ -46,9 +45,6 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
 
     @CommandLine.Mixin
     private final @NotNull SubscribeOptions subscribeOptions = new SubscribeOptions();
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -135,7 +131,6 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
 
     @Override
     public @NotNull String toString() {
-        return "ContextSubscribeCommand{" + "stay=" + stay + ", subscribeOptions=" + subscribeOptions +
-                ", defaultOptions=" + defaultOptions + '}';
+        return "ContextSubscribeCommand{" + "stay=" + stay + ", subscribeOptions=" + subscribeOptions + '}';
     }
 }

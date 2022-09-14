@@ -30,8 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
-
 public class CLITestExtension {
 
     public static final @NotNull List<String> CLI_EXEC =

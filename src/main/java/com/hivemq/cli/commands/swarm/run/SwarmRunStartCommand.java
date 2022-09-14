@@ -17,7 +17,6 @@
 package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiException;
@@ -42,7 +41,8 @@ import java.util.concurrent.TimeUnit;
 
 @CommandLine.Command(name = "start", description = "Start HiveMQ Swarm runs.", synopsisHeading = "%n@|bold Usage:|@  ",
         descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class)
+        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class,
+        mixinStandardHelpOptions = true)
 public class SwarmRunStartCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = {"-f", "--file"}, description = "The scenario file. " +
@@ -58,9 +58,6 @@ public class SwarmRunStartCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private @NotNull SwarmOptions swarmOptions = new SwarmOptions();
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     private final @NotNull RunsApi runsApi;
     private final @NotNull ScenariosApi scenariosApi;
@@ -255,7 +252,7 @@ public class SwarmRunStartCommand implements Callable<Integer> {
     @Override
     public @NotNull String toString() {
         return "SwarmRunStartCommand{" + "scenario=" + scenario + ", detached=" + detached + ", swarmOptions=" +
-                swarmOptions + ", defaultOptions=" + defaultOptions + ", runsApi=" + runsApi + ", scenariosApi=" +
-                scenariosApi + ", errorTransformer=" + errorTransformer + ", out=" + out + '}';
+                swarmOptions + ", runsApi=" + runsApi + ", scenariosApi=" + scenariosApi + ", errorTransformer=" +
+                errorTransformer + ", out=" + out + '}';
     }
 }

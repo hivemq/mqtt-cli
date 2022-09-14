@@ -16,18 +16,14 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "exit", description = "Exit the shell")
+@CommandLine.Command(name = "exit", description = "Exit the shell", mixinStandardHelpOptions = true)
 public class ShellExitCommand implements Callable<Integer> {
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ShellExitCommand() {
@@ -41,7 +37,7 @@ public class ShellExitCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ShellExitCommand{" + "defaultOptions=" + defaultOptions + '}';
+        return "ShellExitCommand{}";
     }
 }
 

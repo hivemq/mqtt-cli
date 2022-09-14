@@ -17,7 +17,6 @@
 package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.options.DefaultOptions;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -26,7 +25,8 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "run", description = "HiveMQ Swarm Run Command Line Interpreter.",
         synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class)
+        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class,
+        mixinStandardHelpOptions = true)
 public class SwarmRunCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
@@ -35,9 +35,6 @@ public class SwarmRunCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private final @NotNull SwarmOptions swarmOptions = new SwarmOptions();
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public SwarmRunCommand() {}
@@ -50,7 +47,6 @@ public class SwarmRunCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmRunCommand{" + "spec=" + spec + ", swarmOptions=" + swarmOptions + ", defaultOptions=" +
-                defaultOptions + '}';
+        return "SwarmRunCommand{" + "spec=" + spec + ", swarmOptions=" + swarmOptions + '}';
     }
 }

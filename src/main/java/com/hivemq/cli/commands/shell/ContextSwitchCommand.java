@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -30,7 +29,7 @@ import javax.inject.Inject;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "switch", description = "Switch the current context")
+@CommandLine.Command(name = "switch", description = "Switch the current context", mixinStandardHelpOptions = true)
 public class ContextSwitchCommand extends ShellContextCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
@@ -44,9 +43,6 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
     @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost",
             description = "The hostname of the message broker (default 'localhost')")
     private @Nullable String host;
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -100,6 +96,6 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
     @Override
     public @NotNull String toString() {
         return "ContextSwitchCommand{" + "contextName='" + contextName + '\'' + ", identifier='" + identifier + '\'' +
-                ", host='" + host + '\'' + ", defaultOptions=" + defaultOptions + '}';
+                ", host='" + host + '\'' + '}';
     }
 }

@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.PublishOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -27,14 +26,12 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "pub", aliases = "publish", description = "Publish a message to a list of topics")
+@CommandLine.Command(name = "pub", aliases = "publish", description = "Publish a message to a list of topics",
+        mixinStandardHelpOptions = true)
 public class ContextPublishCommand extends ShellContextCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private final @NotNull PublishOptions publishOptions = new PublishOptions();
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextPublishCommand(final @NotNull MqttClientExecutor executor) {
@@ -62,7 +59,6 @@ public class ContextPublishCommand extends ShellContextCommand implements Callab
 
     @Override
     public @NotNull String toString() {
-        return "ContextPublishCommand{" + "publishOptions=" + publishOptions + ", defaultOptions=" + defaultOptions +
-                '}';
+        return "ContextPublishCommand{" + "publishOptions=" + publishOptions + '}';
     }
 }

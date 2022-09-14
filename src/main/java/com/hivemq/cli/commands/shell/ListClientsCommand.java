@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -32,7 +31,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "ls", aliases = "list",
-        description = "List all connected clients with their respective identifiers")
+        description = "List all connected clients with their respective identifiers", mixinStandardHelpOptions = true)
 public class ListClientsCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
@@ -56,9 +55,6 @@ public class ListClientsCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false",
             description = "list subscribed topics of clients")
     private boolean listSubscriptions;
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ListClientsCommand() {
@@ -179,7 +175,6 @@ public class ListClientsCommand implements Callable<Integer> {
     @Override
     public @NotNull String toString() {
         return "ListClientsCommand{" + "sortByTime=" + sortByTime + ", doNotSort=" + doNotSort + ", reverse=" +
-                reverse + ", longOutput=" + longOutput + ", listSubscriptions=" + listSubscriptions +
-                ", defaultOptions=" + defaultOptions + '}';
+                reverse + ", longOutput=" + longOutput + ", listSubscriptions=" + listSubscriptions + '}';
     }
 }

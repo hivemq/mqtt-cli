@@ -17,7 +17,6 @@
 package com.hivemq.cli.commands.hivemq.export;
 
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.options.DefaultOptions;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -26,12 +25,9 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "export", description = "Exports the specified details from HiveMQ",
         synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
+        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class,
+        mixinStandardHelpOptions = true)
 public class ExportCommand implements Callable<Integer> {
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
@@ -48,6 +44,6 @@ public class ExportCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ExportCommand{" + "defaultOptions=" + defaultOptions + ", spec=" + spec + '}';
+        return "ExportCommand{" + ", spec=" + spec + '}';
     }
 }

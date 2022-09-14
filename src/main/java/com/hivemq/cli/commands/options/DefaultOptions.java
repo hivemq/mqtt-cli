@@ -3,6 +3,10 @@ package com.hivemq.cli.commands.options;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
+/**
+ * Helper Option in order to allow the --version and --help option at commands which already define -h and -V
+ * themselves.
+ */
 public class DefaultOptions {
 
     @SuppressWarnings("unused")

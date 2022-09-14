@@ -18,7 +18,6 @@ package com.hivemq.cli.commands.swarm.commander;
 
 import com.google.gson.Gson;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.commands.swarm.run.SwarmOptions;
@@ -40,7 +39,8 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "status",
         description = "Check the status of HiveMQ Swarm. (READY, STARTING, RUNNING, STOPPING).",
         synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class)
+        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class,
+        mixinStandardHelpOptions = true)
 public class SwarmStatusCommand implements Callable<Integer> {
 
     public enum OutputFormat {
@@ -55,9 +55,6 @@ public class SwarmStatusCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private final @NotNull SwarmOptions swarmOptions = new SwarmOptions();
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     private final @NotNull Gson gson;
     private final @NotNull RunsApi runsApi;
@@ -159,8 +156,8 @@ public class SwarmStatusCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmStatusCommand{" + "format=" + format + ", swarmOptions=" + swarmOptions + ", defaultOptions=" +
-                defaultOptions + ", gson=" + gson + ", runsApi=" + runsApi + ", commanderApi=" + commanderApi +
-                ", errorTransformer=" + errorTransformer + ", out=" + out + '}';
+        return "SwarmStatusCommand{" + "format=" + format + ", swarmOptions=" + swarmOptions + ", gson=" + gson +
+                ", runsApi=" + runsApi + ", commanderApi=" + commanderApi + ", errorTransformer=" + errorTransformer +
+                ", out=" + out + '}';
     }
 }

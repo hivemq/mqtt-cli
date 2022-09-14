@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -28,14 +27,11 @@ import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "unsub", aliases = "unsubscribe",
-        description = "Unsubscribe this MQTT client from a list of topics")
+        description = "Unsubscribe this MQTT client from a list of topics", mixinStandardHelpOptions = true)
 public class ContextUnsubscribeCommand extends ShellContextCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private final @NotNull UnsubscribeOptions unsubscribeOptions = new UnsubscribeOptions();
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
     public ContextUnsubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -65,7 +61,6 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ca
 
     @Override
     public @NotNull String toString() {
-        return "ContextUnsubscribeCommand{" + "unsubscribeOptions=" + unsubscribeOptions + ", defaultOptions=" +
-                defaultOptions + '}';
+        return "ContextUnsubscribeCommand{" + "unsubscribeOptions=" + unsubscribeOptions + '}';
     }
 }

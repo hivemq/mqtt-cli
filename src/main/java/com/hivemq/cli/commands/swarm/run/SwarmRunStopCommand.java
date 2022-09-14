@@ -17,7 +17,6 @@
 package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiException;
@@ -39,7 +38,8 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "stop", description = "Stop HiveMQ Swarm runs.", synopsisHeading = "%n@|bold Usage:|@  ",
         descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class)
+        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class,
+        mixinStandardHelpOptions = true)
 public class SwarmRunStopCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = {"-r", "--run-id"},
@@ -48,9 +48,6 @@ public class SwarmRunStopCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private @NotNull SwarmOptions swarmOptions = new SwarmOptions();
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     private final @NotNull RunsApi runsApi;
     private final @NotNull CommanderApi commanderApi;
@@ -132,8 +129,7 @@ public class SwarmRunStopCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmRunStopCommand{" + "runId=" + runId + ", swarmOptions=" + swarmOptions + ", defaultOptions=" +
-                defaultOptions + ", runsApi=" + runsApi + ", commanderApi=" + commanderApi + ", errorTransformer=" +
-                errorTransformer + ", out=" + out + '}';
+        return "SwarmRunStopCommand{" + "runId=" + runId + ", swarmOptions=" + swarmOptions + ", runsApi=" + runsApi +
+                ", commanderApi=" + commanderApi + ", errorTransformer=" + errorTransformer + ", out=" + out + '}';
     }
 }

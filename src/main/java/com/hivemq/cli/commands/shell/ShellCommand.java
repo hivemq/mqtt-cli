@@ -19,7 +19,6 @@ package com.hivemq.cli.commands.shell;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +47,7 @@ import java.util.concurrent.Callable;
         description = "Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.",
         footer = {"", "@|bold Press Ctl-C to exit.|@"}, synopsisHeading = "%n@|bold Usage|@:  ",
         descriptionHeading = "%n", optionListHeading = "%n@|bold Options|@:%n",
-        commandListHeading = "%n@|bold Commands|@:%n", separator = " ")
+        commandListHeading = "%n@|bold Commands|@:%n", separator = " ", mixinStandardHelpOptions = true)
 public class ShellCommand implements Callable<Integer> {
 
     private static final @NotNull String DEFAULT_PROMPT = "mqtt> ";
@@ -69,9 +68,6 @@ public class ShellCommand implements Callable<Integer> {
             description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
             order = 1)
     private boolean logToLogfile;
-
-    @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
@@ -202,7 +198,7 @@ public class ShellCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ShellCommand{" + "logToLogfile=" + logToLogfile + ", defaultOptions=" + defaultOptions + ", spec=" +
-                spec + ", defaultCLIProperties=" + defaultCLIProperties + ", logfilePath='" + logfilePath + '\'' + '}';
+        return "ShellCommand{" + "logToLogfile=" + logToLogfile + ", spec=" + spec + ", defaultCLIProperties=" +
+                defaultCLIProperties + ", logfilePath='" + logfilePath + '\'' + '}';
     }
 }
