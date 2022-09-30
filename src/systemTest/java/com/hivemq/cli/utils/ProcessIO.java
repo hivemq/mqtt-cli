@@ -18,6 +18,7 @@ package com.hivemq.cli.utils;
 import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -71,7 +72,6 @@ public class ProcessIO {
             } catch (final Exception ex) {
                 ex.printStackTrace();
             }
-
         });
 
 
@@ -120,6 +120,7 @@ public class ProcessIO {
 
                         // End of stream reached
                         if (readChar == -1) {
+                            Assertions.fail("Reached end of stream.");
                             return false;
                         }
 
@@ -136,6 +137,7 @@ public class ProcessIO {
                         }
                     }
                 } catch (final IOException ex) {
+                    Assertions.fail(ex);
                     ex.printStackTrace();
                     return false;
                 }
