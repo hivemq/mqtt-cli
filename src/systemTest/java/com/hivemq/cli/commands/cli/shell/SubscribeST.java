@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.cli.shell;
 
-import com.hivemq.cli.utils.CLIShellTestExtension;
+import com.hivemq.cli.utils.MqttCliShell;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SubscribeST {
@@ -34,7 +35,7 @@ public class SubscribeST {
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
 
     @RegisterExtension
-    private final @NotNull CLIShellTestExtension cliShellTestExtension = new CLIShellTestExtension();
+    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
 
     @BeforeAll
     static void beforeAll() {
@@ -48,29 +49,28 @@ public class SubscribeST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_subscribe() {
-        cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
-                "cliTest@" + hivemq.getHost() + ">");
-
-        cliShellTestExtension.executeCommandWithTimeout("sub -t test", "cliTest@" + hivemq.getHost() + ">");
+    void test_successful_subscribe() throws Exception {
+        final List<String> subscribeCommand = List.of("sub", "-t", "test");
+        mqttCliShell.connectClient(hivemq);
+        mqttCliShell.executeCommand(subscribeCommand).awaitStdout(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_missing_topic() {
-        cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
-                "cliTest@" + hivemq.getHost() + ">");
-
-        cliShellTestExtension.executeCommandWithErrorWithTimeout(
-                "sub",
-                "Missing required option: '--topic <topics>'");
+    void test_subscribe_missing_topic() throws Exception{
+        final List<String> subscribeCommand = List.of("sub");
+        mqttCliShell.connectClient(hivemq);
+        mqttCliShell.executeCommand(subscribeCommand)
+                .awaitStdErr("Missing required option: '--topic <topics>'")
+                .awaitStdout("cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_missing_arguments() {
-        cliShellTestExtension.executeCommandWithErrorWithTimeout("sub", "Unmatched argument at index 0: 'sub'");
+    void test_missing_arguments() throws Exception {
+        final List<String> subscribeCommand = List.of("sub");
+        mqttCliShell.executeCommand(subscribeCommand)
+                .awaitStdErr("Unmatched argument at index 0: 'sub'")
+                .awaitStdout("mqtt>");
     }
 }

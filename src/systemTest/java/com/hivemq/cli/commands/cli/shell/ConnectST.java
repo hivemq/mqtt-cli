@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.cli.shell;
 
-import com.hivemq.cli.utils.CLIShellTestExtension;
+import com.hivemq.cli.utils.MqttCliShell;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
 
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class ConnectST {
@@ -35,7 +35,7 @@ public class ConnectST {
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
 
     @RegisterExtension
-    private final @NotNull CLIShellTestExtension cliShellTestExtension = new CLIShellTestExtension();
+    final MqttCliShell mqttCliShell = new MqttCliShell();
 
     @BeforeAll
     static void beforeAll() {
@@ -49,16 +49,31 @@ public class ConnectST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_connect() {
-        cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
-                "cliTest@" + hivemq.getHost() + ">");
+    void test_successful_connect() throws Exception {
+        final List<String> connectCommand = List.of(
+                "con",
+                "-h", hivemq.getHost(),
+                "-p", String.valueOf(hivemq.getMqttPort()),
+                "-i", "cliTest"
+        );
+
+        mqttCliShell.executeCommand(connectCommand).awaitStdout(String.format("cliTest@%s>", hivemq.getHost()));
     }
+
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_unsuccessful_connect() {
-        cliShellTestExtension.executeCommandWithErrorWithTimeout("con -h localhost -p 22 -i cliTest",
-                "Unable to connect.");
+    void test_unsuccessful_connect() throws Exception {
+        final List<String> connectCommand = List.of(
+                "con",
+                "-h", "localhost",
+                "-p", "22",
+                "-i", "cliTest"
+        );
+
+        mqttCliShell.executeCommand(connectCommand)
+                .awaitStdErr("Unable to connect.")
+                .awaitStdout("mqtt>");
     }
+
 }
