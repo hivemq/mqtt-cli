@@ -31,7 +31,8 @@ jobs:
         if: always() # always run even if the previous step fails
         with:
           report_paths: '**/build/test-results/*/TEST-*.xml'
-      - uses: actions/upload-artifact@v3
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
         with:
           name: test-results
           path: './build/test-results/'
