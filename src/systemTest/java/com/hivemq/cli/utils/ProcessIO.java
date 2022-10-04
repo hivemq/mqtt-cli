@@ -15,56 +15,67 @@
  */
 package com.hivemq.cli.utils;
 
-import org.apache.commons.io.input.TeeInputStream;
-import org.apache.commons.io.output.TeeOutputStream;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
+import org.testcontainers.shaded.org.awaitility.core.ConditionTimeoutException;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 public class ProcessIO {
 
-    private final @NotNull BufferedReader reader;
-    private final @NotNull BufferedReader readerErr;
-    private final @NotNull BufferedWriter writer;
-    private final @NotNull PrintStream stdout;
+    private final @NotNull BufferedWriter stdoutWriter;
+    private final @NotNull StringBuilder processStdOut;
+    private final @NotNull StringBuilder processStdErr;
+    private final @NotNull BufferedWriter processOutputWriter;
+    private final @NotNull AtomicInteger processStdOutMarker;
+    private final @NotNull AtomicInteger processStdErrMarker;
 
     private ProcessIO(
-            final @NotNull BufferedReader reader,
-            final @NotNull BufferedReader readerErr,
-            final @NotNull BufferedWriter writer,
-            final @NotNull PrintStream stdout) {
-        this.reader = reader;
-        this.readerErr = readerErr;
-        this.writer = writer;
-        this.stdout = stdout;
+            final @NotNull BufferedWriter stdoutWriter,
+            final @NotNull StringBuilder processStdOut,
+            final @NotNull StringBuilder processStdErr,
+            final @NotNull BufferedWriter processOutputWriter) {
+        this.stdoutWriter = stdoutWriter;
+        this.processStdOut = processStdOut;
+        this.processStdErr = processStdErr;
+        this.processOutputWriter = processOutputWriter;
+        this.processStdOutMarker = new AtomicInteger(0);
+        this.processStdErrMarker = new AtomicInteger(0);
     }
 
-    public static @NotNull ProcessIO startReading(final @NotNull Process process) throws IOException {
+    public static @NotNull ProcessIO startReading(final @NotNull Process process) {
 
-        final PipedInputStream pipeIn = new PipedInputStream();
-        final PipedOutputStream pipeOut = new PipedOutputStream(pipeIn);
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(pipeIn, StandardCharsets.UTF_8));
-        final BufferedWriter writer =
-                new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8));
-        final PrintStream stdout = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-        final TeeOutputStream teeOut = new TeeOutputStream(pipeOut, stdout);
-        final TeeInputStream teeInStdOut = new TeeInputStream(process.getInputStream(), teeOut);
+        final StringBuilder processStdOut = new StringBuilder();
+        final StringBuilder processErrOut = new StringBuilder();
+        final BufferedWriter processOutputWriter =
+                new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+
+        /* Startup std-out writer */
+        final InputStream processInputStream = process.getInputStream();
+        final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
 
         CompletableFuture.runAsync(() -> {
             try {
                 int previousChar = '\0';
                 while (true) {
-                    final int readChar = teeInStdOut.read();
+                    final int readChar = processInputStream.read();
 
                     if (readChar == -1) {
                         return;
                     }
 
-                    if (previousChar == '>' && readChar == ' ') {
-                        stdout.flush();
+                    writer.write(readChar);
+                    processStdOut.append((char) readChar);
+
+                    if ((previousChar == '>' && readChar == ' ') || readChar == '\n') {
+                        writer.flush();
                     }
 
                     previousChar = readChar;
@@ -74,85 +85,86 @@ public class ProcessIO {
             }
         });
 
-
-        final PipedInputStream pipeInErr = new PipedInputStream();
-        final PipedOutputStream pipeOutErr = new PipedOutputStream(pipeInErr);
-        final BufferedReader readerErr = new BufferedReader(new InputStreamReader(pipeInErr, StandardCharsets.UTF_8));
-        final PrintStream stdErr = new PrintStream(System.err, true, StandardCharsets.UTF_8);
-        final TeeOutputStream teeOutErr = new TeeOutputStream(pipeOutErr, stdErr);
-        final TeeInputStream teeInStdErr = new TeeInputStream(process.getErrorStream(), teeOutErr);
+        /* Startup std-err writer */
+        final InputStream processErrorStream = process.getErrorStream();
+        final BufferedWriter errorWriter =
+                new BufferedWriter(new OutputStreamWriter(System.err, StandardCharsets.UTF_8));
 
         CompletableFuture.runAsync(() -> {
             try {
                 while (true) {
-                    final int readChar = teeInStdErr.read();
+                    final int readChar = processErrorStream.read();
 
                     if (readChar == -1) {
                         return;
                     }
 
+                    errorWriter.write(readChar);
+                    processErrOut.append((char) readChar);
+
+                    if (readChar == '\n') {
+                        errorWriter.flush();
+                    }
                 }
             } catch (final Exception ex) {
                 ex.printStackTrace();
             }
         });
 
-        return new ProcessIO(reader, readerErr, writer, stdout);
+        return new ProcessIO(writer, processStdOut, processErrOut, processOutputWriter);
     }
 
+    public void awaitStdOut(final @NotNull String stdOutMessage) throws TimeoutException {
+        try {
+            await().until(() -> {
+                final int index = processStdOut.indexOf(stdOutMessage, processStdOutMarker.get());
 
-    public @NotNull CompletableFuture<Boolean> awaitStdOutMessage(final @NotNull String message, final @NotNull StringBuilder outputUntilStop) {
-        return awaitMessage(reader, message, outputUntilStop);
-    }
-
-    public @NotNull CompletableFuture<Boolean> awaitStdErrMessage(final @NotNull String message, final @NotNull StringBuilder outputUntilStop) {
-        return awaitMessage(readerErr, message, outputUntilStop);
-    }
-
-    private CompletableFuture<Boolean> awaitMessage(final @NotNull BufferedReader reader, final @NotNull String message, final @NotNull StringBuilder outputUntilStop) {
-        return CompletableFuture.supplyAsync(() -> {
-            while (true) {
-                try {
-                    for (int i = 0; i < message.length(); i++) {
-
-                        // Read next character from the input stream
-                        final int readChar = reader.read();
-
-                        // End of stream reached
-                        if (readChar == -1) {
-                            Assertions.fail("Reached end of stream.");
-                            return false;
-                        }
-
-                        outputUntilStop.append((char) readChar);
-
-                        // Start new iteration
-                        if (readChar != message.charAt(i)) {
-                            break;
-                        }
-
-                        // Message is contained
-                        if ((i == message.length() - 1)) {
-                            return true;
-                        }
-                    }
-                } catch (final IOException ex) {
-                    Assertions.fail(ex);
-                    ex.printStackTrace();
+                if (index == -1) {
                     return false;
                 }
-            }
-        });
+
+                processStdOutMarker.set(index + stdOutMessage.length());
+                return true;
+            });
+        } catch (final @NotNull ConditionTimeoutException timeoutException) {
+            final String errorMessage = String.format(
+                    "Timeout while waiting for expected standard output '%s'. Actual: '%s'",
+                    stdOutMessage,
+                    processStdOut.substring(processStdErrMarker.get()));
+            throw new TimeoutException(errorMessage, timeoutException);
+        }
+    }
+
+    public void awaitStdErr(final @NotNull String stdErrMessage) throws TimeoutException {
+        try {
+            await().until(() -> {
+                final int index = processStdErr.indexOf(stdErrMessage, processStdErrMarker.get());
+
+                if (index == -1) {
+                    return false;
+                }
+
+                processStdErrMarker.set(index + stdErrMessage.length());
+                return true;
+            });
+        } catch (final ConditionTimeoutException timeoutException) {
+            final String errorMessage = String.format(
+                    "Timeout while waiting for expected error output '%s'. Actual: '%s'",
+                    stdErrMessage,
+                    processStdErr.substring(processStdErrMarker.get()));
+            throw new TimeoutException(errorMessage, timeoutException);
+        }
 
     }
 
     public void writeMsg(final @NotNull String message) throws IOException {
-        stdout.write(message.getBytes(StandardCharsets.UTF_8));
-        stdout.write('\n');
+        stdoutWriter.write(message);
+        stdoutWriter.write('\n');
+        stdoutWriter.flush();
 
-        writer.write(message);
-        writer.write("\n");
-        writer.flush();
+        processOutputWriter.write(message);
+        processOutputWriter.write('\n');
+        processOutputWriter.flush();
     }
 
 }

@@ -18,13 +18,6 @@ package com.hivemq.cli.utils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class AwaitOutput {
 
     private final @NotNull ProcessIO processIO;
@@ -35,35 +28,24 @@ public class AwaitOutput {
         this.command = command;
     }
 
-    public @NotNull AwaitOutput awaitStdout(final @NotNull String expectedOutput) {
-        final StringBuilder outputUntilStop = new StringBuilder();
-        final CompletableFuture<Boolean> awaitMsg = processIO.awaitStdOutMessage(expectedOutput, outputUntilStop);
+    public @NotNull AwaitOutput awaitStdOut(final @NotNull String expectedOutput) {
         try {
-            assertEquals(true, awaitMsg.get(10, TimeUnit.SECONDS),
-                    String.format("Expected command '%s' to produce output '%s' but only read '%s'", command, expectedOutput, outputUntilStop));
-        } catch (final InterruptedException | ExecutionException exception) {
-            exception.printStackTrace();
-            throw new RuntimeException(exception);
+            processIO.awaitStdOut(expectedOutput);
         } catch (final TimeoutException timeoutException) {
-            Assertions.fail(String.format("Timeout: Expected command '%s' to produce output '%s' but only read '%s'", command, expectedOutput, outputUntilStop));
+            Assertions.fail(String.format("Command '%s' did not return expected standard output '%s' in time.", command, expectedOutput), timeoutException);
         }
         return this;
     }
 
     public @NotNull AwaitOutput awaitStdErr(final @NotNull String expectedOutput) {
-        final StringBuilder outputUntilStop = new StringBuilder();
-        final CompletableFuture<Boolean> awaitMsg = processIO.awaitStdErrMessage(expectedOutput, outputUntilStop);
         try {
-            assertEquals(true, awaitMsg.get(10, TimeUnit.SECONDS),
-                    String.format("Expected command '%s' to produce error output '%s' but only read '%s'", command, expectedOutput, outputUntilStop));
-        } catch (final InterruptedException | ExecutionException exception) {
-            exception.printStackTrace();
-            throw new RuntimeException(exception);
+            processIO.awaitStdErr(expectedOutput);
         } catch (final TimeoutException timeoutException) {
-            Assertions.fail(String.format("Timeout: Expected command '%s' to produce error output '%s' but only read '%s'", command, expectedOutput, outputUntilStop));
+            Assertions.fail(String.format("Command '%s' did not return expected error output '%s' in time.", command, expectedOutput), timeoutException);
         }
         return this;
     }
+
     public @NotNull AwaitOutput awaitLog(final @NotNull String expectedLogMessage) {
         //FIXME
         return null;

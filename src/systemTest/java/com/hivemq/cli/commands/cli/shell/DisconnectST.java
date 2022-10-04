@@ -52,15 +52,15 @@ public class DisconnectST {
     void test_successful_disconnect() throws Exception {
         final List<String> disconnectCommand = List.of("dis");
         mqttCliShell.connectClient(hivemq);
-       mqttCliShell.executeCommand(disconnectCommand).awaitStdout("mqtt>");
+       mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>");
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_unsuccessful_disconnect() throws Exception {
         final List<String> disconnectCommand = List.of("dis");
-        mqttCliShell.executeCommand(disconnectCommand)
+        mqttCliShell.executeAsync(disconnectCommand)
                 .awaitStdErr("Missing required option '--identifier=<identifier>'")
-                .awaitStdout("mqtt>");
+                .awaitStdOut("mqtt>");
     }
 }

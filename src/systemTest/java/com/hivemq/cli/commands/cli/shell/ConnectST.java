@@ -57,7 +57,7 @@ public class ConnectST {
                 "-i", "cliTest"
         );
 
-        mqttCliShell.executeCommand(connectCommand).awaitStdout(String.format("cliTest@%s>", hivemq.getHost()));
+        mqttCliShell.executeAsync(connectCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
 
@@ -71,9 +71,9 @@ public class ConnectST {
                 "-i", "cliTest"
         );
 
-        mqttCliShell.executeCommand(connectCommand)
+        mqttCliShell.executeAsync(connectCommand)
                 .awaitStdErr("Unable to connect.")
-                .awaitStdout("mqtt>");
+                .awaitStdOut("mqtt>");
     }
 
 }

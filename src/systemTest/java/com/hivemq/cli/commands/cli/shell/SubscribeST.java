@@ -52,7 +52,7 @@ public class SubscribeST {
     void test_successful_subscribe() throws Exception {
         final List<String> subscribeCommand = List.of("sub", "-t", "test");
         mqttCliShell.connectClient(hivemq);
-        mqttCliShell.executeCommand(subscribeCommand).awaitStdout(String.format("cliTest@%s>", hivemq.getHost()));
+        mqttCliShell.executeAsync(subscribeCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
     @Test
@@ -60,17 +60,17 @@ public class SubscribeST {
     void test_subscribe_missing_topic() throws Exception{
         final List<String> subscribeCommand = List.of("sub");
         mqttCliShell.connectClient(hivemq);
-        mqttCliShell.executeCommand(subscribeCommand)
+        mqttCliShell.executeAsync(subscribeCommand)
                 .awaitStdErr("Missing required option: '--topic <topics>'")
-                .awaitStdout("cliTest@" + hivemq.getHost() + ">");
+                .awaitStdOut("cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_missing_arguments() throws Exception {
         final List<String> subscribeCommand = List.of("sub");
-        mqttCliShell.executeCommand(subscribeCommand)
-                .awaitStdErr("Unmatched argument at index 0: 'sub'")
-                .awaitStdout("mqtt>");
+        mqttCliShell.executeAsync(subscribeCommand)
+                .awaitStdOut("mqtt>")
+                .awaitStdErr("Unmatched argument at index 0: 'sub'");
     }
 }

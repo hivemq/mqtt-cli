@@ -52,7 +52,7 @@ public class PublishST {
     void test_successful_publish() throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test");
         mqttCliShell.connectClient(hivemq);
-        mqttCliShell.executeCommand(publishCommand).awaitStdout(String.format("cliTest@%s>", hivemq.getHost()));
+        mqttCliShell.executeAsync(publishCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
     @Test
@@ -60,9 +60,9 @@ public class PublishST {
     void test_publish_missing_topic() throws Exception {
         final List<String> publishCommand = List.of("pub");
         mqttCliShell.connectClient(hivemq);
-        mqttCliShell.executeCommand(publishCommand)
+        mqttCliShell.executeAsync(publishCommand)
                 .awaitStdErr("Missing required option: '--topic <topics>'")
-                .awaitStdout("cliTest@" + hivemq.getHost() + ">");
+                .awaitStdOut("cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test
@@ -70,17 +70,17 @@ public class PublishST {
     void test_publish_missing_message() throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test");
         mqttCliShell.connectClient(hivemq);
-        mqttCliShell.executeCommand(publishCommand)
+        mqttCliShell.executeAsync(publishCommand)
                 .awaitStdErr("Error: Missing required argument (specify one of these)")
-                .awaitStdout("cliTest@" + hivemq.getHost() + ">");
+                .awaitStdOut("cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_missing_arguments() throws Exception {
         final List<String> publishCommand = List.of("pub");
-        mqttCliShell.executeCommand(publishCommand)
+        mqttCliShell.executeAsync(publishCommand)
                 .awaitStdErr("Unmatched argument at index 0: 'pub'")
-                .awaitStdout("mqtt>");
+                .awaitStdOut("mqtt>");
     }
 }

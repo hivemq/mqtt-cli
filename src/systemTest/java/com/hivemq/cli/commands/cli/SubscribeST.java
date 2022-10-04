@@ -73,11 +73,11 @@ public class SubscribeST {
 
         final AwaitOutput awaitOutput = mqttCli.executeAsync(subscribeCommand);
 
-        awaitOutput.awaitStdout("received SUBACK");
+        awaitOutput.awaitStdOut("received SUBACK");
 
         publisher.publishWith().topic("test").payload("testReturn".getBytes(StandardCharsets.UTF_8)).send();
 
-        awaitOutput.awaitStdout("testReturn");
+        awaitOutput.awaitStdOut("testReturn");
     }
 
     @Test

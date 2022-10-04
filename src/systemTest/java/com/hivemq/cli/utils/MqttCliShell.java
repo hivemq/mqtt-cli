@@ -47,24 +47,24 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
     private void startShellMode() throws IOException {
         final List<String> shellCommand = new ArrayList<>(CLI_EXEC);
-        assertTrue(shellCommand.addAll(List.of("sh", "-l")));
+        assertTrue(shellCommand.addAll(List.of("sh")));
 
         this.process = new ProcessBuilder(shellCommand).start();
         this.processIO = ProcessIO.startReading(process);
 
-        final AwaitOutput awaitOutput = new AwaitOutput(processIO, String.join(" ", shellCommand));
-        awaitOutput.awaitStdout("mqtt>");
+        new AwaitOutput(processIO, String.join(" ", shellCommand)).awaitStdOut("mqtt>");
     }
 
     public void connectClient(final @NotNull HiveMQTestContainerExtension hivemq) throws Exception {
         final List<String> connectCommand =
                 List.of("con", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-i", "cliTest");
 
-        executeCommand(connectCommand).awaitStdout(String.format("cliTest@%s>", hivemq.getHost()));
+        executeAsync(connectCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
-    public @NotNull AwaitOutput executeCommand(final @NotNull List<String> command) throws IOException {
+    public @NotNull AwaitOutput executeAsync(final @NotNull List<String> command) throws IOException {
         final String fullCommand = String.join(" ", command);
+
         processIO.writeMsg(fullCommand);
         return new AwaitOutput(processIO, fullCommand);
     }
