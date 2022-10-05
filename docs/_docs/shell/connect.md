@@ -26,8 +26,9 @@ mqtt> con   [-h <host>]
             [-V <version>] 
             [-i <identifier>] 
             [-ip <identifierPrefix>]             
-            [-cdsv]
+            [-dsv]
             [-k <keepAlive>] 
+            [--[no-]cleanStart]
             [-se <sessionExpiryInterval>] 
             [-up <connectUserProperties>]...
             [-ws]
@@ -78,7 +79,7 @@ mqtt> con   [-h <host>]
 | ``-ip``  | ``--identifierPrefix``| The prefix identifier which will prepend the randomly generated client name if no identifier is given. | ``mqttClient``
 | ``-d``    |   ``--debug``     | Print info level debug messages to the console. | ``False``
 | ``-v``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
-| ``-c``   | ``--[no-]cleanStart`` | Enable clean start if set. | ``True``
+|   | ``--[no-]cleanStart`` | Enable clean start if set. | ``True``
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-up``  | ``--userProperty`` | A user property of the connect message.
