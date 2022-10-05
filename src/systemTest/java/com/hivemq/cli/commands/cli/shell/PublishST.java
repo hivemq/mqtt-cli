@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.cli.shell;
 
-import com.hivemq.cli.utils.CLIShellTestExtension;
+import com.hivemq.cli.utils.MqttCliShell;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
 
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class PublishST {
@@ -35,7 +35,7 @@ public class PublishST {
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
 
     @RegisterExtension
-    private final @NotNull CLIShellTestExtension cliShellTestExtension = new CLIShellTestExtension();
+    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
 
     @BeforeAll
     static void beforeAll() {
@@ -49,39 +49,38 @@ public class PublishST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_publish() {
-        cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
-                "cliTest@" + hivemq.getHost() + ">");
-
-        cliShellTestExtension.executeCommandWithTimeout("pub -t test -m test", "cliTest@" + hivemq.getHost() + ">");
+    void test_successful_publish() throws Exception {
+        final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test");
+        mqttCliShell.connectClient(hivemq);
+        mqttCliShell.executeAsync(publishCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_publish_missing_topic() {
-        cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
-                "cliTest@" + hivemq.getHost() + ">");
-
-        cliShellTestExtension.executeCommandWithErrorWithTimeout("pub", "Missing required option: '--topic <topics>'");
+    void test_publish_missing_topic() throws Exception {
+        final List<String> publishCommand = List.of("pub");
+        mqttCliShell.connectClient(hivemq);
+        mqttCliShell.executeAsync(publishCommand)
+                .awaitStdErr("Missing required option: '--topic <topics>'")
+                .awaitStdOut("cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_publish_missing_message() {
-        cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
-                "cliTest@" + hivemq.getHost() + ">");
-
-        cliShellTestExtension.executeCommandWithErrorWithTimeout("pub -t test", Set.of(
-                "Error: Missing required argument (specify one of these): (-m <messageFromCommandline> | -m:file <messageFromFile>)",
-                "Error: Missing required argument (specify one of these): (-m:file <messageFromFile> | -m <messageFromCommandline>)"));
+    void test_publish_missing_message() throws Exception {
+        final List<String> publishCommand = List.of("pub", "-t", "test");
+        mqttCliShell.connectClient(hivemq);
+        mqttCliShell.executeAsync(publishCommand)
+                .awaitStdErr("Error: Missing required argument (specify one of these)")
+                .awaitStdOut("cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_missing_arguments() {
-        cliShellTestExtension.executeCommandWithErrorWithTimeout("pub", "Unmatched argument at index 0: 'pub'");
+    void test_missing_arguments() throws Exception {
+        final List<String> publishCommand = List.of("pub");
+        mqttCliShell.executeAsync(publishCommand)
+                .awaitStdErr("Unmatched argument at index 0: 'pub'")
+                .awaitStdOut("mqtt>");
     }
 }
