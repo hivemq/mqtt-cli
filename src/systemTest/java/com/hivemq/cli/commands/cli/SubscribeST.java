@@ -16,7 +16,9 @@
 
 package com.hivemq.cli.commands.cli;
 
-import com.hivemq.cli.utils.CLITestExtension;
+import com.hivemq.cli.utils.AwaitOutput;
+import com.hivemq.cli.utils.ExecutionResult;
+import com.hivemq.cli.utils.MqttCli;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
@@ -27,21 +29,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.testcontainers.utility.DockerImageName;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SubscribeST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq-ce"));
 
-    private final @NotNull CLITestExtension cliTestExtension = new CLITestExtension();
+    private final @NotNull MqttCli mqttCli = new MqttCli();
 
     @BeforeAll
     static void beforeAll() {
@@ -56,17 +56,13 @@ public class SubscribeST {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_successful_subscribe() throws Exception {
-        final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
-        publishCommand.add("sub");
-        publishCommand.add("-h");
-        publishCommand.add(hivemq.getHost());
-        publishCommand.add("-p");
-        publishCommand.add(String.valueOf(hivemq.getMqttPort()));
-        publishCommand.add("-t");
-        publishCommand.add("test");
-        publishCommand.add("-d");
-
-        final Process sub = new ProcessBuilder(publishCommand).start();
+        final List<String> subscribeCommand = List.of(
+                "sub",
+                "-h", hivemq.getHost(),
+                "-p", String.valueOf(hivemq.getMqttPort()),
+                "-t", "test",
+                "-d"
+        );
 
         final Mqtt5BlockingClient publisher = Mqtt5Client.builder()
                 .identifier("publisher")
@@ -75,24 +71,27 @@ public class SubscribeST {
                 .buildBlocking();
         publisher.connect();
 
-        cliTestExtension.waitForOutputWithTimeout(sub, "received SUBACK");
-        final CompletableFuture<Void> testReturn = cliTestExtension.waitForOutput(sub, "testReturn");
+        final AwaitOutput awaitOutput = mqttCli.executeAsync(subscribeCommand);
+
+        awaitOutput.awaitStdOut("received SUBACK");
+
         publisher.publishWith().topic("test").payload("testReturn".getBytes(StandardCharsets.UTF_8)).send();
-        testReturn.get(10, TimeUnit.SECONDS);
+
+        awaitOutput.awaitStdOut("testReturn");
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_subscribe_missing_topic() throws Exception {
-        final List<String> publishCommand = new ArrayList<>(CLITestExtension.CLI_EXEC);
-        publishCommand.add("sub");
-        publishCommand.add("-h");
-        publishCommand.add(hivemq.getHost());
-        publishCommand.add("-p");
-        publishCommand.add(String.valueOf(hivemq.getMqttPort()));
-        final Process sub = new ProcessBuilder(publishCommand).start();
+        final List<String> subscribeCommand = List.of(
+                "sub",
+                "-h", hivemq.getHost(),
+                "-p", String.valueOf(hivemq.getMqttPort())
+        );
 
-        cliTestExtension.waitForErrorWithTimeout(sub, "Missing required option: '--topic <topics>'");
-        assertEquals(sub.waitFor(), 2);
+        final ExecutionResult executionResult = mqttCli.execute(subscribeCommand);
+
+        assertEquals(2, executionResult.getExitCode());
+        assertTrue(executionResult.getErrorOutput().contains("Missing required option: '--topic <topics>'"));
     }
 }

@@ -277,6 +277,7 @@ val systemTestRuntimeOnly: Configuration by configurations.getting {
 dependencies {
     systemTestImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemq-testcontainer.version")}")
     systemTestImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
+    systemTestImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
 }
 
 tasks.named<JavaCompile>("compileSystemTestJava") {

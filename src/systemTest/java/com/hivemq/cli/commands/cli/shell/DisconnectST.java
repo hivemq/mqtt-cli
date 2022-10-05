@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.cli.shell;
 
-import com.hivemq.cli.utils.CLIShellTestExtension;
+import com.hivemq.cli.utils.MqttCliShell;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class DisconnectST {
@@ -34,7 +35,7 @@ public class DisconnectST {
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
 
     @RegisterExtension
-    private final @NotNull CLIShellTestExtension cliShellTestExtension = new CLIShellTestExtension();
+    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
 
     @BeforeAll
     static void beforeAll() {
@@ -48,19 +49,18 @@ public class DisconnectST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_disconnect() {
-        cliShellTestExtension.executeCommandWithTimeout(
-                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
-                "cliTest@" + hivemq.getHost() + ">");
-
-        cliShellTestExtension.executeCommandWithTimeout("dis", "mqtt>");
+    void test_successful_disconnect() throws Exception {
+        final List<String> disconnectCommand = List.of("dis");
+        mqttCliShell.connectClient(hivemq);
+       mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>");
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_unsuccessful_disconnect() {
-        cliShellTestExtension.executeCommandWithErrorWithTimeout(
-                "dis",
-                "Missing required option '--identifier=<identifier>'");
+    void test_unsuccessful_disconnect() throws Exception {
+        final List<String> disconnectCommand = List.of("dis");
+        mqttCliShell.executeAsync(disconnectCommand)
+                .awaitStdErr("Missing required option '--identifier=<identifier>'")
+                .awaitStdOut("mqtt>");
     }
 }
