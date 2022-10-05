@@ -34,14 +34,15 @@ mqtt sub    -t <topics> [-t <topics>]...
             [-J]
             [-T]
             [-up <userProperties>]... 
-            [-cdsvl]
+            [-dsvl]
             [-h <host>] 
             [-p <port>]                                         
             [-V <version>] 
             [-i <identifier>] 
             [-ip <identifierPrefix>]
             [-k <keepAlive>]  
-            [-se <sessionExpiryInterval>]      
+            [-se <sessionExpiryInterval>]
+            [--[no-]cleanStart]      
             [-Cup <connectUserProperties>]...
             [-ws]
             [-ws:path <webSocketPath>] 
@@ -103,7 +104,7 @@ mqtt sub    -t <topics> [-t <topics>]...
 | ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier given. | ``mqttClient``
-| ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
+|    | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-Cup``  | ``--connectUserProperty`` | A user property of the subscribe message. |

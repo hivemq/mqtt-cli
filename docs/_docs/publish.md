@@ -31,7 +31,7 @@ mqtt pub --help
 ``` 
 mqtt pub    -t <topics> [-t <topics>]... 
             (-m <message> | -m:file <filename>)
-            [-cdrsvl] 
+            [-drsvl] 
             [-q <qos>]...
             [-e <messageExpiryInterval>]          
             [-ct <contentType>] 
@@ -46,6 +46,7 @@ mqtt pub    -t <topics> [-t <topics>]...
             [-ip <identifierPrefix>] 
             [-k <keepAlive>] 
             [-se <sessionExpiryInterval>]
+            [--[no-]cleanStart]
             [-Cup <connectUserProperties>]... 
             [-ws]
             [-ws:path <webSocketPath>]
@@ -114,7 +115,7 @@ mqtt pub    -t <topics> [-t <topics>]...
 | ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``5``
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier is given. | ``mqttClient``
-| ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
+|  | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60`` 
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-Cup``  | ``--connectUserProperty`` | A user property of the connect message. |

@@ -62,7 +62,7 @@ public abstract class AbstractCommonFlags extends AbstractConnectRestrictionFlag
     private @Nullable Integer keepAlive;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true, defaultValue = "true",
+    @CommandLine.Option(names = {"--no-cleanStart"}, negatable = true, defaultValue = "true",
             description = "Define a clean start for the connection (default: true)", order = 2)
     private boolean cleanStart;
 
