@@ -74,9 +74,7 @@ public class PublishST {
                 "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
                 "cliTest@" + hivemq.getHost() + ">");
 
-        cliShellTestExtension.executeCommandWithErrorWithTimeout("pub -t test", Set.of(
-                "Error: Missing required argument (specify one of these): (-m <messageFromCommandline> | -m:file <messageFromFile>)",
-                "Error: Missing required argument (specify one of these): (-m:file <messageFromFile> | -m <messageFromCommandline>)"));
+        cliShellTestExtension.executeCommandWithErrorWithTimeout("pub -t test", Set.of("Error: Missing required argument (specify one of these)"));
     }
 
     @Test
