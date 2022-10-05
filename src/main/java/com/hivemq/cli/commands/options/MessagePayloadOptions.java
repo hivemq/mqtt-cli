@@ -33,7 +33,7 @@ public class MessagePayloadOptions {
     }
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-m:empty", "--message-empty"}, defaultValue = "false",description = "Sets the message to an empty payload")
+    @CommandLine.Option(names = {"-m:empty", "--message-empty"}, defaultValue = "false", description = "Sets the message to an empty payload")
     private void setMessageToEmpty(final boolean isEmpty) {
         if (isEmpty) {
             messageBuffer = ByteBuffer.allocate(0);

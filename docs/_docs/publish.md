@@ -30,8 +30,9 @@ mqtt pub --help
 
 ``` 
 mqtt pub    -t <topics> [-t <topics>]... 
-            (-m <message> | -m:file <filename>)
+            (-m <message> | -m:file <filename> | -m:empty)
             [-drsvl] 
+            [-cdrsvl] 
             [-q <qos>]...
             [-e <messageExpiryInterval>]          
             [-ct <contentType>] 
@@ -92,6 +93,7 @@ mqtt pub    -t <topics> [-t <topics>]...
 | ``-t``      | ``--topic``                  | The MQTT topic to which the message will be published.                                                                                                                                                                                |
 | ``-m``      | ``--message``                | The message which will be published on the topic.                                                                                                                                                                                     |
 | ``-m:file`` | ``--message-file``           | The file whose payload will be published on the topic.                                                                                                                                                                                |
+| ``-m:empty`` | ``--message-empty``           | Sets the message to an empty payload.                                                                                                                                                                                |
 | ``-r``      | ``--[no-]retain``            | Whether the message will be retained.                                                                                                                                                                                                 | ``False``
 | ``-q``      | ``--qos``                    | Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 | ``-e``      | ``--messageExpiryInterval``  | The lifetime of the publish message in seconds.                                                                                                                                                                                       |
