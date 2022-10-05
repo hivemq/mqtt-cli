@@ -29,7 +29,7 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class DisconnectST {
+public class ShellSubscribeST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
@@ -49,18 +49,28 @@ public class DisconnectST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_disconnect() throws Exception {
-        final List<String> disconnectCommand = List.of("dis");
+    void test_successful_subscribe() throws Exception {
+        final List<String> subscribeCommand = List.of("sub", "-t", "test");
         mqttCliShell.connectClient(hivemq);
-       mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>");
+        mqttCliShell.executeAsync(subscribeCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_unsuccessful_disconnect() throws Exception {
-        final List<String> disconnectCommand = List.of("dis");
-        mqttCliShell.executeAsync(disconnectCommand)
-                .awaitStdErr("Missing required option '--identifier=<identifier>'")
-                .awaitStdOut("mqtt>");
+    void test_subscribe_missing_topic() throws Exception{
+        final List<String> subscribeCommand = List.of("sub");
+        mqttCliShell.connectClient(hivemq);
+        mqttCliShell.executeAsync(subscribeCommand)
+                .awaitStdErr("Missing required option: '--topic <topics>'")
+                .awaitStdOut("cliTest@" + hivemq.getHost() + ">");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_missing_arguments() throws Exception {
+        final List<String> subscribeCommand = List.of("sub");
+        mqttCliShell.executeAsync(subscribeCommand)
+                .awaitStdOut("mqtt>")
+                .awaitStdErr("Unmatched argument at index 0: 'sub'");
     }
 }

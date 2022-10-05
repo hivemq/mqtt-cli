@@ -29,7 +29,7 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SubscribeST {
+public class ShellPublishST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
@@ -49,28 +49,38 @@ public class SubscribeST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_subscribe() throws Exception {
-        final List<String> subscribeCommand = List.of("sub", "-t", "test");
+    void test_successful_publish() throws Exception {
+        final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test");
         mqttCliShell.connectClient(hivemq);
-        mqttCliShell.executeAsync(subscribeCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
+        mqttCliShell.executeAsync(publishCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_missing_topic() throws Exception{
-        final List<String> subscribeCommand = List.of("sub");
+    void test_publish_missing_topic() throws Exception {
+        final List<String> publishCommand = List.of("pub");
         mqttCliShell.connectClient(hivemq);
-        mqttCliShell.executeAsync(subscribeCommand)
+        mqttCliShell.executeAsync(publishCommand)
                 .awaitStdErr("Missing required option: '--topic <topics>'")
                 .awaitStdOut("cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_publish_missing_message() throws Exception {
+        final List<String> publishCommand = List.of("pub", "-t", "test");
+        mqttCliShell.connectClient(hivemq);
+        mqttCliShell.executeAsync(publishCommand)
+                .awaitStdErr("Error: Missing required argument (specify one of these)")
+                .awaitStdOut("cliTest@" + hivemq.getHost() + ">");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_missing_arguments() throws Exception {
-        final List<String> subscribeCommand = List.of("sub");
-        mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut("mqtt>")
-                .awaitStdErr("Unmatched argument at index 0: 'sub'");
+        final List<String> publishCommand = List.of("pub");
+        mqttCliShell.executeAsync(publishCommand)
+                .awaitStdErr("Unmatched argument at index 0: 'pub'")
+                .awaitStdOut("mqtt>");
     }
 }
