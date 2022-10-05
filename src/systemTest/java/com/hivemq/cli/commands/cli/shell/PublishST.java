@@ -82,4 +82,14 @@ public class PublishST {
     void test_missing_arguments() {
         cliShellTestExtension.executeCommandWithErrorWithTimeout("pub", "Unmatched argument at index 0: 'pub'");
     }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_publish_empty() {
+        cliShellTestExtension.executeCommandWithTimeout(
+                "con -h " + hivemq.getHost() + " -p " + hivemq.getMqttPort() + " -i cliTest",
+                "cliTest@" + hivemq.getHost() + ">");
+
+        cliShellTestExtension.executeCommandWithTimeout("pub -t test -m:empty", "cliTest@" + hivemq.getHost() + ">");
+    }
 }
