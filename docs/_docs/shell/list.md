@@ -6,7 +6,7 @@ redirect_from: /docs/shell/list.html
 # List
 ***
 
-Lists all the connected clients.
+Lists all the connected clients of this mqtt-cli shell session.
 
 ## Synopsis
 

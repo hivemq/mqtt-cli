@@ -8,7 +8,7 @@ redirect_from: /docs/shell/connect.html
 
 The Connect command creates a client and connects it to the specified broker.
 The client will stay connected until it is disconnected by the broker or the [Disconnect](disconnect.md) method is called.
-To list all of the connected clients use the [List](list.md) method.
+To list all the connected clients of this mqtt-cli shell session use the [List](list.md) method.
 
 ## Simple Examples
 

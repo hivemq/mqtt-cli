@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "ls", aliases = "list",
-        description = "List all connected clients with their respective identifiers")
+        description = "List all connected clients of this mqtt-cli session with their respective identifiers")
 public class ListClientsCommand implements Runnable, CliCommand {
 
     @SuppressWarnings("unused")
