@@ -64,13 +64,8 @@ public class ProcessIO {
         CompletableFuture.runAsync(() -> {
             try {
                 int previousChar = '\0';
-                while (true) {
-                    final int readChar = processInputStream.read();
-
-                    if (readChar == -1) {
-                        return;
-                    }
-
+                int readChar;
+                while ((readChar = processInputStream.read()) != -1) {
                     writer.write(readChar);
                     processStdOut.append((char) readChar);
 
@@ -92,13 +87,8 @@ public class ProcessIO {
 
         CompletableFuture.runAsync(() -> {
             try {
-                while (true) {
-                    final int readChar = processErrorStream.read();
-
-                    if (readChar == -1) {
-                        return;
-                    }
-
+                int readChar;
+                while ((readChar = processErrorStream.read()) != -1) {
                     errorWriter.write(readChar);
                     processErrOut.append((char) readChar);
 

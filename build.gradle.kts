@@ -299,6 +299,7 @@ val systemTest by tasks.registering(Test::class) {
     dependsOn(tasks.shadowJar)
     systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
             tasks.shadowJar.map { it.outputs.files.singleFile }.get()
+    systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
 }
 
 val systemTestNative by tasks.registering(Test::class) {
@@ -314,6 +315,7 @@ val systemTestNative by tasks.registering(Test::class) {
     dependsOn(tasks.nativeCompile)
     systemProperties["cliExec"] =
         tasks.nativeCompile.map { it.outputs.files.singleFile }.get().resolve(project.name).absolutePath
+    systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
     testLogging {
         showCauses = true
         showExceptions = true
