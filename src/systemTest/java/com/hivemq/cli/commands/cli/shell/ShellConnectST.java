@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.cli.shell;
 
+import com.hivemq.cli.utils.AwaitOutput;
 import com.hivemq.cli.utils.MqttCliShell;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
@@ -49,13 +52,26 @@ public class ShellConnectST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_connect() throws Exception {
+    void whenHelpOptionIsUsed_thenUsageHelpIsDisplayed() throws Exception {
+        final List<String> connectCommand = List.of("con", "--help");
+
+        mqttCliShell.executeAsync(connectCommand).awaitStdOut("Usage").awaitStdOut("Options").awaitStdOut("mqtt>");
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(strings = {"3", "5"})
+    void whenConnect_thenConnectIsSuccess(final @NotNull String mqttVersion) throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort()),
-                "-i", "cliTest"
-        );
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-i",
+                "cliTest",
+                "-V",
+                mqttVersion);
 
         mqttCliShell.executeAsync(connectCommand)
                 .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
@@ -63,16 +79,12 @@ public class ShellConnectST {
                 .awaitLog("received CONNACK");
     }
 
-
-    @Test
+    @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_unsuccessful_connect() throws Exception {
-        final List<String> connectCommand = List.of(
-                "con",
-                "-h", "localhost",
-                "-p", "22",
-                "-i", "cliTest"
-        );
+    @ValueSource(strings = {"3", "5"})
+    void whenWrongPortIsUsed_thenConnectIsFailure(final @NotNull String mqttVersion) throws Exception {
+        final List<String> connectCommand =
+                List.of("con", "-h", hivemq.getHost(), "-p", "22", "-V", mqttVersion, "-i", "cliTest");
 
         mqttCliShell.executeAsync(connectCommand)
                 .awaitStdErr("Connection refused")
@@ -80,52 +92,182 @@ public class ShellConnectST {
                 .awaitLog("Connection refused");
     }
 
-    @Test
+    @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_connect_no_client_id() throws Exception {
+    @ValueSource(strings = {"3", "5"})
+    void whenWrongHostIsUsed_thenConnectIsFailure(final @NotNull String mqttVersion) throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort())
-        );
+                "-h",
+                "unreachable-host",
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                mqttVersion,
+                "-i",
+                "cliTest");
 
         mqttCliShell.executeAsync(connectCommand)
+                .awaitStdErr("nodename nor servname provided, or not known")
+                .awaitStdOut("mqtt>")
+                .awaitLog("nodename nor servname provided, or not known");
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(strings = {"3", "5"})
+    void whenNoClientIdIsUsed_thenConnectIsSuccess(final String mqttVersion) throws Exception {
+        final List<String> connectCommand =
+                List.of("con", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-V", mqttVersion);
+
+
+        final AwaitOutput awaitOutput = mqttCliShell.executeAsync(connectCommand)
+                .awaitStdOut(String.format("@%s>", hivemq.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("received CONNACK");
+
+        if (mqttVersion.equals("5")) {
+            awaitOutput.awaitLog("assignedClientIdentifier=");
+        }
+
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(strings = {"5"})
+    void whenSessionExpiryIsUsed_thenSessionIsUsed(final @NotNull String mqttVersion) throws Exception {
+        final List<String> connectCommand = List.of(
+                "con",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                mqttVersion,
+                "-se",
+                "120",
+                "-i",
+                "sessionTest",
+                "--no-cleanStart");
+
+        mqttCliShell.executeAsync(connectCommand)
+                .awaitStdOut(String.format("sessionTest@%s>", hivemq.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("sessionExpiryInterval=120")
+                .awaitLog("received CONNACK")
+                .awaitLog("sessionPresent=false");
+
+        mqttCliShell.executeAsync(List.of("dis")).awaitStdOut("mqtt>").awaitLog("sending DISCONNECT");
+
+        mqttCliShell.executeAsync(connectCommand)
+                .awaitStdOut(String.format("sessionTest@%s>", hivemq.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("sessionExpiryInterval=120")
+                .awaitLog("received CONNACK")
+                .awaitLog("sessionPresent=true");
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(strings = {"3"})
+    void whenIdentifierPrefixIsUsed_thenAssignedClientIdStartsWithPrefix(final @NotNull String mqttVersion)
+            throws Exception {
+        final List<String> connectCommand = List.of(
+                "con",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                mqttVersion,
+                "-ip",
+                "myPrefix");
+
+        mqttCliShell.executeAsync(connectCommand)
+                .awaitStdOut("myPrefix")
                 .awaitStdOut(String.format("@%s>", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
     }
 
-    @Test
+    @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_connect_session_expiry() throws Exception {
+    @ValueSource(strings = {"5"})
+    void whenUserPropertyIsUsed_thenConnectSentWithUserProperties(final @NotNull String mqttVersion) throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort()),
-                "-se", "60",
-                "-i", "sessionTest",
-                "--no-cleanStart"
-        );
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-i",
+                "cliTest",
+                "-V",
+                mqttVersion,
+                "-up",
+                "key1=value1",
+                "-up",
+                "key2=value2");
 
         mqttCliShell.executeAsync(connectCommand)
-                .awaitStdOut(String.format("sessionTest@%s>", hivemq.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
-                .awaitLog("cleanStart=false")
-                .awaitLog("sessionExpiryInterval=60")
-                .awaitLog("received CONNACK")
-                .awaitLog("sessionPresent=false");
-
-        mqttCliShell.executeAsync(List.of("dis"))
-                .awaitStdOut("mqtt>")
-                .awaitLog("sending DISCONNECT");
-
-        mqttCliShell.executeAsync(connectCommand)
-                .awaitStdOut(String.format("sessionTest@%s>", hivemq.getHost()))
-                .awaitLog("sending CONNECT")
-                .awaitLog("cleanStart=false")
-                .awaitLog("sessionExpiryInterval=60")
-                .awaitLog("received CONNACK")
-                .awaitLog("sessionPresent=true");
+                .awaitLog("userProperties=[(key1, value1), (key2, value2)]")
+                .awaitLog("received CONNACK");
     }
 
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(strings = {"3", "5"})
+    void whenKeepAliveIsUsed_thenConnectContainsKeepAlive(final @NotNull String mqttVersion) throws Exception {
+        final List<String> connectCommand = List.of(
+                "con",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-i",
+                "cliTest",
+                "-V",
+                mqttVersion,
+                "-k",
+                "60");
+
+        mqttCliShell.executeAsync(connectCommand)
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("keepAlive=60")
+                .awaitLog("received CONNACK");
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(strings = {"3", "5"})
+    void test_rcvMax(final @NotNull String mqttVersion) throws Exception {
+        final List<String> connectCommand = List.of(
+                "con",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-i",
+                "cliTest",
+                "-V",
+                mqttVersion,
+                "--rcvMax",
+                "60");
+
+        final AwaitOutput awaitOutput = mqttCliShell.executeAsync(connectCommand)
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitLog("sending CONNECT");
+
+        if (mqttVersion.equals("3")) {
+            awaitOutput.awaitStdErr("Restriction receive maximum was set but is unused in MQTT Version MQTT_3_1_1");
+        } else {
+            awaitOutput.awaitLog("receiveMaximum=60");
+        }
+
+        awaitOutput.awaitLog("received CONNACK");
+
+    }
 }

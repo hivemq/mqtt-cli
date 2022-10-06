@@ -49,7 +49,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
         // Start and await the start of the shell
         this.process = startShellMode(homeDir);
         this.processIO = ProcessIO.startReading(process);
-        new AwaitOutput(processIO, null, String.join(" ",getShellCommand(homeDir))).awaitStdOut("mqtt>");
+        new AwaitOutput(processIO, null, String.join(" ", getShellCommand(homeDir))).awaitStdOut("mqtt>");
 
         // We can only initialize the logger after starting up the shell because the startup initializes the logfile
         this.logWaiter = setupLogWaiter(homeDir);
@@ -57,9 +57,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     public void afterEach(final @NotNull ExtensionContext context) {
-        if (process.isAlive()) {
-            process.destroy();
-        }
+        process.destroyForcibly();
     }
 
     private @NotNull Process startShellMode(final @NotNull Path homeDir) throws IOException {
@@ -105,7 +103,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
         final AwaitOutput awaitOutput =
                 executeAsync(connectCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
-            awaitOutput.awaitLog("received CONNACK");
+        awaitOutput.awaitLog("received CONNACK");
     }
 
     /**
