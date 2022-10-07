@@ -39,7 +39,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     private ProcessIO processIO;
     private Process process;
     private LogWaiter logWaiter;
-    private Process orphanProcessDestroyer;
+    private Process orphanCleanupProcess;
 
     @Override
     public void beforeEach(final @NotNull ExtensionContext context) throws Exception {
@@ -50,7 +50,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
         // Start and await the start of the shell
         this.process = startShellMode(homeDir);
-        this.orphanProcessDestroyer = startOrphanProcessDestroyer(process);
+        this.orphanCleanupProcess = startOrphanCleanupProcess(process);
         this.processIO = ProcessIO.startReading(process);
         new AwaitOutput(processIO, null, String.join(" ", getShellCommand(homeDir))).awaitStdOut("mqtt>");
 
@@ -58,29 +58,29 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
         this.logWaiter = setupLogWaiter(homeDir);
     }
 
-    private @NotNull Process startOrphanProcessDestroyer(final @NotNull Process childProcess) throws IOException {
-        // We start the ProcessGarbageCollector which sole job is to destroy the childProcess, meaning the mqtt-cli shell,
-        // when the jvm process exited
-        final long jvmProcessId = ProcessHandle.current().pid();
-        final List<String> processKillerCommand = List.of(
-                System.getProperty("java"),
-                Resources.getResource("OrphanProcessDestroyer.java").getPath(),
-                String.valueOf(jvmProcessId),
-                String.valueOf(childProcess.pid())
-        );
-        final Process processKillerProcess = new ProcessBuilder(processKillerCommand).start();
-
-        // Wait until the process prints X, which means that the process garbage collector has registered the
-        final int readChar = processKillerProcess.getInputStream().read();
-        assertEquals('X', readChar);
-
-        return processKillerProcess;
-    }
-
     @Override
     public void afterEach(final @NotNull ExtensionContext context) {
         process.destroyForcibly();
-        orphanProcessDestroyer.destroyForcibly();
+        orphanCleanupProcess.destroyForcibly();
+    }
+
+    private @NotNull Process startOrphanCleanupProcess(final @NotNull Process childProcess) throws IOException {
+        // We start the ProcessGarbageCollector which sole job is to destroy the childProcess, meaning the mqtt-cli shell,
+        // when the jvm process exited
+        final long jvmProcessId = ProcessHandle.current().pid();
+        final List<String> orphanCleanupProcessCommand = List.of(
+                System.getProperty("java"),
+                Resources.getResource("OrphanCleanupProcess.java").getPath(),
+                String.valueOf(jvmProcessId),
+                String.valueOf(childProcess.pid())
+        );
+        final Process orphanCleanupProcess = new ProcessBuilder(orphanCleanupProcessCommand).start();
+
+        // Wait until the process prints X, which means that the process garbage collector has registered the
+        final int readChar = orphanCleanupProcess.getInputStream().read();
+        assertEquals('X', readChar);
+
+        return orphanCleanupProcess;
     }
 
     private @NotNull Process startShellMode(final @NotNull Path homeDir) throws IOException {

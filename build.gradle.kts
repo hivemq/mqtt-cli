@@ -278,6 +278,7 @@ dependencies {
     systemTestImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemq-testcontainer.version")}")
     systemTestImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
     systemTestImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
+    systemTestImplementation("com.hivemq:hivemq-community-edition-embedded:${property("hivemq-community-edition-embedded.version")}")
 }
 
 tasks.named<JavaCompile>("compileSystemTestJava") {
