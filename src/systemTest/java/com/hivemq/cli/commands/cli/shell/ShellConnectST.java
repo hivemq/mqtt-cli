@@ -38,6 +38,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +58,7 @@ public class ShellConnectST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void whenHelpOptionIsUsed_thenUsageHelpIsDisplayed() throws Exception {
+    void test_help() throws Exception {
         final List<String> connectCommand = List.of("con", "--help");
         mqttCliShell.executeAsync(connectCommand).awaitStdOut("Usage").awaitStdOut("Options").awaitStdOut("mqtt>");
     }
@@ -64,7 +66,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenConnect_thenConnectIsSuccess(final char mqttVersion) throws Exception {
+    void test_defaultConnect(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
 
         mqttCliShell.executeAsync(connectCommand)
@@ -79,7 +81,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenWrongPortIsUsed_thenConnectIsFailure(final char mqttVersion) throws Exception {
+    void test_wrongPort(final char mqttVersion) throws Exception {
         final List<String> connectCommand =
                 List.of("con", "-h", hivemq.getHost(), "-p", "22", "-V", String.valueOf(mqttVersion), "-i", "cliTest");
 
@@ -94,7 +96,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenWrongHostIsUsed_thenConnectIsFailure(final char mqttVersion) throws Exception {
+    void test_wrongHost(final char mqttVersion) throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h",
@@ -117,7 +119,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenNoCleanStartIsUsed_thenConnectCleanStartIsFalse(final char mqttVersion) throws Exception {
+    void test_cleanStart(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--no-cleanStart");
 
@@ -135,7 +137,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenReceiveMaximumIsUsed_thenConnectContainsReceiveMaximum(final char mqttVersion) throws Exception {
+    void test_receiveMaximum(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--rcvMax");
         connectCommand.add("500");
@@ -160,7 +162,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenMaxPacketSizeIsUsed_thenConnectPacketContainsMaxPacketSize(final char mqttVersion) throws Exception {
+    void test_maxPacketSize(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--maxPacketSize");
         connectCommand.add("500");
@@ -185,7 +187,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenTopicAliasMaxIsUsed_thenConnectContainsTopicAliasMax(final char mqttVersion) throws Exception {
+    void test_topicAliasMaximum(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--topicAliasMax");
         connectCommand.add("5");
@@ -210,7 +212,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenRequestProblemInformationIsUSed_thenConnectContainsRequestProblemInformation(final char mqttVersion)
+    void test_requestProblemInformation(final char mqttVersion)
             throws IOException {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--no-reqProblemInfo");
@@ -236,7 +238,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenRequestResponseInformationIsUsed_thenConnectContainsRequestResponseInformation(final char mqttVersion)
+    void test_requestResponseInformation(final char mqttVersion)
             throws IOException {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--reqResponseInfo");
@@ -262,7 +264,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenNoClientIdIsUsed_thenConnectIsSuccess(final char mqttVersion) throws Exception {
+    void test_noClientId(final char mqttVersion) throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h",
@@ -288,7 +290,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenUserNameIsUsed_thenConnectPacketContainsUserName(final char mqttVersion) throws Exception {
+    void test_userName(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("-u");
         connectCommand.add("username");
@@ -307,7 +309,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenPasswordIsUsed_thenConnectPacketContainsPassword(final char mqttVersion) throws Exception {
+    void test_password(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("-pw");
         connectCommand.add("password");
@@ -330,7 +332,34 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenWillIsUsed_thenConnectContainsWill(final char mqttVersion) throws Exception {
+    void test_passwordFile(final char mqttVersion) throws Exception {
+
+        final Path passwordFile = Files.createTempFile("mqtt-cli-password", ".txt");
+        Files.writeString(passwordFile, "password", StandardCharsets.UTF_8);
+
+        final List<String> connectCommand = defaultConnectCommand(mqttVersion);
+        connectCommand.add("-pw:file");
+        connectCommand.add(passwordFile.toString());
+
+        final AwaitOutput awaitOutput = mqttCliShell.executeAsync(connectCommand);
+
+        if (mqttVersion == '3') {
+            awaitOutput.awaitStdErr("Password-Only Authentication is not allowed in MQTT 3");
+        } else {
+            awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
+                    .awaitLog("sending CONNECT")
+                    .awaitLog("received CONNACK");
+            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
+            });
+        }
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_will(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("-Wt");
         connectCommand.add("test-will-topic");
@@ -405,7 +434,7 @@ public class ShellConnectST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void whenSessionExpiryIsUsed_thenSessionIsUsed() throws Exception {
+    void test_sessionExpiryInterval() throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h",
@@ -451,7 +480,7 @@ public class ShellConnectST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void whenIdentifierPrefixIsUsed_thenAssignedClientIdStartsWithPrefix() throws Exception {
+    void test_identifierPrefix() throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h",
@@ -472,7 +501,7 @@ public class ShellConnectST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void whenUserPropertyIsUsed_thenConnectSentWithUserProperties() throws Exception {
+    void test_userProperties() throws Exception {
         final List<String> connectCommand = defaultConnectCommand();
         connectCommand.add("-up");
         connectCommand.add("key1=value1");
@@ -498,7 +527,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void whenKeepAliveIsUsed_thenConnectContainsKeepAlive(final char mqttVersion) throws Exception {
+    void test_keepAlive(final char mqttVersion) throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h",
