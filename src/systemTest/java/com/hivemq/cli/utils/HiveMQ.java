@@ -1,5 +1,21 @@
+/*
+ * Copyright 2019-present HiveMQ and the HiveMQ Community
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.hivemq.cli.utils;
 
+import com.hivemq.configuration.service.InternalConfigurations;
 import com.hivemq.embedded.EmbeddedExtension;
 import com.hivemq.embedded.EmbeddedHiveMQ;
 import com.hivemq.embedded.EmbeddedHiveMQBuilder;
@@ -12,6 +28,7 @@ import com.hivemq.extension.sdk.api.parameter.ExtensionStartOutput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStopInput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStopOutput;
 import com.hivemq.extension.sdk.api.services.Services;
+import com.hivemq.migration.meta.PersistenceType;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -86,6 +103,8 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
 
         try {
             hivemq = builder.build();
+            InternalConfigurations.PAYLOAD_PERSISTENCE_TYPE.set(PersistenceType.FILE);
+            InternalConfigurations.RETAINED_MESSAGE_PERSISTENCE_TYPE.set(PersistenceType.FILE);
             hivemq.start().join();
         } catch (final Exception ex) {
             ex.printStackTrace();
@@ -111,7 +130,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     }
 
     public @NotNull String getHost() {
-        return "localhost";
+        return "127.0.0.1";
     }
 
     private int generatePort() throws IOException {
