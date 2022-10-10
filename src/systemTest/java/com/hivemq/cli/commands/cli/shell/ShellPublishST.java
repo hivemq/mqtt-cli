@@ -63,8 +63,11 @@ public class ShellPublishST {
                 .awaitLog("received PUBLISH acknowledgement");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
-           publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
-           publishAssertion.setTopic("test");
+            publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
+            publishAssertion.setTopic("test");
+            if (mqttVersion == '5') {
+                publishAssertion.setMessageExpiryInterval(120);
+            }
         });
     }
 

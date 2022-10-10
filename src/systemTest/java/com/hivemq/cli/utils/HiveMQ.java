@@ -23,24 +23,15 @@ import com.hivemq.embedded.EmbeddedHiveMQ;
 import com.hivemq.embedded.EmbeddedHiveMQBuilder;
 import com.hivemq.extension.sdk.api.ExtensionMain;
 import com.hivemq.extension.sdk.api.annotations.NotNull;
-import com.hivemq.extension.sdk.api.client.ClientContext;
-import com.hivemq.extension.sdk.api.client.parameter.InitializerInput;
 import com.hivemq.extension.sdk.api.interceptor.connect.ConnectInboundInterceptor;
-import com.hivemq.extension.sdk.api.interceptor.disconnect.DisconnectInboundInterceptor;
-import com.hivemq.extension.sdk.api.interceptor.disconnect.parameter.DisconnectInboundInput;
-import com.hivemq.extension.sdk.api.interceptor.disconnect.parameter.DisconnectInboundOutput;
-import com.hivemq.extension.sdk.api.interceptor.publish.PublishInboundInterceptor;
-import com.hivemq.extension.sdk.api.interceptor.publish.parameter.PublishInboundInput;
-import com.hivemq.extension.sdk.api.interceptor.publish.parameter.PublishInboundOutput;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
-import com.hivemq.extension.sdk.api.packets.disconnect.DisconnectPacket;
 import com.hivemq.extension.sdk.api.packets.publish.PublishPacket;
+import com.hivemq.extension.sdk.api.packets.subscribe.SubscribePacket;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStartInput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStartOutput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStopInput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStopOutput;
 import com.hivemq.extension.sdk.api.services.Services;
-import com.hivemq.extension.sdk.api.services.intializer.ClientInitializer;
 import com.hivemq.migration.meta.PersistenceType;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -66,6 +57,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
 
     private List<ConnectPacket> connectPackets;
     private List<PublishPacket> publishPackets;
+    private List<SubscribePacket> subscribePackets;
     private List<DisconnectInformation> disconnectInformations;
 
     private int port = -1;
@@ -91,6 +83,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         this.connectPackets = new ArrayList<>();
         this.publishPackets = new ArrayList<>();
         this.disconnectInformations = new ArrayList<>();
+        this.subscribePackets = new ArrayList<>();
 
         final String tlsConfig = setupTls();
         final String websocketsConfig = setupWebsockets();
@@ -108,11 +101,13 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                 "</hivemq>";
 
         final Path hivemqConfigFolder = Files.createTempDirectory("hivemq-config-folder");
+        hivemqConfigFolder.toFile().deleteOnExit();
         final File configXml = new File(hivemqConfigFolder.toAbsolutePath().toString(), "config.xml");
         assertTrue(configXml.createNewFile());
         Files.writeString(configXml.toPath(), hivemqConfig);
 
         final Path hivemqDataFolder = Files.createTempDirectory("hivemq-data-folder");
+        hivemqDataFolder.toFile().deleteOnExit();
 
         final EmbeddedExtension embeddedExtension = EmbeddedExtension.builder()
                 .withId("test-interceptor-extension")
@@ -129,11 +124,17 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                         final ConnectInboundInterceptor connectInboundInterceptor = (connectInboundInput, connectInboundOutput) -> connectPackets.add(connectInboundInput.getConnectPacket());
                         Services.interceptorRegistry().setConnectInboundInterceptorProvider(input -> connectInboundInterceptor);
                         Services.initializerRegistry().setClientInitializer((initializerInput, clientContext) -> {
+
                             clientContext.addDisconnectInboundInterceptor((disconnectInboundInput, disconnectInboundOutput) -> {
                                 disconnectInformations.add(new DisconnectInformation(disconnectInboundInput.getDisconnectPacket(), disconnectInboundInput.getClientInformation().getClientId()));
                             });
+
                             clientContext.addPublishInboundInterceptor((publishInboundInput, publishInboundOutput) -> {
                                 publishPackets.add(publishInboundInput.getPublishPacket());
+                            });
+
+                            clientContext.addSubscribeInboundInterceptor((subscribeInboundInput, subscribeInboundOutput) -> {
+                                subscribePackets.add(subscribeInboundInput.getSubscribePacket());
                             });
                         });
                     }
@@ -178,6 +179,10 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
 
     public @NotNull List<PublishPacket> getPublishPackets() {
         return publishPackets;
+    }
+
+    public @NotNull List<SubscribePacket> getSubscribePackets() {
+        return subscribePackets;
     }
 
     public @NotNull List<DisconnectInformation> getDisconnectInformations() {

@@ -409,6 +409,7 @@ public class ShellConnectST {
     void test_passwordFile(final char mqttVersion) throws Exception {
 
         final Path passwordFile = Files.createTempFile("mqtt-cli-password", ".txt");
+        passwordFile.toFile().deleteOnExit();
         Files.writeString(passwordFile, "password", StandardCharsets.UTF_8);
 
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
@@ -438,6 +439,7 @@ public class ShellConnectST {
     void test_userNameAndPasswordFile(final char mqttVersion) throws Exception {
 
         final Path passwordFile = Files.createTempFile("mqtt-cli-password", ".txt");
+        passwordFile.toFile().deleteOnExit();
         Files.writeString(passwordFile, "password", StandardCharsets.UTF_8);
 
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
