@@ -17,30 +17,40 @@
 package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.utils.ExecutionResult;
-import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCli;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
+import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.testcontainers.utility.DockerImageName;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPacket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PublishST {
 
-    @RegisterExtension
-    private static final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
+    private static final @NotNull HiveMQTestContainerExtension hivemq =
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
 
     private final @NotNull MqttCli mqttCli = new MqttCli();
+
+    @BeforeAll
+    static void beforeAll() {
+        hivemq.start();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        hivemq.stop();
+    }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -71,42 +81,6 @@ public class PublishST {
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH"));
         assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
-    }
-
-    @Test
-    @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_emptyMessage() throws Exception {
-        final List<String> publishCommand = List.of(
-                "pub",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort()),
-                "-t", "test",
-                "-m:empty",
-                "-d"
-        );
-
-        final Mqtt5BlockingClient subscriber = Mqtt5Client.builder()
-                .identifier("subscriber")
-                .serverHost(hivemq.getHost())
-                .serverPort(hivemq.getMqttPort())
-                .buildBlocking();
-        subscriber.connect();
-        final CountDownLatch receivedPublish = new CountDownLatch(1);
-        subscriber.toAsync().subscribeWith().topicFilter("test").callback(ignored -> receivedPublish.countDown()).send();
-
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
-
-        assertTrue(receivedPublish.await(10, TimeUnit.SECONDS));
-        assertEquals(0, executionResult.getExitCode());
-        assertTrue(executionResult.getStandardOutput().contains("sending CONNECT"));
-        assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
-        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH"));
-        assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
-
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
-            publishAssertion.setTopic("test");
-            publishAssertion.setPayload(ByteBuffer.allocate(0));
-        });
     }
 
     @Test

@@ -568,6 +568,7 @@ public class ShellConnectST {
 
             assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setCleanStart(false);
                 connectAssertion.setClientId("sessionTest");
             });
 
