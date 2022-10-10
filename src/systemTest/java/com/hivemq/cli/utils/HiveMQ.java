@@ -169,6 +169,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     public void afterEach(final ExtensionContext context) {
         connectPackets.clear();
         disconnectInformations.clear();
+        publishPackets.clear();
     }
 
     public @NotNull List<ConnectPacket> getConnectPackets() {
