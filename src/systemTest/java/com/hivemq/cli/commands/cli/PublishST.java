@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PublishST {
 
     @RegisterExtension
-    private final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
+    private static final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
 
     private final @NotNull MqttCli mqttCli = new MqttCli();
 
