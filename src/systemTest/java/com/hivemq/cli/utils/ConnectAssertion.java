@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
 import com.google.common.collect.ImmutableList;
@@ -50,13 +51,16 @@ public class ConnectAssertion {
     private @NotNull Optional<ByteBuffer> authenticationData = Optional.empty();
 
     private @Nullable WillPublishPacket willPublish = null;
-    private @Nullable UserProperties userProperties = UserPropertiesImpl.of(ImmutableList.<MqttUserProperty>builder().build());
+    private @Nullable UserProperties userProperties =
+            UserPropertiesImpl.of(ImmutableList.<MqttUserProperty>builder().build());
 
     private ConnectAssertion() {
 
     }
 
-    public static void assertConnectPacket(final @NotNull ConnectPacket connectPacket, final @NotNull Consumer<ConnectAssertion> connectAssertionConsumer) {
+    public static void assertConnectPacket(
+            final @NotNull ConnectPacket connectPacket,
+            final @NotNull Consumer<ConnectAssertion> connectAssertionConsumer) {
         final ConnectAssertion connectAssertion = new ConnectAssertion();
         connectAssertionConsumer.accept(connectAssertion);
         assertEquals(connectAssertion.mqttVersion, connectPacket.getMqttVersion());

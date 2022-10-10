@@ -20,7 +20,6 @@ import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCliShell;
 import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class ShellConnectEnvST {
 
-    private static String PASSWORD_ENV = "PASSWORD";
+    private static final String PASSWORD_ENV = "PASSWORD";
 
     @RegisterExtension
     static HiveMQ hivemq = new HiveMQ();
@@ -59,6 +58,7 @@ public class ShellConnectEnvST {
         if (mqttVersion == '3') {
             awaitOutput.awaitStdErr("Password-Only Authentication is not allowed in MQTT 3");
             awaitOutput.awaitStdOut("mqtt>");
+            awaitOutput.awaitLog("Password-Only Authentication is not allowed in MQTT 3");
         } else {
             awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
                     .awaitLog("sending CONNECT")
