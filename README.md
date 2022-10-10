@@ -123,7 +123,7 @@ In Shell-Mode the following Commands are available **without** an active context
 * con, connect     Connect an MQTT client
 * dis, disconnect  Disconnect an MQTT client
 * switch           Switch the current context
-* ls               List all connected clients with their respective identifiers
+* ls               List all connected clients of this mqtt-cli session with their respective identifiers
 * cls, clear       Clear the screen
 * exit  
 
@@ -138,7 +138,7 @@ The following Commands are available **with** an active context:
 *  unsub, unsubscribe  Unsubscribe this MQTT client from a list of topics
 *  dis, disconnect     Disconnect this MQTT client
 *  switch              Switch the current context
-*  ls, list            List all connected clients with their respective identifieres
+*  ls, list            List all connected clients of this mqtt-cli session with their respective identifiers
 *  cls, clear          Clear the screen
 *  exit                Exit the current context
 
