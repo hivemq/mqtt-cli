@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.ConnectAssertion.assertConnectPacket;
+import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class ShellConnectEnvST {

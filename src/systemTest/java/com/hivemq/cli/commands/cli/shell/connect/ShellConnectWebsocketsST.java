@@ -28,7 +28,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.ConnectAssertion.assertConnectPacket;
+import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class ShellConnectWebsocketsST {
@@ -46,7 +46,7 @@ public class ShellConnectWebsocketsST {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getWebsocketPort()),
+                "-p", String.valueOf(hivemq.getWebsocketsPort()),
                 "-V", String.valueOf(mqttVersion),
                 "-i", "cliTest",
                 "-ws",

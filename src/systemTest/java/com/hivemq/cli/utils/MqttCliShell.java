@@ -17,7 +17,7 @@
 package com.hivemq.cli.utils;
 
 import com.google.common.io.Resources;
-import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
+import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
 import static com.hivemq.cli.utils.MqttCli.CLI_EXEC;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
@@ -41,6 +41,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     private Process process;
     private LogWaiter logWaiter;
     private Process orphanCleanupProcess;
+    private int connectClientMarker = 0;
 
     private @NotNull Map<String, String> envVariables;
 
@@ -129,17 +130,28 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     /**
      * Connects a mqtt-client and awaits the successful output statements on std-out and in the logfile.
      *
-     * @param hivemq the HiveMQ container to which the client should connect
+     * @param hivemq the HiveMQ instance to which the client should connect
      * @throws IOException when the cli command to connect could not be written to the shell
      */
-    public void connectClient(final @NotNull HiveMQTestContainerExtension hivemq) throws IOException {
+    public void connectClient(final @NotNull HiveMQ hivemq, final char mqttVersion) throws IOException {
+        connectClient(hivemq, mqttVersion, "cliTest");
+    }
+
+    public void connectClient(final @NotNull HiveMQ hivemq, final char mqttVersion, final @NotNull String clientId) throws IOException {
         final List<String> connectCommand =
-                List.of("con", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-i", "cliTest");
+                List.of("con", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-V", String.valueOf(mqttVersion), "-i", clientId);
 
 
         final AwaitOutput awaitOutput =
-                executeAsync(connectCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
+                executeAsync(connectCommand).awaitStdOut(String.format("%s@%s>", clientId, hivemq.getHost()));
         awaitOutput.awaitLog("received CONNACK");
+
+        assertConnectPacket(hivemq.getConnectPackets().get(connectClientMarker), connectAssertion -> {
+            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setClientId(clientId);
+        });
+
+        connectClientMarker+= 1;
     }
 
     /**
@@ -154,6 +166,16 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
         final String fullCommand = String.join(" ", command);
         processIO.writeMsg(fullCommand);
         return new AwaitOutput(processIO, logWaiter, fullCommand);
+    }
+
+    private @NotNull MqttVersion toVersion(final char version) {
+        if (version == '3') {
+            return MqttVersion.V_3_1_1;
+        } else if (version == '5') {
+            return MqttVersion.V_5;
+        }
+        fail("version " + version + " can not be converted to MqttVersion object.");
+        throw new RuntimeException();
     }
 
 }

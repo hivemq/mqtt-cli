@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.utils;
+package com.hivemq.cli.utils.assertions;
 
 import com.google.common.collect.ImmutableList;
 import com.hivemq.extension.sdk.api.annotations.Nullable;
@@ -55,7 +55,6 @@ public class ConnectAssertion {
             UserPropertiesImpl.of(ImmutableList.<MqttUserProperty>builder().build());
 
     private ConnectAssertion() {
-
     }
 
     public static void assertConnectPacket(

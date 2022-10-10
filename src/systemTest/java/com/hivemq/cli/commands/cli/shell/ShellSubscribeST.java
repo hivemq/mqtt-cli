@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.cli.shell;
 
+import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCliShell;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
@@ -31,35 +34,27 @@ import java.util.concurrent.TimeUnit;
 
 public class ShellSubscribeST {
 
-    private static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
+    @RegisterExtension
+    private final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
 
-    @BeforeAll
-    static void beforeAll() {
-        hivemq.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        hivemq.stop();
-    }
-
-    @Test
+    @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_subscribe() throws Exception {
+    @ValueSource(chars = {'3', '5'})
+    void test_successful_subscribe(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub", "-t", "test");
-        mqttCliShell.connectClient(hivemq);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
-    @Test
+    @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_missing_topic() throws Exception{
+    @ValueSource(chars = {'3', '5'})
+    void test_subscribe_missing_topic(final char mqttVersion) throws Exception{
         final List<String> subscribeCommand = List.of("sub");
-        mqttCliShell.connectClient(hivemq);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
                 .awaitStdErr("Missing required option: '--topic <topics>'")
                 .awaitStdOut("cliTest@" + hivemq.getHost() + ">");

@@ -16,19 +16,27 @@
 package com.hivemq.cli.utils;
 
 import com.google.common.io.Resources;
+import com.hivemq.cli.utils.assertions.DisconnectInformation;
 import com.hivemq.configuration.service.InternalConfigurations;
 import com.hivemq.embedded.EmbeddedExtension;
 import com.hivemq.embedded.EmbeddedHiveMQ;
 import com.hivemq.embedded.EmbeddedHiveMQBuilder;
 import com.hivemq.extension.sdk.api.ExtensionMain;
 import com.hivemq.extension.sdk.api.annotations.NotNull;
+import com.hivemq.extension.sdk.api.client.ClientContext;
+import com.hivemq.extension.sdk.api.client.parameter.InitializerInput;
 import com.hivemq.extension.sdk.api.interceptor.connect.ConnectInboundInterceptor;
+import com.hivemq.extension.sdk.api.interceptor.disconnect.DisconnectInboundInterceptor;
+import com.hivemq.extension.sdk.api.interceptor.disconnect.parameter.DisconnectInboundInput;
+import com.hivemq.extension.sdk.api.interceptor.disconnect.parameter.DisconnectInboundOutput;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
+import com.hivemq.extension.sdk.api.packets.disconnect.DisconnectPacket;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStartInput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStartOutput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStopInput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStopOutput;
 import com.hivemq.extension.sdk.api.services.Services;
+import com.hivemq.extension.sdk.api.services.intializer.ClientInitializer;
 import com.hivemq.migration.meta.PersistenceType;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -51,11 +59,13 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     private static final String BIND_ADDRESS = "localhost";
 
     private EmbeddedHiveMQ hivemq;
+
     private List<ConnectPacket> connectPackets;
+    private List<DisconnectInformation> disconnectInformations;
 
     private int port = -1;
     private int tlsPort = -1;
-    private int websocketPort = -1;
+    private int websocketsPort = -1;
 
     private final boolean tlsEnabled;
     private final boolean websocketEnabled;
@@ -73,6 +83,8 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     public void beforeAll(final ExtensionContext context) throws IOException {
 
         this.port = generatePort();
+        this.connectPackets = new ArrayList<>();
+        this.disconnectInformations = new ArrayList<>();
 
         final String tlsConfig = setupTls();
         final String websocketsConfig = setupWebsockets();
@@ -96,7 +108,6 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
 
         final Path hivemqDataFolder = Files.createTempDirectory("hivemq-data-folder");
 
-        connectPackets = new ArrayList<>();
         final EmbeddedExtension embeddedExtension = EmbeddedExtension.builder()
                 .withId("test-interceptor-extension")
                 .withName("HiveMQ Test Interceptor Extension")
@@ -111,6 +122,9 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                             final @NotNull ExtensionStartOutput extensionStartOutput) {
                         final ConnectInboundInterceptor connectInboundInterceptor = (connectInboundInput, connectInboundOutput) -> connectPackets.add(connectInboundInput.getConnectPacket());
                         Services.interceptorRegistry().setConnectInboundInterceptorProvider(input -> connectInboundInterceptor);
+                        Services.initializerRegistry().setClientInitializer((initializerInput, clientContext) -> clientContext.addDisconnectInboundInterceptor((disconnectInboundInput, disconnectInboundOutput) -> {
+                            disconnectInformations.add(new DisconnectInformation(disconnectInboundInput.getDisconnectPacket(), disconnectInboundInput.getClientInformation().getClientId()));
+                        }));
                     }
 
                     @Override
@@ -143,10 +157,15 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     @Override
     public void afterEach(final ExtensionContext context) {
         connectPackets.clear();
+        disconnectInformations.clear();
     }
 
-    public final @NotNull List<ConnectPacket> getConnectPackets() {
+    public @NotNull List<ConnectPacket> getConnectPackets() {
         return connectPackets;
+    }
+
+    public @NotNull List<DisconnectInformation> getDisconnectInformations() {
+        return disconnectInformations;
     }
 
     public int getMqttPort() {
@@ -160,11 +179,11 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         return tlsPort;
     }
 
-    public int getWebsocketPort() {
-        if (websocketPort == -1) {
+    public int getWebsocketsPort() {
+        if (websocketsPort == -1) {
             throw new RuntimeException("HiveMQ was initialized without a websocket listener.");
         }
-        return websocketPort;
+        return websocketsPort;
     }
 
     public @NotNull String getWebsocketsPath() {
@@ -211,10 +230,10 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     private @NotNull String setupWebsockets() throws IOException {
         String websocketsConfig = "";
         if (websocketEnabled) {
-            this.websocketPort = generatePort();
+            this.websocketsPort = generatePort();
             websocketsConfig =
             "<websocket-listener>\n" +
-            "          <port>" + websocketPort + "</port>\n" +
+            "          <port>" + websocketsPort + "</port>\n" +
             "          <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
             "          <path>" + WEBSOCKETS_PATH + "</path>\n" +
             "          <name>my-websocket-listener</name>\n" +

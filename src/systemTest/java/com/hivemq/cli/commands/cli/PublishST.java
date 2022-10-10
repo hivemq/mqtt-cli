@@ -17,6 +17,7 @@
 package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.utils.ExecutionResult;
+import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCli;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
@@ -37,20 +39,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PublishST {
 
-    private static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
+    @RegisterExtension
+    private final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
 
     private final @NotNull MqttCli mqttCli = new MqttCli();
-
-    @BeforeAll
-    static void beforeAll() {
-        hivemq.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        hivemq.stop();
-    }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)

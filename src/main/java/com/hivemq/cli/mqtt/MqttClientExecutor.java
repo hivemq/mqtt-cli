@@ -324,7 +324,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     @Override
     void mqtt3Disconnect(final @NotNull Mqtt3Client client, final @NotNull Disconnect disconnect) {
-        Logger.debug("{} Sending DISCONNECT", LoggerUtils.getClientPrefix(client.getConfig()));
+        Logger.debug("{} sending DISCONNECT", LoggerUtils.getClientPrefix(client.getConfig()));
 
         client.toBlocking().disconnect();
     }
