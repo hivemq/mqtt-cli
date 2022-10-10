@@ -212,8 +212,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_requestProblemInformation(final char mqttVersion)
-            throws IOException {
+    void test_requestProblemInformation(final char mqttVersion) throws IOException {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--no-reqProblemInfo");
 
@@ -238,8 +237,7 @@ public class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_requestResponseInformation(final char mqttVersion)
-            throws IOException {
+    void test_requestResponseInformation(final char mqttVersion) throws IOException {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--reqResponseInfo");
 
@@ -318,6 +316,7 @@ public class ShellConnectST {
 
         if (mqttVersion == '3') {
             awaitOutput.awaitStdErr("Password-Only Authentication is not allowed in MQTT 3");
+            awaitOutput.awaitStdOut("mqtt>");
         } else {
             awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
                     .awaitLog("sending CONNECT")
@@ -327,6 +326,27 @@ public class ShellConnectST {
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
         }
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_userNameAndPassword(final char mqttVersion) throws Exception {
+        final List<String> connectCommand = defaultConnectCommand(mqttVersion);
+        connectCommand.add("-u");
+        connectCommand.add("user");
+        connectCommand.add("-pw");
+        connectCommand.add("password");
+
+        mqttCliShell.executeAsync(connectCommand)
+                .awaitStdOut(String.format("@%s>", hivemq.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("received CONNACK");
+        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setUserName("user");
+            connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
+        });
     }
 
     @ParameterizedTest
@@ -345,6 +365,7 @@ public class ShellConnectST {
 
         if (mqttVersion == '3') {
             awaitOutput.awaitStdErr("Password-Only Authentication is not allowed in MQTT 3");
+            awaitOutput.awaitStdOut("mqtt>");
         } else {
             awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
                     .awaitLog("sending CONNECT")
@@ -354,6 +375,31 @@ public class ShellConnectST {
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
         }
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_userNameAndPasswordFile(final char mqttVersion) throws Exception {
+
+        final Path passwordFile = Files.createTempFile("mqtt-cli-password", ".txt");
+        Files.writeString(passwordFile, "password", StandardCharsets.UTF_8);
+
+        final List<String> connectCommand = defaultConnectCommand(mqttVersion);
+        connectCommand.add("-u");
+        connectCommand.add("user");
+        connectCommand.add("-pw:file");
+        connectCommand.add(passwordFile.toString());
+
+        mqttCliShell.executeAsync(connectCommand)
+                .awaitStdOut(String.format("@%s>", hivemq.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("received CONNACK");
+        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setUserName("user");
+            connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
+        });
     }
 
     @ParameterizedTest

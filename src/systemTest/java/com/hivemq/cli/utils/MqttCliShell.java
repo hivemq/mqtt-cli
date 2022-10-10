@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.hivemq.cli.utils.MqttCli.CLI_EXEC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,6 +41,16 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     private Process process;
     private LogWaiter logWaiter;
     private Process orphanCleanupProcess;
+
+    private @NotNull Map<String, String> envVariables;
+
+    public MqttCliShell() {
+        envVariables = Map.of();
+    }
+
+    public MqttCliShell(final @NotNull Map<String, String> envVariables) {
+        this.envVariables = envVariables;
+    }
 
     @Override
     public void beforeEach(final @NotNull ExtensionContext context) throws Exception {
@@ -85,7 +96,9 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
     private @NotNull Process startShellMode(final @NotNull Path homeDir) throws IOException {
         final List<String> shellCommand = getShellCommand(homeDir);
-        return new ProcessBuilder(shellCommand).start();
+        final ProcessBuilder processBuilder = new ProcessBuilder(shellCommand);
+        processBuilder.environment().putAll(envVariables);
+        return processBuilder.start();
     }
 
     private @NotNull List<String> getShellCommand(final Path homeDir) {
