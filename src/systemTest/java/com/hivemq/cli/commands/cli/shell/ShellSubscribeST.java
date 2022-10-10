@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class ShellSubscribeST {
 
     @RegisterExtension
-    private final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
+    private static final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
