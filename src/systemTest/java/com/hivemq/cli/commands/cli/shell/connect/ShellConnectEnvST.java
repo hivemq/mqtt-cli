@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.commands.cli.shell;
+package com.hivemq.cli.commands.cli.shell.connect;
 
 import com.hivemq.cli.utils.AwaitOutput;
 import com.hivemq.cli.utils.HiveMQ;
@@ -40,7 +40,7 @@ public class ShellConnectEnvST {
     private static final String PASSWORD_ENV = "PASSWORD";
 
     @RegisterExtension
-    static HiveMQ hivemq = new HiveMQ();
+    static HiveMQ hivemq = HiveMQ.builder().build();
 
     @RegisterExtension
     final MqttCliShell mqttCliShell = new MqttCliShell(Map.of(PASSWORD_ENV, "password"));

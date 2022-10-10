@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.cli.shell;
+package com.hivemq.cli.commands.cli.shell.connect;
 
 import com.google.common.collect.ImmutableList;
 import com.hivemq.cli.utils.AwaitOutput;
@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ShellConnectST {
 
     @RegisterExtension
-    static HiveMQ hivemq = new HiveMQ();
+    static HiveMQ hivemq = HiveMQ.builder().build();
 
     @RegisterExtension
     final MqttCliShell mqttCliShell = new MqttCliShell();
@@ -76,6 +76,49 @@ public class ShellConnectST {
 
         final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
         assertConnectPacket(connectPacket, connectAssertion -> connectAssertion.setMqttVersion(toVersion(mqttVersion)));
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectWhileConnected(final char mqttVersion) throws Exception {
+        final List<String> connectCommand1 = List.of(
+                "con",
+                "-h", hivemq.getHost(),
+                "-p", String.valueOf(hivemq.getMqttPort()),
+                "-V", String.valueOf(mqttVersion),
+                "-i", "client1"
+        );
+
+        final List<String> connectCommand2 = List.of(
+                "con",
+                "-h", hivemq.getHost(),
+                "-p", String.valueOf(hivemq.getMqttPort()),
+                "-V", String.valueOf(mqttVersion),
+                "-i", "client2"
+        );
+
+        mqttCliShell.executeAsync(connectCommand1)
+                .awaitStdOut(String.format("client1@%s>", hivemq.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("received CONNACK");
+
+        final ConnectPacket connectPacket1 = hivemq.getConnectPackets().get(0);
+        assertConnectPacket(connectPacket1, connectAssertion -> {
+            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setClientId("client1");
+        });
+
+        mqttCliShell.executeAsync(connectCommand2)
+                .awaitStdOut(String.format("client2@%s>", hivemq.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("received CONNACK");
+
+        final ConnectPacket connectPacket2 = hivemq.getConnectPackets().get(1);
+        assertConnectPacket(connectPacket2, connectAssertion -> {
+            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setClientId("client2");
+        });
     }
 
     @ParameterizedTest

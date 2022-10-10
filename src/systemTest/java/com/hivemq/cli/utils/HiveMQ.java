@@ -15,6 +15,7 @@
  */
 package com.hivemq.cli.utils;
 
+import com.google.common.io.Resources;
 import com.hivemq.configuration.service.InternalConfigurations;
 import com.hivemq.embedded.EmbeddedExtension;
 import com.hivemq.embedded.EmbeddedHiveMQ;
@@ -46,22 +47,45 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCallback {
 
+    private static final String WEBSOCKETS_PATH = "/mqtt-custom";
+    private static final String BIND_ADDRESS = "localhost";
+
     private EmbeddedHiveMQ hivemq;
     private List<ConnectPacket> connectPackets;
-    private int port;
+
+    private int port = -1;
+    private int tlsPort = -1;
+    private int websocketPort = -1;
+
+    private final boolean tlsEnabled;
+    private final boolean websocketEnabled;
+
+    public static @NotNull Builder builder() {
+        return new Builder();
+    }
+
+    public HiveMQ(final boolean tlsEnabled, final boolean websocketEnabled) {
+        this.tlsEnabled = tlsEnabled;
+        this.websocketEnabled = websocketEnabled;
+    }
 
     @Override
     public void beforeAll(final ExtensionContext context) throws IOException {
 
-        port = generatePort();
+        this.port = generatePort();
+
+        final String tlsConfig = setupTls();
+        final String websocketsConfig = setupWebsockets();
 
         final String hivemqConfig =
                 "<hivemq>\n" + "    " +
                 "   <listeners>\n" + "        " +
                 "       <tcp-listener>\n" +
                 "            <port>" + port + "</port>\n" +
-                "            <bind-address>0.0.0.0</bind-address>\n" +
+                "            <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
                 "        </tcp-listener>\n" +
+                        tlsConfig +
+                        websocketsConfig +
                 "    </listeners>\n" +
                 "</hivemq>";
 
@@ -129,13 +153,100 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         return port;
     }
 
+    public int getMqttTlsPort() {
+        if (tlsPort == -1) {
+            throw new RuntimeException("HiveMQ was initialized without a TLS listener.");
+        }
+        return tlsPort;
+    }
+
+    public int getWebsocketPort() {
+        if (websocketPort == -1) {
+            throw new RuntimeException("HiveMQ was initialized without a websocket listener.");
+        }
+        return websocketPort;
+    }
+
+    public @NotNull String getWebsocketsPath() {
+        return WEBSOCKETS_PATH;
+    }
+
     public @NotNull String getHost() {
-        return "127.0.0.1";
+        return BIND_ADDRESS;
     }
 
     private int generatePort() throws IOException {
-        try (final ServerSocket socket = new ServerSocket(0);) {
+        try (final ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();
+        }
+    }
+
+    private @NotNull String setupTls() throws IOException {
+        String tlsConfig = "";
+        if (tlsEnabled) {
+            this.tlsPort = generatePort();
+            final String brokerKeyStorePath = Resources.getResource("tls/broker-keystore.jks").getPath();
+            final String brokerTrustStorePath = Resources.getResource("tls/client-keystore.jks").getPath();
+            tlsConfig =
+                    "<tls-tcp-listener>\n" +
+                    "           <port>" + tlsPort + "</port>\n" +
+                    "           <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
+                    "           <tls>\n" +
+                    "                <keystore>" +
+                    "                   <path>" + brokerKeyStorePath +  "</path>\n" +
+                    "                   <password>changeme</password>\n" +
+                    "                   <private-key-password>changeme</private-key-password>\n" +
+                    "                </keystore>\n" +
+                    "                <client-authentication-mode>REQUIRED</client-authentication-mode>\n" +
+                    "                <truststore>\n" +
+                    "                   <path>" + brokerTrustStorePath + "</path>\n" +
+                    "                   <password>changeme</password>\n" +
+                    "                </truststore>\n" +
+                    "           </tls>\n" +
+                    "</tls-tcp-listener>\n";
+        }
+        return tlsConfig;
+    }
+
+    private @NotNull String setupWebsockets() throws IOException {
+        String websocketsConfig = "";
+        if (websocketEnabled) {
+            this.websocketPort = generatePort();
+            websocketsConfig =
+            "<websocket-listener>\n" +
+            "          <port>" + websocketPort + "</port>\n" +
+            "          <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
+            "          <path>" + WEBSOCKETS_PATH + "</path>\n" +
+            "          <name>my-websocket-listener</name>\n" +
+            "          <subprotocols>\n" +
+            "              <subprotocol>mqttv3.1</subprotocol>\n" +
+            "              <subprotocol>mqtt</subprotocol>\n" +
+            "          </subprotocols>\n" +
+            "          <allow-extensions>true</allow-extensions>\n" +
+            "</websocket-listener>";
+        }
+        return websocketsConfig;
+    }
+
+    public static class Builder {
+        private boolean tlsEnabled = false;
+        private boolean websocketEnabled = false;
+
+        private Builder() {
+        }
+
+        public @NotNull HiveMQ build() {
+            return new HiveMQ(tlsEnabled, websocketEnabled);
+        }
+
+        public @NotNull Builder withTlsEnabled(final boolean tlsEnabled) {
+            this.tlsEnabled = tlsEnabled;
+            return this;
+        }
+
+        public @NotNull Builder withWebsocketEnabled(final boolean websocketEnabled) {
+            this.websocketEnabled = websocketEnabled;
+            return this;
         }
     }
 }
