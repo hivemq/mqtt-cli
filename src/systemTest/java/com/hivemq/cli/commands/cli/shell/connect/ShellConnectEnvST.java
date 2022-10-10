@@ -40,7 +40,7 @@ public class ShellConnectEnvST {
     private static final String PASSWORD_ENV = "PASSWORD";
 
     @RegisterExtension
-    static HiveMQ hivemq = HiveMQ.builder().build();
+    private final static HiveMQ hivemq = HiveMQ.builder().build();
 
     @RegisterExtension
     final MqttCliShell mqttCliShell = new MqttCliShell(Map.of(PASSWORD_ENV, "password"));

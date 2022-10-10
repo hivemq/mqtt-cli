@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ShellConnectST {
 
     @RegisterExtension
-    static HiveMQ hivemq = HiveMQ.builder().build();
+    private final static HiveMQ hivemq = HiveMQ.builder().build();
 
     @RegisterExtension
     final MqttCliShell mqttCliShell = new MqttCliShell();

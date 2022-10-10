@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ShellConnectWebsocketsST {
 
     @RegisterExtension
-    static HiveMQ hivemq = HiveMQ.builder().withWebsocketEnabled(true).build();
+    private final static HiveMQ hivemq = HiveMQ.builder().withWebsocketEnabled(true).build();
 
     @RegisterExtension
     final MqttCliShell mqttCliShell = new MqttCliShell();

@@ -29,13 +29,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.testcontainers.utility.DockerImageName;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPacket;
 
 public class ShellPublishST {
 
     @RegisterExtension
-    private final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
+    private static final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -47,6 +51,11 @@ public class ShellPublishST {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test");
         mqttCliShell.connectClient(hivemq, mqttVersion);
         mqttCliShell.executeAsync(publishCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
+
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+           publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
+           publishAssertion.setTopic("test");
+        });
     }
 
     @ParameterizedTest
