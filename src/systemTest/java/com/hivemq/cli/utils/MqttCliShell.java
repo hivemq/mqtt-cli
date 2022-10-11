@@ -168,6 +168,10 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
         return new AwaitOutput(processIO, logWaiter, fullCommand);
     }
 
+    public boolean isAlive() {
+        return process.isAlive();
+    }
+
     private @NotNull MqttVersion toVersion(final char version) {
         if (version == '3') {
             return MqttVersion.V_3_1_1;
