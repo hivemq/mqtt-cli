@@ -24,9 +24,13 @@ import com.hivemq.embedded.EmbeddedHiveMQBuilder;
 import com.hivemq.extension.sdk.api.ExtensionMain;
 import com.hivemq.extension.sdk.api.annotations.NotNull;
 import com.hivemq.extension.sdk.api.interceptor.connect.ConnectInboundInterceptor;
+import com.hivemq.extension.sdk.api.interceptor.unsubscribe.UnsubscribeInboundInterceptor;
+import com.hivemq.extension.sdk.api.interceptor.unsubscribe.parameter.UnsubscribeInboundInput;
+import com.hivemq.extension.sdk.api.interceptor.unsubscribe.parameter.UnsubscribeInboundOutput;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
 import com.hivemq.extension.sdk.api.packets.publish.PublishPacket;
 import com.hivemq.extension.sdk.api.packets.subscribe.SubscribePacket;
+import com.hivemq.extension.sdk.api.packets.unsubscribe.UnsubscribePacket;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStartInput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStartOutput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStopInput;
@@ -58,6 +62,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     private List<ConnectPacket> connectPackets;
     private List<PublishPacket> publishPackets;
     private List<SubscribePacket> subscribePackets;
+    private List<UnsubscribePacket> unsubscribePackets;
     private List<DisconnectInformation> disconnectInformations;
 
     private int port = -1;
@@ -84,6 +89,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         this.publishPackets = new ArrayList<>();
         this.disconnectInformations = new ArrayList<>();
         this.subscribePackets = new ArrayList<>();
+        this.unsubscribePackets = new ArrayList<>();
 
         final String tlsConfig = setupTls();
         final String websocketsConfig = setupWebsockets();
@@ -136,6 +142,11 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                             clientContext.addSubscribeInboundInterceptor((subscribeInboundInput, subscribeInboundOutput) -> {
                                 subscribePackets.add(subscribeInboundInput.getSubscribePacket());
                             });
+
+                            clientContext.addUnsubscribeInboundInterceptor((unsubscribeInboundInput, unsubscribeInboundOutput) -> {
+                                unsubscribePackets.add(unsubscribeInboundInput.getUnsubscribePacket());
+                            });
+
                         });
                     }
 
@@ -171,6 +182,8 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         connectPackets.clear();
         disconnectInformations.clear();
         publishPackets.clear();
+        subscribePackets.clear();
+        unsubscribePackets.clear();
     }
 
     public @NotNull List<ConnectPacket> getConnectPackets() {
@@ -183,6 +196,10 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
 
     public @NotNull List<SubscribePacket> getSubscribePackets() {
         return subscribePackets;
+    }
+
+    public @NotNull List<UnsubscribePacket> getUnsubscribePackets() {
+        return unsubscribePackets;
     }
 
     public @NotNull List<DisconnectInformation> getDisconnectInformations() {

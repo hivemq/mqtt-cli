@@ -280,7 +280,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         for (final String topic : unsubscribe.getTopics()) {
             final Mqtt3Unsubscribe unsubscribeMessage = Mqtt3Unsubscribe.builder().topicFilter(topic).build();
 
-            Logger.debug("{} Sending UNSUBSCRIBE {}", clientLogPrefix, unsubscribeMessage);
+            Logger.debug("{} sending UNSUBSCRIBE {}", clientLogPrefix, unsubscribeMessage);
 
             client.toAsync().unsubscribe(unsubscribeMessage).whenComplete((Void unsubAck, Throwable throwable) -> {
                 if (throwable != null) {
