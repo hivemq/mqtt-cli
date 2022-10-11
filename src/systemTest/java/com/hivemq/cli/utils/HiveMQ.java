@@ -23,10 +23,14 @@ import com.hivemq.embedded.EmbeddedHiveMQ;
 import com.hivemq.embedded.EmbeddedHiveMQBuilder;
 import com.hivemq.extension.sdk.api.ExtensionMain;
 import com.hivemq.extension.sdk.api.annotations.NotNull;
+import com.hivemq.extension.sdk.api.interceptor.connack.ConnackOutboundInterceptor;
+import com.hivemq.extension.sdk.api.interceptor.connack.parameter.ConnackOutboundInput;
+import com.hivemq.extension.sdk.api.interceptor.connack.parameter.ConnackOutboundOutput;
 import com.hivemq.extension.sdk.api.interceptor.connect.ConnectInboundInterceptor;
 import com.hivemq.extension.sdk.api.interceptor.unsubscribe.UnsubscribeInboundInterceptor;
 import com.hivemq.extension.sdk.api.interceptor.unsubscribe.parameter.UnsubscribeInboundInput;
 import com.hivemq.extension.sdk.api.interceptor.unsubscribe.parameter.UnsubscribeInboundOutput;
+import com.hivemq.extension.sdk.api.packets.connack.ConnackPacket;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
 import com.hivemq.extension.sdk.api.packets.publish.PublishPacket;
 import com.hivemq.extension.sdk.api.packets.subscribe.SubscribePacket;
@@ -60,6 +64,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     private EmbeddedHiveMQ hivemq;
 
     private List<ConnectPacket> connectPackets;
+    private List<ConnackPacket> connackPackets;
     private List<PublishPacket> publishPackets;
     private List<SubscribePacket> subscribePackets;
     private List<UnsubscribePacket> unsubscribePackets;
@@ -86,6 +91,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
 
         this.port = generatePort();
         this.connectPackets = new ArrayList<>();
+        this.connackPackets = new ArrayList<>();
         this.publishPackets = new ArrayList<>();
         this.disconnectInformations = new ArrayList<>();
         this.subscribePackets = new ArrayList<>();
@@ -127,8 +133,14 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                     public void extensionStart(
                             final @NotNull ExtensionStartInput extensionStartInput,
                             final @NotNull ExtensionStartOutput extensionStartOutput) {
+
+                        // Add Connect & Connack Interceptors
                         final ConnectInboundInterceptor connectInboundInterceptor = (connectInboundInput, connectInboundOutput) -> connectPackets.add(connectInboundInput.getConnectPacket());
+                        final ConnackOutboundInterceptor connackOutboundInterceptor = (connackOutboundInput, connackOutboundOutput) -> connackPackets.add(connackOutboundInput.getConnackPacket());
                         Services.interceptorRegistry().setConnectInboundInterceptorProvider(input -> connectInboundInterceptor);
+                        Services.interceptorRegistry().setConnackOutboundInterceptorProvider(input -> connackOutboundInterceptor);
+
+                        // Add all other interceptors
                         Services.initializerRegistry().setClientInitializer((initializerInput, clientContext) -> {
 
                             clientContext.addDisconnectInboundInterceptor((disconnectInboundInput, disconnectInboundOutput) -> {
@@ -180,6 +192,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     @Override
     public void afterEach(final ExtensionContext context) {
         connectPackets.clear();
+        connackPackets.clear();
         disconnectInformations.clear();
         publishPackets.clear();
         subscribePackets.clear();
@@ -188,6 +201,10 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
 
     public @NotNull List<ConnectPacket> getConnectPackets() {
         return connectPackets;
+    }
+
+    public @NotNull List<ConnackPacket> getConnackPackets() {
+        return connackPackets;
     }
 
     public @NotNull List<PublishPacket> getPublishPackets() {

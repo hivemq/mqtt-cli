@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.cli.shell.connect;
+package com.hivemq.cli.commands.shell.connect;
 
 import com.google.common.collect.ImmutableList;
 import com.hivemq.cli.utils.AwaitOutput;
@@ -172,6 +172,9 @@ public class ShellConnectST {
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            if (mqttVersion == '3') {
+                connectAssertion.setSessionExpiryInterval(4294967295L);
+            }
             connectAssertion.setCleanStart(false);
         });
     }

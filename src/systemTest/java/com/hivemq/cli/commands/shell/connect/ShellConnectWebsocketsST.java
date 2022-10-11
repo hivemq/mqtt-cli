@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.commands.cli.shell.connect;
+package com.hivemq.cli.commands.shell.connect;
 
-import com.google.common.io.Resources;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCliShell;
+import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
 import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
@@ -31,10 +31,10 @@ import java.util.concurrent.TimeUnit;
 import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class ShellConnectTlsST {
+public class ShellConnectWebsocketsST {
 
     @RegisterExtension
-    private final static HiveMQ hivemq = HiveMQ.builder().withTlsEnabled(true).build();
+    private final static HiveMQ hivemq = HiveMQ.builder().withWebsocketEnabled(true).build();
 
     @RegisterExtension
     final MqttCliShell mqttCliShell = new MqttCliShell();
@@ -42,38 +42,25 @@ public class ShellConnectTlsST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_mutualTls(final char mqttVersion) throws Exception {
-
-        final String clientKeyPem = Resources.getResource("tls/client-key.pem").getPath();
-        final String clientCertPem = Resources.getResource("tls/client-cert.pem").getPath();
-        final String serverPem = Resources.getResource("tls/server.pem").getPath();
-
+    void test_defaultConnect(final char mqttVersion) throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttTlsPort()),
+                "-p", String.valueOf(hivemq.getWebsocketsPort()),
                 "-V", String.valueOf(mqttVersion),
                 "-i", "cliTest",
-                "--cafile",
-                serverPem,
-                "--key",
-                clientKeyPem,
-                "--cert",
-                clientCertPem
+                "-ws",
+                "-ws:path",
+                hivemq.getWebsocketsPath()
         );
 
         mqttCliShell.executeAsync(connectCommand)
-                .awaitStdOut("Enter private key password:");
-
-        mqttCliShell.executeAsync(List.of("changeme"))
-                .awaitStdOut(String.format("cliTest@%s", hivemq.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
-        });
-
+        final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
+        assertConnectPacket(connectPacket, connectAssertion -> connectAssertion.setMqttVersion(toVersion(mqttVersion)));
     }
 
     private @NotNull MqttVersion toVersion(final char version) {

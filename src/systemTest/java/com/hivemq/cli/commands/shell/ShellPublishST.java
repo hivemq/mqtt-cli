@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.cli.shell;
+package com.hivemq.cli.commands.shell;
 
 import com.google.common.collect.ImmutableList;
 import com.hivemq.cli.utils.AwaitOutput;

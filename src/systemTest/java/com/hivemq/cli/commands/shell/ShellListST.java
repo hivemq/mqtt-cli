@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.commands.cli.shell;
+package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.utils.AwaitOutput;
 import com.hivemq.cli.utils.HiveMQ;

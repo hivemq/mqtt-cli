@@ -19,10 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,15 +36,18 @@ public class MqttCli {
      * Executes a mqtt-cli command in blocking manner. This method should be used for all mqtt-cli commands which
      * exit the cli with an exit code.
      * @param command the command to execute with the mqtt cli
+     * @param environmentVariables the environment variables to start the process with
      * @return an {@link ExecutionResult} which contains the std-output, err-ouput and exit-code of the command's execution
      * @throws IOException when an error occurred while starting the process or reading its output
      * @throws InterruptedException when the process was interrupted
      */
-    public @NotNull ExecutionResult execute(final @NotNull List<String> command) throws IOException, InterruptedException {
+    public @NotNull ExecutionResult execute(final @NotNull List<String> command, final @NotNull Map<String, String> environmentVariables) throws IOException, InterruptedException {
         final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
         assertTrue(fullCommand.addAll(command));
 
-        final Process process = new ProcessBuilder(fullCommand).start();
+        final ProcessBuilder processBuilder = new ProcessBuilder(fullCommand);
+        processBuilder.environment().putAll(environmentVariables);
+        final Process process = processBuilder.start();
 
         final int exitCode = process.waitFor();
 
@@ -64,6 +64,40 @@ public class MqttCli {
     }
 
     /**
+     * Executes a mqtt-cli command in blocking manner. This method should be used for all mqtt-cli commands which
+     * exit the cli with an exit code.
+     * @param command the command to execute with the mqtt cli
+     * @return an {@link ExecutionResult} which contains the std-output, err-ouput and exit-code of the command's execution
+     * @throws IOException when an error occurred while starting the process or reading its output
+     * @throws InterruptedException when the process was interrupted
+     */
+    public @NotNull ExecutionResult execute(final @NotNull List<String> command) throws IOException, InterruptedException {
+        return execute(command, Map.of());
+    }
+
+    /**
+     * Executes a mqtt-cli command asynchronously. This method should be used for all mqtt-cli commands which do not
+     * exit the process like the subscribe command.
+     * @param command the command to execute with the mqtt cli
+     * @param environmentVariables the environment variables to start the process with
+     * @return an {@link AwaitOutput} which can be used to wait for std-out std-err messages
+     * @throws IOException when an error occurred while starting the process
+     */
+    public @NotNull AwaitOutput executeAsync(final @NotNull List<String> command, final @NotNull Map<String, String> environmentVariables)
+            throws IOException {
+        final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
+        assertTrue(fullCommand.addAll(command));
+
+        final ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.environment().putAll(environmentVariables);
+        final Process process = processBuilder.start();
+
+        final ProcessIO processIO = ProcessIO.startReading(process);
+
+        return new AwaitOutput(processIO, null, String.join(" ", command));
+    }
+
+    /**
      * Executes a mqtt-cli command asynchronously. This method should be used for all mqtt-cli commands which do not
      * exit the process like the subscribe command.
      * @param command the command to execute with the mqtt cli
@@ -72,13 +106,7 @@ public class MqttCli {
      */
     public @NotNull AwaitOutput executeAsync(final @NotNull List<String> command)
             throws IOException {
-        final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
-        assertTrue(fullCommand.addAll(command));
-
-        final Process process = new ProcessBuilder(fullCommand).start();
-        final ProcessIO processIO = ProcessIO.startReading(process);
-
-        return new AwaitOutput(processIO, null, String.join(" ", command));
+        return executeAsync(command, Map.of());
     }
 
 }
