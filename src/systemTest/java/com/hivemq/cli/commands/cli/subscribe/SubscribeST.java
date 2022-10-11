@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.cli;
+package com.hivemq.cli.commands.cli.subscribe;
 
 import com.hivemq.cli.utils.AwaitOutput;
 import com.hivemq.cli.utils.ExecutionResult;

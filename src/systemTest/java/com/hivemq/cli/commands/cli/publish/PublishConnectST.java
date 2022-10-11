@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.hivemq.cli.commands.cli;
+package com.hivemq.cli.commands.cli.publish;
 
 import com.google.common.collect.ImmutableList;
 import com.hivemq.cli.utils.ExecutionResult;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCli;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.extension.sdk.api.packets.connack.ConnackPacket;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
 import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
@@ -31,57 +28,30 @@ import com.hivemq.extension.sdk.api.services.builder.Builders;
 import com.hivemq.extension.sdk.api.services.builder.WillPublishBuilder;
 import com.hivemq.extensions.packets.general.UserPropertiesImpl;
 import com.hivemq.mqtt.message.mqtt5.MqttUserProperty;
-import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.testcontainers.utility.DockerImageName;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
-import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPacket;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PublishST {
+public class PublishConnectST {
 
     @RegisterExtension
     private static final HiveMQ hivemq = HiveMQ.builder().build();
 
     private final @NotNull MqttCli mqttCli = new MqttCli();
-
-    @ParameterizedTest
-    @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    @ValueSource(chars = {'3', '5'})
-    void test_successfulConnectAndPublish(final char mqttVersion) throws Exception {
-        final List<String> publishCommand = defaultPublishCommand(mqttVersion);
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
-
-        assertPublishOutput(executionResult);
-
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
-        });
-
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
-            publishAssertion.setTopic("test");
-            publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
-        });
-    }
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -624,31 +594,6 @@ public class PublishST {
                 connectAssertion.setUserProperties(expectedUserProperties);
             }
         });
-    }
-
-    @Test
-    @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_publish_missing_topic() throws Exception {
-        final List<String> publishCommand =
-                List.of("pub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()));
-
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
-
-        assertEquals(2, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput().contains("Missing required option: '--topic <topics>'"));
-    }
-
-    @Test
-    @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_publish_missing_message() throws Exception {
-        final List<String> publishCommand =
-                List.of("pub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-t", "test");
-
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
-
-        assertEquals(2, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput()
-                .contains("Error: Missing required argument (specify one of these):"));
     }
 
     private void assertPublishOutput(final @NotNull ExecutionResult executionResult) {
