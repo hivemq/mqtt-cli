@@ -88,7 +88,7 @@ public class MqttCli {
         final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
         assertTrue(fullCommand.addAll(command));
 
-        final ProcessBuilder processBuilder = new ProcessBuilder(command);
+        final ProcessBuilder processBuilder = new ProcessBuilder(fullCommand);
         processBuilder.environment().putAll(environmentVariables);
         final Process process = processBuilder.start();
 
