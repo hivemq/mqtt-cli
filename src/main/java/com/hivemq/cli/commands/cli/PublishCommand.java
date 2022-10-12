@@ -68,7 +68,7 @@ public class PublishCommand extends AbstractConnectFlags implements MqttAction, 
     private @NotNull MessagePayloadOptions message;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-r", "--retain"}, negatable = true,
+    @CommandLine.Option(names = {"-r", "--retain"},
             description = "The message will be retained (default: false)", order = 1)
     private boolean retain;
 

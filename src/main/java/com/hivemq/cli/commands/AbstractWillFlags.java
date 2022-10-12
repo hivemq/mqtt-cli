@@ -51,7 +51,7 @@ public abstract class AbstractWillFlags extends MqttCommand implements Will {
     private @Nullable MqttQos willQos;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-Wr", "--willRetain"}, negatable = true, defaultValue = "false",
+    @CommandLine.Option(names = {"-Wr", "--willRetain"}, defaultValue = "false",
             description = "Will message as retained message (default: false)", order = 3)
     private boolean willRetain;
 

@@ -62,16 +62,15 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
     private @Nullable Integer sendTopicAliasMaximum;
 
     @SuppressWarnings({"unused", "FieldMayBeFinal"})
-    @CommandLine.Option(names = {"--reqProblemInfo"}, negatable = true,
-            description = "The client requests problem information from the server. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION + ")", order = 3)
-    private boolean requestProblemInformation = Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION;
+    @CommandLine.Option(names = {"--no-reqProblemInfo"}, negatable = true,
+            description = "The client requests problem information from the server. (default: true)", order = 3)
+    private boolean requestProblemInformation;
 
     @SuppressWarnings({"unused", "FieldMayBeFinal"})
-    @CommandLine.Option(names = {"--reqResponseInfo"}, negatable = true,
-            description = "The client requests response information from the server. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION + ")", order = 3)
-    private boolean requestResponseInformation = Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION;
+    @CommandLine.Option(names = {"--reqResponseInfo"},
+            description = "The client requests response information from the server. (default: false)",
+            defaultValue = "false", order = 3)
+    private boolean requestResponseInformation;
 
     @Override
     public void logUnusedOptions() {
@@ -120,8 +119,8 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
                 (sendMaximumPacketSize != null ? (", sendMaximumPacketSize=" + sendMaximumPacketSize) : "") +
                 (topicAliasMaximum != null ? (", topicAliasMaximum=" + topicAliasMaximum) : "") +
                 (sendTopicAliasMaximum != null ? (", sendTopicAliasMaximum=" + sendTopicAliasMaximum) : "") +
-                ", requestProblemInformation=" + requestProblemInformation +
-                ", requestResponseInformation=" + requestResponseInformation;
+                ", requestProblemInformation=" + requestProblemInformation + ", requestResponseInformation=" +
+                requestResponseInformation;
     }
 
     @Override
