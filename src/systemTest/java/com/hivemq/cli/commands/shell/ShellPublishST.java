@@ -71,7 +71,7 @@ public class ShellPublishST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_messageFromFile(final char mqttVersion) throws Exception {
+    void test_messageToFile(final char mqttVersion) throws Exception {
         final Path publishFile = Files.createTempFile("publish", "txt");
         Files.write(publishFile, "message".getBytes(StandardCharsets.UTF_8));
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m:file", publishFile.toString());

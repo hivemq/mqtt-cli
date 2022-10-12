@@ -52,15 +52,13 @@ public class PublishST {
 
     @RegisterExtension
     private static final HiveMQ hivemq = HiveMQ.builder().build();
-
-    private final @NotNull MqttCli mqttCli = new MqttCli();
-
+    
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_successfulConnectAndPublish(final char mqttVersion) throws Exception {
         final List<String> publishCommand = defaultPublishCommand(mqttVersion);
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
         assertPublishOutput(executionResult);
 
@@ -81,7 +79,7 @@ public class PublishST {
         final List<String> publishCommand = defaultPublishCommand(mqttVersion);
         publishCommand.add("-r");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
@@ -104,7 +102,7 @@ public class PublishST {
         publishCommand.add("-m:file");
         publishCommand.add(messageFile.toString());
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
@@ -122,7 +120,7 @@ public class PublishST {
         publishCommand.remove("message");
         publishCommand.add("-m:empty");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
@@ -145,7 +143,7 @@ public class PublishST {
         publishCommand.add("-t");
         publishCommand.add("test3");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test1"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test2"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test3"));
@@ -184,7 +182,7 @@ public class PublishST {
         publishCommand.add("-q");
         publishCommand.add("2");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test1, payload=7byte, qos=AT_MOST_ONCE, retain=false}"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test2, payload=7byte, qos=AT_LEAST_ONCE, retain=false}"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test3, payload=7byte, qos=EXACTLY_ONCE, retain=false}"));
@@ -214,7 +212,7 @@ public class PublishST {
         publishCommand.add("-e");
         publishCommand.add("60");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -238,7 +236,7 @@ public class PublishST {
         publishCommand.add("-pf");
         publishCommand.add("utf8");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -262,7 +260,7 @@ public class PublishST {
         publishCommand.add("-ct");
         publishCommand.add("content-type");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -286,7 +284,7 @@ public class PublishST {
         publishCommand.add("-rt");
         publishCommand.add("response-topic");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -310,7 +308,7 @@ public class PublishST {
         publishCommand.add("-cd");
         publishCommand.add("correlation-data");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -336,7 +334,7 @@ public class PublishST {
         publishCommand.add("-up");
         publishCommand.add("key2=value2");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -361,7 +359,7 @@ public class PublishST {
         final List<String> publishCommand =
                 List.of("pub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()));
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
         assertEquals(2, executionResult.getExitCode());
         assertTrue(executionResult.getErrorOutput().contains("Missing required option: '--topic <topics>'"));
@@ -373,7 +371,7 @@ public class PublishST {
         final List<String> publishCommand =
                 List.of("pub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-t", "test");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
         assertEquals(2, executionResult.getExitCode());
         assertTrue(executionResult.getErrorOutput()

@@ -41,7 +41,7 @@ public class MqttCli {
      * @throws IOException when an error occurred while starting the process or reading its output
      * @throws InterruptedException when the process was interrupted
      */
-    public @NotNull ExecutionResult execute(final @NotNull List<String> command, final @NotNull Map<String, String> environmentVariables) throws IOException, InterruptedException {
+    public static @NotNull ExecutionResult execute(final @NotNull List<String> command, final @NotNull Map<String, String> environmentVariables) throws IOException, InterruptedException {
         final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
         assertTrue(fullCommand.addAll(command));
 
@@ -71,43 +71,8 @@ public class MqttCli {
      * @throws IOException when an error occurred while starting the process or reading its output
      * @throws InterruptedException when the process was interrupted
      */
-    public @NotNull ExecutionResult execute(final @NotNull List<String> command) throws IOException, InterruptedException {
+    public static @NotNull ExecutionResult execute(final @NotNull List<String> command) throws IOException, InterruptedException {
         return execute(command, Map.of());
-    }
-
-    /**
-     * Executes a mqtt-cli command asynchronously. This method should be used for all mqtt-cli commands which do not
-     * exit the process like the subscribe command.
-     * @param command the command to execute with the mqtt cli
-     * @param environmentVariables the environment variables to start the process with
-     * @return an {@link ExecutionResultAsync} which can be used to wait for std-out std-err messages and write messages
-     * @throws IOException when an error occurred while starting the process
-     */
-    public @NotNull ExecutionResultAsync executeAsync(final @NotNull List<String> command, final @NotNull Map<String, String> environmentVariables)
-            throws IOException {
-        final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
-        assertTrue(fullCommand.addAll(command));
-
-        final ProcessBuilder processBuilder = new ProcessBuilder(fullCommand);
-        processBuilder.environment().putAll(environmentVariables);
-        final Process process = processBuilder.start();
-
-        final ProcessIO processIO = ProcessIO.startReading(process);
-
-        final AwaitOutput awaitOutput = new AwaitOutput(processIO, null, String.join(" ", command));
-        return new ExecutionResultAsync(awaitOutput, processIO);
-    }
-
-    /**
-     * Executes a mqtt-cli command asynchronously. This method should be used for all mqtt-cli commands which do not
-     * exit the process like the subscribe command.
-     * @param command the command to execute with the mqtt cli
-     * @return an {@link ExecutionResultAsync} which can be used to wait for std-out std-err messages and write messages
-     * @throws IOException when an error occurred while starting the process
-     */
-    public @NotNull ExecutionResultAsync executeAsync(final @NotNull List<String> command)
-            throws IOException {
-        return executeAsync(command, Map.of());
     }
 
 }

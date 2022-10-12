@@ -50,9 +50,7 @@ public class PublishConnectST {
 
     @RegisterExtension
     private static final HiveMQ hivemq = HiveMQ.builder().build();
-
-    private final @NotNull MqttCli mqttCli = new MqttCli();
-
+    
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
@@ -70,7 +68,7 @@ public class PublishConnectST {
                 "test",
                 "-d");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(0, executionResult.getExitCode());
         assertTrue(executionResult.getErrorOutput()
                 .contains("wrong-host: nodename nor servname provided, or not known"));
@@ -93,7 +91,7 @@ public class PublishConnectST {
                 "test",
                 "-d");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(0, executionResult.getExitCode());
         assertTrue(executionResult.getErrorOutput().contains("Connection refused"));
     }
@@ -105,7 +103,7 @@ public class PublishConnectST {
         final List<String> publishCommand = defaultPublishCommand(mqttVersion);
         publishCommand.add("--no-cleanStart");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
@@ -125,7 +123,7 @@ public class PublishConnectST {
         publishCommand.add("-k");
         publishCommand.add("100");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
@@ -142,7 +140,7 @@ public class PublishConnectST {
         publishCommand.remove("-i");
         publishCommand.remove("cliTest");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertTrue(executionResult.getStandardOutput().contains("sending CONNECT"));
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
 
@@ -178,7 +176,7 @@ public class PublishConnectST {
         publishCommand.add("-ip");
         publishCommand.add("test-");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
@@ -200,7 +198,7 @@ public class PublishConnectST {
         publishCommand.add("-u");
         publishCommand.add("username");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
@@ -217,7 +215,7 @@ public class PublishConnectST {
         publishCommand.add("-pw");
         publishCommand.add("password");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
         if (mqttVersion == '3') {
             assertTrue(executionResult.getErrorOutput()
@@ -240,7 +238,7 @@ public class PublishConnectST {
         publishCommand.add("-pw:env");
         publishCommand.add("PASSWORD");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand, Map.of("PASSWORD", "password"));
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of("PASSWORD", "password"));
 
         if (mqttVersion == '3') {
             assertTrue(executionResult.getErrorOutput()
@@ -267,7 +265,7 @@ public class PublishConnectST {
         publishCommand.add("-pw:file");
         publishCommand.add(passwordFile.toString());
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
         if (mqttVersion == '3') {
             assertTrue(executionResult.getErrorOutput()
@@ -292,7 +290,7 @@ public class PublishConnectST {
         publishCommand.add("-pw");
         publishCommand.add("password");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         assertPublishOutput(executionResult);
@@ -313,7 +311,7 @@ public class PublishConnectST {
         publishCommand.add("-pw:env");
         publishCommand.add("PASSWORD");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand, Map.of("PASSWORD", "password"));
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of("PASSWORD", "password"));
 
         assertPublishOutput(executionResult);
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
@@ -337,7 +335,7 @@ public class PublishConnectST {
         publishCommand.add("-pw:file");
         publishCommand.add(passwordFile.toString());
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
         assertPublishOutput(executionResult);
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
@@ -374,7 +372,7 @@ public class PublishConnectST {
         publishCommand.add("-Wup");
         publishCommand.add("key2=value2");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -433,7 +431,7 @@ public class PublishConnectST {
         publishCommand.add("--rcvMax");
         publishCommand.add("100");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -457,7 +455,7 @@ public class PublishConnectST {
         publishCommand.add("--maxPacketSize");
         publishCommand.add("100");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -481,7 +479,7 @@ public class PublishConnectST {
         publishCommand.add("--topicAliasMax");
         publishCommand.add("100");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -504,7 +502,7 @@ public class PublishConnectST {
         final List<String> publishCommand = defaultPublishCommand(mqttVersion);
         publishCommand.add("--no-reqProblemInfo");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -527,7 +525,7 @@ public class PublishConnectST {
         final List<String> publishCommand = defaultPublishCommand(mqttVersion);
         publishCommand.add("--reqResponseInfo");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -552,7 +550,7 @@ public class PublishConnectST {
         publishCommand.add("-se");
         publishCommand.add("100");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
@@ -578,7 +576,7 @@ public class PublishConnectST {
         publishCommand.add("-Cup");
         publishCommand.add("key2=value2");
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {

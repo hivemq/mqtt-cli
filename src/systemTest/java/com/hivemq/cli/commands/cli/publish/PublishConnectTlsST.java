@@ -34,10 +34,12 @@ import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPack
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class PublishConnectTlsST {
+
     @RegisterExtension
     private final static HiveMQ hivemq = HiveMQ.builder().withTlsEnabled(true).build();
 
-    final MqttCli mqttCli = new MqttCli();
+    @RegisterExtension
+    private final static MqttCliAsync mqttCli = new MqttCliAsync();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -66,9 +68,9 @@ public class PublishConnectTlsST {
         );
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
-        executionResult.getAwaitOutput().awaitStdOut("Enter private key password:");
+        executionResult.awaitStdOut("Enter private key password:");
         executionResult.write("changeme");
-        executionResult.getAwaitOutput().awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("received PUBLISH acknowledgement");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(toVersion(mqttVersion));

@@ -40,8 +40,6 @@ public class PublishConnectWebsocketsST {
     @RegisterExtension
     private final static HiveMQ hivemq = HiveMQ.builder().withWebsocketEnabled(true).build();
 
-    final MqttCli mqttCli = new MqttCli();
-
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
@@ -60,7 +58,7 @@ public class PublishConnectWebsocketsST {
                 "-d"
         );
 
-        final ExecutionResult executionResult = mqttCli.execute(publishCommand);
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(0, executionResult.getExitCode());
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
         assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));

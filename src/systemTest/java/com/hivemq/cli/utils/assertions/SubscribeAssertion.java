@@ -31,6 +31,7 @@ public class SubscribeAssertion {
 
     private @NotNull List<Subscription> subscriptions = List.of();
     private @NotNull UserProperties userProperties = UserPropertiesImpl.of(ImmutableList.of());
+
     private SubscribeAssertion() {
     }
 

@@ -16,21 +16,36 @@
 package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 
 public class ExecutionResultAsync {
 
-    private final @NotNull AwaitOutput awaitOutput;
     private final @NotNull ProcessIO processIO;
+    private final @NotNull String command;
 
-    public ExecutionResultAsync(final @NotNull AwaitOutput awaitOutput, final @NotNull ProcessIO processIO) {
-        this.awaitOutput = awaitOutput;
+    public ExecutionResultAsync(final @NotNull ProcessIO processIO, final @NotNull String command) {
         this.processIO = processIO;
+        this.command = command;
     }
 
-    public @NotNull AwaitOutput getAwaitOutput() {
-        return awaitOutput;
+    public @NotNull ExecutionResultAsync awaitStdOut(final @NotNull String expectedOutput) {
+        try {
+            processIO.awaitStdOut(expectedOutput);
+        } catch (final TimeoutException timeoutException) {
+            Assertions.fail(String.format("Command '%s' did not return expected standard output '%s' in time. Actual read standard output: '%s'", command, expectedOutput, timeoutException.getActualOutput()), timeoutException);
+        }
+        return this;
+    }
+
+    public @NotNull ExecutionResultAsync awaitStdErr(final @NotNull String expectedOutput) {
+        try {
+            processIO.awaitStdErr(expectedOutput);
+        } catch (final TimeoutException timeoutException) {
+            Assertions.fail(String.format("Command '%s' did not return expected error output '%s' in time. Actual read error output: '%s'", command, expectedOutput, timeoutException.getActualOutput()), timeoutException);
+        }
+        return this;
     }
 
     public void write(final @NotNull String output) throws IOException {

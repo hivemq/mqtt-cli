@@ -43,7 +43,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     private Process orphanCleanupProcess;
     private int connectClientMarker = 0;
 
-    private @NotNull Map<String, String> envVariables;
+    private final @NotNull Map<String, String> envVariables;
 
     public MqttCliShell() {
         envVariables = Map.of();
@@ -62,7 +62,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
         // Start and await the start of the shell
         this.process = startShellMode(homeDir);
-        this.orphanCleanupProcess = startOrphanCleanupProcess(process);
+        this.orphanCleanupProcess = OrphanProcessCleanup.startOrphanCleanupProcess(process);
         this.processIO = ProcessIO.startReading(process);
         new AwaitOutput(processIO, null, String.join(" ", getShellCommand(homeDir))).awaitStdOut("mqtt>");
 
@@ -74,25 +74,6 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     public void afterEach(final @NotNull ExtensionContext context) {
         process.destroyForcibly();
         orphanCleanupProcess.destroyForcibly();
-    }
-
-    private @NotNull Process startOrphanCleanupProcess(final @NotNull Process childProcess) throws IOException {
-        // We start the ProcessGarbageCollector which sole job is to destroy the childProcess, meaning the mqtt-cli shell,
-        // when the jvm process exited
-        final long jvmProcessId = ProcessHandle.current().pid();
-        final List<String> orphanCleanupProcessCommand = List.of(
-                System.getProperty("java"),
-                Resources.getResource("OrphanCleanupProcess.java").getPath(),
-                String.valueOf(jvmProcessId),
-                String.valueOf(childProcess.pid())
-        );
-        final Process orphanCleanupProcess = new ProcessBuilder(orphanCleanupProcessCommand).start();
-
-        // Wait until the process prints X, which means that the process garbage collector has registered the
-        final int readChar = orphanCleanupProcess.getInputStream().read();
-        assertEquals('X', readChar);
-
-        return orphanCleanupProcess;
     }
 
     private @NotNull Process startShellMode(final @NotNull Path homeDir) throws IOException {
