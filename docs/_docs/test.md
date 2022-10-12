@@ -82,7 +82,7 @@ mqtt test   [--help]
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
 | ``-V``   | ``--mqttVersion``| The MQTT version to test the broker on. | Both versions will be tested
-| ``-a``| ``--all`` | Perform all tests for all MQTT versions | ``False`` (Only test MQTT 3)
+| ``-a``| ``--all`` | Perform all tests for all MQTT versions | ``false`` (Only test MQTT 3)
 | ``-t``| ``--timeOut`` | The time to wait for the broker to respond (in seconds). | ``10s``
 | ``-q`` | ``--qosTries`` | The amount of messages to send and receive from the broker for each QoS level. | ``10``
 | ``-l`` | | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties) | ``false``
@@ -103,7 +103,7 @@ mqtt test   [--help]
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-s``    | ``--secure``  | Whether a default SSL configuration is used. | ``False``
+| ``-s``    | ``--secure``  | Whether a default SSL configuration is used. | ``false``
 | ``-u``   | ``--user`` | Define the username for authentication. |
 | ``-pw``  | ``--password`` | Define the password for authentication directly. <br> If left blank the user will be prompted for the password in console. |
 | ``-pw:env``  |  | Define that the password for authentication is read in from an environment variable. | ``MQTT_CLI_PW`` if option is specified without value

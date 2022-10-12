@@ -34,9 +34,9 @@ client@host> sub    -t <topics> [-t <topics>]...
 |----------|-------------|------------------------------|----------|
 | ``-t``   | ``--topic``| The MQTT topic the client will subscribe to. |
 | ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified. You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
-| ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``False`` 
+| ``-oc``| ``--outputToConsole`` | If this flag is set the output will be printed to the console. | ``false`` 
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
-| ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``False``
+| ``-b64``| ``--base64``| If set the received publish messages will be base64 encoded. | ``false``
 | ``-J``  | ``--jsonOutput`` | Print the received publishes in pretty JSON format. | `False`
 | ``-T``  | ``--showTopics`` | Prepend the specific topic name to the received publish. | `False`
 | ``-up``  | ``--userProperty`` | A user property of the subscribe message. |

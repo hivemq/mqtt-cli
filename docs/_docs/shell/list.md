@@ -20,12 +20,12 @@ mqtt> ls    [-ahlrstU]
 
 |Option |Long Version | Explanation | Default
 |---------------|-------------|------------------------------|
-| ``-a``    |  | Include disconnected clients. | ``False``
-| ``-l``   | ``--long``| Use a long listing format with detailed information about the clients. | ``False``
-| ``-r`` | ``--reverse`` | Reverse order while sorting | ``False`` 
-| ``-s`` | ``--subscriptions``  | List subscribed topics of the clients. | ``False``
-| ``-t`` | ``--time``  | Sort cliens by their creation time. | ``False``
-| ``-U`` |   |  Do not sort.  |  ``False``
+| ``-a``    |  | Include disconnected clients. | ``false``
+| ``-l``   | ``--long``| Use a long listing format with detailed information about the clients. | ``false``
+| ``-r`` | ``--reverse`` | Reverse order while sorting | ``false`` 
+| ``-s`` | ``--subscriptions``  | List subscribed topics of the clients. | ``false``
+| ``-t`` | ``--time``  | Sort cliens by their creation time. | ``false``
+| ``-U`` |   |  Do not sort.  |  ``false``
 
 ***
 
