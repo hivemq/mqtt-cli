@@ -63,7 +63,7 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
 
     @SuppressWarnings({"unused", "FieldMayBeFinal"})
     @CommandLine.Option(names = {"--no-reqProblemInfo"}, negatable = true,
-            description = "The client requests problem information from the server. (default: true)", order = 3)
+            description = "The client requests problem information from the server. (default: true)", defaultValue = "true", order = 3)
     private boolean requestProblemInformation;
 
     @SuppressWarnings({"unused", "FieldMayBeFinal"})
