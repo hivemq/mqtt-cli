@@ -84,19 +84,25 @@ public class ShellConnectST {
     void test_connectWhileConnected(final char mqttVersion) throws Exception {
         final List<String> connectCommand1 = List.of(
                 "con",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort()),
-                "-V", String.valueOf(mqttVersion),
-                "-i", "client1"
-        );
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "client1");
 
         final List<String> connectCommand2 = List.of(
                 "con",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort()),
-                "-V", String.valueOf(mqttVersion),
-                "-i", "client2"
-        );
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "client2");
 
         mqttCliShell.executeAsync(connectCommand1)
                 .awaitStdOut(String.format("client1@%s>", hivemq.getHost()))
@@ -140,7 +146,8 @@ public class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_wrongHost(final char mqttVersion) throws Exception {
-        final List<String> connectCommand = List.of("con",
+        final List<String> connectCommand = List.of(
+                "con",
                 "-h",
                 "unreachable-host",
                 "-p",
@@ -320,7 +327,8 @@ public class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_noClientId(final char mqttVersion) throws Exception {
-        final List<String> connectCommand = List.of("con",
+        final List<String> connectCommand = List.of(
+                "con",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -549,7 +557,9 @@ public class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_sessionExpiryInterval(final char mqttVersion) throws Exception {
-        final List<String> connectCommand = List.of("con",
+        final String clientId = "sessionTest_V" + mqttVersion;
+        final List<String> connectCommand = List.of(
+                "con",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -559,25 +569,26 @@ public class ShellConnectST {
                 "-se",
                 "120",
                 "-i",
-                "sessionTest",
+                clientId,
                 "--no-cleanStart");
 
         if (mqttVersion == '3') {
             mqttCliShell.executeAsync(connectCommand)
-                    .awaitStdOut(String.format("sessionTest@%s>", hivemq.getHost()))
+                    .awaitStdOut(String.format("%s@%s>", clientId, hivemq.getHost()))
                     .awaitStdErr("Connect session expiry interval was set but is unused in MQTT Version MQTT_3_1_1")
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
 
             assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setSessionExpiryInterval(4294967295L);
                 connectAssertion.setCleanStart(false);
-                connectAssertion.setClientId("sessionTest");
+                connectAssertion.setClientId(clientId);
             });
 
         } else {
             mqttCliShell.executeAsync(connectCommand)
-                    .awaitStdOut(String.format("sessionTest@%s>", hivemq.getHost()))
+                    .awaitStdOut(String.format("%s@%s>", clientId, hivemq.getHost()))
                     .awaitLog("sending CONNECT")
                     .awaitLog("sessionExpiryInterval=120")
                     .awaitLog("received CONNACK")
@@ -585,7 +596,7 @@ public class ShellConnectST {
 
             final ConnectPacket connectPacket1 = hivemq.getConnectPackets().get(0);
             assertConnectPacket(connectPacket1, connectAssertion -> {
-                connectAssertion.setClientId("sessionTest");
+                connectAssertion.setClientId(clientId);
                 connectAssertion.setCleanStart(false);
                 connectAssertion.setSessionExpiryInterval(120);
             });
@@ -593,7 +604,7 @@ public class ShellConnectST {
             mqttCliShell.executeAsync(List.of("dis")).awaitStdOut("mqtt>").awaitLog("sending DISCONNECT");
 
             mqttCliShell.executeAsync(connectCommand)
-                    .awaitStdOut(String.format("sessionTest@%s>", hivemq.getHost()))
+                    .awaitStdOut(String.format("%s@%s>", clientId, hivemq.getHost()))
                     .awaitLog("sending CONNECT")
                     .awaitLog("sessionExpiryInterval=120")
                     .awaitLog("received CONNACK")
@@ -601,7 +612,7 @@ public class ShellConnectST {
 
             final ConnectPacket connectPacket2 = hivemq.getConnectPackets().get(1);
             assertConnectPacket(connectPacket2, connectAssertion -> {
-                connectAssertion.setClientId("sessionTest");
+                connectAssertion.setClientId(clientId);
                 connectAssertion.setCleanStart(false);
                 connectAssertion.setSessionExpiryInterval(120);
             });
@@ -612,7 +623,8 @@ public class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_identifierPrefix(final char mqttVersion) throws Exception {
-        final List<String> connectCommand = List.of("con",
+        final List<String> connectCommand = List.of(
+                "con",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -676,7 +688,8 @@ public class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_keepAlive(final char mqttVersion) throws Exception {
-        final List<String> connectCommand = List.of("con",
+        final List<String> connectCommand = List.of(
+                "con",
                 "-h",
                 hivemq.getHost(),
                 "-p",

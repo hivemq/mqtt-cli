@@ -124,7 +124,7 @@ public class ShellUnsubscribeST {
         mqttCliShell.connectClient(hivemq, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
                 .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
-                .awaitStdErr("Missing required option '--topic <topics>'")
+                .awaitStdErr("Missing required option: '--topic <topics>'")
                 .awaitStdErr("Try 'help unsub' for more information.");
 
         assertEquals(0, hivemq.getUnsubscribePackets().size());

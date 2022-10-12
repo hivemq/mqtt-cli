@@ -69,8 +69,8 @@ public class SubscribeConnectST {
 
         final ExecutionResult executionResult = MqttCli.execute(subscribeCommand);
         assertEquals(0, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput()
-                .contains("wrong-host: nodename nor servname provided, or not known"));
+        assertTrue(executionResult.getErrorOutput().contains("unreachable-host: Temporary failure in name resolution") ||
+                executionResult.getErrorOutput().contains("nodename nor servname provided, or not known"));
     }
 
     @ParameterizedTest
@@ -90,7 +90,8 @@ public class SubscribeConnectST {
 
         final ExecutionResult executionResult = MqttCli.execute(subscribeCommand);
         assertEquals(0, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput().contains("Connection refused"));
+        assertTrue(executionResult.getErrorOutput().contains("readAddress(..) failed: Connection reset by peer") ||
+                executionResult.getErrorOutput().contains("Connection refused"));
     }
 
     @ParameterizedTest
