@@ -31,6 +31,7 @@ import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3Subscribe;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3SubscribeBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.unsubscribe.Mqtt3Unsubscribe;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 import com.hivemq.client.mqtt.mqtt5.message.disconnect.Mqtt5Disconnect;
@@ -244,9 +245,11 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     @Override
     void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull Unsubscribe unsubscribe) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
+        final Mqtt5UserProperties userProperties = unsubscribe.getUserProperties() != null? unsubscribe.getUserProperties() : Mqtt5UserProperties.of();
 
         for (final String topic : unsubscribe.getTopics()) {
-            final Mqtt5Unsubscribe unsubscribeMessage = Mqtt5Unsubscribe.builder().topicFilter(topic).build();
+            final Mqtt5Unsubscribe unsubscribeMessage =
+                    Mqtt5Unsubscribe.builder().topicFilter(topic).userProperties(userProperties).build();
 
             Logger.debug("{} sending UNSUBSCRIBE {}", clientLogPrefix, unsubscribeMessage);
 
