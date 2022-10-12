@@ -80,10 +80,10 @@ public class MqttCli {
      * exit the process like the subscribe command.
      * @param command the command to execute with the mqtt cli
      * @param environmentVariables the environment variables to start the process with
-     * @return an {@link AwaitOutput} which can be used to wait for std-out std-err messages
+     * @return an {@link ExecutionResultAsync} which can be used to wait for std-out std-err messages and write messages
      * @throws IOException when an error occurred while starting the process
      */
-    public @NotNull AwaitOutput executeAsync(final @NotNull List<String> command, final @NotNull Map<String, String> environmentVariables)
+    public @NotNull ExecutionResultAsync executeAsync(final @NotNull List<String> command, final @NotNull Map<String, String> environmentVariables)
             throws IOException {
         final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
         assertTrue(fullCommand.addAll(command));
@@ -94,17 +94,18 @@ public class MqttCli {
 
         final ProcessIO processIO = ProcessIO.startReading(process);
 
-        return new AwaitOutput(processIO, null, String.join(" ", command));
+        final AwaitOutput awaitOutput = new AwaitOutput(processIO, null, String.join(" ", command));
+        return new ExecutionResultAsync(awaitOutput, processIO);
     }
 
     /**
      * Executes a mqtt-cli command asynchronously. This method should be used for all mqtt-cli commands which do not
      * exit the process like the subscribe command.
      * @param command the command to execute with the mqtt cli
-     * @return an {@link AwaitOutput} which can be used to wait for std-out std-err messages
+     * @return an {@link ExecutionResultAsync} which can be used to wait for std-out std-err messages and write messages
      * @throws IOException when an error occurred while starting the process
      */
-    public @NotNull AwaitOutput executeAsync(final @NotNull List<String> command)
+    public @NotNull ExecutionResultAsync executeAsync(final @NotNull List<String> command)
             throws IOException {
         return executeAsync(command, Map.of());
     }

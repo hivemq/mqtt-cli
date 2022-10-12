@@ -22,14 +22,10 @@ import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCli;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.testcontainers.utility.DockerImageName;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -47,7 +43,7 @@ public class SubscribeST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_successful_subscribe() throws Exception {
+    void test_successfulConnectAndSubscribe() throws Exception {
         final List<String> subscribeCommand = List.of(
                 "sub",
                 "-h", hivemq.getHost(),
@@ -63,8 +59,8 @@ public class SubscribeST {
                 .buildBlocking();
         publisher.connect();
 
-        final AwaitOutput awaitOutput = mqttCli.executeAsync(subscribeCommand);
-
+        final AwaitOutput awaitOutput = mqttCli.executeAsync(subscribeCommand).getAwaitOutput();
+        awaitOutput.awaitStdOut("sending SUBSCRIBE");
         awaitOutput.awaitStdOut("received SUBACK");
 
         publisher.publishWith().topic("test").payload("testReturn".getBytes(StandardCharsets.UTF_8)).send();
@@ -86,4 +82,5 @@ public class SubscribeST {
         assertEquals(2, executionResult.getExitCode());
         assertTrue(executionResult.getErrorOutput().contains("Missing required option: '--topic <topics>'"));
     }
+
 }
