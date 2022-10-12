@@ -59,7 +59,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Runnab
     private @NotNull MessagePayloadOptions message;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, defaultValue = "false",
+    @CommandLine.Option(names = {"-r", "--retain"}, defaultValue = "false",
             description = "The message will be retained (default: false)")
     private boolean retain;
 
