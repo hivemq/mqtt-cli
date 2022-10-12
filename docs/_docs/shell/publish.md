@@ -36,7 +36,7 @@ client@host> pub    -t <topics> [-t <topics>]...
 | ``-m:file`` | ``--message-file``           | The file whose payload will be published on the topic.                                                                                                                                                                                |
 | ``-m:empty`` | ``--message-empty``           | Sets the message to an empty payload.                                                                                                                                                                                |
 | ``-q`` | ``--qos`` | Use a defined quality of service level on all topics if only one QoS is specified.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
-| ``-r``| ``--[no-]retain`` | Message will be retained. | ``False``
+| ``-r``| ``--retain`` | Message will be retained. | ``false``
 | ``-e`` | ``--messageExpiryInterval`` | The lifetime of the publish message in seconds. |
 | ``-cd`` | ``--correlationData`` | The correlation data of the publish message. |
 | ``-ct`` | ``--contentType`` | A description of the content of the publish message. |

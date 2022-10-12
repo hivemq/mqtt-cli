@@ -61,7 +61,7 @@ mqtt> con   [-h <host>]
             [--topicAliasMax <topicAliasMaximum>] 
             [--sendTopicAliasMax <sendTopicAliasMaximum>] 
             [--[no-]reqProblemInfo] 
-            [--[no-]reqResponseInfo]                                                              
+            [--reqResponseInfo]                                                              
             [--help] 
 ```
 
@@ -77,13 +77,13 @@ mqtt> con   [-h <host>]
 | ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly defined UTF-8 String will be generated.
 | ``-ip``  | ``--identifierPrefix``| The prefix identifier which will prepend the randomly generated client name if no identifier is given. | ``mqttClient``
-| ``-d``    |   ``--debug``     | Print info level debug messages to the console. | ``False``
-| ``-v``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``False``
-|   | ``--[no-]cleanStart`` | Enable clean start if set. | ``True``
+| ``-d``    |   ``--debug``     | Print info level debug messages to the console. | ``false``
+| ``-v``    |   ``--verbose``   | Print detailed debug level messages to the console. | ``false``
+|   | ``--[no-]cleanStart`` | Enable clean start if set. | ``true``
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-up``  | ``--userProperty`` | A user property of the connect message.
-| ``--ws``  |  | Use WebSocket transport protocol. | ``False``
+| ``--ws``  |  | Use WebSocket transport protocol. | ``false``
 | ``--ws:path``  |  | The path to the WebSocket located at given broker host. | 
 
 ***
@@ -92,7 +92,7 @@ mqtt> con   [-h <host>]
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-s``    | ``--secure``  | Use the default SSL configuration. | ``False``
+| ``-s``    | ``--secure``  | Use the default SSL configuration. | ``false``
 | ``-u``   | ``--user`` | A username for authentication can be defined. |
 | ``-pw``  | ``--password`` | A password for authentication can be defined directly. <br> If left blank the user will be prompted for the password in console. |
 | ``-pw:env``  |  | Define that the password for authentication is read in from an environment variable. | ``MQTT_CLI_PW`` if option is specified without value
@@ -114,7 +114,7 @@ mqtt> con   [-h <host>]
 | ``-We``   | ``--willMessageExpiryInterval``   | Lifetime of the will message in seconds. <br> Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
 | ``-Wm``  | ``--willPayload`` | Payload of the will message. |
 | ``-Wq``   | ``--willQualityOfService`` | QoS level of the will message. | ``0``
-| ``-Wr``   | ``--[no-]willRetain``  | Retain the will message. | ``False``
+| ``-Wr``   | ``--willRetain``  | Retain the will message. | ``false``
 | ``-Wt``  | ``--willTopic`` | Topic of the will message.  |
 | ``-Wcd``  | ``--willCorrelationData`` | Correlation data of the will message  |
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
@@ -135,7 +135,7 @@ mqtt> con   [-h <host>]
 |   |  ``--topicAliasMax``  |  The maximum amount of topic aliases the client accepts from the server.  | ``0``
 |   |  ``--sendTopicAliasMax``  |  The maximum amount of topic aliases the client sends to the server.  | ``16``
 |   |  `` --[no-]reqProblemInfo`` |  The client requests problem information from the server.  | ``true``
-|   |  ``--[no-]reqResponseInfo``  | The client requests response information from the server. | ``false``
+|   |  ``--reqResponseInfo``  | The client requests response information from the server. | ``false``
 
 *** 
 
