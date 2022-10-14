@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SuppressWarnings("NewClassNamingConvention")
 class SubscribeST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =

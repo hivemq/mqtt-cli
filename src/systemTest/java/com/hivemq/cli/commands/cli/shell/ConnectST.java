@@ -29,7 +29,6 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("NewClassNamingConvention")
 class ConnectST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
