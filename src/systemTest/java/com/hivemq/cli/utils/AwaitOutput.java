@@ -32,7 +32,9 @@ public class AwaitOutput {
         try {
             processIO.awaitStdOut(expectedOutput);
         } catch (final TimeoutException timeoutException) {
-            Assertions.fail(String.format("Command '%s' did not return expected standard output '%s' in time.", command, expectedOutput), timeoutException);
+            Assertions.fail(String.format("Command '%s' did not return expected standard output '%s' in time.",
+                    command,
+                    expectedOutput), timeoutException);
         }
         return this;
     }
@@ -41,7 +43,9 @@ public class AwaitOutput {
         try {
             processIO.awaitStdErr(expectedOutput);
         } catch (final TimeoutException timeoutException) {
-            Assertions.fail(String.format("Command '%s' did not return expected error output '%s' in time.", command, expectedOutput), timeoutException);
+            Assertions.fail(String.format("Command '%s' did not return expected error output '%s' in time.",
+                    command,
+                    expectedOutput), timeoutException);
         }
         return this;
     }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
-public class ProcessIO {
+class ProcessIO {
 
     private final @NotNull BufferedWriter stdoutWriter;
     private final @NotNull StringBuilder processStdOut;
@@ -166,5 +167,4 @@ public class ProcessIO {
         processOutputWriter.write('\n');
         processOutputWriter.flush();
     }
-
 }

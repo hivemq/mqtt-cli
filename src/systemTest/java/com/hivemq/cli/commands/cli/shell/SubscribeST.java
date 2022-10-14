@@ -29,7 +29,8 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class SubscribeST {
+@SuppressWarnings("NewClassNamingConvention")
+class SubscribeST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
@@ -57,7 +58,7 @@ public class SubscribeST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_missing_topic() throws Exception{
+    void test_subscribe_missing_topic() throws Exception {
         final List<String> subscribeCommand = List.of("sub");
         mqttCliShell.connectClient(hivemq);
         mqttCliShell.executeAsync(subscribeCommand)

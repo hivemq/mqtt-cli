@@ -22,7 +22,8 @@ public class ExecutionResult {
     private final @NotNull String standardOutput;
     private final @NotNull String errorOutput;
 
-    public ExecutionResult(final int exitCode, final @NotNull String standardOutput, final @NotNull String errorOutput) {
+    public ExecutionResult(
+            final int exitCode, final @NotNull String standardOutput, final @NotNull String errorOutput) {
         this.exitCode = exitCode;
         this.standardOutput = standardOutput;
         this.errorOutput = errorOutput;

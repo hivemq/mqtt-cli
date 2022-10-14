@@ -17,9 +17,9 @@ package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
 
-public class TimeoutException extends Exception {
+class TimeoutException extends Exception {
 
-    public TimeoutException(final @NotNull String message, final @NotNull Throwable cause) {
+    TimeoutException(final @NotNull String message, final @NotNull Throwable cause) {
         super(message, cause);
     }
 }

@@ -17,6 +17,7 @@ package com.hivemq.cli.utils;
 
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -24,14 +25,15 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.hivemq.cli.utils.MqttCli.CLI_EXEC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
-    private ProcessIO processIO;
-    private Process process;
+    private @Nullable ProcessIO processIO;
+    private @Nullable Process process;
 
     @Override
     public void beforeEach(final @NotNull ExtensionContext context) throws Exception {
@@ -40,14 +42,14 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     public void afterEach(final @NotNull ExtensionContext context) {
-        if (process.isAlive()) {
+        if (process != null && process.isAlive()) {
             process.destroy();
         }
     }
 
     private void startShellMode() throws IOException {
         final List<String> shellCommand = new ArrayList<>(CLI_EXEC);
-        assertTrue(shellCommand.addAll(List.of("sh")));
+        assertTrue(shellCommand.add("sh"));
 
         this.process = new ProcessBuilder(shellCommand).start();
         this.processIO = ProcessIO.startReading(process);
@@ -65,9 +67,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     public @NotNull AwaitOutput executeAsync(final @NotNull List<String> command) throws IOException {
         final String fullCommand = String.join(" ", command);
 
-        processIO.writeMsg(fullCommand);
+        Objects.requireNonNull(processIO).writeMsg(fullCommand);
         return new AwaitOutput(processIO, fullCommand);
     }
-
-
 }

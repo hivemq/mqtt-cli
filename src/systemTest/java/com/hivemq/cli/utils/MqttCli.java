@@ -35,7 +35,8 @@ public class MqttCli {
             Arrays.stream(Objects.requireNonNull(System.getProperty("cliExec")).split(" "))
                     .collect(Collectors.toUnmodifiableList());
 
-    public @NotNull ExecutionResult execute(final @NotNull List<String> command) throws IOException, InterruptedException {
+    public @NotNull ExecutionResult execute(final @NotNull List<String> command)
+            throws IOException, InterruptedException {
         final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
         assertTrue(fullCommand.addAll(command));
 
@@ -49,8 +50,7 @@ public class MqttCli {
         return new ExecutionResult(exitCode, stdOut, stdErr);
     }
 
-    public @NotNull AwaitOutput executeAsync(final @NotNull List<String> command)
-            throws IOException {
+    public @NotNull AwaitOutput executeAsync(final @NotNull List<String> command) throws IOException {
         final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
         assertTrue(fullCommand.addAll(command));
 
@@ -59,5 +59,4 @@ public class MqttCli {
 
         return new AwaitOutput(processIO, String.join(" ", command));
     }
-
 }

@@ -29,7 +29,8 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class PublishST {
+@SuppressWarnings("NewClassNamingConvention")
+class PublishST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));

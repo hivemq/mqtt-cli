@@ -29,13 +29,14 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class ConnectST {
+@SuppressWarnings("NewClassNamingConvention")
+class ConnectST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
 
     @RegisterExtension
-    final MqttCliShell mqttCliShell = new MqttCliShell();
+    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
 
     @BeforeAll
     static void beforeAll() {
@@ -50,30 +51,17 @@ public class ConnectST {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_successful_connect() throws Exception {
-        final List<String> connectCommand = List.of(
-                "con",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort()),
-                "-i", "cliTest"
-        );
+        final List<String> connectCommand =
+                List.of("con", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-i", "cliTest");
 
         mqttCliShell.executeAsync(connectCommand).awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
     }
 
-
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_unsuccessful_connect() throws Exception {
-        final List<String> connectCommand = List.of(
-                "con",
-                "-h", "localhost",
-                "-p", "22",
-                "-i", "cliTest"
-        );
+        final List<String> connectCommand = List.of("con", "-h", "localhost", "-p", "22", "-i", "cliTest");
 
-        mqttCliShell.executeAsync(connectCommand)
-                .awaitStdErr("Unable to connect.")
-                .awaitStdOut("mqtt>");
+        mqttCliShell.executeAsync(connectCommand).awaitStdErr("Unable to connect.").awaitStdOut("mqtt>");
     }
-
 }

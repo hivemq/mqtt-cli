@@ -36,7 +36,8 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SubscribeST {
+@SuppressWarnings("NewClassNamingConvention")
+class SubscribeST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq-ce"));
@@ -56,13 +57,8 @@ public class SubscribeST {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_successful_subscribe() throws Exception {
-        final List<String> subscribeCommand = List.of(
-                "sub",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort()),
-                "-t", "test",
-                "-d"
-        );
+        final List<String> subscribeCommand =
+                List.of("sub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-t", "test", "-d");
 
         final Mqtt5BlockingClient publisher = Mqtt5Client.builder()
                 .identifier("publisher")
@@ -83,11 +79,8 @@ public class SubscribeST {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_subscribe_missing_topic() throws Exception {
-        final List<String> subscribeCommand = List.of(
-                "sub",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort())
-        );
+        final List<String> subscribeCommand =
+                List.of("sub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()));
 
         final ExecutionResult executionResult = mqttCli.execute(subscribeCommand);
 

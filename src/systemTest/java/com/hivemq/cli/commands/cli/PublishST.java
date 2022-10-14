@@ -35,7 +35,8 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PublishST {
+@SuppressWarnings("NewClassNamingConvention")
+class PublishST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
@@ -55,14 +56,16 @@ public class PublishST {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_successful_publish() throws Exception {
-        final List<String> publishCommand = List.of(
-                "pub",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort()),
-                "-t", "test",
-                "-m", "test",
-                "-d"
-        );
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-t",
+                "test",
+                "-m",
+                "test",
+                "-d");
 
         final Mqtt5BlockingClient subscriber = Mqtt5Client.builder()
                 .identifier("subscriber")
@@ -71,7 +74,11 @@ public class PublishST {
                 .buildBlocking();
         subscriber.connect();
         final CountDownLatch receivedPublish = new CountDownLatch(1);
-        subscriber.toAsync().subscribeWith().topicFilter("test").callback(ignored -> receivedPublish.countDown()).send();
+        subscriber.toAsync()
+                .subscribeWith()
+                .topicFilter("test")
+                .callback(ignored -> receivedPublish.countDown())
+                .send();
 
         final ExecutionResult executionResult = mqttCli.execute(publishCommand);
 
@@ -86,11 +93,8 @@ public class PublishST {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_publish_missing_topic() throws Exception {
-        final List<String> publishCommand = List.of(
-                "pub",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort())
-        );
+        final List<String> publishCommand =
+                List.of("pub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()));
 
         final ExecutionResult executionResult = mqttCli.execute(publishCommand);
 
@@ -101,17 +105,17 @@ public class PublishST {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_publish_missing_message() throws Exception {
-        final List<String> publishCommand = List.of(
-                "pub",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttPort()),
-                "-t", "test"
-        );
+        final List<String> publishCommand =
+                List.of("pub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-t", "test");
 
         final ExecutionResult executionResult = mqttCli.execute(publishCommand);
 
         assertEquals(2, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput().contains("Error: Missing required argument (specify one of these): (-m=<messageFromCommandline> | -m:file=<messageFromFile>)")
-                || executionResult.getErrorOutput().contains("Error: Missing required argument (specify one of these): (-m:file=<messageFromFile> | -m=<messageFromCommandline>)"));
+        assertTrue(executionResult.getErrorOutput()
+                .contains(
+                        "Error: Missing required argument (specify one of these): (-m=<messageFromCommandline> | -m:file=<messageFromFile>)") ||
+                executionResult.getErrorOutput()
+                        .contains(
+                                "Error: Missing required argument (specify one of these): (-m:file=<messageFromFile> | -m=<messageFromCommandline>)"));
     }
 }

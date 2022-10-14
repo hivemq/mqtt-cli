@@ -29,7 +29,8 @@ import org.testcontainers.utility.DockerImageName;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class DisconnectST {
+@SuppressWarnings("NewClassNamingConvention")
+class DisconnectST {
 
     private static final @NotNull HiveMQTestContainerExtension hivemq =
             new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
@@ -52,7 +53,7 @@ public class DisconnectST {
     void test_successful_disconnect() throws Exception {
         final List<String> disconnectCommand = List.of("dis");
         mqttCliShell.connectClient(hivemq);
-       mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>");
+        mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>");
     }
 
     @Test
