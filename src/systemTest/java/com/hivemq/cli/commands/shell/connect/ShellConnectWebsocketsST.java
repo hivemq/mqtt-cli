@@ -17,9 +17,8 @@ package com.hivemq.cli.commands.shell.connect;
 
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCliShell;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class ShellConnectWebsocketsST {
 
@@ -60,16 +58,6 @@ public class ShellConnectWebsocketsST {
                 .awaitLog("received CONNACK");
 
         final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
-        assertConnectPacket(connectPacket, connectAssertion -> connectAssertion.setMqttVersion(toVersion(mqttVersion)));
-    }
-
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
+        assertConnectPacket(connectPacket, connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion)));
     }
 }

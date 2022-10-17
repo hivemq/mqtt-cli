@@ -18,9 +18,7 @@ package com.hivemq.cli.commands.cli.publish;
 import com.hivemq.cli.utils.ExecutionResult;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCli;
-import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
-import org.jetbrains.annotations.NotNull;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,7 +31,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
 import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPacket;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PublishConnectWebsocketsST {
 
@@ -64,7 +63,7 @@ public class PublishConnectWebsocketsST {
         assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
         });
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
@@ -73,14 +72,5 @@ public class PublishConnectWebsocketsST {
         });
     }
 
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
-    }
 }
 

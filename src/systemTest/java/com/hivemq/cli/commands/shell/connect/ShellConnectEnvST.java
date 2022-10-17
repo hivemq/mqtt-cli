@@ -18,7 +18,7 @@ package com.hivemq.cli.commands.shell.connect;
 import com.hivemq.cli.utils.AwaitOutput;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCliShell;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class ShellConnectEnvST {
 
@@ -64,7 +63,7 @@ public class ShellConnectEnvST {
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
             assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
         }
@@ -86,21 +85,11 @@ public class ShellConnectEnvST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("user");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
         });
 
-    }
-
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
     }
 
     private @NotNull List<String> defaultConnectCommand() {

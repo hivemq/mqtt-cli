@@ -20,8 +20,8 @@ import com.google.common.collect.ImmutableList;
 import com.hivemq.cli.utils.AwaitOutput;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCliShell;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
 import com.hivemq.extension.sdk.api.packets.publish.PayloadFormatIndicator;
 import com.hivemq.extension.sdk.api.services.builder.Builders;
@@ -46,7 +46,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class ShellConnectST {
 
@@ -75,7 +74,7 @@ public class ShellConnectST {
                 .awaitLog("received CONNACK");
 
         final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
-        assertConnectPacket(connectPacket, connectAssertion -> connectAssertion.setMqttVersion(toVersion(mqttVersion)));
+        assertConnectPacket(connectPacket, connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion)));
     }
 
     @ParameterizedTest
@@ -111,7 +110,7 @@ public class ShellConnectST {
 
         final ConnectPacket connectPacket1 = hivemq.getConnectPackets().get(0);
         assertConnectPacket(connectPacket1, connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setClientId("client1");
         });
 
@@ -122,7 +121,7 @@ public class ShellConnectST {
 
         final ConnectPacket connectPacket2 = hivemq.getConnectPackets().get(1);
         assertConnectPacket(connectPacket2, connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setClientId("client2");
         });
     }
@@ -178,7 +177,7 @@ public class ShellConnectST {
                 .awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '3') {
                 connectAssertion.setSessionExpiryInterval(4294967295L);
             }
@@ -206,7 +205,7 @@ public class ShellConnectST {
         awaitOutput.awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setReceiveMaximum(500);
             }
@@ -233,7 +232,7 @@ public class ShellConnectST {
         awaitOutput.awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setMaximumPacketSize(500);
             }
@@ -260,7 +259,7 @@ public class ShellConnectST {
         awaitOutput.awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setTopicAliasMaximum(5);
             }
@@ -288,7 +287,7 @@ public class ShellConnectST {
         awaitOutput.awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestProblemInformation(false);
             }
@@ -316,7 +315,7 @@ public class ShellConnectST {
         awaitOutput.awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestResponseInformation(true);
             }
@@ -363,7 +362,7 @@ public class ShellConnectST {
                 .awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
         });
     }
@@ -387,7 +386,7 @@ public class ShellConnectST {
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
             assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
         }
@@ -408,7 +407,7 @@ public class ShellConnectST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("user");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
         });
@@ -438,7 +437,7 @@ public class ShellConnectST {
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
             assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
         }
@@ -464,7 +463,7 @@ public class ShellConnectST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("user");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
         });
@@ -522,7 +521,7 @@ public class ShellConnectST {
                         .messageExpiryInterval(4294967295L)
                         .retain(true);
 
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setWillPublish(expectedWillBuilder.build());
             });
 
@@ -546,7 +545,7 @@ public class ShellConnectST {
                         .userProperty("key1", "value1")
                         .userProperty("key2", "value2");
 
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setWillPublish(expectedWillBuilder.build());
             });
         }
@@ -580,7 +579,7 @@ public class ShellConnectST {
                     .awaitLog("received CONNACK");
 
             assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setSessionExpiryInterval(4294967295L);
                 connectAssertion.setCleanStart(false);
                 connectAssertion.setClientId(clientId);
@@ -672,7 +671,7 @@ public class ShellConnectST {
         awaitOutput.awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 final ImmutableList<MqttUserProperty> userProperties = ImmutableList.<MqttUserProperty>builder()
                         .add(new MqttUserProperty("key1", "value1"))
@@ -708,19 +707,9 @@ public class ShellConnectST {
                 .awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setKeepAlive(30);
         });
-    }
-
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
     }
 
     private @NotNull List<String> defaultConnectCommand() {

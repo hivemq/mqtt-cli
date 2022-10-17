@@ -22,7 +22,6 @@ import com.hivemq.cli.utils.*;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
 import com.hivemq.extension.sdk.api.packets.subscribe.RetainHandling;
 import com.hivemq.extension.sdk.api.packets.subscribe.Subscription;
@@ -46,7 +45,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
 import static com.hivemq.cli.utils.assertions.SubscribeAssertion.assertSubscribePacket;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SubscribeST {
 
@@ -70,7 +70,7 @@ public class SubscribeST {
         executionResult.awaitStdOut("message");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
         });
 
         assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
@@ -380,16 +380,6 @@ public class SubscribeST {
 
     private Subscription createSubscription(final @NotNull String topic, final @NotNull Qos qos) {
         return new SubscriptionImpl(topic, qos, RetainHandling.SEND, false, false);
-    }
-
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
     }
 
 }

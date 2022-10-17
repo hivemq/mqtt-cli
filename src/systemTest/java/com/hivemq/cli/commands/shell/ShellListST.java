@@ -18,7 +18,7 @@ package com.hivemq.cli.commands.shell;
 import com.hivemq.cli.utils.AwaitOutput;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCliShell;
-import com.hivemq.client.mqtt.MqttVersion;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -28,8 +28,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class ShellListST {
 
@@ -88,21 +86,21 @@ public class ShellListST {
                 .awaitStdOut("client1")
                 .awaitStdOut(hivemq.getHost())
                 .awaitStdOut(String.valueOf(hivemq.getMqttPort()))
-                .awaitStdOut(toVersion(mqttVersion).name())
+                .awaitStdOut(MqttVersionConverter.toClientVersion(mqttVersion).name())
                 .awaitStdOut("NO_SSL");
 
         awaitOutput.awaitStdOut("CONNECTED")
                 .awaitStdOut("client2")
                 .awaitStdOut(hivemq.getHost())
                 .awaitStdOut(String.valueOf(hivemq.getMqttPort()))
-                .awaitStdOut(toVersion(mqttVersion).name())
+                .awaitStdOut(MqttVersionConverter.toClientVersion(mqttVersion).name())
                 .awaitStdOut("NO_SSL");
 
         awaitOutput.awaitStdOut("CONNECTED")
                 .awaitStdOut("client3")
                 .awaitStdOut(hivemq.getHost())
                 .awaitStdOut(String.valueOf(hivemq.getMqttPort()))
-                .awaitStdOut(toVersion(mqttVersion).name())
+                .awaitStdOut(MqttVersionConverter.toClientVersion(mqttVersion).name())
                 .awaitStdOut("NO_SSL");
     }
 
@@ -129,13 +127,4 @@ public class ShellListST {
                 .awaitStdOut("-subscribed topics: [topic2]");
     }
 
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.MQTT_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.MQTT_5_0;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
-    }
 }

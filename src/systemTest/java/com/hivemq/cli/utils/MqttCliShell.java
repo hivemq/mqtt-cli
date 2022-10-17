@@ -16,8 +16,6 @@
 
 package com.hivemq.cli.utils;
 
-import com.google.common.io.Resources;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -31,9 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
 import static com.hivemq.cli.utils.MqttCli.CLI_EXEC;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
@@ -128,7 +127,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
         awaitOutput.awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(connectClientMarker), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setClientId(clientId);
         });
 
@@ -149,18 +148,12 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
         return new AwaitOutput(processIO, logWaiter, fullCommand);
     }
 
+    /**
+     * Check if the mqtt-cli shell process is alive.
+     * @return true if the mqtt-cli shell process is alive.
+     */
     public boolean isAlive() {
         return process.isAlive();
-    }
-
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
     }
 
 }

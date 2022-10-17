@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.hivemq.cli.utils.ExecutionResult;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCli;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.extension.sdk.api.packets.connack.ConnackPacket;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
 import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
@@ -108,7 +109,7 @@ public class PublishConnectST {
         assertPublishOutput(executionResult);
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setCleanStart(false);
             if (mqttVersion == '3') {
                 connectAssertion.setSessionExpiryInterval(4294967295L);
@@ -128,7 +129,7 @@ public class PublishConnectST {
         assertPublishOutput(executionResult);
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setKeepAlive(100);
         });
     }
@@ -162,7 +163,7 @@ public class PublishConnectST {
                         expectedClientId,
                         hivemq.getHost())));
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setClientId(expectedClientId);
         });
     }
@@ -186,7 +187,7 @@ public class PublishConnectST {
         }
 
         assertConnectPacket(connectPacket, connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setClientId(connectPacket.getClientId());
         });
     }
@@ -203,7 +204,7 @@ public class PublishConnectST {
         assertPublishOutput(executionResult);
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
         });
     }
@@ -225,7 +226,7 @@ public class PublishConnectST {
         } else {
             assertPublishOutput(executionResult);
             assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
         }
@@ -248,7 +249,7 @@ public class PublishConnectST {
         } else {
             assertPublishOutput(executionResult);
             assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
         }
@@ -275,7 +276,7 @@ public class PublishConnectST {
         } else {
             assertPublishOutput(executionResult);
             assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
         }
@@ -296,7 +297,7 @@ public class PublishConnectST {
 
         assertPublishOutput(executionResult);
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
         });
@@ -316,7 +317,7 @@ public class PublishConnectST {
 
         assertPublishOutput(executionResult);
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
         });
@@ -340,7 +341,7 @@ public class PublishConnectST {
 
         assertPublishOutput(executionResult);
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
         });
@@ -398,7 +399,7 @@ public class PublishConnectST {
                         .messageExpiryInterval(4294967295L)
                         .retain(true);
 
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setWillPublish(expectedWillBuilder.build());
             });
 
@@ -418,7 +419,7 @@ public class PublishConnectST {
                         .userProperty("key1", "value1")
                         .userProperty("key2", "value2");
 
-                connectAssertion.setMqttVersion(toVersion(mqttVersion));
+                connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setWillPublish(expectedWillBuilder.build());
             });
         }
@@ -441,7 +442,7 @@ public class PublishConnectST {
         }
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setReceiveMaximum(100);
             }
@@ -465,7 +466,7 @@ public class PublishConnectST {
         }
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setMaximumPacketSize(100);
             }
@@ -489,7 +490,7 @@ public class PublishConnectST {
         }
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setTopicAliasMaximum(100);
             }
@@ -512,7 +513,7 @@ public class PublishConnectST {
         }
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestProblemInformation(false);
             }
@@ -536,7 +537,7 @@ public class PublishConnectST {
         }
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestResponseInformation(true);
             }
@@ -560,7 +561,7 @@ public class PublishConnectST {
         }
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setSessionExpiryInterval(100);
             }
@@ -585,7 +586,7 @@ public class PublishConnectST {
         }
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 final UserPropertiesImpl expectedUserProperties = UserPropertiesImpl.of(ImmutableList.of(
                         MqttUserProperty.of("key1", "value1"),
@@ -601,16 +602,6 @@ public class PublishConnectST {
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH"));
         assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
-    }
-
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
     }
 
     private @NotNull List<String> defaultPublishCommand(final char mqttVersion) {

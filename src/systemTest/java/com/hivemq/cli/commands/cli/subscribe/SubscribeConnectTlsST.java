@@ -19,6 +19,7 @@ import com.google.common.io.Resources;
 import com.hivemq.cli.utils.ExecutionResultAsync;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCliAsync;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
 import com.hivemq.extension.sdk.api.packets.subscribe.RetainHandling;
@@ -81,7 +82,7 @@ public class SubscribeConnectTlsST {
         executionResult.awaitStdOut("received SUBACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
         });
 
         assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
@@ -92,13 +93,4 @@ public class SubscribeConnectTlsST {
 
     }
 
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
-    }
 }

@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import com.hivemq.cli.utils.ExecutionResult;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCli;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
 import com.hivemq.extension.sdk.api.packets.publish.PayloadFormatIndicator;
 import com.hivemq.extension.sdk.api.packets.publish.PublishPacket;
@@ -46,7 +46,8 @@ import java.util.stream.Collectors;
 
 import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
 import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPacket;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PublishST {
 
@@ -63,7 +64,7 @@ public class PublishST {
         assertPublishOutput(executionResult);
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
         });
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
@@ -384,16 +385,6 @@ public class PublishST {
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH"));
         assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
-    }
-
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
     }
 
     private @NotNull List<String> defaultPublishCommand(final char mqttVersion) {

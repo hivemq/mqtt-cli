@@ -18,8 +18,7 @@ package com.hivemq.cli.commands.shell.connect;
 import com.google.common.io.Resources;
 import com.hivemq.cli.utils.HiveMQ;
 import com.hivemq.cli.utils.MqttCliShell;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
-import org.jetbrains.annotations.NotNull;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class ShellConnectTlsST {
 
@@ -71,18 +69,9 @@ public class ShellConnectTlsST {
                 .awaitLog("received CONNACK");
 
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(toVersion(mqttVersion));
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
         });
 
     }
 
-    private @NotNull MqttVersion toVersion(final char version) {
-        if (version == '3') {
-            return MqttVersion.V_3_1_1;
-        } else if (version == '5') {
-            return MqttVersion.V_5;
-        }
-        fail("version " + version + " can not be converted to MqttVersion object.");
-        throw new RuntimeException();
-    }
 }
