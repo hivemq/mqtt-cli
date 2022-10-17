@@ -17,9 +17,9 @@
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.collect.ImmutableList;
-import com.hivemq.cli.utils.AwaitOutput;
-import com.hivemq.cli.utils.HiveMQ;
-import com.hivemq.cli.utils.MqttCliShell;
+import com.hivemq.cli.utils.cli.results.AwaitOutput;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.MqttCliShell;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
 import com.hivemq.extension.sdk.api.packets.publish.PayloadFormatIndicator;
 import com.hivemq.extension.sdk.api.packets.publish.PublishPacket;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPacket;
+import static com.hivemq.cli.utils.broker.assertions.PublishAssertion.assertPublishPacket;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ShellPublishST {

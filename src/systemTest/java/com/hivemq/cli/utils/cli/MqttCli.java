@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.utils;
+package com.hivemq.cli.utils.cli;
 
+import com.hivemq.cli.utils.cli.results.ExecutionResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

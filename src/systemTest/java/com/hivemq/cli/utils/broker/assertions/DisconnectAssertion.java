@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.utils.assertions;
+package com.hivemq.cli.utils.broker.assertions;
 
 import com.google.common.collect.ImmutableList;
 import com.hivemq.extension.sdk.api.packets.disconnect.DisconnectPacket;

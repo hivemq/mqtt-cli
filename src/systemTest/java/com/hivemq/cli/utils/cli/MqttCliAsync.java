@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.utils;
+package com.hivemq.cli.utils.cli;
 
+import com.hivemq.cli.utils.OrphanProcessCleanup;
+import com.hivemq.cli.utils.cli.io.ProcessIO;
+import com.hivemq.cli.utils.cli.results.ExecutionResultAsync;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -24,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.hivemq.cli.utils.MqttCli.CLI_EXEC;
+import static com.hivemq.cli.utils.cli.MqttCli.CLI_EXEC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MqttCliAsync implements AfterEachCallback {

@@ -15,9 +15,9 @@
  */
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.utils.AwaitOutput;
-import com.hivemq.cli.utils.HiveMQ;
-import com.hivemq.cli.utils.MqttCliShell;
+import com.hivemq.cli.utils.cli.results.AwaitOutput;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.MqttCliShell;
 import com.hivemq.cli.utils.MqttVersionConverter;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;

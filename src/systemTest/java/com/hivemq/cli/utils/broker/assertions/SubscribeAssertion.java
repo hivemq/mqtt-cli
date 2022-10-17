@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.utils.assertions;
+package com.hivemq.cli.utils.broker.assertions;
 
 import com.google.common.collect.ImmutableList;
 import com.hivemq.extension.sdk.api.packets.general.UserProperties;
-import com.hivemq.extension.sdk.api.packets.unsubscribe.UnsubscribePacket;
+import com.hivemq.extension.sdk.api.packets.subscribe.SubscribePacket;
+import com.hivemq.extension.sdk.api.packets.subscribe.Subscription;
 import com.hivemq.extensions.packets.general.UserPropertiesImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,27 +27,23 @@ import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class UnsubscribeAssertion {
+public class SubscribeAssertion {
 
-    private @NotNull List<String> topicFilters = List.of();
+    private @NotNull List<Subscription> subscriptions = List.of();
     private @NotNull UserProperties userProperties = UserPropertiesImpl.of(ImmutableList.of());
 
-    private UnsubscribeAssertion() {
+    private SubscribeAssertion() {
     }
 
-    public static void assertUnsubscribePacket(
-            final @NotNull UnsubscribePacket unsubscribePacket,
-            final @NotNull Consumer<UnsubscribeAssertion> unsubscribeAssertionConsumer) {
-
-        final UnsubscribeAssertion unsubscribeAssertion = new UnsubscribeAssertion();
-        unsubscribeAssertionConsumer.accept(unsubscribeAssertion);
-
-        assertEquals(unsubscribeAssertion.topicFilters, unsubscribePacket.getTopicFilters());
-        assertEquals(unsubscribeAssertion.userProperties, unsubscribePacket.getUserProperties());
+    public static void assertSubscribePacket(final @NotNull SubscribePacket subscribePacket, final @NotNull Consumer<SubscribeAssertion> subscribeAssertionConsumer) {
+        final SubscribeAssertion subscribeAssertion = new SubscribeAssertion();
+        subscribeAssertionConsumer.accept(subscribeAssertion);
+        assertEquals(subscribeAssertion.subscriptions, subscribePacket.getSubscriptions());
+        assertEquals(subscribeAssertion.userProperties, subscribePacket.getUserProperties());
     }
 
-    public void setTopicFilters(final @NotNull List<String> topicFilters) {
-        this.topicFilters = topicFilters;
+    public void setSubscriptions(final @NotNull List<Subscription> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 
     public void setUserProperties(final @NotNull UserProperties userProperties) {

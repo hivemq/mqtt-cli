@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.utils;
+package com.hivemq.cli.utils.cli;
 
+import com.hivemq.cli.utils.MqttVersionConverter;
+import com.hivemq.cli.utils.OrphanProcessCleanup;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.io.LogWaiter;
+import com.hivemq.cli.utils.cli.io.ProcessIO;
+import com.hivemq.cli.utils.cli.results.AwaitOutput;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -29,12 +35,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.hivemq.cli.utils.MqttCli.CLI_EXEC;
-import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
+import static com.hivemq.cli.utils.cli.MqttCli.CLI_EXEC;
+import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
+
+    public static String DEFAULT_CLIENT_NAME = "cliTest";
 
     private ProcessIO processIO;
     private Process process;
@@ -108,15 +116,21 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     }
 
     /**
-     * Connects a mqtt-client and awaits the successful output statements on std-out and in the logfile.
+     * Connects a mqtt-client with client-id {@link #DEFAULT_CLIENT_NAME} and awaits the successful output statements on std-out and in the logfile.
      *
      * @param hivemq the HiveMQ instance to which the client should connect
      * @throws IOException when the cli command to connect could not be written to the shell
      */
     public void connectClient(final @NotNull HiveMQ hivemq, final char mqttVersion) throws IOException {
-        connectClient(hivemq, mqttVersion, "cliTest");
+        connectClient(hivemq, mqttVersion, DEFAULT_CLIENT_NAME);
     }
 
+    /**
+     * Connects a mqtt-client with the given client-id and awaits the successful output statements on std-out and in the logfile.
+     *
+     * @param hivemq the HiveMQ instance to which the client should connect
+     * @throws IOException when the cli command to connect could not be written to the shell
+     */
     public void connectClient(final @NotNull HiveMQ hivemq, final char mqttVersion, final @NotNull String clientId) throws IOException {
         final List<String> connectCommand =
                 List.of("con", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-V", String.valueOf(mqttVersion), "-i", clientId);

@@ -16,13 +16,12 @@
 package com.hivemq.cli.commands.cli.publish;
 
 import com.google.common.collect.ImmutableList;
-import com.hivemq.cli.utils.ExecutionResult;
-import com.hivemq.cli.utils.HiveMQ;
-import com.hivemq.cli.utils.MqttCli;
+import com.hivemq.cli.utils.cli.results.ExecutionResult;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.MqttCli;
 import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.extension.sdk.api.packets.connack.ConnackPacket;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
 import com.hivemq.extension.sdk.api.packets.publish.PayloadFormatIndicator;
 import com.hivemq.extension.sdk.api.services.builder.Builders;
@@ -44,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
+import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PublishConnectST {

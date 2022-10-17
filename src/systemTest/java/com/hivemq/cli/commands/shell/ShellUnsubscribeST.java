@@ -16,9 +16,9 @@
 package com.hivemq.cli.commands.shell;
 
 import com.google.common.collect.ImmutableList;
-import com.hivemq.cli.utils.AwaitOutput;
-import com.hivemq.cli.utils.HiveMQ;
-import com.hivemq.cli.utils.MqttCliShell;
+import com.hivemq.cli.utils.cli.results.AwaitOutput;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.MqttCliShell;
 import com.hivemq.extensions.packets.general.UserPropertiesImpl;
 import com.hivemq.mqtt.message.mqtt5.MqttUserProperty;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.assertions.UnsubscribeAssertion.assertUnsubscribePacket;
+import static com.hivemq.cli.utils.broker.assertions.UnsubscribeAssertion.assertUnsubscribePacket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ShellUnsubscribeST {

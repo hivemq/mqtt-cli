@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class OrphanProcessCleanup {
 
     public static @NotNull Process startOrphanCleanupProcess(final @NotNull Process childProcess) throws IOException {
-        // We start the ProcessGarbageCollector which sole job is to destroy the childProcess, meaning the mqtt-cli shell,
+        // We start the the OrphanCleanupProcess which sole job is to destroy the childProcess, meaning the mqtt-cli shell,
         // when the jvm process exited
         final long jvmProcessId = ProcessHandle.current().pid();
         final List<String> orphanCleanupProcessCommand = List.of(
@@ -37,7 +37,7 @@ public class OrphanProcessCleanup {
         );
         final Process orphanCleanupProcess = new ProcessBuilder(orphanCleanupProcessCommand).start();
 
-        // Wait until the process prints X, which means that the process garbage collector has registered the
+        // Wait until the process prints X, which means that the orphan cleanup process has sucessfully started
         final int readChar = orphanCleanupProcess.getInputStream().read();
         assertEquals('X', readChar);
 

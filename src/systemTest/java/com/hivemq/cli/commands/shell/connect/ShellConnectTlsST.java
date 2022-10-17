@@ -16,8 +16,8 @@
 package com.hivemq.cli.commands.shell.connect;
 
 import com.google.common.io.Resources;
-import com.hivemq.cli.utils.HiveMQ;
-import com.hivemq.cli.utils.MqttCliShell;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.MqttCliShell;
 import com.hivemq.cli.utils.MqttVersionConverter;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -27,7 +27,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
+import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 
 public class ShellConnectTlsST {
 

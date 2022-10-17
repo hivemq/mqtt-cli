@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.utils;
+package com.hivemq.cli.utils.broker;
 
 import com.google.common.io.Resources;
-import com.hivemq.cli.utils.assertions.DisconnectInformation;
+import com.hivemq.cli.utils.broker.assertions.DisconnectInformation;
 import com.hivemq.configuration.service.InternalConfigurations;
 import com.hivemq.embedded.EmbeddedExtension;
 import com.hivemq.embedded.EmbeddedHiveMQ;
@@ -24,12 +24,7 @@ import com.hivemq.embedded.EmbeddedHiveMQBuilder;
 import com.hivemq.extension.sdk.api.ExtensionMain;
 import com.hivemq.extension.sdk.api.annotations.NotNull;
 import com.hivemq.extension.sdk.api.interceptor.connack.ConnackOutboundInterceptor;
-import com.hivemq.extension.sdk.api.interceptor.connack.parameter.ConnackOutboundInput;
-import com.hivemq.extension.sdk.api.interceptor.connack.parameter.ConnackOutboundOutput;
 import com.hivemq.extension.sdk.api.interceptor.connect.ConnectInboundInterceptor;
-import com.hivemq.extension.sdk.api.interceptor.unsubscribe.UnsubscribeInboundInterceptor;
-import com.hivemq.extension.sdk.api.interceptor.unsubscribe.parameter.UnsubscribeInboundInput;
-import com.hivemq.extension.sdk.api.interceptor.unsubscribe.parameter.UnsubscribeInboundOutput;
 import com.hivemq.extension.sdk.api.packets.connack.ConnackPacket;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
 import com.hivemq.extension.sdk.api.packets.publish.PublishPacket;
@@ -81,7 +76,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         return new Builder();
     }
 
-    public HiveMQ(final boolean tlsEnabled, final boolean websocketEnabled) {
+    private HiveMQ(final boolean tlsEnabled, final boolean websocketEnabled) {
         this.tlsEnabled = tlsEnabled;
         this.websocketEnabled = websocketEnabled;
     }
@@ -140,7 +135,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                         Services.interceptorRegistry().setConnectInboundInterceptorProvider(input -> connectInboundInterceptor);
                         Services.interceptorRegistry().setConnackOutboundInterceptorProvider(input -> connackOutboundInterceptor);
 
-                        // Add all other interceptors
+                        // Add all the other interceptors
                         Services.initializerRegistry().setClientInitializer((initializerInput, clientContext) -> {
 
                             clientContext.addDisconnectInboundInterceptor((disconnectInboundInput, disconnectInboundOutput) -> {

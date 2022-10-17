@@ -17,9 +17,9 @@
 package com.hivemq.cli.commands.cli.publish;
 
 import com.google.common.collect.ImmutableList;
-import com.hivemq.cli.utils.ExecutionResult;
-import com.hivemq.cli.utils.HiveMQ;
-import com.hivemq.cli.utils.MqttCli;
+import com.hivemq.cli.utils.cli.results.ExecutionResult;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.MqttCli;
 import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
 import com.hivemq.extension.sdk.api.packets.publish.PayloadFormatIndicator;
@@ -44,8 +44,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
-import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPacket;
+import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
+import static com.hivemq.cli.utils.broker.assertions.PublishAssertion.assertPublishPacket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

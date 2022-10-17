@@ -15,9 +15,9 @@
  */
 package com.hivemq.cli.commands.cli.publish;
 
-import com.hivemq.cli.utils.ExecutionResult;
-import com.hivemq.cli.utils.HiveMQ;
-import com.hivemq.cli.utils.MqttCli;
+import com.hivemq.cli.utils.cli.results.ExecutionResult;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.MqttCli;
 import com.hivemq.cli.utils.MqttVersionConverter;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -29,8 +29,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
-import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPacket;
+import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
+import static com.hivemq.cli.utils.broker.assertions.PublishAssertion.assertPublishPacket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

@@ -18,9 +18,9 @@ package com.hivemq.cli.commands.shell;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
-import com.hivemq.cli.utils.AwaitOutput;
-import com.hivemq.cli.utils.HiveMQ;
-import com.hivemq.cli.utils.MqttCliShell;
+import com.hivemq.cli.utils.cli.results.AwaitOutput;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.MqttCliShell;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
@@ -43,7 +43,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.assertions.SubscribeAssertion.assertSubscribePacket;
+import static com.hivemq.cli.utils.broker.assertions.SubscribeAssertion.assertSubscribePacket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ShellSubscribeST {

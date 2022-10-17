@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.utils.assertions;
+package com.hivemq.cli.utils.broker.assertions;
 
 import com.google.common.collect.ImmutableList;
 import com.hivemq.extension.sdk.api.annotations.Nullable;

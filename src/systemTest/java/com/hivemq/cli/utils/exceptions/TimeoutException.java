@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.utils.assertions;
+package com.hivemq.cli.utils.exceptions;
 
-import com.hivemq.extension.sdk.api.packets.disconnect.DisconnectPacket;
 import org.jetbrains.annotations.NotNull;
 
-public class DisconnectInformation {
-    private final @NotNull DisconnectPacket disconnectPacket;
-    private final @NotNull String clientId;
+public class TimeoutException extends Exception {
 
-    public DisconnectInformation(final @NotNull DisconnectPacket disconnectPacket, final @NotNull String clientId) {
-        this.disconnectPacket = disconnectPacket;
-        this.clientId = clientId;
+    private final @NotNull String actualOutput;
+
+    public TimeoutException(final @NotNull Throwable cause, final @NotNull String actualOutput) {
+        super(cause);
+        this.actualOutput = actualOutput;
     }
 
-    public @NotNull DisconnectPacket getDisconnectPacket() {
-        return disconnectPacket;
-    }
-
-    public @NotNull String getClientId() {
-        return clientId;
+    public @NotNull String getActualOutput() {
+        return actualOutput;
     }
 }

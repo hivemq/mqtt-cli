@@ -15,8 +15,10 @@
  */
 package com.hivemq.cli.commands.cli.subscribe;
 
-import com.hivemq.cli.utils.*;
-import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
+import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.cli.results.ExecutionResultAsync;
+import com.hivemq.cli.utils.cli.MqttCliAsync;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
 import com.hivemq.extension.sdk.api.packets.subscribe.RetainHandling;
 import com.hivemq.extension.sdk.api.packets.subscribe.Subscription;
@@ -27,15 +29,11 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.hivemq.cli.utils.assertions.ConnectAssertion.assertConnectPacket;
-import static com.hivemq.cli.utils.assertions.PublishAssertion.assertPublishPacket;
-import static com.hivemq.cli.utils.assertions.SubscribeAssertion.assertSubscribePacket;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
+import static com.hivemq.cli.utils.broker.assertions.SubscribeAssertion.assertSubscribePacket;
 
 public class SubscribeConnectWebsocketsST {
 

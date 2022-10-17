@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.utils;
+package com.hivemq.cli.utils.cli.io;
 
+import com.hivemq.cli.utils.exceptions.TimeoutException;
 import org.awaitility.core.ConditionTimeoutException;
 import org.jetbrains.annotations.NotNull;
 

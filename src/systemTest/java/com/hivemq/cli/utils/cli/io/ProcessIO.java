@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.utils;
+package com.hivemq.cli.utils.cli.io;
 
+import com.hivemq.cli.utils.exceptions.TimeoutException;
 import org.awaitility.core.ConditionTimeoutException;
 import org.jetbrains.annotations.NotNull;
 
@@ -140,10 +141,12 @@ public class ProcessIO {
     }
 
     public void writeMsg(final @NotNull String message) throws IOException {
+        // We write these messages to stdout so that the console output of the tests make sense
         stdoutWriter.write(message);
         stdoutWriter.write('\n');
         stdoutWriter.flush();
 
+        // This is the actual writing to the process which gets interpreted
         processOutputWriter.write(message);
         processOutputWriter.write('\n');
         processOutputWriter.flush();
