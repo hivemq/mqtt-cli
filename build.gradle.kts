@@ -109,6 +109,12 @@ dependencies {
     implementation("io.netty:netty-codec-http:${property("netty.version")}")
     implementation("io.netty:netty-transport-native-epoll:${property("netty.version")}:linux-x86_64")
     implementation("com.opencsv:opencsv:${property("open-csv.version")}")
+    constraints {
+        implementation("org.apache.commons:commons-text:1.10.0") {
+            because("Force a commons-text version that does not contain CVE-2022-42889, " +
+                    "because opencsv brings the vulnerable version 1.9 as transitive dependency")
+        }
+    }
 }
 
 /* ******************** OpenAPI ******************** */
