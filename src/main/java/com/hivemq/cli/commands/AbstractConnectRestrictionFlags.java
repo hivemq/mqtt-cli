@@ -101,7 +101,7 @@ public abstract class AbstractConnectRestrictionFlags extends AbstractWillFlags 
                 Logger.warn("Restriction send topic alias maximum was set but is unused in MQTT Version {}",
                         MqttVersion.MQTT_3_1_1);
             }
-            if (requestProblemInformation) {
+            if (!requestProblemInformation) {
                 Logger.warn("Restriction request problem information was set but is unused in MQTT Version {}",
                         MqttVersion.MQTT_3_1_1);
             }
