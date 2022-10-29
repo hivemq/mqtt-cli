@@ -22,6 +22,7 @@ import com.hivemq.cli.utils.broker.HiveMQ;
 import com.hivemq.cli.utils.cli.io.LogWaiter;
 import com.hivemq.cli.utils.cli.io.ProcessIO;
 import com.hivemq.cli.utils.cli.results.AwaitOutput;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -44,6 +45,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
     public static String DEFAULT_CLIENT_NAME = "cliTest";
 
+    private Path homeDir;
     private ProcessIO processIO;
     private Process process;
     private LogWaiter logWaiter;
@@ -62,10 +64,8 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     public void beforeEach(final @NotNull ExtensionContext context) throws Exception {
-
         // Setup the mqtt-cli home folder for logging, etc.
-        final Path homeDir = Files.createTempDirectory("mqtt-cli-home");
-        homeDir.toFile().deleteOnExit();
+        this.homeDir = Files.createTempDirectory("mqtt-cli-home");
 
         // Start and await the start of the shell
         this.process = startShellMode(homeDir);
@@ -78,7 +78,8 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     }
 
     @Override
-    public void afterEach(final @NotNull ExtensionContext context) {
+    public void afterEach(final @NotNull ExtensionContext context) throws IOException {
+        FileUtils.deleteDirectory(homeDir.toFile());
         process.destroyForcibly();
         orphanCleanupProcess.destroyForcibly();
     }

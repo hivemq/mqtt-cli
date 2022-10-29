@@ -36,6 +36,7 @@ import com.hivemq.extension.sdk.api.parameter.ExtensionStopInput;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStopOutput;
 import com.hivemq.extension.sdk.api.services.Services;
 import com.hivemq.migration.meta.PersistenceType;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -57,6 +58,10 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     private static final String BIND_ADDRESS = "localhost";
 
     private EmbeddedHiveMQ hivemq;
+
+    private Path hivemqConfigFolder;
+    private Path hivemqDataFolder;
+
 
     private List<ConnectPacket> connectPackets;
     private List<ConnackPacket> connackPackets;
@@ -107,13 +112,13 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                 "    </listeners>\n" +
                 "</hivemq>";
 
-        final Path hivemqConfigFolder = Files.createTempDirectory("hivemq-config-folder");
+        this.hivemqConfigFolder = Files.createTempDirectory("hivemq-config-folder");
         hivemqConfigFolder.toFile().deleteOnExit();
         final File configXml = new File(hivemqConfigFolder.toAbsolutePath().toString(), "config.xml");
         assertTrue(configXml.createNewFile());
         Files.writeString(configXml.toPath(), hivemqConfig);
 
-        final Path hivemqDataFolder = Files.createTempDirectory("hivemq-data-folder");
+        this.hivemqDataFolder = Files.createTempDirectory("hivemq-data-folder");
         hivemqDataFolder.toFile().deleteOnExit();
 
         final EmbeddedExtension embeddedExtension = EmbeddedExtension.builder()
@@ -180,8 +185,10 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     }
 
     @Override
-    public void afterAll(final ExtensionContext context) {
+    public void afterAll(final ExtensionContext context) throws IOException {
         hivemq.stop();
+        FileUtils.deleteDirectory(hivemqConfigFolder.toFile());
+        FileUtils.deleteDirectory(hivemqDataFolder.toFile());
     }
 
     @Override
