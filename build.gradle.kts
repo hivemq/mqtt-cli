@@ -431,6 +431,7 @@ downloadLicenses {
 
 val updateThirdPartyLicenses by tasks.registering {
     group = "license"
+    dependsOn(tasks.clean)
     dependsOn(tasks.downloadLicenses)
     doLast {
         javaexec {
