@@ -26,52 +26,66 @@ import picocli.CommandLine;
 public class ConnectRestrictionOptions {
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--rcvMax"}, description =
-            "The maximum amount of not acknowledged publishes with QoS 1 or 2 the client accepts from the server concurrently. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_RECEIVE_MAXIMUM + ")")
+    @CommandLine.Option(names = {"--rcvMax"},
+                        description =
+                                "The maximum amount of not acknowledged publishes with QoS 1 or 2 the client accepts from the server concurrently. (default: " +
+                                        Mqtt5ConnectRestrictions.DEFAULT_RECEIVE_MAXIMUM +
+                                        ")")
     private @Nullable Integer receiveMaximum;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--sendMax"}, description =
-            "The maximum amount of not acknowledged publishes with QoS 1 or 2 the client send to the server concurrently. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_SEND_MAXIMUM + ")")
+    @CommandLine.Option(names = {"--sendMax"},
+                        description =
+                                "The maximum amount of not acknowledged publishes with QoS 1 or 2 the client send to the server concurrently. (default: " +
+                                        Mqtt5ConnectRestrictions.DEFAULT_SEND_MAXIMUM +
+                                        ")")
     private @Nullable Integer sendMaximum;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--maxPacketSize"},
-            description = "The maximum packet size the client accepts from the server. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_MAXIMUM_PACKET_SIZE + ")")
+                        description = "The maximum packet size the client accepts from the server. (default: " +
+                                Mqtt5ConnectRestrictions.DEFAULT_MAXIMUM_PACKET_SIZE +
+                                ")")
     private @Nullable Integer maximumPacketSize;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--sendMaxPacketSize"},
-            description = "The maximum packet size the client sends to the server. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_SEND_MAXIMUM_PACKET_SIZE + ")")
+                        description = "The maximum packet size the client sends to the server. (default: " +
+                                Mqtt5ConnectRestrictions.DEFAULT_SEND_MAXIMUM_PACKET_SIZE +
+                                ")")
     private @Nullable Integer sendMaximumPacketSize;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--topicAliasMax"},
-            description = "The maximum amount of topic aliases the client accepts from the server. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_TOPIC_ALIAS_MAXIMUM + ")")
+                        description =
+                                "The maximum amount of topic aliases the client accepts from the server. (default: " +
+                                        Mqtt5ConnectRestrictions.DEFAULT_TOPIC_ALIAS_MAXIMUM +
+                                        ")")
     private @Nullable Integer topicAliasMaximum;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--sendTopicAliasMax"},
-            description = "The maximum amount of topic aliases the client sends to the server. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_SEND_TOPIC_ALIAS_MAXIMUM + ")")
+                        description = "The maximum amount of topic aliases the client sends to the server. (default: " +
+                                Mqtt5ConnectRestrictions.DEFAULT_SEND_TOPIC_ALIAS_MAXIMUM +
+                                ")")
     private @Nullable Integer sendTopicAliasMaximum;
 
     @SuppressWarnings({"unused", "FieldMayBeFinal"})
-    @CommandLine.Option(names = {"--reqProblemInfo"}, negatable = true,
-            description = "The client requests problem information from the server. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION + ")")
-    private boolean requestProblemInformation = Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION;
+    @CommandLine.Option(names = {"--no-reqProblemInfo"},
+                        negatable = true,
+                        description = "The client requests problem information from the server. (default: " +
+                                Mqtt5ConnectRestrictions.DEFAULT_REQUEST_PROBLEM_INFORMATION +
+                                ")",
+                        defaultValue = "true")
+    private boolean requestProblemInformation;
 
     @SuppressWarnings({"unused", "FieldMayBeFinal"})
-    @CommandLine.Option(names = {"--reqResponseInfo"}, negatable = true,
-            description = "The client requests response information from the server. (default: " +
-                    Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION + ")")
-    private boolean requestResponseInformation = Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION;
+    @CommandLine.Option(names = {"--reqResponseInfo"},
+                        description = "The client requests response information from the server. (default: " +
+                                Mqtt5ConnectRestrictions.DEFAULT_REQUEST_RESPONSE_INFORMATION +
+                                ")",
+                        defaultValue = "false")
+    private boolean requestResponseInformation;
 
     public @Nullable Integer getReceiveMaximum() {
         return receiveMaximum;
@@ -144,10 +158,23 @@ public class ConnectRestrictionOptions {
 
     @Override
     public @NotNull String toString() {
-        return "ConnectRestrictionOptions{" + "receiveMaximum=" + receiveMaximum + ", sendMaximum=" + sendMaximum +
-                ", maximumPacketSize=" + maximumPacketSize + ", sendMaximumPacketSize=" + sendMaximumPacketSize +
-                ", topicAliasMaximum=" + topicAliasMaximum + ", sendTopicAliasMaximum=" + sendTopicAliasMaximum +
-                ", requestProblemInformation=" + requestProblemInformation + ", requestResponseInformation=" +
-                requestResponseInformation + '}';
+        return "ConnectRestrictionOptions{" +
+                "receiveMaximum=" +
+                receiveMaximum +
+                ", sendMaximum=" +
+                sendMaximum +
+                ", maximumPacketSize=" +
+                maximumPacketSize +
+                ", sendMaximumPacketSize=" +
+                sendMaximumPacketSize +
+                ", topicAliasMaximum=" +
+                topicAliasMaximum +
+                ", sendTopicAliasMaximum=" +
+                sendTopicAliasMaximum +
+                ", requestProblemInformation=" +
+                requestProblemInformation +
+                ", requestResponseInformation=" +
+                requestResponseInformation +
+                '}';
     }
 }

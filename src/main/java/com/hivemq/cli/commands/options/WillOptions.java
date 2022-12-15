@@ -15,7 +15,11 @@
  */
 package com.hivemq.cli.commands.options;
 
-import com.hivemq.cli.converters.*;
+import com.hivemq.cli.converters.ByteBufferConverter;
+import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
+import com.hivemq.cli.converters.MqttQosConverter;
+import com.hivemq.cli.converters.PayloadFormatIndicatorConverter;
+import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -38,56 +42,65 @@ public class WillOptions {
     private @Nullable String willTopic;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-Wm", "--willMessage"}, converter = ByteBufferConverter.class,
-            description = "The payload of the will message")
+    @CommandLine.Option(names = {"-Wm", "--willMessage"},
+                        converter = ByteBufferConverter.class,
+                        description = "The payload of the will message")
     private @Nullable ByteBuffer willMessage;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-Wq", "--willQualityOfService"}, defaultValue = "0",
-            converter = MqttQosConverter.class,
-            description = "Quality of service level for the will message (default: 0)")
+    @CommandLine.Option(names = {"-Wq", "--willQualityOfService"},
+                        defaultValue = "0",
+                        converter = MqttQosConverter.class,
+                        description = "Quality of service level for the will message (default: 0)")
     private @Nullable MqttQos willQos;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-Wr", "--willRetain"}, negatable = true, defaultValue = "false",
-            description = "Will message as retained message (default: false)")
+    @CommandLine.Option(names = {"-Wr", "--willRetain"},
+                        defaultValue = "false",
+                        description = "Will message as retained message (default: false)")
     private boolean willRetain;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-We", "--willMessageExpiryInterval"}, converter = UnsignedIntConverter.class,
-            description = "The lifetime of the will message in seconds (default: no message expiry)")
+    @CommandLine.Option(names = {"-We", "--willMessageExpiryInterval"},
+                        converter = UnsignedIntConverter.class,
+                        description = "The lifetime of the will message in seconds (default: no message expiry)")
     private @Nullable Long willMessageExpiryInterval;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-Wd", "--willDelayInterval"}, converter = UnsignedIntConverter.class, description =
-            "The Server delays publishing the client's will message until the will delay has passed (default: " +
-                    Mqtt5WillPublish.DEFAULT_DELAY_INTERVAL + ")")
+    @CommandLine.Option(names = {"-Wd", "--willDelayInterval"},
+                        converter = UnsignedIntConverter.class,
+                        description =
+                                "The Server delays publishing the client's will message until the will delay has passed (default: " +
+                                        Mqtt5WillPublish.DEFAULT_DELAY_INTERVAL +
+                                        ")")
     private @Nullable Long willDelayInterval;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wpf", "--willPayloadFormatIndicator"},
-            converter = PayloadFormatIndicatorConverter.class,
-            description = "The payload format indicator of the will message")
+                        converter = PayloadFormatIndicatorConverter.class,
+                        description = "The payload format indicator of the will message")
     private @Nullable Mqtt5PayloadFormatIndicator willPayloadFormatIndicator;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wct", "--willContentType"},
-            description = "A description of the will message's content")
+                        description = "A description of the will message's content")
     private @Nullable String willContentType;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-Wrt", "--willResponseTopic"},
-            description = "The topic name for the response message")
+                        description = "The topic name for the response message")
     private @Nullable String willResponseTopic;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-Wcd", "--willCorrelationData"}, converter = ByteBufferConverter.class,
-            description = "The correlation data of the will message")
+    @CommandLine.Option(names = {"-Wcd", "--willCorrelationData"},
+                        converter = ByteBufferConverter.class,
+                        description = "The correlation data of the will message")
     private @Nullable ByteBuffer willCorrelationData;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-Wup", "--willUserProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property of the will message")
+    @CommandLine.Option(names = {"-Wup", "--willUserProperty"},
+                        converter = Mqtt5UserPropertyConverter.class,
+                        description = "A user property of the will message")
     private @Nullable Mqtt5UserProperty @Nullable [] willUserProperties;
 
     public @Nullable String getWillTopic() {
@@ -162,11 +175,32 @@ public class WillOptions {
 
     @Override
     public @NotNull String toString() {
-        return "WillOptions{" + "willTopic='" + willTopic + '\'' + ", willMessage=" + willMessage + ", willQos=" +
-                willQos + ", willRetain=" + willRetain + ", willMessageExpiryInterval=" + willMessageExpiryInterval +
-                ", willDelayInterval=" + willDelayInterval + ", willPayloadFormatIndicator=" +
-                willPayloadFormatIndicator + ", willContentType='" + willContentType + '\'' + ", willResponseTopic='" +
-                willResponseTopic + '\'' + ", willCorrelationData=" + willCorrelationData + ", willUserProperties=" +
-                Arrays.toString(willUserProperties) + '}';
+        return "WillOptions{" +
+                "willTopic='" +
+                willTopic +
+                '\'' +
+                ", willMessage=" +
+                willMessage +
+                ", willQos=" +
+                willQos +
+                ", willRetain=" +
+                willRetain +
+                ", willMessageExpiryInterval=" +
+                willMessageExpiryInterval +
+                ", willDelayInterval=" +
+                willDelayInterval +
+                ", willPayloadFormatIndicator=" +
+                willPayloadFormatIndicator +
+                ", willContentType='" +
+                willContentType +
+                '\'' +
+                ", willResponseTopic='" +
+                willResponseTopic +
+                '\'' +
+                ", willCorrelationData=" +
+                willCorrelationData +
+                ", willUserProperties=" +
+                Arrays.toString(willUserProperties) +
+                '}';
     }
 }

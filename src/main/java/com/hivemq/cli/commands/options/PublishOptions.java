@@ -16,7 +16,11 @@
 
 package com.hivemq.cli.commands.options;
 
-import com.hivemq.cli.converters.*;
+import com.hivemq.cli.converters.ByteBufferConverter;
+import com.hivemq.cli.converters.Mqtt5UserPropertyConverter;
+import com.hivemq.cli.converters.MqttQosConverter;
+import com.hivemq.cli.converters.PayloadFormatIndicatorConverter;
+import com.hivemq.cli.converters.UnsignedIntConverter;
 import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -38,8 +42,10 @@ public class PublishOptions {
     private @NotNull String @NotNull [] topics;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "0",
-            description = "Quality of service for the corresponding topic (default for all: 0)")
+    @CommandLine.Option(names = {"-q", "--qos"},
+                        converter = MqttQosConverter.class,
+                        defaultValue = "0",
+                        description = "Quality of service for the corresponding topic (default for all: 0)")
     private @NotNull MqttQos @NotNull [] qos;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
@@ -47,38 +53,44 @@ public class PublishOptions {
     private @NotNull MessagePayloadOptions message;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-r", "--retain"}, negatable = true, defaultValue = "false",
-            description = "The message will be retained (default: false)")
+    @CommandLine.Option(names = {"-r", "--retain"},
+                        description = "The message will be retained (default: false)",
+                        defaultValue = "false")
     private boolean retain;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-e", "--messageExpiryInterval"}, converter = UnsignedIntConverter.class,
-            description = "The lifetime of the publish message in seconds (default: no message expiry)")
+    @CommandLine.Option(names = {"-e", "--messageExpiryInterval"},
+                        converter = UnsignedIntConverter.class,
+                        description = "The lifetime of the publish message in seconds (default: no message expiry)")
     private @Nullable Long messageExpiryInterval;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"}, converter = PayloadFormatIndicatorConverter.class,
-            description = "The payload format indicator of the publish message")
+    @CommandLine.Option(names = {"-pf", "--payloadFormatIndicator"},
+                        converter = PayloadFormatIndicatorConverter.class,
+                        description = "The payload format indicator of the publish message")
     private @Nullable Mqtt5PayloadFormatIndicator payloadFormatIndicator;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-ct", "--contentType"}, description = "A description of publish message's content",
-            order = 1)
+    @CommandLine.Option(names = {"-ct", "--contentType"},
+                        description = "A description of publish message's content",
+                        order = 1)
     private @Nullable String contentType;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-rt", "--responseTopic"},
-            description = "The topic name for the publish message`s response message")
+                        description = "The topic name for the publish message`s response message")
     private @Nullable String responseTopic;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-cd", "--correlationData"}, converter = ByteBufferConverter.class,
-            description = "The correlation data of the publish message")
+    @CommandLine.Option(names = {"-cd", "--correlationData"},
+                        converter = ByteBufferConverter.class,
+                        description = "The correlation data of the publish message")
     private @Nullable ByteBuffer correlationData;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property of the publish message")
+    @CommandLine.Option(names = {"-up", "--userProperty"},
+                        converter = Mqtt5UserPropertyConverter.class,
+                        description = "A user property of the publish message")
     private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
 
     public @NotNull String @NotNull [] getTopics() {
@@ -122,7 +134,6 @@ public class PublishOptions {
     }
 
     public void logUnusedOptions(final @NotNull MqttVersion mqttVersion) {
-
         if (mqttVersion == MqttVersion.MQTT_3_1_1) {
             if (messageExpiryInterval != null) {
                 Logger.warn("Publish message expiry was set but is unused in MQTT Version {}", MqttVersion.MQTT_3_1_1);
@@ -154,11 +165,30 @@ public class PublishOptions {
 
     @Override
     public @NotNull String toString() {
-        return "PublishOptions{" + "topics=" + Arrays.toString(topics) + ", qos=" + Arrays.toString(qos) +
-                ", message=" + message + ", retain=" + retain + ", messageExpiryInterval=" + messageExpiryInterval +
-                ", payloadFormatIndicator=" + payloadFormatIndicator + ", contentType='" + contentType + '\'' +
-                ", responseTopic='" + responseTopic + '\'' + ", correlationData=" + correlationData +
-                ", userProperties=" + Arrays.toString(userProperties) + '}';
+        return "PublishOptions{" +
+                "topics=" +
+                Arrays.toString(topics) +
+                ", qos=" +
+                Arrays.toString(qos) +
+                ", message=" +
+                message +
+                ", retain=" +
+                retain +
+                ", messageExpiryInterval=" +
+                messageExpiryInterval +
+                ", payloadFormatIndicator=" +
+                payloadFormatIndicator +
+                ", contentType='" +
+                contentType +
+                '\'' +
+                ", responseTopic='" +
+                responseTopic +
+                '\'' +
+                ", correlationData=" +
+                correlationData +
+                ", userProperties=" +
+                Arrays.toString(userProperties) +
+                '}';
     }
 }
 

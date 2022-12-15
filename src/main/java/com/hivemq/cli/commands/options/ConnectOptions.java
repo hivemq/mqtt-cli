@@ -66,8 +66,8 @@ public class ConnectOptions {
     private @Nullable Integer keepAlive;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-c", "--cleanStart"}, negatable = true, defaultValue = "true",
-            description = "Define a clean start for the connection (default: true)")
+    @CommandLine.Option(names = {"--no-cleanStart"}, negatable = true, defaultValue = "true",
+                        description = "Define a clean start for the connection (default: true)")
     private boolean cleanStart;
 
     @SuppressWarnings("unused")
@@ -81,10 +81,10 @@ public class ConnectOptions {
     private @Nullable Mqtt5UserProperty @Nullable [] connectUserProperties;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-ws"}, description = "Use WebSocket transport protocol (default: false)", order = 2)
+    @CommandLine.Option(names = {"-ws"}, description = "Use WebSocket transport protocol (default: false)")
     private boolean useWebSocket;
 
-    @CommandLine.Option(names = {"-ws:path"}, description = "The path of the WebSocket", order = 2)
+    @CommandLine.Option(names = {"-ws:path"}, description = "The path of the WebSocket")
     private @Nullable String webSocketPath;
 
     @CommandLine.Mixin
