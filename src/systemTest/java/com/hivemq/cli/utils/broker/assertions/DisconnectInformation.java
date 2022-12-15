@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.broker.assertions;
 
 import com.hivemq.extension.sdk.api.packets.disconnect.DisconnectPacket;
 import org.jetbrains.annotations.NotNull;
 
 public class DisconnectInformation {
+
     private final @NotNull DisconnectPacket disconnectPacket;
     private final @NotNull String clientId;
 

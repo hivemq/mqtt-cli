@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.broker;
 
 import com.google.common.io.Resources;
@@ -22,7 +23,6 @@ import com.hivemq.embedded.EmbeddedExtension;
 import com.hivemq.embedded.EmbeddedHiveMQ;
 import com.hivemq.embedded.EmbeddedHiveMQBuilder;
 import com.hivemq.extension.sdk.api.ExtensionMain;
-import com.hivemq.extension.sdk.api.annotations.NotNull;
 import com.hivemq.extension.sdk.api.interceptor.connack.ConnackOutboundInterceptor;
 import com.hivemq.extension.sdk.api.interceptor.connect.ConnectInboundInterceptor;
 import com.hivemq.extension.sdk.api.packets.connack.ConnackPacket;
@@ -37,6 +37,8 @@ import com.hivemq.extension.sdk.api.parameter.ExtensionStopOutput;
 import com.hivemq.extension.sdk.api.services.Services;
 import com.hivemq.migration.meta.PersistenceType;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -49,26 +51,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCallback {
 
-    private static final String WEBSOCKETS_PATH = "/mqtt-custom";
-    private static final String BIND_ADDRESS = "localhost";
+    private static final @NotNull String WEBSOCKETS_PATH = "/mqtt-custom";
+    private static final @NotNull String BIND_ADDRESS = "localhost";
 
-    private EmbeddedHiveMQ hivemq;
+    private @Nullable EmbeddedHiveMQ hivemq;
 
-    private Path hivemqConfigFolder;
-    private Path hivemqDataFolder;
+    private @Nullable Path hivemqConfigFolder;
+    private @Nullable Path hivemqDataFolder;
 
-
-    private List<ConnectPacket> connectPackets;
-    private List<ConnackPacket> connackPackets;
-    private List<PublishPacket> publishPackets;
-    private List<SubscribePacket> subscribePackets;
-    private List<UnsubscribePacket> unsubscribePackets;
-    private List<DisconnectInformation> disconnectInformations;
+    private @Nullable List<ConnectPacket> connectPackets;
+    private @Nullable List<ConnackPacket> connackPackets;
+    private @Nullable List<PublishPacket> publishPackets;
+    private @Nullable List<SubscribePacket> subscribePackets;
+    private @Nullable List<UnsubscribePacket> unsubscribePackets;
+    private @Nullable List<DisconnectInformation> disconnectInformations;
 
     private int port = -1;
     private int tlsPort = -1;
@@ -87,8 +89,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     }
 
     @Override
-    public void beforeAll(final ExtensionContext context) throws IOException {
-
+    public void beforeAll(final @NotNull ExtensionContext context) throws IOException {
         this.port = generatePort();
         this.connectPackets = new ArrayList<>();
         this.connackPackets = new ArrayList<>();
@@ -99,7 +100,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
 
         final String tlsConfig = setupTls();
         final String websocketsConfig = setupWebsockets();
-
+        //@formatter:off
         final String hivemqConfig =
                 "<hivemq>\n" + "    " +
                 "   <listeners>\n" + "        " +
@@ -111,7 +112,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                         websocketsConfig +
                 "    </listeners>\n" +
                 "</hivemq>";
-
+        //@formatter:on
         this.hivemqConfigFolder = Files.createTempDirectory("hivemq-config-folder");
         hivemqConfigFolder.toFile().deleteOnExit();
         final File configXml = new File(hivemqConfigFolder.toAbsolutePath().toString(), "config.xml");
@@ -133,31 +134,32 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                     public void extensionStart(
                             final @NotNull ExtensionStartInput extensionStartInput,
                             final @NotNull ExtensionStartOutput extensionStartOutput) {
-
                         // Add Connect & Connack Interceptors
-                        final ConnectInboundInterceptor connectInboundInterceptor = (connectInboundInput, connectInboundOutput) -> connectPackets.add(connectInboundInput.getConnectPacket());
-                        final ConnackOutboundInterceptor connackOutboundInterceptor = (connackOutboundInput, connackOutboundOutput) -> connackPackets.add(connackOutboundInput.getConnackPacket());
-                        Services.interceptorRegistry().setConnectInboundInterceptorProvider(input -> connectInboundInterceptor);
-                        Services.interceptorRegistry().setConnackOutboundInterceptorProvider(input -> connackOutboundInterceptor);
+                        final ConnectInboundInterceptor connectInboundInterceptor =
+                                (connectInboundInput, connectInboundOutput) -> connectPackets.add(connectInboundInput.getConnectPacket());
+                        final ConnackOutboundInterceptor connackOutboundInterceptor =
+                                (connackOutboundInput, connackOutboundOutput) -> connackPackets.add(connackOutboundInput.getConnackPacket());
+                        Services.interceptorRegistry()
+                                .setConnectInboundInterceptorProvider(input -> connectInboundInterceptor);
+                        Services.interceptorRegistry()
+                                .setConnackOutboundInterceptorProvider(input -> connackOutboundInterceptor);
 
                         // Add all the other interceptors
                         Services.initializerRegistry().setClientInitializer((initializerInput, clientContext) -> {
 
-                            clientContext.addDisconnectInboundInterceptor((disconnectInboundInput, disconnectInboundOutput) -> {
-                                disconnectInformations.add(new DisconnectInformation(disconnectInboundInput.getDisconnectPacket(), disconnectInboundInput.getClientInformation().getClientId()));
-                            });
+                            clientContext.addDisconnectInboundInterceptor((disconnectInboundInput, disconnectInboundOutput) -> disconnectInformations.add(
+                                    new DisconnectInformation(
+                                            disconnectInboundInput.getDisconnectPacket(),
+                                            disconnectInboundInput.getClientInformation().getClientId())));
 
-                            clientContext.addPublishInboundInterceptor((publishInboundInput, publishInboundOutput) -> {
-                                publishPackets.add(publishInboundInput.getPublishPacket());
-                            });
+                            clientContext.addPublishInboundInterceptor((publishInboundInput, publishInboundOutput) -> publishPackets.add(
+                                    publishInboundInput.getPublishPacket()));
 
-                            clientContext.addSubscribeInboundInterceptor((subscribeInboundInput, subscribeInboundOutput) -> {
-                                subscribePackets.add(subscribeInboundInput.getSubscribePacket());
-                            });
+                            clientContext.addSubscribeInboundInterceptor((subscribeInboundInput, subscribeInboundOutput) -> subscribePackets.add(
+                                    subscribeInboundInput.getSubscribePacket()));
 
-                            clientContext.addUnsubscribeInboundInterceptor((unsubscribeInboundInput, unsubscribeInboundOutput) -> {
-                                unsubscribePackets.add(unsubscribeInboundInput.getUnsubscribePacket());
-                            });
+                            clientContext.addUnsubscribeInboundInterceptor((unsubscribeInboundInput, unsubscribeInboundOutput) -> unsubscribePackets.add(
+                                    unsubscribeInboundInput.getUnsubscribePacket()));
 
                         });
                     }
@@ -167,7 +169,8 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                             final @NotNull ExtensionStopInput extensionStopInput,
                             final @NotNull ExtensionStopOutput extensionStopOutput) {
                     }
-                }).build();
+                })
+                .build();
 
         final EmbeddedHiveMQBuilder builder = EmbeddedHiveMQ.builder()
                 .withConfigurationFolder(hivemqConfigFolder)
@@ -185,44 +188,44 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
     }
 
     @Override
-    public void afterAll(final ExtensionContext context) throws IOException {
-        hivemq.stop();
-        FileUtils.deleteDirectory(hivemqConfigFolder.toFile());
-        FileUtils.deleteDirectory(hivemqDataFolder.toFile());
+    public void afterAll(final @NotNull ExtensionContext context) throws IOException {
+        Objects.requireNonNull(hivemq).stop();
+        FileUtils.deleteDirectory(Objects.requireNonNull(hivemqConfigFolder).toFile());
+        FileUtils.deleteDirectory(Objects.requireNonNull(hivemqDataFolder).toFile());
     }
 
     @Override
-    public void afterEach(final ExtensionContext context) {
-        connectPackets.clear();
-        connackPackets.clear();
-        disconnectInformations.clear();
-        publishPackets.clear();
-        subscribePackets.clear();
-        unsubscribePackets.clear();
+    public void afterEach(final @NotNull ExtensionContext context) {
+        Objects.requireNonNull(connectPackets).clear();
+        Objects.requireNonNull(connackPackets).clear();
+        Objects.requireNonNull(disconnectInformations).clear();
+        Objects.requireNonNull(publishPackets).clear();
+        Objects.requireNonNull(subscribePackets).clear();
+        Objects.requireNonNull(unsubscribePackets).clear();
     }
 
     public @NotNull List<ConnectPacket> getConnectPackets() {
-        return connectPackets;
+        return Objects.requireNonNull(connectPackets);
     }
 
     public @NotNull List<ConnackPacket> getConnackPackets() {
-        return connackPackets;
+        return Objects.requireNonNull(connackPackets);
     }
 
     public @NotNull List<PublishPacket> getPublishPackets() {
-        return publishPackets;
+        return Objects.requireNonNull(publishPackets);
     }
 
     public @NotNull List<SubscribePacket> getSubscribePackets() {
-        return subscribePackets;
+        return Objects.requireNonNull(subscribePackets);
     }
 
     public @NotNull List<UnsubscribePacket> getUnsubscribePackets() {
-        return unsubscribePackets;
+        return Objects.requireNonNull(unsubscribePackets);
     }
 
     public @NotNull List<DisconnectInformation> getDisconnectInformations() {
-        return disconnectInformations;
+        return Objects.requireNonNull(disconnectInformations);
     }
 
     public int getMqttPort() {
@@ -263,6 +266,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
             this.tlsPort = generatePort();
             final String brokerKeyStorePath = Resources.getResource("tls/broker-keystore.jks").getPath();
             final String brokerTrustStorePath = Resources.getResource("tls/client-keystore.jks").getPath();
+            //@formatter:off
             tlsConfig =
                     "<tls-tcp-listener>\n" +
                     "           <port>" + tlsPort + "</port>\n" +
@@ -280,6 +284,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                     "                </truststore>\n" +
                     "           </tls>\n" +
                     "</tls-tcp-listener>\n";
+            //@formatter:on
         }
         return tlsConfig;
     }
@@ -288,23 +293,18 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         String websocketsConfig = "";
         if (websocketEnabled) {
             this.websocketsPort = generatePort();
-            websocketsConfig =
-            "<websocket-listener>\n" +
-            "          <port>" + websocketsPort + "</port>\n" +
-            "          <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
-            "          <path>" + WEBSOCKETS_PATH + "</path>\n" +
-            "          <name>my-websocket-listener</name>\n" +
-            "          <subprotocols>\n" +
-            "              <subprotocol>mqttv3.1</subprotocol>\n" +
-            "              <subprotocol>mqtt</subprotocol>\n" +
-            "          </subprotocols>\n" +
-            "          <allow-extensions>true</allow-extensions>\n" +
-            "</websocket-listener>";
+            websocketsConfig = "<websocket-listener>\n" + "          <port>" + websocketsPort + "</port>\n" +
+                    "          <bind-address>" + BIND_ADDRESS + "</bind-address>\n" + "          <path>" +
+                    WEBSOCKETS_PATH + "</path>\n" + "          <name>my-websocket-listener</name>\n" +
+                    "          <subprotocols>\n" + "              <subprotocol>mqttv3.1</subprotocol>\n" +
+                    "              <subprotocol>mqtt</subprotocol>\n" + "          </subprotocols>\n" +
+                    "          <allow-extensions>true</allow-extensions>\n" + "</websocket-listener>";
         }
         return websocketsConfig;
     }
 
     public static class Builder {
+
         private boolean tlsEnabled = false;
         private boolean websocketEnabled = false;
 

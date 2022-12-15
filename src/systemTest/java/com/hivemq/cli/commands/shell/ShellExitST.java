@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.utils.broker.HiveMQ;
@@ -29,10 +30,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
-public class ShellExitST {
+class ShellExitST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
+    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -43,9 +44,9 @@ public class ShellExitST {
     void test_exitContext(final char mqttVersion) throws Exception {
         final List<String> exitCommand = List.of("exit");
         final List<String> lsCommand = List.of("ls");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client");
         mqttCliShell.executeAsync(exitCommand).awaitStdOut("mqtt>");
-        mqttCliShell.executeAsync(lsCommand).awaitStdOut(String.format("client@%s", hivemq.getHost()));
+        mqttCliShell.executeAsync(lsCommand).awaitStdOut(String.format("client@%s", HIVE_MQ.getHost()));
     }
 
     @Test

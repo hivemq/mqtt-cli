@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.cli.io;
 
 import com.hivemq.cli.utils.exceptions.TimeoutException;
@@ -52,7 +53,6 @@ public class ProcessIO {
     }
 
     public static @NotNull ProcessIO startReading(final @NotNull Process process) {
-
         final StringBuilder processStdOut = new StringBuilder();
         final StringBuilder processErrOut = new StringBuilder();
         final BufferedWriter processOutputWriter =
@@ -151,5 +151,4 @@ public class ProcessIO {
         processOutputWriter.write('\n');
         processOutputWriter.flush();
     }
-
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.cli.io;
 
 import com.hivemq.cli.utils.exceptions.TimeoutException;
@@ -26,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LogWaiter {
 
@@ -38,46 +40,41 @@ public class LogWaiter {
     }
 
     public void awaitLog(final @NotNull String expectedLogMessage) throws TimeoutException {
-
         final AtomicReference<String> readLog = new AtomicReference<>();
 
         try {
             await().until(() -> {
                 final StringBuilder readChars = new StringBuilder();
                 try {
-                    final FileReader fileReader = new FileReader(logFile, StandardCharsets.UTF_8);
-                    fileReader.skip(filePosition.get());
+                    try (final FileReader fileReader = new FileReader(logFile, StandardCharsets.UTF_8)) {
+                        assertEquals(filePosition.get(), fileReader.skip(filePosition.get()));
+                        while (true) {
+                            for (int i = 0; i < expectedLogMessage.length(); i++) {
+                                final int readChar = fileReader.read();
+                                readChars.append((char) readChar);
 
-                    while (true) {
-                        for (int i = 0; i < expectedLogMessage.length(); i++) {
-                            final int readChar = fileReader.read();
-                            readChars.append((char) readChar);
+                                if (readChar == -1) {
+                                    return false;
+                                }
 
-                            if (readChar == -1) {
-                                return false;
-                            }
-
-                            if (expectedLogMessage.charAt(i) != readChar) {
-                                break;
-                            }
+                                if (expectedLogMessage.charAt(i) != readChar) {
+                                    break;
+                                }
 
 
-                            if (i == expectedLogMessage.length() - 1) {
-                                filePosition.set(filePosition.get() + readChars.length());
-                                return true;
+                                if (i == expectedLogMessage.length() - 1) {
+                                    filePosition.set(filePosition.get() + readChars.length());
+                                    return true;
+                                }
                             }
                         }
                     }
                 } finally {
                     readLog.set(readChars.toString());
                 }
-
             });
         } catch (final ConditionTimeoutException e) {
             throw new TimeoutException(e, readLog.get());
         }
-
     }
-
 }
-

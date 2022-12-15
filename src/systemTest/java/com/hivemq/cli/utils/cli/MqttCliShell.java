@@ -24,6 +24,7 @@ import com.hivemq.cli.utils.cli.io.ProcessIO;
 import com.hivemq.cli.utils.cli.results.AwaitOutput;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -35,21 +36,22 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import static com.hivemq.cli.utils.cli.MqttCli.CLI_EXEC;
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
+import static com.hivemq.cli.utils.cli.MqttCli.CLI_EXEC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
-    public static String DEFAULT_CLIENT_NAME = "cliTest";
+    public static @NotNull String DEFAULT_CLIENT_NAME = "cliTest";
 
-    private Path homeDir;
-    private ProcessIO processIO;
-    private Process process;
-    private LogWaiter logWaiter;
-    private Process orphanCleanupProcess;
+    private @Nullable Path homeDir;
+    private @Nullable ProcessIO processIO;
+    private @Nullable Process process;
+    private @Nullable LogWaiter logWaiter;
+    private @Nullable Process orphanCleanupProcess;
     private int connectClientMarker = 0;
 
     private final @NotNull Map<String, String> envVariables;
@@ -79,9 +81,15 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
     @Override
     public void afterEach(final @NotNull ExtensionContext context) throws IOException {
-        FileUtils.deleteDirectory(homeDir.toFile());
-        process.destroyForcibly();
-        orphanCleanupProcess.destroyForcibly();
+        if (homeDir != null && homeDir.toFile().exists()) {
+            FileUtils.deleteDirectory(homeDir.toFile());
+        }
+        if (process != null) {
+            process.destroyForcibly();
+        }
+        if (orphanCleanupProcess != null) {
+            orphanCleanupProcess.destroyForcibly();
+        }
     }
 
     private @NotNull Process startShellMode(final @NotNull Path homeDir) throws IOException {
@@ -117,7 +125,8 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     }
 
     /**
-     * Connects a mqtt-client with client-id {@link #DEFAULT_CLIENT_NAME} and awaits the successful output statements on std-out and in the logfile.
+     * Connects a mqtt-client with client-id {@link #DEFAULT_CLIENT_NAME} and awaits the successful output statements on
+     * std-out and in the logfile.
      *
      * @param hivemq the HiveMQ instance to which the client should connect
      * @throws IOException when the cli command to connect could not be written to the shell
@@ -127,15 +136,24 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     }
 
     /**
-     * Connects a mqtt-client with the given client-id and awaits the successful output statements on std-out and in the logfile.
+     * Connects a mqtt-client with the given client-id and awaits the successful output statements on std-out and in the
+     * logfile.
      *
      * @param hivemq the HiveMQ instance to which the client should connect
      * @throws IOException when the cli command to connect could not be written to the shell
      */
-    public void connectClient(final @NotNull HiveMQ hivemq, final char mqttVersion, final @NotNull String clientId) throws IOException {
-        final List<String> connectCommand =
-                List.of("con", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-V", String.valueOf(mqttVersion), "-i", clientId);
-
+    public void connectClient(final @NotNull HiveMQ hivemq, final char mqttVersion, final @NotNull String clientId)
+            throws IOException {
+        final List<String> connectCommand = List.of(
+                "con",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                clientId);
 
         final AwaitOutput awaitOutput =
                 executeAsync(connectCommand).awaitStdOut(String.format("%s@%s>", clientId, hivemq.getHost()));
@@ -146,7 +164,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
             connectAssertion.setClientId(clientId);
         });
 
-        connectClientMarker+= 1;
+        connectClientMarker += 1;
     }
 
     /**
@@ -159,16 +177,17 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
      */
     public @NotNull AwaitOutput executeAsync(final @NotNull List<String> command) throws IOException {
         final String fullCommand = String.join(" ", command);
-        processIO.writeMsg(fullCommand);
+        Objects.requireNonNull(processIO).writeMsg(fullCommand);
         return new AwaitOutput(processIO, logWaiter, fullCommand);
     }
 
     /**
      * Check if the mqtt-cli shell process is alive.
+     *
      * @return true if the mqtt-cli shell process is alive.
      */
     public boolean isAlive() {
-        return process.isAlive();
+        return Objects.requireNonNull(process).isAlive();
     }
 
 }

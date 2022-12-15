@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell.connect;
 
-import com.hivemq.cli.utils.cli.results.AwaitOutput;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.broker.HiveMQ;
 import com.hivemq.cli.utils.cli.MqttCliShell;
-import com.hivemq.cli.utils.MqttVersionConverter;
+import com.hivemq.cli.utils.cli.results.AwaitOutput;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -34,15 +35,15 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 
-public class ShellConnectEnvST {
+class ShellConnectEnvST {
 
-    private static final String PASSWORD_ENV = "PASSWORD";
-
-    @RegisterExtension
-    private final static HiveMQ hivemq = HiveMQ.builder().build();
+    private static final @NotNull String PASSWORD_ENV = "PASSWORD";
 
     @RegisterExtension
-    final MqttCliShell mqttCliShell = new MqttCliShell(Map.of(PASSWORD_ENV, "password"));
+    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().build();
+
+    @RegisterExtension
+    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell(Map.of(PASSWORD_ENV, "password"));
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -59,10 +60,10 @@ public class ShellConnectEnvST {
             awaitOutput.awaitStdOut("mqtt>");
             awaitOutput.awaitLog("Password-Only Authentication is not allowed in MQTT 3");
         } else {
-            awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
+            awaitOutput.awaitStdOut(String.format("@%s>", HIVE_MQ.getHost()))
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(HIVE_MQ.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -81,10 +82,10 @@ public class ShellConnectEnvST {
 
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(connectCommand);
 
-        awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
+        awaitOutput.awaitStdOut(String.format("@%s>", HIVE_MQ.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVE_MQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("user");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -96,9 +97,9 @@ public class ShellConnectEnvST {
         final ArrayList<String> defaultConnectCommand = new ArrayList<>();
         defaultConnectCommand.add("con");
         defaultConnectCommand.add("-h");
-        defaultConnectCommand.add(hivemq.getHost());
+        defaultConnectCommand.add(HIVE_MQ.getHost());
         defaultConnectCommand.add("-p");
-        defaultConnectCommand.add(String.valueOf(hivemq.getMqttPort()));
+        defaultConnectCommand.add(String.valueOf(HIVE_MQ.getMqttPort()));
         defaultConnectCommand.add("-i");
         defaultConnectCommand.add("cliTest");
         return defaultConnectCommand;

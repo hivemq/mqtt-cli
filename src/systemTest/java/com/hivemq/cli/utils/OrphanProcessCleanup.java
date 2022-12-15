@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
 import com.google.common.io.Resources;
@@ -26,15 +27,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class OrphanProcessCleanup {
 
     public static @NotNull Process startOrphanCleanupProcess(final @NotNull Process childProcess) throws IOException {
-        // We start the the OrphanCleanupProcess which sole job is to destroy the childProcess, meaning the mqtt-cli shell,
+        // We start the OrphanCleanupProcess which sole job is to destroy the childProcess, meaning the mqtt-cli shell,
         // when the jvm process exited
         final long jvmProcessId = ProcessHandle.current().pid();
         final List<String> orphanCleanupProcessCommand = List.of(
                 System.getProperty("java"),
                 Resources.getResource("OrphanCleanupProcess.java").getPath(),
                 String.valueOf(jvmProcessId),
-                String.valueOf(childProcess.pid())
-        );
+                String.valueOf(childProcess.pid()));
         final Process orphanCleanupProcess = new ProcessBuilder(orphanCleanupProcessCommand).start();
 
         // Wait until the process prints X, which means that the orphan cleanup process has sucessfully started

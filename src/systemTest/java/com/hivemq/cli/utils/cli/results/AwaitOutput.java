@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.cli.results;
 
 import com.hivemq.cli.utils.cli.io.LogWaiter;
@@ -30,7 +31,8 @@ public class AwaitOutput {
     private final @NotNull String command;
     private final @Nullable LogWaiter logWaiter;
 
-    public AwaitOutput(final @NotNull ProcessIO processIO, final @Nullable LogWaiter logWaiter, final @NotNull String command) {
+    public AwaitOutput(
+            final @NotNull ProcessIO processIO, final @Nullable LogWaiter logWaiter, final @NotNull String command) {
         this.processIO = processIO;
         this.command = command;
         this.logWaiter = logWaiter;
@@ -40,7 +42,11 @@ public class AwaitOutput {
         try {
             processIO.awaitStdOut(expectedOutput);
         } catch (final TimeoutException timeoutException) {
-            Assertions.fail(String.format("Command '%s' did not return expected standard output '%s' in time. Actual read standard output: '%s'", command, expectedOutput, timeoutException.getActualOutput()), timeoutException);
+            Assertions.fail(String.format(
+                    "Command '%s' did not return expected standard output '%s' in time. Actual read standard output: '%s'",
+                    command,
+                    expectedOutput,
+                    timeoutException.getActualOutput()), timeoutException);
         }
         return this;
     }
@@ -49,7 +55,11 @@ public class AwaitOutput {
         try {
             processIO.awaitStdErr(expectedOutput);
         } catch (final TimeoutException timeoutException) {
-            Assertions.fail(String.format("Command '%s' did not return expected error output '%s' in time. Actual read error output: '%s'", command, expectedOutput, timeoutException.getActualOutput()), timeoutException);
+            Assertions.fail(String.format(
+                    "Command '%s' did not return expected error output '%s' in time. Actual read error output: '%s'",
+                    command,
+                    expectedOutput,
+                    timeoutException.getActualOutput()), timeoutException);
         }
         return this;
     }
@@ -59,9 +69,12 @@ public class AwaitOutput {
         try {
             logWaiter.awaitLog(expectedLogMessage);
         } catch (final TimeoutException timeoutException) {
-            Assertions.fail(String.format("Command '%s' did not return expected logfile output '%s' in time. Actual read logfile output: '%s'", command, expectedLogMessage, timeoutException.getActualOutput()), timeoutException);
+            Assertions.fail(String.format(
+                    "Command '%s' did not return expected logfile output '%s' in time. Actual read logfile output: '%s'",
+                    command,
+                    expectedLogMessage,
+                    timeoutException.getActualOutput()), timeoutException);
         }
         return this;
     }
-
 }

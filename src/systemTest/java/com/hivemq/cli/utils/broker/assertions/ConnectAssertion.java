@@ -17,7 +17,6 @@
 package com.hivemq.cli.utils.broker.assertions;
 
 import com.google.common.collect.ImmutableList;
-import com.hivemq.extension.sdk.api.annotations.Nullable;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
 import com.hivemq.extension.sdk.api.packets.connect.WillPublishPacket;
 import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
@@ -25,6 +24,7 @@ import com.hivemq.extension.sdk.api.packets.general.UserProperties;
 import com.hivemq.extensions.packets.general.UserPropertiesImpl;
 import com.hivemq.mqtt.message.mqtt5.MqttUserProperty;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
@@ -45,10 +45,8 @@ public class ConnectAssertion {
     private boolean requestProblemInformation = true;
     private boolean requestResponseInformation = false;
 
-    private @NotNull Optional<String> userName = Optional.empty();
-    private @NotNull Optional<ByteBuffer> password = Optional.empty();
-    private @NotNull Optional<String> authenticationMethod = Optional.empty();
-    private @NotNull Optional<ByteBuffer> authenticationData = Optional.empty();
+    private @Nullable String userName = null;
+    private @Nullable ByteBuffer password = null;
 
     private @Nullable WillPublishPacket willPublish = null;
     private @Nullable UserProperties userProperties =
@@ -73,10 +71,8 @@ public class ConnectAssertion {
         assertEquals(connectAssertion.requestProblemInformation, connectPacket.getRequestProblemInformation());
         assertEquals(connectAssertion.requestResponseInformation, connectPacket.getRequestResponseInformation());
 
-        assertEquals(connectAssertion.userName, connectPacket.getUserName());
-        assertEquals(connectAssertion.password, connectPacket.getPassword());
-        assertEquals(connectAssertion.authenticationMethod, connectPacket.getAuthenticationMethod());
-        assertEquals(connectAssertion.authenticationData, connectPacket.getAuthenticationData());
+        assertEquals(Optional.ofNullable(connectAssertion.userName), connectPacket.getUserName());
+        assertEquals(Optional.ofNullable(connectAssertion.password), connectPacket.getPassword());
 
         assertEquals(connectAssertion.userProperties, connectPacket.getUserProperties());
         if (connectAssertion.willPublish != null) {
@@ -140,19 +136,11 @@ public class ConnectAssertion {
     }
 
     public void setUserName(final @Nullable String userName) {
-        this.userName = Optional.of(userName);
+        this.userName = userName;
     }
 
     public void setPassword(final @Nullable ByteBuffer password) {
-        this.password = Optional.of(password);
-    }
-
-    public void setAuthenticationMethod(final @Nullable String authenticationMethod) {
-        this.authenticationMethod = Optional.of(authenticationMethod);
-    }
-
-    public void setAuthenticationData(final @Nullable ByteBuffer authenticationData) {
-        this.authenticationData = Optional.of(authenticationData);
+        this.password = password;
     }
 
     public void setWillPublish(final @Nullable WillPublishPacket willPublish) {
@@ -162,5 +150,4 @@ public class ConnectAssertion {
     public void setUserProperties(final @Nullable UserProperties userProperties) {
         this.userProperties = userProperties;
     }
-
 }

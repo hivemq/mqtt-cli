@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.cli.publish;
 
 import com.google.common.collect.ImmutableList;
-import com.hivemq.cli.utils.cli.results.ExecutionResult;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.broker.HiveMQ;
 import com.hivemq.cli.utils.cli.MqttCli;
-import com.hivemq.cli.utils.MqttVersionConverter;
+import com.hivemq.cli.utils.cli.results.ExecutionResult;
 import com.hivemq.extension.sdk.api.packets.connack.ConnackPacket;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
@@ -44,13 +45,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PublishConnectST {
+class PublishConnectST {
 
     @RegisterExtension
-    private static final HiveMQ hivemq = HiveMQ.builder().build();
-    
+    private static final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
+
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
@@ -59,7 +61,7 @@ public class PublishConnectST {
                 "-h",
                 "wrong-host",
                 "-p",
-                String.valueOf(hivemq.getMqttPort()),
+                String.valueOf(HIVEMQ.getMqttPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-t",
@@ -70,8 +72,9 @@ public class PublishConnectST {
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(0, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput().contains("unreachable-host: Temporary failure in name resolution") ||
-                executionResult.getErrorOutput().contains("nodename nor servname provided, or not known"));
+        assertTrue(
+                executionResult.getErrorOutput().contains("unreachable-host: Temporary failure in name resolution") ||
+                        executionResult.getErrorOutput().contains("nodename nor servname provided, or not known"));
     }
 
     @ParameterizedTest
@@ -80,7 +83,7 @@ public class PublishConnectST {
     void test_connectWrongPort(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub",
                 "-h",
-                hivemq.getHost(),
+                HIVEMQ.getHost(),
                 "-p",
                 "22",
                 "-V",
@@ -107,7 +110,7 @@ public class PublishConnectST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setCleanStart(false);
             if (mqttVersion == '3') {
@@ -127,7 +130,7 @@ public class PublishConnectST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setKeepAlive(100);
         });
@@ -147,21 +150,21 @@ public class PublishConnectST {
 
         final String expectedClientId;
         if (mqttVersion == '5') {
-            final ConnackPacket connackPacket = hivemq.getConnackPackets().get(0);
+            final ConnackPacket connackPacket = HIVEMQ.getConnackPackets().get(0);
             assertTrue(connackPacket.getAssignedClientIdentifier().isPresent());
             expectedClientId = connackPacket.getAssignedClientIdentifier().get();
         } else {
-            final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
+            final ConnectPacket connectPacket = HIVEMQ.getConnectPackets().get(0);
             expectedClientId = connectPacket.getClientId();
         }
 
         assertTrue(executionResult.getStandardOutput()
-                .contains(String.format("Client '%s@%s' sending PUBLISH", expectedClientId, hivemq.getHost())));
+                .contains(String.format("Client '%s@%s' sending PUBLISH", expectedClientId, HIVEMQ.getHost())));
         assertTrue(executionResult.getStandardOutput()
                 .contains(String.format("Client '%s@%s' received PUBLISH acknowledgement",
                         expectedClientId,
-                        hivemq.getHost())));
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+                        HIVEMQ.getHost())));
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setClientId(expectedClientId);
         });
@@ -180,7 +183,7 @@ public class PublishConnectST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
+        final ConnectPacket connectPacket = HIVEMQ.getConnectPackets().get(0);
         if (mqttVersion == '3') {
             assertTrue(connectPacket.getClientId().startsWith("test-"));
         }
@@ -202,7 +205,7 @@ public class PublishConnectST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
         });
@@ -224,7 +227,7 @@ public class PublishConnectST {
             assertEquals(0, executionResult.getExitCode());
         } else {
             assertPublishOutput(executionResult);
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -247,7 +250,7 @@ public class PublishConnectST {
             assertEquals(0, executionResult.getExitCode());
         } else {
             assertPublishOutput(executionResult);
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -274,7 +277,7 @@ public class PublishConnectST {
             assertEquals(0, executionResult.getExitCode());
         } else {
             assertPublishOutput(executionResult);
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -295,7 +298,7 @@ public class PublishConnectST {
         assertPublishOutput(executionResult);
 
         assertPublishOutput(executionResult);
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -315,7 +318,7 @@ public class PublishConnectST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of("PASSWORD", "password"));
 
         assertPublishOutput(executionResult);
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -339,7 +342,7 @@ public class PublishConnectST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
         assertPublishOutput(executionResult);
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -390,7 +393,7 @@ public class PublishConnectST {
             assertTrue(executionResult.getErrorOutput()
                     .contains("Will User Properties was set but is unused in MQTT Version MQTT_3_1_1"));
 
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
                 final WillPublishBuilder expectedWillBuilder = Builders.willPublish()
                         .payload(ByteBuffer.wrap("will-message".getBytes(StandardCharsets.UTF_8)))
                         .topic("test-will-topic")
@@ -403,7 +406,7 @@ public class PublishConnectST {
             });
 
         } else {
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
                 final WillPublishBuilder expectedWillBuilder = Builders.willPublish()
                         .payload(ByteBuffer.wrap("will-message".getBytes(StandardCharsets.UTF_8)))
                         .topic("test-will-topic")
@@ -440,7 +443,7 @@ public class PublishConnectST {
                     .contains("Restriction receive maximum was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setReceiveMaximum(100);
@@ -464,7 +467,7 @@ public class PublishConnectST {
                     .contains("Restriction maximum packet size was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setMaximumPacketSize(100);
@@ -488,7 +491,7 @@ public class PublishConnectST {
                     .contains("Restriction topic alias maximum was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setTopicAliasMaximum(100);
@@ -511,7 +514,7 @@ public class PublishConnectST {
                     .contains("Restriction request problem information was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestProblemInformation(false);
@@ -535,7 +538,7 @@ public class PublishConnectST {
                             "Restriction request response information was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestResponseInformation(true);
@@ -559,7 +562,7 @@ public class PublishConnectST {
                     .contains("Connect session expiry interval was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setSessionExpiryInterval(100);
@@ -581,10 +584,11 @@ public class PublishConnectST {
         assertPublishOutput(executionResult);
 
         if (mqttVersion == '3') {
-            assertTrue(executionResult.getErrorOutput().contains("Connect user properties were set but are unused in MQTT Version MQTT_3_1_1"));
+            assertTrue(executionResult.getErrorOutput()
+                    .contains("Connect user properties were set but are unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 final UserPropertiesImpl expectedUserProperties = UserPropertiesImpl.of(ImmutableList.of(
@@ -607,9 +611,9 @@ public class PublishConnectST {
         final ArrayList<String> publishCommand = new ArrayList<>();
         publishCommand.add("pub");
         publishCommand.add("-h");
-        publishCommand.add(hivemq.getHost());
+        publishCommand.add(HIVEMQ.getHost());
         publishCommand.add("-p");
-        publishCommand.add(String.valueOf(hivemq.getMqttPort()));
+        publishCommand.add(String.valueOf(HIVEMQ.getMqttPort()));
         publishCommand.add("-V");
         publishCommand.add(String.valueOf(mqttVersion));
         publishCommand.add("-i");

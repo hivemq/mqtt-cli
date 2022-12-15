@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils;
 
 import com.hivemq.extension.sdk.api.packets.general.MqttVersion;
@@ -26,7 +27,6 @@ public class MqttVersionConverter {
         } else if (version == '5') {
             return MqttVersion.V_5;
         }
-
         throw new IllegalArgumentException("version " + version + " can not be converted to MqttVersion object.");
     }
 

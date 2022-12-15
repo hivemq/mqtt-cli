@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.cli.publish;
 
 import com.google.common.io.Resources;
-import com.hivemq.cli.utils.cli.results.ExecutionResultAsync;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.broker.HiveMQ;
 import com.hivemq.cli.utils.cli.MqttCliAsync;
-import com.hivemq.cli.utils.MqttVersionConverter;
+import com.hivemq.cli.utils.cli.results.ExecutionResultAsync;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,53 +35,57 @@ import java.util.concurrent.TimeUnit;
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 import static com.hivemq.cli.utils.broker.assertions.PublishAssertion.assertPublishPacket;
 
-public class PublishConnectTlsST {
+class PublishConnectTlsST {
 
     @RegisterExtension
-    private final static HiveMQ hivemq = HiveMQ.builder().withTlsEnabled(true).build();
+    private static final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withTlsEnabled(true).build();
 
     @RegisterExtension
-    private final static MqttCliAsync mqttCli = new MqttCliAsync();
+    private final @NotNull MqttCliAsync mqttCli = new MqttCliAsync();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_mutualTls(final char mqttVersion) throws Exception {
-
         final String clientKeyPem = Resources.getResource("tls/client-key.pem").getPath();
         final String clientCertPem = Resources.getResource("tls/client-cert.pem").getPath();
         final String serverPem = Resources.getResource("tls/server.pem").getPath();
 
         final List<String> publishCommand = List.of(
                 "pub",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getMqttTlsPort()),
-                "-V", String.valueOf(mqttVersion),
-                "-i", "cliTest",
-                "-t", "test",
-                "-m", "message",
+                "-h",
+                HIVEMQ.getHost(),
+                "-p",
+                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-t",
+                "test",
+                "-m",
+                "message",
                 "--cafile",
                 serverPem,
                 "--key",
                 clientKeyPem,
                 "--cert",
                 clientCertPem,
-                "-d"
-        );
+                "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("Enter private key password:");
         executionResult.write("changeme");
         executionResult.awaitStdOut("received PUBLISH acknowledgement");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
-        });
+        assertConnectPacket(
+                HIVEMQ.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
-
     }
 }

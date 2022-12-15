@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.cli.results;
 
 import com.hivemq.cli.utils.cli.io.ProcessIO;
@@ -36,7 +37,11 @@ public class ExecutionResultAsync {
         try {
             processIO.awaitStdOut(expectedOutput);
         } catch (final TimeoutException timeoutException) {
-            Assertions.fail(String.format("Command '%s' did not return expected standard output '%s' in time. Actual read standard output: '%s'", command, expectedOutput, timeoutException.getActualOutput()), timeoutException);
+            Assertions.fail(String.format(
+                    "Command '%s' did not return expected standard output '%s' in time. Actual read standard output: '%s'",
+                    command,
+                    expectedOutput,
+                    timeoutException.getActualOutput()), timeoutException);
         }
         return this;
     }
@@ -45,7 +50,11 @@ public class ExecutionResultAsync {
         try {
             processIO.awaitStdErr(expectedOutput);
         } catch (final TimeoutException timeoutException) {
-            Assertions.fail(String.format("Command '%s' did not return expected error output '%s' in time. Actual read error output: '%s'", command, expectedOutput, timeoutException.getActualOutput()), timeoutException);
+            Assertions.fail(String.format(
+                    "Command '%s' did not return expected error output '%s' in time. Actual read error output: '%s'",
+                    command,
+                    expectedOutput,
+                    timeoutException.getActualOutput()), timeoutException);
         }
         return this;
     }

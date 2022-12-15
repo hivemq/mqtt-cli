@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.broker.assertions;
 
 import com.google.common.collect.ImmutableList;
@@ -35,7 +36,9 @@ public class SubscribeAssertion {
     private SubscribeAssertion() {
     }
 
-    public static void assertSubscribePacket(final @NotNull SubscribePacket subscribePacket, final @NotNull Consumer<SubscribeAssertion> subscribeAssertionConsumer) {
+    public static void assertSubscribePacket(
+            final @NotNull SubscribePacket subscribePacket,
+            final @NotNull Consumer<SubscribeAssertion> subscribeAssertionConsumer) {
         final SubscribeAssertion subscribeAssertion = new SubscribeAssertion();
         subscribeAssertionConsumer.accept(subscribeAssertion);
         assertEquals(subscribeAssertion.subscriptions, subscribePacket.getSubscriptions());

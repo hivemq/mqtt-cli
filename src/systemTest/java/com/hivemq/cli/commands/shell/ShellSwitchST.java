@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.utils.broker.HiveMQ;
@@ -26,9 +27,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class ShellSwitchST {
+class ShellSwitchST {
+
     @RegisterExtension
-    private static final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
+    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -37,39 +39,39 @@ public class ShellSwitchST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_successfulSwitchFromContext(final char mqttVersion) throws Exception {
-        final List<String> switchCommand = List.of("switch", String.format("client1@%s", hivemq.getHost()));
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client2");
-        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", hivemq.getHost()));
+        final List<String> switchCommand = List.of("switch", String.format("client1@%s", HIVE_MQ.getHost()));
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client2");
+        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", HIVE_MQ.getHost()));
     }
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_successfulSwitchWithoutContext(final char mqttVersion) throws Exception {
-        final List<String> switchCommand = List.of("switch", String.format("client1@%s", hivemq.getHost()));
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
+        final List<String> switchCommand = List.of("switch", String.format("client1@%s", HIVE_MQ.getHost()));
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
         mqttCliShell.executeAsync(List.of("exit")).awaitStdOut("mqtt>");
-        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", hivemq.getHost()));
+        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", HIVE_MQ.getHost()));
     }
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_hostAndIdentifierWithContext(final char mqttVersion) throws Exception {
-        final List<String> switchCommand = List.of("switch", "-i", "client1", "-h", hivemq.getHost());
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client2");
-        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", hivemq.getHost()));
+        final List<String> switchCommand = List.of("switch", "-i", "client1", "-h", HIVE_MQ.getHost());
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client2");
+        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", HIVE_MQ.getHost()));
     }
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_hostAndIdentifierWithoutContext(final char mqttVersion) throws Exception {
-        final List<String> switchCommand = List.of("switch", "-i", "client1", "-h", hivemq.getHost());
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
+        final List<String> switchCommand = List.of("switch", "-i", "client1", "-h", HIVE_MQ.getHost());
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
         mqttCliShell.executeAsync(List.of("exit")).awaitStdOut("mqtt>");
-        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", hivemq.getHost()));
+        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", HIVE_MQ.getHost()));
     }
 }

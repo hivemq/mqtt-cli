@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell.connect;
 
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.broker.HiveMQ;
 import com.hivemq.cli.utils.cli.MqttCliShell;
-import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,13 +31,13 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 
-public class ShellConnectWebsocketsST {
+class ShellConnectWebsocketsST {
 
     @RegisterExtension
-    private final static HiveMQ hivemq = HiveMQ.builder().withWebsocketEnabled(true).build();
+    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().withWebsocketEnabled(true).build();
 
     @RegisterExtension
-    final MqttCliShell mqttCliShell = new MqttCliShell();
+    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -43,21 +45,26 @@ public class ShellConnectWebsocketsST {
     void test_defaultConnect(final char mqttVersion) throws Exception {
         final List<String> connectCommand = List.of(
                 "con",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getWebsocketsPort()),
-                "-V", String.valueOf(mqttVersion),
-                "-i", "cliTest",
+                "-h",
+                HIVE_MQ.getHost(),
+                "-p",
+                String.valueOf(HIVE_MQ.getWebsocketsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
                 "-ws",
                 "-ws:path",
-                hivemq.getWebsocketsPath()
-        );
+                HIVE_MQ.getWebsocketsPath());
 
         mqttCliShell.executeAsync(connectCommand)
-                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
-        assertConnectPacket(connectPacket, connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion)));
+        final ConnectPacket connectPacket = HIVE_MQ.getConnectPackets().get(0);
+        assertConnectPacket(connectPacket,
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
     }
 }

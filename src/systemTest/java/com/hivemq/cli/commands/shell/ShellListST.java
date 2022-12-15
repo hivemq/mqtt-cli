@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.utils.cli.results.AwaitOutput;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.broker.HiveMQ;
 import com.hivemq.cli.utils.cli.MqttCliShell;
-import com.hivemq.cli.utils.MqttVersionConverter;
+import com.hivemq.cli.utils.cli.results.AwaitOutput;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -29,10 +30,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class ShellListST {
+class ShellListST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ hivemq = HiveMQ.builder().build();
+    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -49,13 +50,13 @@ public class ShellListST {
     @ValueSource(chars = {'3', '5'})
     void test_listConnectedClients(final char mqttVersion) throws Exception {
         final List<String> listCommand = List.of("ls");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client2");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client3");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client2");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client3");
         mqttCliShell.executeAsync(listCommand)
-                .awaitStdOut(String.format("client1@%s", hivemq.getHost()))
-                .awaitStdOut(String.format("client2@%s", hivemq.getHost()))
-                .awaitStdOut(String.format("client3@%s", hivemq.getHost()));
+                .awaitStdOut(String.format("client1@%s", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("client2@%s", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("client3@%s", HIVE_MQ.getHost()));
     }
 
     @ParameterizedTest
@@ -63,13 +64,13 @@ public class ShellListST {
     @ValueSource(chars = {'3', '5'})
     void test_listConnectedClientsReverse(final char mqttVersion) throws Exception {
         final List<String> listCommand = List.of("ls", "-r");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client2");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client3");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client2");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client3");
         mqttCliShell.executeAsync(listCommand)
-                .awaitStdOut(String.format("client3@%s", hivemq.getHost()))
-                .awaitStdOut(String.format("client2@%s", hivemq.getHost()))
-                .awaitStdOut(String.format("client1@%s", hivemq.getHost()));
+                .awaitStdOut(String.format("client3@%s", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("client2@%s", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("client1@%s", HIVE_MQ.getHost()));
     }
 
     @ParameterizedTest
@@ -77,29 +78,29 @@ public class ShellListST {
     @ValueSource(chars = {'3', '5'})
     void test_listLongConnectedClients(final char mqttVersion) throws Exception {
         final List<String> listCommand = List.of("ls", "-l");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client2");
-        mqttCliShell.connectClient(hivemq, mqttVersion, "client3");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client2");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client3");
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(listCommand);
 
         awaitOutput.awaitStdOut("CONNECTED")
                 .awaitStdOut("client1")
-                .awaitStdOut(hivemq.getHost())
-                .awaitStdOut(String.valueOf(hivemq.getMqttPort()))
+                .awaitStdOut(HIVE_MQ.getHost())
+                .awaitStdOut(String.valueOf(HIVE_MQ.getMqttPort()))
                 .awaitStdOut(MqttVersionConverter.toClientVersion(mqttVersion).name())
                 .awaitStdOut("NO_SSL");
 
         awaitOutput.awaitStdOut("CONNECTED")
                 .awaitStdOut("client2")
-                .awaitStdOut(hivemq.getHost())
-                .awaitStdOut(String.valueOf(hivemq.getMqttPort()))
+                .awaitStdOut(HIVE_MQ.getHost())
+                .awaitStdOut(String.valueOf(HIVE_MQ.getMqttPort()))
                 .awaitStdOut(MqttVersionConverter.toClientVersion(mqttVersion).name())
                 .awaitStdOut("NO_SSL");
 
         awaitOutput.awaitStdOut("CONNECTED")
                 .awaitStdOut("client3")
-                .awaitStdOut(hivemq.getHost())
-                .awaitStdOut(String.valueOf(hivemq.getMqttPort()))
+                .awaitStdOut(HIVE_MQ.getHost())
+                .awaitStdOut(String.valueOf(HIVE_MQ.getMqttPort()))
                 .awaitStdOut(MqttVersionConverter.toClientVersion(mqttVersion).name())
                 .awaitStdOut("NO_SSL");
     }
@@ -110,20 +111,20 @@ public class ShellListST {
     void test_listSubscriptions(final char mqttVersion) throws Exception {
         final List<String> listCommand = List.of("ls", "-s");
 
-        mqttCliShell.connectClient(hivemq, mqttVersion, "subscription-client1");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "subscription-client1");
         mqttCliShell.executeAsync(List.of("sub", "-t", "topic1"))
-                .awaitStdOut(String.format("subscription-client1@%s>", hivemq.getHost()))
+                .awaitStdOut(String.format("subscription-client1@%s>", HIVE_MQ.getHost()))
                 .awaitLog("received SUBACK");
 
-        mqttCliShell.connectClient(hivemq, mqttVersion, "subscription-client2");
+        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "subscription-client2");
         mqttCliShell.executeAsync(List.of("sub", "-t", "topic2"))
-                .awaitStdOut(String.format("subscription-client2@%s>", hivemq.getHost()))
+                .awaitStdOut(String.format("subscription-client2@%s>", HIVE_MQ.getHost()))
                 .awaitLog("received SUBACK");
 
         mqttCliShell.executeAsync(listCommand)
-                .awaitStdOut(String.format("subscription-client1@%s", hivemq.getHost()))
+                .awaitStdOut(String.format("subscription-client1@%s", HIVE_MQ.getHost()))
                 .awaitStdOut("-subscribed topics: [topic1]")
-                .awaitStdOut(String.format("subscription-client2@%s", hivemq.getHost()))
+                .awaitStdOut(String.format("subscription-client2@%s", HIVE_MQ.getHost()))
                 .awaitStdOut("-subscribed topics: [topic2]");
     }
 

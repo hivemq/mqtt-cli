@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.commands.cli.publish;
 
-import com.hivemq.cli.utils.cli.results.ExecutionResult;
+import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.broker.HiveMQ;
 import com.hivemq.cli.utils.cli.MqttCli;
-import com.hivemq.cli.utils.MqttVersionConverter;
+import com.hivemq.cli.utils.cli.results.ExecutionResult;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,10 +36,10 @@ import static com.hivemq.cli.utils.broker.assertions.PublishAssertion.assertPubl
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PublishConnectWebsocketsST {
+class PublishConnectWebsocketsST {
 
     @RegisterExtension
-    private final static HiveMQ hivemq = HiveMQ.builder().withWebsocketEnabled(true).build();
+    private static final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withWebsocketEnabled(true).build();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -45,32 +47,36 @@ public class PublishConnectWebsocketsST {
     void test_websockets(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of(
                 "pub",
-                "-h", hivemq.getHost(),
-                "-p", String.valueOf(hivemq.getWebsocketsPort()),
-                "-V", String.valueOf(mqttVersion),
-                "-i", "cliTest",
-                "-t", "topic",
-                "-m", "message",
+                "-h",
+                HIVEMQ.getHost(),
+                "-p",
+                String.valueOf(HIVEMQ.getWebsocketsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-t",
+                "topic",
+                "-m",
+                "message",
                 "-ws",
                 "-ws:path",
-                hivemq.getWebsocketsPath(),
-                "-d"
-        );
+                HIVEMQ.getWebsocketsPath(),
+                "-d");
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(0, executionResult.getExitCode());
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
         assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
-            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
-        });
+        assertConnectPacket(
+                HIVEMQ.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("topic");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
     }
-
 }
-

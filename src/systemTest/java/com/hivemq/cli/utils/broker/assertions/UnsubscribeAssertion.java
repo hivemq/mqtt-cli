@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.hivemq.cli.utils.broker.assertions;
 
 import com.google.common.collect.ImmutableList;
@@ -37,7 +38,6 @@ public class UnsubscribeAssertion {
     public static void assertUnsubscribePacket(
             final @NotNull UnsubscribePacket unsubscribePacket,
             final @NotNull Consumer<UnsubscribeAssertion> unsubscribeAssertionConsumer) {
-
         final UnsubscribeAssertion unsubscribeAssertion = new UnsubscribeAssertion();
         unsubscribeAssertionConsumer.accept(unsubscribeAssertion);
 
