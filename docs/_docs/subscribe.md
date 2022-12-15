@@ -34,14 +34,15 @@ mqtt sub    -t <topics> [-t <topics>]...
             [-J]
             [-T]
             [-up <userProperties>]... 
-            [-cdsvl]
+            [-dsvl]
             [-h <host>] 
             [-p <port>]                                         
             [-V <version>] 
             [-i <identifier>] 
             [-ip <identifierPrefix>]
             [-k <keepAlive>]  
-            [-se <sessionExpiryInterval>]      
+            [-se <sessionExpiryInterval>]
+            [--[no-]cleanStart]      
             [-Cup <connectUserProperties>]...
             [-ws]
             [-ws:path <webSocketPath>] 
@@ -73,7 +74,7 @@ mqtt sub    -t <topics> [-t <topics>]...
             [--topicAliasMax <topicAliasMaximum>] 
             [--sendTopicAliasMax <sendTopicAliasMaximum>]                                                                                  
             [--[no-]reqProblemInfo] 
-            [--[no-]reqResponseInfo] 
+            [--reqResponseInfo] 
             [--help] 
             [--version]
 ```
@@ -87,9 +88,9 @@ mqtt sub    -t <topics> [-t <topics>]...
 | ``-t``   | ``--topic``| The MQTT topic the client will subscribe to. |
 | ``-q`` | ``--qos`` |  Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 | ``-of``| ``--outputToFile`` | If a file is given print the received publishes to the specified output file. If the file is not present it will be created. |
-| ``-b64``| ``--base64``| Whether the received publish messages will be base64 encoded. | ``False``
-| ``-J``  | ``--jsonOutput`` | Print the received publishes in pretty JSON format. | `False`
-| ``-T``  | ``--showTopics`` | Prepend the specific topic name to the received publish. | `False`
+| ``-b64``| ``--base64``| Whether the received publish messages will be base64 encoded. | ``false``
+| ``-J``  | ``--jsonOutput`` | Print the received publishes in pretty JSON format. | `false`
+| ``-T``  | ``--showTopics`` | Prepend the specific topic name to the received publish. | `false`
 | ``-up``  | ``--userProperty`` | A user property of the subscribe message. |
 
 ***
@@ -103,11 +104,11 @@ mqtt sub    -t <topics> [-t <topics>]...
 | ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``MQTT  v.5.0``
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier given. | ``mqttClient``
-| ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
+|    | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``true``
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60``
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-Cup``  | ``--connectUserProperty`` | A user property of the subscribe message. |
-| ``--ws``  |  | Use WebSocket transport protocol. | ``False``
+| ``--ws``  |  | Use WebSocket transport protocol. | ``false``
 | ``--ws:path``  |  | The path to the WebSocket located at given broker host. | 
 | ``-l`` | | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties) | ``false``
 
@@ -117,7 +118,7 @@ mqtt sub    -t <topics> [-t <topics>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-s``    | ``--secure``  | Whether a default SSL configuration is used. | ``False``
+| ``-s``    | ``--secure``  | Whether a default SSL configuration is used. | ``false``
 | ``-u``   | ``--user`` | Define the username for authentication. |
 | ``-pw``  | ``--password`` | Define the password for authentication directly. <br> If left blank the user will be prompted for the password in console. |
 | ``-pw:env``  |  | Define that the password for authentication is read in from an environment variable. | ``MQTT_CLI_PW`` if option is specified without value
@@ -139,7 +140,7 @@ mqtt sub    -t <topics> [-t <topics>]...
 | ``-We``   | ``--willMessageExpiryInterval``   | Lifetime of the will message in seconds. <br> Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
 | ``-Wm``  | ``--willPayload`` | Payload of the will message. |
 | ``-Wq``   | ``--willQualityOfService`` | QoS level of the will message. | ``0``
-| ``-Wr``   | ``--[no-]willRetain``  | Retain the will message. | ``False``
+| ``-Wr``   | ``--willRetain``  | Retain the will message. | ``false``
 | ``-Wt``  | ``--willTopic`` | Topic of the will message.  |
 | ``-Wcd``  | ``--willCorrelationData`` | Correlation data of the will message  |
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
@@ -160,7 +161,7 @@ mqtt sub    -t <topics> [-t <topics>]...
 |   |  ``--topicAliasMax``  |  The maximum amount of topic aliases the client accepts from the server.  | ``0``
 |   |  ``--sendTopicAliasMax``  |  The maximum amount of topic aliases the client sends to the server.  | ``16``
 |   |  `` --[no-]reqProblemInfo`` |  The client requests problem information from the server.  | ``true``
-|   |  ``--[no-]reqResponseInfo``  | The client requests response information from the server. | ``false``
+|   |  ``--reqResponseInfo``  | The client requests response information from the server. | ``false``
 
 *** 
 

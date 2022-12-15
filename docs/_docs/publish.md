@@ -12,10 +12,10 @@ Publishes a message to one or more topics.
 
 | Command                                              |Explanation                                                              |
 |------------------------------------------------------|-------------------------------------------------------------------------|
-| ``mqtt pub -t test -m "Hello" ``                     | Publish the message ``Hello`` with topic 'topic' using the default settings
+| ``mqtt pub -t test -m "Hello" ``                     | Publish the message ``Hello`` with topic 'test' using the default settings
 | ``mqtt pub -t test1 -t test2 -m "Hello Tests"``      | Publish the message ``Hello Tests`` with topics 'test1' and 'test2'
-| ``mqtt pub -t test -m "Hello" -h localhost -p 1884`` | Publish the message ``Hello`` with topic 'topic' to a broker at localhost:1884|
-| ``mqtt pub -t test -m:file payload.txt``             | Publish the message in payload.txt with topic 'topic' using the default settings
+| ``mqtt pub -t test -m "Hello" -h localhost -p 1884`` | Publish the message ``Hello`` with topic 'test' to a broker at localhost:1884|
+| ``mqtt pub -t test -m:file payload.txt``             | Publish the message in payload.txt with topic 'test' using the default settings
 
 <!---
 See also 
@@ -30,7 +30,8 @@ mqtt pub --help
 
 ``` 
 mqtt pub    -t <topics> [-t <topics>]... 
-            (-m <message> | -m:file <filename>)
+            (-m <message> | -m:file <filename> | -m:empty)
+            [-drsvl] 
             [-cdrsvl] 
             [-q <qos>]...
             [-e <messageExpiryInterval>]          
@@ -46,6 +47,7 @@ mqtt pub    -t <topics> [-t <topics>]...
             [-ip <identifierPrefix>] 
             [-k <keepAlive>] 
             [-se <sessionExpiryInterval>]
+            [--[no-]cleanStart]
             [-Cup <connectUserProperties>]... 
             [-ws]
             [-ws:path <webSocketPath>]
@@ -77,7 +79,7 @@ mqtt pub    -t <topics> [-t <topics>]...
             [--topicAliasMax <topicAliasMaximum>]       
             [--sendTopicAliasMax <sendTopicAliasMaximum>] 
             [--[no-]reqProblemInfo] 
-            [--[no-]reqResponseInfo]  
+            [--reqResponseInfo]  
             [--help] 
             [--version]         
 ```
@@ -91,7 +93,8 @@ mqtt pub    -t <topics> [-t <topics>]...
 | ``-t``      | ``--topic``                  | The MQTT topic to which the message will be published.                                                                                                                                                                                |
 | ``-m``      | ``--message``                | The message which will be published on the topic.                                                                                                                                                                                     |
 | ``-m:file`` | ``--message-file``           | The file whose payload will be published on the topic.                                                                                                                                                                                |
-| ``-r``      | ``--[no-]retain``            | Whether the message will be retained.                                                                                                                                                                                                 | ``False``
+| ``-m:empty`` | ``--message-empty``           | Sets the message to an empty payload.                                                                                                                                                                                |
+| ``-r``      | ``--retain``            | Whether the message will be retained.                                                                                                                                                                                                 | ``false``
 | ``-q``      | ``--qos``                    | Define the quality of service level. If only one QoS is specified it will be used for all topics.<br> You can define a specific QoS level for every topic. The corresponding QoS levels will be matched in order to the given topics. | ``0``
 | ``-e``      | ``--messageExpiryInterval``  | The lifetime of the publish message in seconds.                                                                                                                                                                                       |
 | ``-ct``     | ``--contentType``            | A description of the content of the publish message.                                                                                                                                                                                  |
@@ -99,8 +102,8 @@ mqtt pub    -t <topics> [-t <topics>]...
 | ``-pf``     | ``--payloadFormatIndicator`` | The payload format indicator of the publish message.                                                                                                                                                                                  |
 | ``-rt``     | ``--responseTopic``          | The topic name for the response message of the publish message.                                                                                                                                                                       |
 | ``-up``     | ``--userProperty``           | A user property of the publish message                                                                                                                                                                                                |
-| ``-d``      | ``--debug``                  | Print debug level messages to the console.                                                                                                                                                                                            | ``False``
-| ``-v``      | ``--verbose``                | Print trace level messages to the console.                                                                                                                                                                                            | ``False``
+| ``-d``      | ``--debug``                  | Print debug level messages to the console.                                                                                                                                                                                            | ``false``
+| ``-v``      | ``--verbose``                | Print trace level messages to the console.                                                                                                                                                                                            | ``false``
 | ``-l``      |                              | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)                                                                                                                                                          | ``false``
 
 ***
@@ -114,11 +117,11 @@ mqtt pub    -t <topics> [-t <topics>]...
 | ``-V``   | ``--mqttVersion``| The MQTT version can be set to 3 or 5. | ``5``
 | ``-i``   | ``--identifier`` | A unique client identifier can be defined. | A randomly generated UTF-8 String.
 | ``-ip``  | ``--identifierPrefix``| The prefix for randomly generated client identifiers, if no identifier is given. | ``mqttClient``
-| ``-c``   | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``True``
+|  | ``--[no-]cleanStart`` | Whether the client should start a clean session. | ``true``
 | ``k``     | ``--keepAlive``   |   The keep alive of the client (in seconds) | ``60`` 
 | ``-se``  | ``--sessionExpiryInterval`` | Session expiry value in seconds. | ``0`` (Instant Expiry)
 | ``-Cup``  | ``--connectUserProperty`` | A user property of the connect message. |
-| ``--ws``  |  | Use WebSocket transport protocol. | ``False``
+| ``--ws``  |  | Use WebSocket transport protocol. | ``false``
 | ``--ws:path``  |  | The path to the WebSocket located at given broker host. | 
 
 ***
@@ -127,7 +130,7 @@ mqtt pub    -t <topics> [-t <topics>]...
 
 |Option   |Long Version    | Explanation                                         | Default|
 |---------|----------------|-----------------------------------------------------|---------|
-| ``-s``    | ``--secure``  | Whether a default SSL configuration is used. | ``False``
+| ``-s``    | ``--secure``  | Whether a default SSL configuration is used. | ``false``
 | ``-u``   | ``--user`` | Define the username for authentication. |
 | ``-pw``  | ``--password`` | Define the password for authentication directly. <br> If left blank the user will be prompted for the password in console. |
 | ``-pw:env``  |  | Define that the password for authentication is read in from an environment variable. | ``MQTT_CLI_PW`` if option is specified without value
@@ -149,7 +152,7 @@ mqtt pub    -t <topics> [-t <topics>]...
 | ``-We``   | ``--willMessageExpiryInterval``   | Lifetime of the will message in seconds. <br> Can be disabled by setting it to ``4_294_967_295``| ``4_294_967_295`` (Disabled)
 | ``-Wm``  | ``--willPayload`` | Payload of the will message. |
 | ``-Wq``   | ``--willQualityOfService`` | QoS level of the will message. | ``0``
-| ``-Wr``   | ``--[no-]willRetain``  | Retain the will message. | ``False``
+| ``-Wr``   | ``--willRetain``  | Retain the will message. | ``false``
 | ``-Wt``  | ``--willTopic`` | Topic of the will message.  |
 | ``-Wcd``  | ``--willCorrelationData`` | Correlation data of the will message  |
 | ``-Wct``   | ``--willContentType`` |   Description of the will message's content. |
@@ -170,7 +173,7 @@ mqtt pub    -t <topics> [-t <topics>]...
 |   |  ``--topicAliasMax``  |  The maximum amount of topic aliases the client accepts from the server.  | ``0``
 |   |  ``--sendTopicAliasMax``  |  The maximum amount of topic aliases the client sends to the server.  | ``16``
 |   |  `` --[no-]reqProblemInfo`` |  The client requests problem information from the server.  | ``true``
-|   |  ``--[no-]reqResponseInfo``  | The client requests response information from the server. | ``false``
+|   |  ``--reqResponseInfo``  | The client requests response information from the server. | ``false``
 
 *** 
 

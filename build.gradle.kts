@@ -30,8 +30,8 @@ plugins {
 
 /* ******************** metadata ******************** */
 
-val prevVersion = "4.8.2"
-version = "4.8.3"
+val prevVersion = "4.9.0"
+version = "4.9.1"
 group = "com.hivemq"
 description = "MQTT CLI is a tool that provides a feature rich command line interface for connecting, " +
         "publishing, subscribing, unsubscribing and disconnecting " +
@@ -109,6 +109,12 @@ dependencies {
     implementation("io.netty:netty-codec-http:${property("netty.version")}")
     implementation("io.netty:netty-transport-native-epoll:${property("netty.version")}:linux-x86_64")
     implementation("com.opencsv:opencsv:${property("open-csv.version")}")
+    constraints {
+        implementation("org.apache.commons:commons-text:1.10.0") {
+            because("Force a commons-text version that does not contain CVE-2022-42889, " +
+                    "because opencsv brings the vulnerable version 1.9 as transitive dependency")
+        }
+    }
 }
 
 /* ******************** OpenAPI ******************** */
@@ -271,6 +277,8 @@ val systemTestRuntimeOnly: Configuration by configurations.getting {
 dependencies {
     systemTestImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemq-testcontainer.version")}")
     systemTestImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
+    systemTestImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
+    systemTestImplementation("com.hivemq:hivemq-community-edition-embedded:${property("hivemq-community-edition-embedded.version")}")
 }
 
 tasks.named<JavaCompile>("compileSystemTestJava") {
@@ -292,6 +300,7 @@ val systemTest by tasks.registering(Test::class) {
     dependsOn(tasks.shadowJar)
     systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
             tasks.shadowJar.map { it.outputs.files.singleFile }.get()
+    systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
 }
 
 val systemTestNative by tasks.registering(Test::class) {
@@ -307,6 +316,7 @@ val systemTestNative by tasks.registering(Test::class) {
     dependsOn(tasks.nativeCompile)
     systemProperties["cliExec"] =
         tasks.nativeCompile.map { it.outputs.files.singleFile }.get().resolve(project.name).absolutePath
+    systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
     testLogging {
         showCauses = true
         showExceptions = true
@@ -611,7 +621,7 @@ ospackage {
 }
 
 tasks.buildDeb {
-    requires("default-jre").or("java8-runtime")
+    requires("java8-runtime").or("java8-runtime-headless")
 }
 
 tasks.buildRpm {

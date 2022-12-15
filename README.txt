@@ -102,7 +102,7 @@ Commands:
 - con, connect     Connects an MQTT client
 - dis, disconnect  Disconnects an MQTT client
 - switch           Switch the current context
-- ls               List all connected clients with their respective identifieres
+- ls               List all connected clients of this mqtt-cli session with their respective identifiers
 - cls, clear       Clears the screen
 - exit
 
@@ -117,7 +117,7 @@ Commands:
 -  unsub, unsubscribe  Unsubscribes this MQTT client from a list of topics
 -  dis, disconnect     Disconnects this MQTT client
 -  switch              Switch the current context
--  ls, list            List all connected clients with their respective identifiers
+-  ls, list            List all connected clients of this mqtt-cli session with their respective identifiers
 -  cls, clear          Clears the screen
 -  exit                Exit the current context
 
