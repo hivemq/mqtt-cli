@@ -37,11 +37,12 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
     private @Nullable String contextName;
 
     @CommandLine.Option(names = {"-i", "--identifier"},
-            description = "The client identifier UTF-8 String (default randomly generated string)")
+                        description = "The client identifier UTF-8 String (default randomly generated string)")
     private @Nullable String identifier;
 
-    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost",
-            description = "The hostname of the message broker (default 'localhost')")
+    @CommandLine.Option(names = {"-h", "--host"},
+                        defaultValue = "localhost",
+                        description = "The hostname of the message broker (default 'localhost')")
     private @Nullable String host;
 
     @Inject
@@ -95,7 +96,16 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
 
     @Override
     public @NotNull String toString() {
-        return "ContextSwitchCommand{" + "contextName='" + contextName + '\'' + ", identifier='" + identifier + '\'' +
-                ", host='" + host + '\'' + '}';
+        return "ContextSwitchCommand{" +
+                "contextName='" +
+                contextName +
+                '\'' +
+                ", identifier='" +
+                identifier +
+                '\'' +
+                ", host='" +
+                host +
+                '\'' +
+                '}';
     }
 }

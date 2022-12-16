@@ -32,22 +32,24 @@ import java.util.Arrays;
 public class DisconnectOptions {
 
     @CommandLine.Option(names = {"-h", "--host"},
-            description = "The hostname of the message broker (default 'localhost')")
+                        description = "The hostname of the message broker (default 'localhost')")
     private @Nullable String host;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-i", "--identifier"},
-            description = "The client identifier UTF-8 String (default randomly generated string)")
+                        description = "The client identifier UTF-8 String (default randomly generated string)")
     private @Nullable String clientIdentifier;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false",
-            description = "Disconnect all connected clients")
+    @CommandLine.Option(names = {"-a", "--all"},
+                        defaultValue = "false",
+                        description = "Disconnect all connected clients")
     private boolean disconnectAll;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
-            description = "The session expiry of the disconnect (default: 0)")
+    @CommandLine.Option(names = {"-e", "--sessionExpiryInterval"},
+                        converter = UnsignedIntConverter.class,
+                        description = "The session expiry of the disconnect (default: 0)")
     private @Nullable Long sessionExpiryInterval;
 
     @SuppressWarnings("unused")
@@ -55,8 +57,9 @@ public class DisconnectOptions {
     private @Nullable String reasonString;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property of the disconnect message")
+    @CommandLine.Option(names = {"-up", "--userProperty"},
+                        converter = Mqtt5UserPropertyConverter.class,
+                        description = "A user property of the disconnect message")
     private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
 
     public boolean isDisconnectAll() {
@@ -105,8 +108,22 @@ public class DisconnectOptions {
 
     @Override
     public @NotNull String toString() {
-        return "DisconnectOptions{" + "host='" + host + '\'' + ", identifier='" + clientIdentifier + '\'' +
-                ", disconnectAll=" + disconnectAll + ", sessionExpiryInterval=" + sessionExpiryInterval +
-                ", reasonString='" + reasonString + '\'' + ", userProperties=" + Arrays.toString(userProperties) + '}';
+        return "DisconnectOptions{" +
+                "host='" +
+                host +
+                '\'' +
+                ", identifier='" +
+                clientIdentifier +
+                '\'' +
+                ", disconnectAll=" +
+                disconnectAll +
+                ", sessionExpiryInterval=" +
+                sessionExpiryInterval +
+                ", reasonString='" +
+                reasonString +
+                '\'' +
+                ", userProperties=" +
+                Arrays.toString(userProperties) +
+                '}';
     }
 }

@@ -42,39 +42,41 @@ public class SubscribeOptions {
     private @NotNull String @NotNull [] topics;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
-    @CommandLine.Option(names = {"-q", "--qos"}, converter = MqttQosConverter.class, defaultValue = "2",
-            description = "Quality of service for the corresponding topics (default for all: 2)")
+    @CommandLine.Option(names = {"-q", "--qos"},
+                        converter = MqttQosConverter.class,
+                        defaultValue = "2",
+                        description = "Quality of service for the corresponding topics (default for all: 2)")
     private @NotNull MqttQos @NotNull [] qos;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property of the subscribe message")
+    @CommandLine.Option(names = {"-up", "--userProperty"},
+                        converter = Mqtt5UserPropertyConverter.class,
+                        description = "A user property of the subscribe message")
     private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-of", "--outputToFile"},
-            description = "A file to which the received publish messages will be written")
+                        description = "A file to which the received publish messages will be written")
     private @Nullable File outputFile;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-oc", "--outputToConsole"}, hidden = true, defaultValue = "true",
-            description = "The received messages will be written to the console (default: true)")
-    private boolean printToSTDOUT;
-
-    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-b64", "--base64"},
-            description = "Specify the encoding of the received messages as Base64 (default: false)")
+                        description = "Specify the encoding of the received messages as Base64 (default: false)")
     private boolean base64;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-J", "--jsonOutput"}, defaultValue = "false",
-            description = "Print the received publishes in pretty JSON format")
+    @CommandLine.Option(names = {"-J", "--jsonOutput"},
+                        defaultValue = "false",
+                        description = "Print the received publishes in pretty JSON format")
     private boolean jsonOutput;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-T", "--showTopics"}, defaultValue = "false",
-            description = "Prepend the specific topic name to the received publish")
+    @CommandLine.Option(names = {"-T", "--showTopics"},
+                        defaultValue = "false",
+                        description = "Prepend the specific topic name to the received publish")
     private boolean showTopics;
+
+    private boolean printToSTDOUT = false;
 
     public SubscribeOptions() {
         setDefaultOptions();
@@ -96,9 +98,13 @@ public class SubscribeOptions {
         return printToSTDOUT;
     }
 
-    public boolean isBase64() {return base64;}
+    public boolean isBase64() {
+        return base64;
+    }
 
-    public boolean isJsonOutput() {return jsonOutput;}
+    public boolean isJsonOutput() {
+        return jsonOutput;
+    }
 
     public @Nullable Mqtt5UserProperties getUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(userProperties);
@@ -163,9 +169,23 @@ public class SubscribeOptions {
 
     @Override
     public @NotNull String toString() {
-        return "SubscribeOptions{" + "topics=" + Arrays.toString(topics) + ", qos=" + Arrays.toString(qos) +
-                ", userProperties=" + Arrays.toString(userProperties) + ", outputFile=" + outputFile +
-                ", printToSTDOUT=" + printToSTDOUT + ", base64=" + base64 + ", jsonOutput=" + jsonOutput +
-                ", showTopics=" + showTopics + '}';
+        return "SubscribeOptions{" +
+                "topics=" +
+                Arrays.toString(topics) +
+                ", qos=" +
+                Arrays.toString(qos) +
+                ", userProperties=" +
+                Arrays.toString(userProperties) +
+                ", outputFile=" +
+                outputFile +
+                ", printToSTDOUT=" +
+                printToSTDOUT +
+                ", base64=" +
+                base64 +
+                ", jsonOutput=" +
+                jsonOutput +
+                ", showTopics=" +
+                showTopics +
+                '}';
     }
 }

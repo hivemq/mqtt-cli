@@ -26,8 +26,10 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "unsub", aliases = "unsubscribe",
-        description = "Unsubscribe this MQTT client from a list of topics", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "unsub",
+                     aliases = "unsubscribe",
+                     description = "Unsubscribe this MQTT client from a list of topics",
+                     mixinStandardHelpOptions = true)
 public class ContextUnsubscribeCommand extends ShellContextCommand implements Callable<Integer> {
 
     @CommandLine.Mixin

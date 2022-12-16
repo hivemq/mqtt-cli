@@ -30,8 +30,8 @@ public class PasswordFileToByteBufferConverter implements CommandLine.ITypeConve
     public @NotNull ByteBuffer convert(final @NotNull String value) throws Exception {
         final FileConverter fileConverter = new FileConverter();
         final File file = fileConverter.convert(value);
-        final BufferedReader in = Files.newBufferedReader(file.toPath());
-
-        return ByteBuffer.wrap(in.readLine().getBytes());
+        try (final BufferedReader in = Files.newBufferedReader(file.toPath())) {
+            return ByteBuffer.wrap(in.readLine().getBytes());
+        }
     }
 }

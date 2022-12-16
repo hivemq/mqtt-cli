@@ -373,7 +373,7 @@ class PublishST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
         assertEquals(2, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput().contains("Missing required option: '--topic <topics>'"));
+        assertTrue(executionResult.getErrorOutput().contains("Missing required option: '--topic=<topics>'"));
     }
 
     @Test
@@ -386,7 +386,7 @@ class PublishST {
 
         assertEquals(2, executionResult.getExitCode());
         assertTrue(executionResult.getErrorOutput()
-                .contains("Error: Missing required argument (specify one of these):"));
+                .contains("Missing required argument (specify one of these):"));
     }
 
     private void assertPublishOutput(final @NotNull ExecutionResult executionResult) {

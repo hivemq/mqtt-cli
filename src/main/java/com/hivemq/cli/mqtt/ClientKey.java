@@ -16,6 +16,7 @@
 package com.hivemq.cli.mqtt;
 
 import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.MqttClientConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,9 +41,30 @@ public class ClientKey {
                 client.getConfig().getServerHost());
     }
 
+    public static ClientKey of(final @NotNull MqttClientConfig clientConfig) {
+        return new ClientKey(clientConfig.getClientIdentifier().map(Objects::toString).orElse(""),
+                clientConfig.getServerHost());
+    }
 
     @Override
-    public String toString() {
-        return "Client{" + "clientIdentifier='" + clientIdentifier + '\'' + ", hostname='" + hostname + '\'' + '}';
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final ClientKey clientKey = (ClientKey) o;
+        return Objects.equals(clientIdentifier, clientKey.clientIdentifier) && hostname.equals(clientKey.hostname);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(clientIdentifier, hostname);
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "client{" + "clientIdentifier='" + clientIdentifier + '\'' + ", hostname='" + hostname + '\'' + '}';
     }
 }

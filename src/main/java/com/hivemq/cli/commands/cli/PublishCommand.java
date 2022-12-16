@@ -31,13 +31,16 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "pub", versionProvider = MqttCLIMain.CLIVersionProvider.class, aliases = "publish",
-        description = "Publish a message to a list of topics.")
+@CommandLine.Command(name = "pub",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     aliases = "publish",
+                     description = "Publish a message to a list of topics.")
 public class PublishCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
-            description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
+    @CommandLine.Option(names = {"-l"},
+                        defaultValue = "false",
+                        description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
 
     @CommandLine.Mixin
@@ -61,7 +64,6 @@ public class PublishCommand implements Callable<Integer> {
 
     @Override
     public @NotNull Integer call() {
-
         String logLevel = "warn";
         if (debugOptions.isDebug()) {
             logLevel = "debug";
@@ -98,8 +100,19 @@ public class PublishCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "PublishCommand{" + "logToLogfile=" + logToLogfile + ", connectOptions=" + connectOptions +
-                ", publishOptions=" + publishOptions + ", debugOptions=" + debugOptions + ", defaultOptions=" +
-                defaultOptions + ", mqttClientExecutor=" + mqttClientExecutor + '}';
+        return "PublishCommand{" +
+                "logToLogfile=" +
+                logToLogfile +
+                ", connectOptions=" +
+                connectOptions +
+                ", publishOptions=" +
+                publishOptions +
+                ", debugOptions=" +
+                debugOptions +
+                ", defaultOptions=" +
+                defaultOptions +
+                ", mqttClientExecutor=" +
+                mqttClientExecutor +
+                '}';
     }
 }

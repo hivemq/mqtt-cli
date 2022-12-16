@@ -28,8 +28,10 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "con", aliases = "connect", description = "Connect an MQTT client",
-        abbreviateSynopsis = true)
+@CommandLine.Command(name = "con",
+                     aliases = "connect",
+                     description = "Connect an MQTT client",
+                     abbreviateSynopsis = true)
 public class ShellConnectCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
@@ -66,7 +68,13 @@ public class ShellConnectCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ShellConnectCommand{" + "connectOptions=" + connectOptions + ", defaultOptions=" + defaultOptions +
-                ", mqttClientExecutor=" + mqttClientExecutor + '}';
+        return "ShellConnectCommand{" +
+                "connectOptions=" +
+                connectOptions +
+                ", defaultOptions=" +
+                defaultOptions +
+                ", mqttClientExecutor=" +
+                mqttClientExecutor +
+                '}';
     }
 }

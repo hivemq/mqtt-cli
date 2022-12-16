@@ -43,11 +43,17 @@ import java.io.PrintWriter;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "shell", aliases = "sh", versionProvider = MqttCLIMain.CLIVersionProvider.class,
-        description = "Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.",
-        footer = {"", "@|bold Press Ctl-C to exit.|@"}, synopsisHeading = "%n@|bold Usage|@:  ",
-        descriptionHeading = "%n", optionListHeading = "%n@|bold Options|@:%n",
-        commandListHeading = "%n@|bold Commands|@:%n", separator = " ", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "shell",
+                     aliases = "sh",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     description = "Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.",
+                     footer = {"", "@|bold Press Ctl-C to exit.|@"},
+                     synopsisHeading = "%n@|bold Usage|@:  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options|@:%n",
+                     commandListHeading = "%n@|bold Commands|@:%n",
+                     separator = " ",
+                     mixinStandardHelpOptions = true)
 public class ShellCommand implements Callable<Integer> {
 
     private static final @NotNull String DEFAULT_PROMPT = "mqtt> ";
@@ -64,9 +70,9 @@ public class ShellCommand implements Callable<Integer> {
     private static boolean exitShell = false;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
-            description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
-            order = 1)
+    @CommandLine.Option(names = {"-l"},
+                        defaultValue = "false",
+                        description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
@@ -114,11 +120,9 @@ public class ShellCommand implements Callable<Integer> {
             TERMINAL_WRITER.println(shellCommandLine.getUsageMessage());
             TERMINAL_WRITER.flush();
 
-            TERMINAL_WRITER.printf(
-                    "Using default values from properties file %s:\n",
+            TERMINAL_WRITER.printf("Using default values from properties file %s:\n",
                     Objects.requireNonNull(defaultCLIProperties.getFile()).getPath());
-            TERMINAL_WRITER.printf(
-                    "Host: %s, Port: %d, Mqtt-Version %s, Logfile-Debug-Level: %s\n",
+            TERMINAL_WRITER.printf("Host: %s, Port: %d, Mqtt-Version %s, Logfile-Debug-Level: %s\n",
                     defaultCLIProperties.getHost(),
                     defaultCLIProperties.getPort(),
                     defaultCLIProperties.getMqttVersion(),
@@ -198,7 +202,16 @@ public class ShellCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ShellCommand{" + "logToLogfile=" + logToLogfile + ", spec=" + spec + ", defaultCLIProperties=" +
-                defaultCLIProperties + ", logfilePath='" + logfilePath + '\'' + '}';
+        return "ShellCommand{" +
+                "logToLogfile=" +
+                logToLogfile +
+                ", spec=" +
+                spec +
+                ", defaultCLIProperties=" +
+                defaultCLIProperties +
+                ", logfilePath='" +
+                logfilePath +
+                '\'' +
+                '}';
     }
 }

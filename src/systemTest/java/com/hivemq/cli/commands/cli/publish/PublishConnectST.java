@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PublishConnectST {
@@ -71,7 +72,7 @@ class PublishConnectST {
                 "-d");
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
-        assertEquals(0, executionResult.getExitCode());
+        assertEquals(1, executionResult.getExitCode());
         assertTrue(
                 executionResult.getErrorOutput().contains("unreachable-host: Temporary failure in name resolution") ||
                         executionResult.getErrorOutput().contains("nodename nor servname provided, or not known"));
@@ -95,7 +96,7 @@ class PublishConnectST {
                 "-d");
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
-        assertEquals(0, executionResult.getExitCode());
+        assertEquals(1, executionResult.getExitCode());
         assertTrue(executionResult.getErrorOutput().contains("readAddress(..) failed: Connection reset by peer") ||
                 executionResult.getErrorOutput().contains("Connection refused"));
     }
@@ -103,7 +104,7 @@ class PublishConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectCleanStart(final char mqttVersion) throws Exception {
+    void test_connectNoCleanStart(final char mqttVersion) throws Exception {
         final List<String> publishCommand = defaultPublishCommand(mqttVersion);
         publishCommand.add("--no-cleanStart");
 
@@ -118,6 +119,26 @@ class PublishConnectST {
             }
         });
     }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectCleanStart(final char mqttVersion) throws Exception {
+        final List<String> publishCommand = defaultPublishCommand(mqttVersion);
+        publishCommand.add("--cleanStart");
+
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+        assertPublishOutput(executionResult);
+
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
+            connectAssertion.setCleanStart(true);
+            if (mqttVersion == '3') {
+                connectAssertion.setSessionExpiryInterval(0L);
+            }
+        });
+    }
+
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -224,7 +245,7 @@ class PublishConnectST {
         if (mqttVersion == '3') {
             assertTrue(executionResult.getErrorOutput()
                     .contains("Password-Only Authentication is not allowed in MQTT 3"));
-            assertEquals(0, executionResult.getExitCode());
+            assertEquals(1, executionResult.getExitCode());
         } else {
             assertPublishOutput(executionResult);
             assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
@@ -247,7 +268,7 @@ class PublishConnectST {
         if (mqttVersion == '3') {
             assertTrue(executionResult.getErrorOutput()
                     .contains("Password-Only Authentication is not allowed in MQTT 3"));
-            assertEquals(0, executionResult.getExitCode());
+            assertEquals(1, executionResult.getExitCode());
         } else {
             assertPublishOutput(executionResult);
             assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
@@ -274,7 +295,7 @@ class PublishConnectST {
         if (mqttVersion == '3') {
             assertTrue(executionResult.getErrorOutput()
                     .contains("Password-Only Authentication is not allowed in MQTT 3"));
-            assertEquals(0, executionResult.getExitCode());
+            assertEquals(1, executionResult.getExitCode());
         } else {
             assertPublishOutput(executionResult);
             assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
@@ -502,9 +523,32 @@ class PublishConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectRequestProblemInformation(final char mqttVersion) throws Exception {
+    void test_connectNoRequestProblemInformation(final char mqttVersion) throws Exception {
         final List<String> publishCommand = defaultPublishCommand(mqttVersion);
         publishCommand.add("--no-reqProblemInfo");
+
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+        assertPublishOutput(executionResult);
+
+        if (mqttVersion == '3') {
+            assertFalse(executionResult.getErrorOutput()
+                    .contains("Restriction request problem information was set but is unused in MQTT Version MQTT_3_1_1"));
+        }
+
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
+            if (mqttVersion == '5') {
+                connectAssertion.setRequestProblemInformation(false);
+            }
+        });
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectRequestProblemInformation(final char mqttVersion) throws Exception {
+        final List<String> publishCommand = defaultPublishCommand(mqttVersion);
+        publishCommand.add("--reqProblemInfo");
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
@@ -517,7 +561,7 @@ class PublishConnectST {
         assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
-                connectAssertion.setRequestProblemInformation(false);
+                connectAssertion.setRequestProblemInformation(true);
             }
         });
     }

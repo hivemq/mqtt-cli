@@ -29,8 +29,7 @@ public class IntersectionUtil {
     public static boolean intersects(final @NotNull MqttTopicFilter filterA, final @NotNull MqttTopicFilter filterB) {
         // Topics are equal (fast evaluation)
         if (filterA.matches(filterB) || filterB.matches(filterA)) {
-            Logger.debug(
-                    "Topic filter \"{}\" matches \"{}\" and therefore they intersect.",
+            Logger.debug("Topic filter \"{}\" matches \"{}\" and therefore they intersect.",
                     filterA.toString(),
                     filterB.toString());
             return true;
@@ -54,8 +53,7 @@ public class IntersectionUtil {
 
         if (filterALevelSize > filterBLevelSize) { // FilterB is smaller
             if (!filterB.containsMultiLevelWildcard()) {
-                Logger.debug(
-                        "Topic filter \"{}\" has less levels than topic filter \"{}\" " +
+                Logger.debug("Topic filter \"{}\" has less levels than topic filter \"{}\" " +
                                 "and does not contain a multi level wildcard. Therefore, it is disjoint.",
                         filterB.toString(),
                         filterA.toString());
@@ -67,8 +65,7 @@ public class IntersectionUtil {
                         final List<String> filterBIntersectedLevels = filterBLevels.subList(0, levelIndex);
                         final String filterADisjointLevel = filterALevels.get(levelIndex);
                         final String filterBDisjointLevel = filterBLevels.get(levelIndex);
-                        Logger.debug(
-                                "Topic filters intersected up to level {} (\"{}\"<=>\"{}\") " +
+                        Logger.debug("Topic filters intersected up to level {} (\"{}\"<=>\"{}\") " +
                                         "but disjoint at level {} with \"{}\"<=/=>\"{}\"",
                                 levelIndex,
                                 String.join("/", filterAIntersectedLevels),
@@ -82,8 +79,7 @@ public class IntersectionUtil {
             }
         } else if (filterALevelSize < filterBLevelSize) { // FilterA is smaller
             if (!filterA.containsMultiLevelWildcard()) {
-                Logger.debug(
-                        "Topic filter \"{}\" has less levels than topic filter \"{}\" " +
+                Logger.debug("Topic filter \"{}\" has less levels than topic filter \"{}\" " +
                                 "and does not contain a multi level wildcard. Therefore, it is disjoint.",
                         filterA.toString(),
                         filterB.toString());
@@ -95,8 +91,7 @@ public class IntersectionUtil {
                         final List<String> filterBIntersectedLevels = filterBLevels.subList(0, levelIndex);
                         final String filterADisjointLevel = filterALevels.get(levelIndex);
                         final String filterBDisjointLevel = filterBLevels.get(levelIndex);
-                        Logger.debug(
-                                "Topic filters intersected up to level {} (\"{}\"<=>\"{}\") " +
+                        Logger.debug("Topic filters intersected up to level {} (\"{}\"<=>\"{}\") " +
                                         "but disjoint at level {} with \"{}\"<=/=>\"{}\"",
                                 levelIndex,
                                 String.join("/", filterAIntersectedLevels),
@@ -115,8 +110,7 @@ public class IntersectionUtil {
                     final List<String> filterBIntersectedLevels = filterBLevels.subList(0, levelIndex + 1);
                     final String filterADisjointLevel = filterALevels.get(levelIndex);
                     final String filterBDisjointLevel = filterBLevels.get(levelIndex);
-                    Logger.debug(
-                            "Topic filters intersected up to level {} (\"{}\"<=>\"{}\") " +
+                    Logger.debug("Topic filters intersected up to level {} (\"{}\"<=>\"{}\") " +
                                     "but disjoint at level {} with \"{}\"<=/=>\"{}\"",
                             levelIndex,
                             String.join("/", filterAIntersectedLevels),

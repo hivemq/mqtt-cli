@@ -37,8 +37,9 @@ public class UnsubscribeOptions {
     private @NotNull String @NotNull [] topics;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-up", "--userProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property for the unsubscribe message")
+    @CommandLine.Option(names = {"-up", "--userProperty"},
+                        converter = Mqtt5UserPropertyConverter.class,
+                        description = "A user property for the unsubscribe message")
     private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
 
     public UnsubscribeOptions() {
@@ -71,8 +72,7 @@ public class UnsubscribeOptions {
     public void logUnusedUnsubscribeOptions(final @NotNull MqttVersion mqttVersion) {
         if (mqttVersion == MqttVersion.MQTT_3_1_1) {
             if (userProperties != null) {
-                Logger.warn(
-                        "Unsubscribe user properties were set but are unused in MQTT Version {}",
+                Logger.warn("Unsubscribe user properties were set but are unused in MQTT Version {}",
                         MqttVersion.MQTT_3_1_1);
             }
         }

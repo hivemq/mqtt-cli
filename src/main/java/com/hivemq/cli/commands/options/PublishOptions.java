@@ -71,9 +71,7 @@ public class PublishOptions {
     private @Nullable Mqtt5PayloadFormatIndicator payloadFormatIndicator;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-ct", "--contentType"},
-                        description = "A description of publish message's content",
-                        order = 1)
+    @CommandLine.Option(names = {"-ct", "--contentType"}, description = "A description of publish message's content")
     private @Nullable String contentType;
 
     @SuppressWarnings("unused")

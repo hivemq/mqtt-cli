@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hivemq.cli.utils;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -26,11 +26,17 @@ public class OrphanCleanupProcess {
     public static void main(final String[] args) throws ExecutionException, InterruptedException, TimeoutException {
         final String jvmProcessId = args[0];
         final String childProcessId = args[1];
-        final ProcessHandle jvmProcess = ProcessHandle.of(Long.parseLong(jvmProcessId)).get();
-        final ProcessHandle childProcess = ProcessHandle.of(Long.parseLong(childProcessId)).get();
-        final CompletableFuture<ProcessHandle> future = jvmProcess.onExit().whenComplete((processHandle, throwable) -> {
-            childProcess.destroyForcibly();
-        });
+        final Optional<ProcessHandle> jvmProcess = ProcessHandle.of(Long.parseLong(jvmProcessId));
+        final Optional<ProcessHandle> childProcess = ProcessHandle.of(Long.parseLong(childProcessId));
+        final CompletableFuture<ProcessHandle> future;
+        if (jvmProcess.isPresent() && childProcess.isPresent()) {
+            future = jvmProcess.get().onExit().whenComplete((processHandle, throwable) -> childProcess.get().destroyForcibly());
+        } else if (jvmProcess.isEmpty() && childProcess.isPresent()) {
+            childProcess.get().destroyForcibly();
+            future = CompletableFuture.completedFuture(null);
+        } else {
+            future = CompletableFuture.completedFuture(null);
+        }
         System.out.println('X');
         future.get(300, TimeUnit.SECONDS);
     }

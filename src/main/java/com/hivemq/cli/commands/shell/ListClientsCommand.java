@@ -26,12 +26,18 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-@CommandLine.Command(name = "ls", aliases = "list",
-        description = "List all connected clients with their respective identifiers", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "ls",
+                     aliases = "list",
+                     description = "List all connected clients with their respective identifiers",
+                     mixinStandardHelpOptions = true)
 public class ListClientsCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
@@ -43,8 +49,9 @@ public class ListClientsCommand implements Callable<Integer> {
     private boolean doNotSort;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-r", "--reverse"}, defaultValue = "false",
-            description = "reverse order while sorting")
+    @CommandLine.Option(names = {"-r", "--reverse"},
+                        defaultValue = "false",
+                        description = "reverse order while sorting")
     private boolean reverse;
 
     @SuppressWarnings("unused")
@@ -52,8 +59,9 @@ public class ListClientsCommand implements Callable<Integer> {
     private boolean longOutput;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false",
-            description = "list subscribed topics of clients")
+    @CommandLine.Option(names = {"-s", "--subscriptions"},
+                        defaultValue = "false",
+                        description = "list subscribed topics of clients")
     private boolean listSubscriptions;
 
     @Inject
@@ -102,17 +110,30 @@ public class ListClientsCommand implements Callable<Integer> {
                     .max(Integer::compareTo)
                     .orElse("NO_SSL".length());
 
-            final String format =
-                    "%-" + longestState + "s " + "%02d:%02d:%02d " + "%-" + longestID + "s " + "%-" + longestHost +
-                            "s " + "%5d " + "%-" + longestVersion + "s " + "%-" + longestSSLVersion + "s\n";
+            final String format = "%-" +
+                    longestState +
+                    "s " +
+                    "%02d:%02d:%02d " +
+                    "%-" +
+                    longestID +
+                    "s " +
+                    "%-" +
+                    longestHost +
+                    "s " +
+                    "%5d " +
+                    "%-" +
+                    longestVersion +
+                    "s " +
+                    "%-" +
+                    longestSSLVersion +
+                    "s\n";
 
             for (final ClientData clientData : sortedClientData) {
                 final MqttClient client = clientData.getClient();
                 final LocalDateTime dateTime = clientData.getCreationTime();
                 final String connectionState = client.getState().toString();
 
-                writer.printf(
-                        format,
+                writer.printf(format,
                         connectionState,
                         dateTime.getHour(),
                         dateTime.getMinute(),
@@ -174,7 +195,17 @@ public class ListClientsCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ListClientsCommand{" + "sortByTime=" + sortByTime + ", doNotSort=" + doNotSort + ", reverse=" +
-                reverse + ", longOutput=" + longOutput + ", listSubscriptions=" + listSubscriptions + '}';
+        return "ListClientsCommand{" +
+                "sortByTime=" +
+                sortByTime +
+                ", doNotSort=" +
+                doNotSort +
+                ", reverse=" +
+                reverse +
+                ", longOutput=" +
+                longOutput +
+                ", listSubscriptions=" +
+                listSubscriptions +
+                '}';
     }
 }

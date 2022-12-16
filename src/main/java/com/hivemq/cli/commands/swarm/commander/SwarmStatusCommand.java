@@ -37,10 +37,13 @@ import java.io.PrintStream;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "status",
-        description = "Check the status of HiveMQ Swarm. (READY, STARTING, RUNNING, STOPPING).",
-        synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class,
-        mixinStandardHelpOptions = true)
+                     description = "Check the status of HiveMQ Swarm. (READY, STARTING, RUNNING, STOPPING).",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class SwarmStatusCommand implements Callable<Integer> {
 
     public enum OutputFormat {
@@ -49,8 +52,9 @@ public class SwarmStatusCommand implements Callable<Integer> {
     }
 
     @SuppressWarnings("FieldMayBeFinal")
-    @CommandLine.Option(names = {"--format"}, defaultValue = "pretty",
-            description = "The export output format (JSON, PRETTY). Default=PRETTY.", order = 2)
+    @CommandLine.Option(names = {"--format"},
+                        defaultValue = "pretty",
+                        description = "The export output format (JSON, PRETTY). Default=PRETTY.")
     private @NotNull OutputFormat format = OutputFormat.PRETTY;
 
     @CommandLine.Mixin
@@ -122,15 +126,15 @@ public class SwarmStatusCommand implements Callable<Integer> {
                     return -1;
                 }
                 if (format == OutputFormat.JSON) {
-                    final CommanderStatusWithRun commanderStatusWithRun = new CommanderStatusWithRun(
-                            commanderStatus.getCommanderStatus(),
-                            runId,
-                            runResponse.getScenarioId(),
-                            runResponse.getScenarioName(),
-                            runResponse.getScenarioDescription(),
-                            runResponse.getScenarioType(),
-                            runResponse.getRunStatus(),
-                            runResponse.getScenarioStage());
+                    final CommanderStatusWithRun commanderStatusWithRun =
+                            new CommanderStatusWithRun(commanderStatus.getCommanderStatus(),
+                                    runId,
+                                    runResponse.getScenarioId(),
+                                    runResponse.getScenarioName(),
+                                    runResponse.getScenarioDescription(),
+                                    runResponse.getScenarioType(),
+                                    runResponse.getRunStatus(),
+                                    runResponse.getScenarioStage());
                     out.println(gson.toJson(commanderStatusWithRun));
                 } else if (format == OutputFormat.PRETTY) {
                     out.println("Status: " + commanderStatus.getCommanderStatus());
@@ -156,8 +160,21 @@ public class SwarmStatusCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmStatusCommand{" + "format=" + format + ", swarmOptions=" + swarmOptions + ", gson=" + gson +
-                ", runsApi=" + runsApi + ", commanderApi=" + commanderApi + ", errorTransformer=" + errorTransformer +
-                ", out=" + out + '}';
+        return "SwarmStatusCommand{" +
+                "format=" +
+                format +
+                ", swarmOptions=" +
+                swarmOptions +
+                ", gson=" +
+                gson +
+                ", runsApi=" +
+                runsApi +
+                ", commanderApi=" +
+                commanderApi +
+                ", errorTransformer=" +
+                errorTransformer +
+                ", out=" +
+                out +
+                '}';
     }
 }

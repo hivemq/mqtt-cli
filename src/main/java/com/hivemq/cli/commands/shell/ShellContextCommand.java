@@ -26,11 +26,15 @@ import javax.inject.Inject;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(sortOptions = false, name = "> ",
-        description = "In context mode all MQTT commands relate to the currently active client.",
-        synopsisHeading = "%n@|bold Usage|@:  ",
-        synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch | ls | cls | exit }", descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options|@:%n", commandListHeading = "%n@|bold Commands|@:%n", separator = " ")
+@CommandLine.Command(sortOptions = false,
+                     name = "> ",
+                     description = "In context mode all MQTT commands relate to the currently active client.",
+                     synopsisHeading = "%n@|bold Usage|@:  ",
+                     synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch | ls | cls | exit }",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options|@:%n",
+                     commandListHeading = "%n@|bold Commands|@:%n",
+                     separator = " ")
 public class ShellContextCommand implements Callable<Integer> {
 
     public static @Nullable MqttClient contextClient;

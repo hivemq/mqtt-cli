@@ -102,8 +102,8 @@ dependencies {
     implementation("org.tinylog:tinylog-api:${property("tinylog.version")}")
     implementation("org.tinylog:tinylog-impl:${property("tinylog.version")}")
     implementation("org.jetbrains:annotations:${property("jetbrains-annotations.version")}")
-    implementation("org.bouncycastle:bcprov-jdk15on:${property("bouncycastle.version")}")
-    implementation("org.bouncycastle:bcpkix-jdk15on:${property("bouncycastle.version")}")
+    implementation("org.bouncycastle:bcprov-jdk18on:${property("bouncycastle.version")}")
+    implementation("org.bouncycastle:bcpkix-jdk18on:${property("bouncycastle.version")}")
     implementation("com.hivemq:hivemq-mqtt-client:${property("hivemq-client.version")}")
     implementation("io.netty:netty-handler:${property("netty.version")}")
     implementation("io.netty:netty-codec-http:${property("netty.version")}")
@@ -111,8 +111,10 @@ dependencies {
     implementation("com.opencsv:opencsv:${property("open-csv.version")}")
     constraints {
         implementation("org.apache.commons:commons-text:1.10.0") {
-            because("Force a commons-text version that does not contain CVE-2022-42889, " +
-                    "because opencsv brings the vulnerable version 1.9 as transitive dependency")
+            because(
+                "Force a commons-text version that does not contain CVE-2022-42889, " +
+                        "because opencsv brings the vulnerable version 1.9 as transitive dependency"
+            )
         }
     }
 }
@@ -504,7 +506,13 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
     buildArgs.add("--no-fallback")
     buildArgs.add("--enable-https")
     buildArgs.add(
+        "--rerun-class-initialization-at-runtime=" +
+                "org.bouncycastle.jcajce.provider.drbg.DRBG\$Default," +
+                "org.bouncycastle.jcajce.provider.drbg.DRBG\$NonceAndIV"
+    )
+    buildArgs.add(
         "--initialize-at-build-time=" +
+                "org.bouncycastle," +
                 "org.jctools.queues.BaseMpscLinkedArrayQueue," +
                 "org.jctools.queues.BaseSpscLinkedArrayQueue," +
                 "org.jctools.util.UnsafeAccess," +

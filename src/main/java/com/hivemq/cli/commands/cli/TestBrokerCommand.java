@@ -25,7 +25,13 @@ import com.hivemq.cli.commands.options.SslOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
-import com.hivemq.cli.mqtt.test.results.*;
+import com.hivemq.cli.mqtt.test.results.AsciiCharsInClientIdTestResults;
+import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
+import com.hivemq.cli.mqtt.test.results.QosTestResult;
+import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
+import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -46,44 +52,47 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "test",
-        description = "Tests the specified broker on different MQTT feature support and prints the results.",
-        sortOptions = false)
+                     description = "Tests the specified broker on different MQTT feature support and prints the results.",
+                     sortOptions = false)
 public class TestBrokerCommand implements Callable<Integer> {
 
     private static final int MAX_PAYLOAD_TEST_SIZE = 100000; // ~ 1 MB
 
     @CommandLine.Option(names = {"-h", "--host"},
-            description = "The hostname of the message broker (default 'localhost')", order = 1)
+                        description = "The hostname of the message broker (default 'localhost')")
     private @Nullable String host;
 
-    @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)",
-            order = 1)
+    @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)")
     private @Nullable Integer port;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class,
-            description = "The MQTT version to test the broker on (default: test both versions)", order = 1)
+    @CommandLine.Option(names = {"-V", "--mqttVersion"},
+                        converter = MqttVersionConverter.class,
+                        description = "The MQTT version to test the broker on (default: test both versions)")
     private @Nullable MqttVersion version;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-a", "--all"}, defaultValue = "false",
-            description = "Perform all tests for all MQTT versions (default: only MQTT 3)", order = 1)
+    @CommandLine.Option(names = {"-a", "--all"},
+                        defaultValue = "false",
+                        description = "Perform all tests for all MQTT versions (default: only MQTT 3)")
     private boolean testAll;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
-    @CommandLine.Option(names = {"-t", "--timeOut"}, defaultValue = "10",
-            description = "The time to wait for the broker to respond", order = 1)
+    @CommandLine.Option(names = {"-t", "--timeOut"},
+                        defaultValue = "10",
+                        description = "The time to wait for the broker to respond")
     private @NotNull Integer timeOut;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via default value
-    @CommandLine.Option(names = {"-q", "--qosTries"}, defaultValue = "10",
-            description = "The amount of publishes to send to the broker on every qos level", order = 1)
+    @CommandLine.Option(names = {"-q", "--qosTries"},
+                        defaultValue = "10",
+                        description = "The amount of publishes to send to the broker on every qos level")
     private @NotNull Integer qosTries;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
-            description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
-            order = 1)
+    @CommandLine.Option(names = {"-l"},
+                        defaultValue = "false",
+                        description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
 
     @CommandLine.Mixin
@@ -140,8 +149,7 @@ public class TestBrokerCommand implements Callable<Integer> {
     }
 
     public void testMqtt5Features() {
-        final Mqtt5FeatureTester mqtt5Tester = new Mqtt5FeatureTester(
-                Objects.requireNonNull(host),
+        final Mqtt5FeatureTester mqtt5Tester = new Mqtt5FeatureTester(Objects.requireNonNull(host),
                 Objects.requireNonNull(port),
                 authenticationOptions.getUser(),
                 authenticationOptions.getPassword(),
@@ -201,12 +209,13 @@ public class TestBrokerCommand implements Callable<Integer> {
         System.out.println(restrictions.getTopicAliasMaximum());
 
         System.out.print("\t\t> Session expiry interval: ");
-        System.out.println(
-                connAck.getSessionExpiryInterval().isPresent() ? connAck.getSessionExpiryInterval().getAsLong() + "s" :
-                        "Client-based");
+        System.out.println(connAck.getSessionExpiryInterval().isPresent() ?
+                connAck.getSessionExpiryInterval().getAsLong() + "s" :
+                "Client-based");
 
         System.out.print("\t\t> Server keep alive: ");
-        System.out.println(connAck.getServerKeepAlive().isPresent() ? connAck.getServerKeepAlive().getAsInt() + "s" :
+        System.out.println(connAck.getServerKeepAlive().isPresent() ?
+                connAck.getServerKeepAlive().getAsInt() + "s" :
                 "Client-based");
 
 
@@ -291,8 +300,7 @@ public class TestBrokerCommand implements Callable<Integer> {
     }
 
     public void testMqtt3Features() {
-        final Mqtt3FeatureTester mqtt3Tester = new Mqtt3FeatureTester(
-                Objects.requireNonNull(host),
+        final Mqtt3FeatureTester mqtt3Tester = new Mqtt3FeatureTester(Objects.requireNonNull(host),
                 Objects.requireNonNull(port),
                 authenticationOptions.getUser(),
                 authenticationOptions.getPassword(),
@@ -401,10 +409,32 @@ public class TestBrokerCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "TestBrokerCommand{" + "host='" + host + '\'' + ", port=" + port + ", version=" + version +
-                ", testAll=" + testAll + ", timeOut=" + timeOut + ", qosTries=" + qosTries + ", logToLogfile=" +
-                logToLogfile + ", authenticationOptions=" + authenticationOptions + ", sslOptions=" + sslOptions +
-                ", defaultOptions=" + defaultOptions + ", defaultCLIProperties=" + defaultCLIProperties +
-                ", sslConfig=" + sslConfig + '}';
+        return "TestBrokerCommand{" +
+                "host='" +
+                host +
+                '\'' +
+                ", port=" +
+                port +
+                ", version=" +
+                version +
+                ", testAll=" +
+                testAll +
+                ", timeOut=" +
+                timeOut +
+                ", qosTries=" +
+                qosTries +
+                ", logToLogfile=" +
+                logToLogfile +
+                ", authenticationOptions=" +
+                authenticationOptions +
+                ", sslOptions=" +
+                sslOptions +
+                ", defaultOptions=" +
+                defaultOptions +
+                ", defaultCLIProperties=" +
+                defaultCLIProperties +
+                ", sslConfig=" +
+                sslConfig +
+                '}';
     }
 }

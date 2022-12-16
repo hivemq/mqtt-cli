@@ -41,43 +41,49 @@ import java.util.Objects;
 
 public class ConnectOptions {
 
-    @CommandLine.Option(names = {"-V", "--mqttVersion"}, converter = MqttVersionConverter.class,
-            description = "The MQTT version used by the client (default: 5)")
+    @CommandLine.Option(names = {"-V", "--mqttVersion"},
+                        converter = MqttVersionConverter.class,
+                        description = "The MQTT version used by the client (default: 5)")
     private @Nullable MqttVersion version;
 
     @CommandLine.Option(names = {"-h", "--host"},
-            description = "The hostname of the message broker (default 'localhost')")
+                        description = "The hostname of the message broker (default 'localhost')")
     private @Nullable String host;
 
     @CommandLine.Option(names = {"-p", "--port"}, description = "The port of the message broker (default: 1883)")
     private @Nullable Integer port;
 
     @CommandLine.Option(names = {"-i", "--identifier"},
-            description = "The client identifier UTF-8 String (default randomly generated string)")
+                        description = "The client identifier UTF-8 String (default randomly generated string)")
     private @Nullable String identifier;
 
     @CommandLine.Option(names = {"-ip", "--identifierPrefix"},
-            description = "The prefix of the client Identifier UTF-8 String")
+                        description = "The prefix of the client Identifier UTF-8 String")
     private @Nullable String identifierPrefix;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-k", "--keepAlive"}, converter = UnsignedShortConverter.class,
-            description = "A keep alive of the client (in seconds) (default: 60)")
+    @CommandLine.Option(names = {"-k", "--keepAlive"},
+                        converter = UnsignedShortConverter.class,
+                        description = "A keep alive of the client (in seconds) (default: 60)")
     private @Nullable Integer keepAlive;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--no-cleanStart"}, negatable = true, defaultValue = "true",
+    @CommandLine.Option(names = {"--no-cleanStart"},
+                        negatable = true,
+                        defaultValue = "true",
                         description = "Define a clean start for the connection (default: true)")
     private boolean cleanStart;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"}, converter = UnsignedIntConverter.class,
-            description = "The lifetime of the session of the connected client")
+    @CommandLine.Option(names = {"-se", "--sessionExpiryInterval"},
+                        converter = UnsignedIntConverter.class,
+                        description = "The lifetime of the session of the connected client")
     private @Nullable Long sessionExpiryInterval;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-Cup", "--connectUserProperty"}, converter = Mqtt5UserPropertyConverter.class,
-            description = "A user property of the connect message'")
+    @CommandLine.Option(names = {"-Cup", "--connectUserProperty"},
+                        converter = Mqtt5UserPropertyConverter.class,
+                        description = "A user property of the connect message'")
     private @Nullable Mqtt5UserProperty @Nullable [] connectUserProperties;
 
     @SuppressWarnings("unused")
@@ -241,12 +247,41 @@ public class ConnectOptions {
 
     @Override
     public @NotNull String toString() {
-        return "ConnectOptions{" + "version=" + version + ", host='" + host + '\'' + ", port=" + port +
-                ", identifier='" + identifier + '\'' + ", identifierPrefix='" + identifierPrefix + '\'' +
-                ", keepAlive=" + keepAlive + ", cleanStart=" + cleanStart + ", sessionExpiryInterval=" +
-                sessionExpiryInterval + ", connectUserProperties=" + Arrays.toString(connectUserProperties) +
-                ", useWebSocket=" + useWebSocket + ", webSocketPath='" + webSocketPath + '\'' + ", willOptions=" +
-                willOptions + ", connectRestrictionOptions=" + connectRestrictionOptions + ", authenticationOptions=" +
-                authenticationOptions + ", sslOptions=" + sslOptions + '}';
+        return "ConnectOptions{" +
+                "version=" +
+                version +
+                ", host='" +
+                host +
+                '\'' +
+                ", port=" +
+                port +
+                ", identifier='" +
+                identifier +
+                '\'' +
+                ", identifierPrefix='" +
+                identifierPrefix +
+                '\'' +
+                ", keepAlive=" +
+                keepAlive +
+                ", cleanStart=" +
+                cleanStart +
+                ", sessionExpiryInterval=" +
+                sessionExpiryInterval +
+                ", connectUserProperties=" +
+                Arrays.toString(connectUserProperties) +
+                ", useWebSocket=" +
+                useWebSocket +
+                ", webSocketPath='" +
+                webSocketPath +
+                '\'' +
+                ", willOptions=" +
+                willOptions +
+                ", connectRestrictionOptions=" +
+                connectRestrictionOptions +
+                ", authenticationOptions=" +
+                authenticationOptions +
+                ", sslOptions=" +
+                sslOptions +
+                '}';
     }
 }

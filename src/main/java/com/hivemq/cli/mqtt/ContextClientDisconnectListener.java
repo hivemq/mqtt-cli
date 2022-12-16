@@ -20,7 +20,6 @@ import com.google.common.base.Throwables;
 import com.hivemq.cli.commands.shell.ShellCommand;
 import com.hivemq.cli.commands.shell.ShellContextCommand;
 import com.hivemq.cli.utils.LoggerUtils;
-import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedContext;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
@@ -52,12 +51,7 @@ public class ContextClientDisconnectListener implements MqttClientDisconnectedLi
         } else if (contextEqualsShellContext(context)) {
             ShellContextCommand.removeContext();
         }
-        MqttClientExecutor.getClientDataMap().remove(getKeyFromConfig(context.getClientConfig()));
-    }
-
-    private @NotNull String getKeyFromConfig(final @NotNull MqttClientConfig clientConfig) {
-        return MqttUtils.buildKey(clientConfig.getClientIdentifier().map(Object::toString).orElse(""),
-                clientConfig.getServerHost());
+        MqttClientExecutor.getClientDataMap().remove(ClientKey.of(context.getClientConfig()));
     }
 
     private boolean contextEqualsShellContext(final @NotNull MqttClientDisconnectedContext context) {

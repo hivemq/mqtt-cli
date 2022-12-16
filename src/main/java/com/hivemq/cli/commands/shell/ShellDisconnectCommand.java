@@ -77,8 +77,15 @@ public class ShellDisconnectCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ShellDisconnectCommand{" + "disconnectOptions=" + disconnectOptions + ", defaultOptions=" +
-                defaultOptions + ", mqttClientExecutor=" + mqttClientExecutor + ", defaultCLIProperties=" +
-                defaultCLIProperties + '}';
+        return "ShellDisconnectCommand{" +
+                "disconnectOptions=" +
+                disconnectOptions +
+                ", defaultOptions=" +
+                defaultOptions +
+                ", mqttClientExecutor=" +
+                mqttClientExecutor +
+                ", defaultCLIProperties=" +
+                defaultCLIProperties +
+                '}';
     }
 }

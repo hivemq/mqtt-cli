@@ -26,8 +26,10 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "pub", aliases = "publish", description = "Publish a message to a list of topics",
-        mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "pub",
+                     aliases = "publish",
+                     description = "Publish a message to a list of topics",
+                     mixinStandardHelpOptions = true)
 public class ContextPublishCommand extends ShellContextCommand implements Callable<Integer> {
 
     @CommandLine.Mixin

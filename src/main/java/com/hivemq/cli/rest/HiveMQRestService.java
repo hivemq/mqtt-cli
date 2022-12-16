@@ -55,9 +55,9 @@ public class HiveMQRestService {
         clientsApi.getMqttClientDetailsAsync(clientId, callback);
     }
 
-    public @NotNull ApiClient getApiClient() {return apiClient;}
-
-    public @NotNull MqttClientsApi getClientsApi() {return clientsApi;}
+    public @NotNull ApiClient getApiClient() {
+        return apiClient;
+    }
 
     private @NotNull OkHttpClient buildOkHttpClient(final double requestsPerSecondLimit) {
         return new OkHttpClient.Builder().connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)

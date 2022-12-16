@@ -23,7 +23,6 @@ import picocli.CommandLine;
 public class Mqtt5UserPropertyConverter implements CommandLine.ITypeConverter<Mqtt5UserProperty> {
 
     static final @NotNull String KEY_VALUE_DELIMETER_ERROR = "a key value pair wasn't delimited by '='";
-    static final @NotNull String NO_PAIR_FOUND = "No key value pair was given.";
 
     @Override
     public @NotNull Mqtt5UserProperty convert(final @NotNull String s) throws Exception {
@@ -35,5 +34,4 @@ public class Mqtt5UserPropertyConverter implements CommandLine.ITypeConverter<Mq
 
         return Mqtt5UserProperty.of(splitKeyValue[0], splitKeyValue[1]);
     }
-
 }

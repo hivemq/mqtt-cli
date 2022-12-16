@@ -339,7 +339,7 @@ class SubscribeST {
         final ExecutionResult executionResult = MqttCli.execute(subscribeCommand);
 
         assertEquals(2, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput().contains("Missing required option: '--topic <topics>'"));
+        assertTrue(executionResult.getErrorOutput().contains("Missing required option: '--topic=<topics>'"));
     }
 
     private @NotNull List<String> defaultSubscribeCommand(final char mqttVersion) {

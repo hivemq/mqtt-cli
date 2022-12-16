@@ -19,6 +19,7 @@ package com.hivemq.cli;
 import com.hivemq.cli.ioc.DaggerMqttCLI;
 import com.hivemq.cli.ioc.MqttCLI;
 import com.hivemq.cli.mqtt.ClientData;
+import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -69,11 +70,11 @@ public class MqttCLIMain {
 
         @Override
         public void run() {
-            final Map<String, ClientData> clientKeyToClientData = MqttClientExecutor.getClientDataMap();
+            final Map<ClientKey, ClientData> clientKeyToClientData = MqttClientExecutor.getClientDataMap();
 
             final List<CompletableFuture<Void>> disconnectFutures = new ArrayList<>();
 
-            for (final Map.Entry<String, ClientData> entry : clientKeyToClientData.entrySet()) {
+            for (final Map.Entry<ClientKey, ClientData> entry : clientKeyToClientData.entrySet()) {
                 final MqttClient client = entry.getValue().getClient();
                 if (client.getConfig().getState().isConnectedOrReconnect()) {
                     switch (client.getConfig().getMqttVersion()) {
@@ -99,10 +100,10 @@ public class MqttCLIMain {
                 version = "DEVELOPMENT";
             }
             return new String[]{
-                    version, "Picocli " + CommandLine.VERSION,
+                    version,
+                    "Picocli " + CommandLine.VERSION,
                     "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
-                    "OS: ${os.name} ${os.version} ${os.arch}"
-            };
+                    "OS: ${os.name} ${os.version} ${os.arch}"};
         }
     }
 }

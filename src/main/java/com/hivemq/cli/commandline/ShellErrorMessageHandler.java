@@ -26,13 +26,13 @@ public class ShellErrorMessageHandler extends CommonErrorMessageHandler
         implements CommandLine.IParameterExceptionHandler {
 
     @Inject
-    ShellErrorMessageHandler() {}
+    ShellErrorMessageHandler() {
+    }
 
     @Override
     public int handleParseException(
             final @NotNull CommandLine.ParameterException ex, final @NotNull String @NotNull [] args) throws Exception {
         final int exitCode = super.handleParseException(ex, args);
-
         final PrintWriter writer = ex.getCommandLine().getErr();
 
         if (ex instanceof CommandLine.UnmatchedArgumentException &&

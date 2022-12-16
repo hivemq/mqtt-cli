@@ -48,8 +48,8 @@ class ExportClientsCommandIT {
 
     @RegisterExtension
     final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4")).withHiveMQConfig(
-                            MountableFile.forClasspathResource("hivemq.configs/rest-api-config.xml"))
+            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
+                            "hivemq.configs/rest-api-config.xml"))
                     .withExposedPorts(HiveMQTestContainerExtension.MQTT_PORT, HTTP_PORT);
 
     private @NotNull File file;
@@ -167,8 +167,8 @@ class ExportClientsCommandIT {
         client.connect();
 
         final CommandLine cmd = new CommandLine(new ExportClientsCommand());
-        final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
-                "-url=http://" + hivemq.getHost() + ":" + 8889);
+        final int returnCode =
+                cmd.execute("-f=" + file.getAbsolutePath(), "-url=http://" + hivemq.getHost() + ":" + 8889);
 
         assertEquals(-1, returnCode);
 

@@ -34,8 +34,10 @@ import javax.inject.Inject;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "sub", versionProvider = MqttCLIMain.CLIVersionProvider.class, aliases = "subscribe",
-        description = "Subscribe an MQTT client to a list of topics.")
+@CommandLine.Command(name = "sub",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     aliases = "subscribe",
+                     description = "Subscribe an MQTT client to a list of topics.")
 public class SubscribeCommand implements Callable<Integer> {
 
     private static final int IDLE_TIME = 5000;
@@ -43,9 +45,20 @@ public class SubscribeCommand implements Callable<Integer> {
     private @Nullable MqttClient subscribeClient;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
-            description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
+    @CommandLine.Option(names = {"-l"},
+                        defaultValue = "false",
+                        description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-no-oc", "--no-outputToConsole"},
+                        hidden = true,
+                        negatable = true,
+                        defaultValue = "true",
+                        description = "The received messages will be written to the console (default: true)")
+    private void printToSTDOUT(final boolean printToSTDOUT) {
+        subscribeOptions.setPrintToSTDOUT(printToSTDOUT);
+    }
 
     @CommandLine.Mixin
     private final @NotNull ConnectOptions connectOptions = new ConnectOptions();
@@ -119,9 +132,21 @@ public class SubscribeCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "SubscribeCommand{" + "mqttClientExecutor=" + mqttClientExecutor + ", subscribeClient=" +
-                subscribeClient + ", logToLogfile=" + logToLogfile + ", connectOptions=" + connectOptions +
-                ", subscribeOptions=" + subscribeOptions + ", debugOptions=" + debugOptions + ", defaultOptions=" +
-                defaultOptions + '}';
+        return "SubscribeCommand{" +
+                "mqttClientExecutor=" +
+                mqttClientExecutor +
+                ", subscribeClient=" +
+                subscribeClient +
+                ", logToLogfile=" +
+                logToLogfile +
+                ", connectOptions=" +
+                connectOptions +
+                ", subscribeOptions=" +
+                subscribeOptions +
+                ", debugOptions=" +
+                debugOptions +
+                ", defaultOptions=" +
+                defaultOptions +
+                '}';
     }
 }

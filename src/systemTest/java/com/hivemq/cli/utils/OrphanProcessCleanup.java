@@ -37,7 +37,7 @@ public class OrphanProcessCleanup {
                 String.valueOf(childProcess.pid()));
         final Process orphanCleanupProcess = new ProcessBuilder(orphanCleanupProcessCommand).start();
 
-        // Wait until the process prints X, which means that the orphan cleanup process has sucessfully started
+        // Wait until the process prints X, which means that the orphan cleanup process has successfully started
         final int readChar = orphanCleanupProcess.getInputStream().read();
         assertEquals('X', readChar);
 

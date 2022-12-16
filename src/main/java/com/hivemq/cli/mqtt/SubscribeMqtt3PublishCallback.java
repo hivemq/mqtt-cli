@@ -70,8 +70,7 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
                 System.out.println(message);
             }
 
-            Logger.debug(
-                    "{} received PUBLISH ('{}') {}",
+            Logger.debug("{} received PUBLISH ('{}') {}",
                     LoggerUtils.getClientPrefix(client.getConfig()),
                     new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
                     mqtt3Publish);

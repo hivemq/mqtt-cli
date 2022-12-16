@@ -32,16 +32,27 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@CommandLine.Command(name = "sub", aliases = "subscribe",
-        description = "Subscribe this MQTT client to a list of topics", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "sub",
+                     aliases = "subscribe",
+                     description = "Subscribe this MQTT client to a list of topics",
+                     mixinStandardHelpOptions = true)
 public class ContextSubscribeCommand extends ShellContextCommand implements Callable<Integer> {
 
     private static final int IDLE_TIME = 1000;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-s", "--stay"}, defaultValue = "false",
-            description = "The subscribe will block the console and wait for publish messages to print (default: false)")
+    @CommandLine.Option(names = {"-s", "--stay"},
+                        defaultValue = "false",
+                        description = "The subscribe will block the console and wait for publish messages to print (default: false)")
     private boolean stay;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-oc", "--outputToConsole"},
+                        defaultValue = "false",
+                        description = "The received messages will be written to the console (default: true)")
+    private void printToSTDOUT(final boolean printToSTDOUT) {
+        subscribeOptions.setPrintToSTDOUT(printToSTDOUT);
+    }
 
     @CommandLine.Mixin
     private final @NotNull SubscribeOptions subscribeOptions = new SubscribeOptions();
@@ -64,8 +75,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
         subscribeOptions.logUnusedOptions(contextClient.getConfig().getMqttVersion());
         subscribeOptions.arrangeQosToMatchTopics();
 
-        if (!stay) {
-            subscribeOptions.setPrintToSTDOUT(false);
+        if (stay) {
+            subscribeOptions.setPrintToSTDOUT(true);
         }
 
         if (subscribeOptions.isOutputFileInvalid(subscribeOptions.getOutputFile())) {

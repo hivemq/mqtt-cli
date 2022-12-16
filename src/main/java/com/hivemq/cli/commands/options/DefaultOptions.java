@@ -35,7 +35,11 @@ public class DefaultOptions {
 
     @Override
     public @NotNull String toString() {
-        return "DefaultOptions{" + "versionInfoRequested=" + versionInfoRequested + ", usageHelpRequested=" +
-                usageHelpRequested + '}';
+        return "DefaultOptions{" +
+                "versionInfoRequested=" +
+                versionInfoRequested +
+                ", usageHelpRequested=" +
+                usageHelpRequested +
+                '}';
     }
 }

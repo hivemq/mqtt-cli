@@ -25,19 +25,18 @@ import javax.inject.Singleton;
 @Singleton
 public class CommandLineConfig {
 
-    //@formatter:off
     private final static @NotNull CommandLine.Help.ColorScheme COLOR_SCHEME =
-            new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.AUTO)
-                    .commands(CommandLine.Help.Ansi.Style.bold, CommandLine.Help.Ansi.Style.fg_yellow)
+            new CommandLine.Help.ColorScheme.Builder(CommandLine.Help.Ansi.AUTO).commands(CommandLine.Help.Ansi.Style.bold,
+                            CommandLine.Help.Ansi.Style.fg_yellow)
                     .options(CommandLine.Help.Ansi.Style.italic, CommandLine.Help.Ansi.Style.fg_yellow)
                     .parameters(CommandLine.Help.Ansi.Style.fg_yellow)
                     .optionParams(CommandLine.Help.Ansi.Style.italic)
                     .build();
-    //@formatter:on
     private static final int CLI_WIDTH = 160;
 
     @Inject
-    public CommandLineConfig() {}
+    public CommandLineConfig() {
+    }
 
     public @NotNull CommandLine.Help.ColorScheme getColorScheme() {
         return COLOR_SCHEME;

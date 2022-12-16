@@ -23,13 +23,15 @@ import picocli.CommandLine;
 
 public class SwarmOptions {
 
-    @CommandLine.Option(names = {"-url"}, defaultValue = "http://localhost:8080",
-            description = "The URL of the HiveMQ Swarm REST API endpoint (default: http://localhost:8080)", order = 1)
+    @CommandLine.Option(names = {"-url"},
+                        defaultValue = "http://localhost:8080",
+                        description = "The URL of the HiveMQ Swarm REST API endpoint (default: http://localhost:8080)")
     private @NotNull String commanderUrl = "http://localhost:8080";
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
-            description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
+    @CommandLine.Option(names = {"-l"},
+                        defaultValue = "false",
+                        description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private void initLogging(final boolean logToLogfile) {
         LoggerUtils.turnOffConsoleLogging(logToLogfile);
     }

@@ -70,7 +70,11 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
 
     @Override
     public @NotNull String toString() {
-        return "ContextDisconnectCommand{" + "disconnectOptions=" + disconnectOptions + ", defaultOptions=" +
-                defaultOptions + '}';
+        return "ContextDisconnectCommand{" +
+                "disconnectOptions=" +
+                disconnectOptions +
+                ", defaultOptions=" +
+                defaultOptions +
+                '}';
     }
 }

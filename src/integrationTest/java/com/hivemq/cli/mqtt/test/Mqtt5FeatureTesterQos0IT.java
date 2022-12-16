@@ -44,8 +44,7 @@ class Mqtt5FeatureTesterQos0IT {
 
     @BeforeEach
     void setUp() {
-        mqtt5FeatureTester =
-                new Mqtt5FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 3);
+        mqtt5FeatureTester = new Mqtt5FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 3);
     }
 
     @AfterAll

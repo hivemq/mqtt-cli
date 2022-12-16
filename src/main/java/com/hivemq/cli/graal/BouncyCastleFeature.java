@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.shell;
+package com.hivemq.cli.graal;
 
-import org.jetbrains.annotations.NotNull;
-import picocli.CommandLine;
+import com.oracle.svm.core.annotate.AutomaticFeature;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.graalvm.nativeimage.hosted.Feature;
+import org.jetbrains.annotations.Nullable;
 
-import javax.inject.Inject;
-import java.util.concurrent.Callable;
+import java.security.Security;
 
 /**
- * Command that clears the screen.
+ * This class is used to register and validate BouncyCastle providers for the native image.
  */
-@CommandLine.Command(name = "cls", aliases = "clear", description = "Clear the screen", mixinStandardHelpOptions = true)
-public class ClearScreenCommand implements Callable<Integer> {
-
-    @Inject
-    ClearScreenCommand() {
-    }
+@SuppressWarnings("unused")
+@AutomaticFeature
+public class BouncyCastleFeature implements Feature {
 
     @Override
-    public @NotNull Integer call() {
-        ShellCommand.clearScreen();
-        return 0;
-    }
-
-    @Override
-    public @NotNull String toString() {
-        return "ClearScreenCommand{}";
+    public void afterRegistration(final @Nullable AfterRegistrationAccess access) {
+        Security.addProvider(new BouncyCastleProvider());
     }
 }

@@ -23,8 +23,9 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "version", description = "Prints version information",
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
+@CommandLine.Command(name = "version",
+                     description = "Prints version information",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class)
 public class VersionCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})

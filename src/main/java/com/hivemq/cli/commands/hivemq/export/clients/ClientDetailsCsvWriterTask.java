@@ -16,7 +16,13 @@
 
 package com.hivemq.cli.commands.hivemq.export.clients;
 
-import com.hivemq.cli.openapi.hivemq.*;
+import com.hivemq.cli.openapi.hivemq.CertificateInformation;
+import com.hivemq.cli.openapi.hivemq.ClientDetails;
+import com.hivemq.cli.openapi.hivemq.ClientRestrictions;
+import com.hivemq.cli.openapi.hivemq.ConnectionDetails;
+import com.hivemq.cli.openapi.hivemq.ProxyInformation;
+import com.hivemq.cli.openapi.hivemq.TLV;
+import com.hivemq.cli.openapi.hivemq.TlsInformation;
 import com.opencsv.CSVWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,13 +44,38 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ClientDetailsCsvWriterTask implements Runnable {
 
     static final @NotNull String @NotNull [] EXPORT_CSV_HEADER = {
-            "clientId", "connected", "sessionExpiryInterval", "connectedAt", "messageQueueSize", "willPresent",
-            "maxMessageSize", "maxQueueSize", "queuedMessageStrategy", "ip", "sourceIp", "sourcePort", "destinationIp",
-            "destinationPort", "tlvs", "mqttVersion", "connectedListenerId", "connectedNodeId", "keepAlive", "username",
-            "password", "cleanStart", "cipherSuite", "tlsVersion", "certificateCommonName", "certificateOrganization",
-            "certificateOrganizationalUnit", "certificateSerial", "certificateValidFrom", "certificateValidUntil",
-            "certificateCountry", "certificateState"
-    };
+            "clientId",
+            "connected",
+            "sessionExpiryInterval",
+            "connectedAt",
+            "messageQueueSize",
+            "willPresent",
+            "maxMessageSize",
+            "maxQueueSize",
+            "queuedMessageStrategy",
+            "ip",
+            "sourceIp",
+            "sourcePort",
+            "destinationIp",
+            "destinationPort",
+            "tlvs",
+            "mqttVersion",
+            "connectedListenerId",
+            "connectedNodeId",
+            "keepAlive",
+            "username",
+            "password",
+            "cleanStart",
+            "cipherSuite",
+            "tlsVersion",
+            "certificateCommonName",
+            "certificateOrganization",
+            "certificateOrganizationalUnit",
+            "certificateSerial",
+            "certificateValidFrom",
+            "certificateValidUntil",
+            "certificateCountry",
+            "certificateState"};
 
     private final @NotNull AtomicLong writtenClientDetails = new AtomicLong(0);
     private final @NotNull CompletableFuture<Void> clientDetailsFuture;
@@ -100,7 +131,9 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         Logger.debug("Finished writing {} client details to CSV file {}", writtenClientDetails, file.getAbsolutePath());
     }
 
-    public long getWrittenClientDetails() {return writtenClientDetails.get();}
+    public long getWrittenClientDetails() {
+        return writtenClientDetails.get();
+    }
 
     private void writeHeader() {
         csvWriter.writeNext(EXPORT_CSV_HEADER);

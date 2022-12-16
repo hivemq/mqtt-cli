@@ -74,7 +74,7 @@ class SubscribeConnectST {
                 "-d");
 
         final ExecutionResult executionResult = MqttCli.execute(subscribeCommand);
-        assertEquals(0, executionResult.getExitCode());
+        assertEquals(1, executionResult.getExitCode());
         assertTrue(
                 executionResult.getErrorOutput().contains("unreachable-host: Temporary failure in name resolution") ||
                         executionResult.getErrorOutput().contains("nodename nor servname provided, or not known"));
@@ -96,7 +96,7 @@ class SubscribeConnectST {
                 "-d");
 
         final ExecutionResult executionResult = MqttCli.execute(subscribeCommand);
-        assertEquals(0, executionResult.getExitCode());
+        assertEquals(1, executionResult.getExitCode());
         assertTrue(executionResult.getErrorOutput().contains("readAddress(..) failed: Connection reset by peer") ||
                 executionResult.getErrorOutput().contains("Connection refused"));
     }
@@ -104,7 +104,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectCleanStart(final char mqttVersion) throws Exception {
+    void test_connectNoCleanStart(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--no-cleanStart");
 
@@ -116,6 +116,25 @@ class SubscribeConnectST {
             connectAssertion.setCleanStart(false);
             if (mqttVersion == '3') {
                 connectAssertion.setSessionExpiryInterval(4294967295L);
+            }
+        });
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectCleanStart(final char mqttVersion) throws Exception {
+        final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
+        subscribeCommand.add("--cleanStart");
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+        assertSubscribeOutput(executionResult);
+
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
+            connectAssertion.setCleanStart(true);
+            if (mqttVersion == '3') {
+                connectAssertion.setSessionExpiryInterval(0L);
             }
         });
     }
@@ -492,9 +511,27 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectRequestProblemInformation(final char mqttVersion) throws Exception {
+    void test_connectNoRequestProblemInformation(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--no-reqProblemInfo");
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+        assertSubscribeOutput(executionResult);
+
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
+            if (mqttVersion == '5') {
+                connectAssertion.setRequestProblemInformation(false);
+            }
+        });
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectRequestProblemInformation(final char mqttVersion) throws Exception {
+        final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
+        subscribeCommand.add("--reqProblemInfo");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribeOutput(executionResult);
@@ -507,7 +544,7 @@ class SubscribeConnectST {
         assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
-                connectAssertion.setRequestProblemInformation(false);
+                connectAssertion.setRequestProblemInformation(true);
             }
         });
     }

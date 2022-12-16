@@ -44,7 +44,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class SwarmRunStartCommandIT {
 
@@ -115,8 +117,7 @@ public class SwarmRunStartCommandIT {
 
         final String scenario =
                 MountableFile.forClasspathResource("SwarmRunStartCommandIT/my-scenario.xml").getResolvedPath();
-        final int execute = commandLine.execute(
-                "-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT),
+        final int execute = commandLine.execute("-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT),
                 "-f=" + scenario);
         assertEquals(0, execute);
 

@@ -36,14 +36,18 @@ import javax.inject.Provider;
 import java.io.PrintStream;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "stop", description = "Stop HiveMQ Swarm runs.", synopsisHeading = "%n@|bold Usage:|@  ",
-        descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class,
-        mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "stop",
+                     description = "Stop HiveMQ Swarm runs.",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class SwarmRunStopCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = {"-r", "--run-id"},
-            description = "The id of the run to stop. If none is given the current run is stopped.", order = 3)
+                        description = "The id of the run to stop. If none is given the current run is stopped.")
     private @Nullable Integer runId;
 
     @CommandLine.Mixin
@@ -129,7 +133,19 @@ public class SwarmRunStopCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmRunStopCommand{" + "runId=" + runId + ", swarmOptions=" + swarmOptions + ", runsApi=" + runsApi +
-                ", commanderApi=" + commanderApi + ", errorTransformer=" + errorTransformer + ", out=" + out + '}';
+        return "SwarmRunStopCommand{" +
+                "runId=" +
+                runId +
+                ", swarmOptions=" +
+                swarmOptions +
+                ", runsApi=" +
+                runsApi +
+                ", commanderApi=" +
+                commanderApi +
+                ", errorTransformer=" +
+                errorTransformer +
+                ", out=" +
+                out +
+                '}';
     }
 }

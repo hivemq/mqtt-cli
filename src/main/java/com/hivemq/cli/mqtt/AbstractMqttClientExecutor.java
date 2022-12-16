@@ -16,9 +16,15 @@
 
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.options.*;
+import com.hivemq.cli.commands.options.AuthenticationOptions;
+import com.hivemq.cli.commands.options.ConnectOptions;
+import com.hivemq.cli.commands.options.ConnectRestrictionOptions;
+import com.hivemq.cli.commands.options.DisconnectOptions;
+import com.hivemq.cli.commands.options.PublishOptions;
+import com.hivemq.cli.commands.options.SubscribeOptions;
+import com.hivemq.cli.commands.options.UnsubscribeOptions;
+import com.hivemq.cli.commands.options.WillOptions;
 import com.hivemq.cli.utils.IntersectionUtil;
-import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
@@ -48,13 +54,17 @@ import org.tinylog.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 abstract class AbstractMqttClientExecutor {
 
-    private static final @NotNull Map<String, ClientData> clientKeyToClientData = new ConcurrentHashMap<>();
+    private static final @NotNull Map<ClientKey, ClientData> clientKeyToClientData = new ConcurrentHashMap<>();
 
     abstract void mqtt5Connect(
             final @NotNull Mqtt5Client client, final @NotNull Mqtt5Connect connectMessage);
@@ -86,27 +96,27 @@ abstract class AbstractMqttClientExecutor {
             final @NotNull String topic,
             final @NotNull MqttQos qos);
 
-    abstract void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull UnsubscribeOptions unsubscribeOptions);
+    abstract void mqtt5Unsubscribe(
+            final @NotNull Mqtt5Client client, final @NotNull UnsubscribeOptions unsubscribeOptions);
 
-    abstract void mqtt3Unsubscribe(final @NotNull Mqtt3Client client, final @NotNull UnsubscribeOptions unsubscribeOptions);
+    abstract void mqtt3Unsubscribe(
+            final @NotNull Mqtt3Client client, final @NotNull UnsubscribeOptions unsubscribeOptions);
 
     abstract void mqtt5Disconnect(
-            final @NotNull Mqtt5Client client,
-            final @NotNull DisconnectOptions disconnectOptions);
+            final @NotNull Mqtt5Client client, final @NotNull DisconnectOptions disconnectOptions);
 
     abstract void mqtt3Disconnect(
-            final @NotNull Mqtt3Client client,
-            final @NotNull DisconnectOptions disconnectOptions);
+            final @NotNull Mqtt3Client client, final @NotNull DisconnectOptions disconnectOptions);
 
     public @NotNull MqttClient connect(final @NotNull ConnectOptions connectOptions) throws Exception {
         return connect(connectOptions, null);
     }
 
     public @NotNull MqttClient connect(
-            final @NotNull ConnectOptions connectOptions,
-            final @Nullable SubscribeOptions subscribeOptions) throws Exception {
+            final @NotNull ConnectOptions connectOptions, final @Nullable SubscribeOptions subscribeOptions)
+            throws Exception {
 
-        final String clientKey = ClientKey.of(connectOptions.getIdentifier(), connectOptions.getHost()).toString();
+        final ClientKey clientKey = ClientKey.of(connectOptions.getIdentifier(), connectOptions.getHost());
         if (isConnected(clientKey)) {
             Logger.debug("Client is already connected ({})", clientKey);
             Logger.info("Using already connected  ({})", clientKey);
@@ -120,21 +130,18 @@ abstract class AbstractMqttClientExecutor {
                 return connectMqtt3Client(connectOptions, subscribeOptions);
         }
 
-        throw new IllegalStateException(
-                "The MQTT Version specified is not supported. Version was " + connectOptions.getVersion());
+        throw new IllegalStateException("The MQTT Version specified is not supported. Version was " +
+                connectOptions.getVersion());
     }
 
     public void subscribe(final @NotNull MqttClient client, final @NotNull SubscribeOptions subscribeOptions) {
         for (int i = 0; i < subscribeOptions.getTopics().length; i++) {
             final String topic = subscribeOptions.getTopics()[i];
 
-            final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
-                    client.getConfig().getServerHost());
-
             // This check only works as subscribes are implemented blocking.
             // Otherwise, we would need to check the topics before they are iterated as they are added to the client data after a successful subscribe.
             final List<MqttTopicFilter> intersectingFilters =
-                    checkForSharedTopicDuplicate(clientKeyToClientData.get(ClientKey.of(client).toString()).getSubscribedTopics(),
+                    checkForSharedTopicDuplicate(clientKeyToClientData.get(ClientKey.of(client)).getSubscribedTopics(),
                             topic);
             // Client{clientIdentifier='hmq_RcrDi_18591249_30a12e2c4bbd17e322a300a4257d76bd', hostname='broker.hivemq.com'} -> {ClientData@3806}
             // Client{clientIdentifier='hmq_RcrDi_18591249_30a12e2c4bbd17e322a300a4257d76bd', hostname='broker.hivemq.com'}
@@ -204,7 +211,7 @@ abstract class AbstractMqttClientExecutor {
     }
 
     public void disconnect(final @NotNull ClientKey clientKey, final @NotNull DisconnectOptions disconnectOptions) {
-        final ClientData clientData = clientKeyToClientData.get(clientKey.toString());
+        final ClientData clientData = clientKeyToClientData.get(clientKey);
         if (clientData != null) {
             disconnect(clientData.getClient(), disconnectOptions);
         }
@@ -219,11 +226,11 @@ abstract class AbstractMqttClientExecutor {
                 mqtt3Disconnect((Mqtt3Client) client, disconnectOptions);
                 break;
         }
-        clientKeyToClientData.remove(ClientKey.of(client).toString());
+        clientKeyToClientData.remove(ClientKey.of(client));
     }
 
     public void disconnectAllClients(final @NotNull DisconnectOptions disconnectOptions) {
-        for (final Map.Entry<String, ClientData> entry : clientKeyToClientData.entrySet()) {
+        for (final Map.Entry<ClientKey, ClientData> entry : clientKeyToClientData.entrySet()) {
             final MqttClient client = entry.getValue().getClient();
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
@@ -249,7 +256,7 @@ abstract class AbstractMqttClientExecutor {
 
     }
 
-    public boolean isConnected(final @NotNull String key) {
+    public boolean isConnected(final @NotNull ClientKey key) {
         if (clientKeyToClientData.containsKey(key)) {
             final MqttClient client = clientKeyToClientData.get(key).getClient();
             final MqttClientState state = client.getState();
@@ -305,9 +312,7 @@ abstract class AbstractMqttClientExecutor {
 
         final ClientData clientData = new ClientData(client);
 
-        final String key = ClientKey.of(client).toString();
-
-        clientKeyToClientData.put(key, clientData);
+        clientKeyToClientData.put(ClientKey.of(client), clientData);
 
         return client;
     }
@@ -342,10 +347,7 @@ abstract class AbstractMqttClientExecutor {
 
         final ClientData clientData = new ClientData(client);
 
-        final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
-                client.getConfig().getServerHost());
-
-        clientKeyToClientData.put(key, clientData);
+        clientKeyToClientData.put(ClientKey.of(client), clientData);
 
         return client;
     }
@@ -483,15 +485,15 @@ abstract class AbstractMqttClientExecutor {
         return null;
     }
 
-    public static @NotNull Map<String, ClientData> getClientDataMap() {
+    public static @NotNull Map<ClientKey, ClientData> getClientDataMap() {
         return clientKeyToClientData;
     }
 
     public @Nullable MqttClient getMqttClient(final @NotNull ClientKey clientKey) {
         MqttClient client = null;
 
-        if (clientKeyToClientData.containsKey(clientKey.toString())) {
-            client = clientKeyToClientData.get(clientKey.toString()).getClient();
+        if (clientKeyToClientData.containsKey(clientKey)) {
+            client = clientKeyToClientData.get(clientKey).getClient();
         }
 
         return client;

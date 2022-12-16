@@ -20,7 +20,13 @@ import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.swarm.*;
+import com.hivemq.cli.openapi.swarm.RunResponse;
+import com.hivemq.cli.openapi.swarm.RunsApi;
+import com.hivemq.cli.openapi.swarm.ScenariosApi;
+import com.hivemq.cli.openapi.swarm.StartRunRequest;
+import com.hivemq.cli.openapi.swarm.StartRunResponse;
+import com.hivemq.cli.openapi.swarm.UploadScenarioRequest;
+import com.hivemq.cli.openapi.swarm.UploadScenarioResponse;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,21 +45,27 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-@CommandLine.Command(name = "start", description = "Start HiveMQ Swarm runs.", synopsisHeading = "%n@|bold Usage:|@  ",
-        descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class,
-        mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "start",
+                     description = "Start HiveMQ Swarm runs.",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class SwarmRunStartCommand implements Callable<Integer> {
 
-    @CommandLine.Option(names = {"-f", "--file"}, description = "The scenario file. " +
-            "If a scenario file is given this command uploads, executes and deletes the scenario afterwards.",
-            required = true, order = 3)
+    @CommandLine.Option(names = {"-f", "--file"},
+                        description = "The scenario file. " +
+                                "If a scenario file is given this command uploads, executes and deletes the scenario afterwards.",
+                        required = true)
     private @Nullable File scenario;
 
-    @CommandLine.Option(names = {"-d", "--detach"}, defaultValue = "false",
-            description = "Run the command in detached mode. " +
-                    "In detached mode the command uploads and executes the scenario and does not wait until the scenario is finished. " +
-                    "The scenario is not deleted afterwards.", order = 4)
+    @CommandLine.Option(names = {"-d", "--detach"},
+                        defaultValue = "false",
+                        description = "Run the command in detached mode. " +
+                                "In detached mode the command uploads and executes the scenario and does not wait until the scenario is finished. " +
+                                "The scenario is not deleted afterwards.")
     private @NotNull Boolean detached = false;
 
     @CommandLine.Mixin
@@ -223,7 +235,8 @@ public class SwarmRunStartCommand implements Callable<Integer> {
     }
 
     private boolean isTerminated(final @NotNull RunResponse run) {
-        return "FINISHED".equals(run.getRunStatus()) || "STOPPED".equals(run.getRunStatus()) ||
+        return "FINISHED".equals(run.getRunStatus()) ||
+                "STOPPED".equals(run.getRunStatus()) ||
                 "FAILED".equals(run.getRunStatus());
     }
 
@@ -251,8 +264,21 @@ public class SwarmRunStartCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmRunStartCommand{" + "scenario=" + scenario + ", detached=" + detached + ", swarmOptions=" +
-                swarmOptions + ", runsApi=" + runsApi + ", scenariosApi=" + scenariosApi + ", errorTransformer=" +
-                errorTransformer + ", out=" + out + '}';
+        return "SwarmRunStartCommand{" +
+                "scenario=" +
+                scenario +
+                ", detached=" +
+                detached +
+                ", swarmOptions=" +
+                swarmOptions +
+                ", runsApi=" +
+                runsApi +
+                ", scenariosApi=" +
+                scenariosApi +
+                ", errorTransformer=" +
+                errorTransformer +
+                ", out=" +
+                out +
+                '}';
     }
 }

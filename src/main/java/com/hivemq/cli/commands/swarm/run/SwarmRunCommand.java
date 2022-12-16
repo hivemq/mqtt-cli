@@ -23,10 +23,14 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "run", description = "HiveMQ Swarm Run Command Line Interpreter.",
-        synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", versionProvider = MqttCLIMain.CLIVersionProvider.class,
-        mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "run",
+                     description = "HiveMQ Swarm Run Command Line Interpreter.",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class SwarmRunCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
@@ -37,7 +41,8 @@ public class SwarmRunCommand implements Callable<Integer> {
     private final @NotNull SwarmOptions swarmOptions = new SwarmOptions();
 
     @Inject
-    public SwarmRunCommand() {}
+    public SwarmRunCommand() {
+    }
 
     @Override
     public @NotNull Integer call() throws Exception {

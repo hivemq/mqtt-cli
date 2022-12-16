@@ -16,7 +16,14 @@
 
 package com.hivemq.cli.mqtt.test;
 
-import com.hivemq.cli.mqtt.test.results.*;
+import com.hivemq.cli.mqtt.test.results.AsciiCharsInClientIdTestResults;
+import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
+import com.hivemq.cli.mqtt.test.results.QosTestResult;
+import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
+import com.hivemq.cli.mqtt.test.results.TestResult;
+import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
 import com.hivemq.cli.utils.Tuple;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
@@ -32,7 +39,10 @@ import org.testcontainers.utility.DockerImageName;
 
 import static com.hivemq.cli.mqtt.test.results.TestResult.OK;
 import static com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAckReturnCode.SUCCESS;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class Mqtt3FeatureTesterDefaultIT {
 
@@ -48,8 +58,7 @@ class Mqtt3FeatureTesterDefaultIT {
 
     @BeforeEach
     void setUp() {
-        mqtt3FeatureTester =
-                new Mqtt3FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 3);
+        mqtt3FeatureTester = new Mqtt3FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 3);
     }
 
     @AfterAll

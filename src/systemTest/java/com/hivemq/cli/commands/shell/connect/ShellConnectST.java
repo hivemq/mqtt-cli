@@ -59,7 +59,7 @@ class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_help() throws Exception {
         final List<String> connectCommand = List.of("con", "--help");
-        mqttCliShell.executeAsync(connectCommand).awaitStdOut("Usage").awaitStdOut("Options").awaitStdOut("mqtt>");
+        mqttCliShell.executeAsync(connectCommand).awaitStdOut("Usage").awaitStdOut("OPTIONS").awaitStdOut("mqtt>");
     }
 
     @ParameterizedTest
@@ -74,8 +74,7 @@ class ShellConnectST {
                 .awaitLog("received CONNACK");
 
         final ConnectPacket connectPacket = HIVE_MQ.getConnectPackets().get(0);
-        assertConnectPacket(
-                connectPacket,
+        assertConnectPacket(connectPacket,
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -84,8 +83,7 @@ class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_connectWhileConnected(final char mqttVersion) throws Exception {
-        final List<String> connectCommand1 = List.of(
-                "con",
+        final List<String> connectCommand1 = List.of("con",
                 "-h",
                 HIVE_MQ.getHost(),
                 "-p",
@@ -95,8 +93,7 @@ class ShellConnectST {
                 "-i",
                 "client1");
 
-        final List<String> connectCommand2 = List.of(
-                "con",
+        final List<String> connectCommand2 = List.of("con",
                 "-h",
                 HIVE_MQ.getHost(),
                 "-p",
@@ -148,8 +145,7 @@ class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_wrongHost(final char mqttVersion) throws Exception {
-        final List<String> connectCommand = List.of(
-                "con",
+        final List<String> connectCommand = List.of("con",
                 "-h",
                 "unreachable-host",
                 "-p",
@@ -170,7 +166,7 @@ class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_cleanStart(final char mqttVersion) throws Exception {
+    void test_noCleanStart(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--no-cleanStart");
 
@@ -185,6 +181,27 @@ class ShellConnectST {
                 connectAssertion.setSessionExpiryInterval(4294967295L);
             }
             connectAssertion.setCleanStart(false);
+        });
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_cleanStart(final char mqttVersion) throws Exception {
+        final List<String> connectCommand = defaultConnectCommand(mqttVersion);
+        connectCommand.add("--cleanStart");
+
+        mqttCliShell.executeAsync(connectCommand)
+                .awaitStdOut(String.format("@%s>", HIVE_MQ.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("received CONNACK");
+
+        assertConnectPacket(HIVE_MQ.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
+            if (mqttVersion == '3') {
+                connectAssertion.setSessionExpiryInterval(0L);
+            }
+            connectAssertion.setCleanStart(true);
         });
     }
 
@@ -272,9 +289,30 @@ class ShellConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_requestProblemInformation(final char mqttVersion) throws IOException {
+    void test_noRequestProblemInformation(final char mqttVersion) throws IOException {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
         connectCommand.add("--no-reqProblemInfo");
+
+        final AwaitOutput awaitOutput =
+                mqttCliShell.executeAsync(connectCommand).awaitStdOut(String.format("@%s>", HIVE_MQ.getHost()));
+
+        awaitOutput.awaitLog("sending CONNECT");
+        awaitOutput.awaitLog("received CONNACK");
+
+        assertConnectPacket(HIVE_MQ.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
+            if (mqttVersion == '5') {
+                connectAssertion.setRequestProblemInformation(false);
+            }
+        });
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_requestProblemInformation(final char mqttVersion) throws IOException {
+        final List<String> connectCommand = defaultConnectCommand(mqttVersion);
+        connectCommand.add("--reqProblemInfo");
 
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(connectCommand).awaitStdOut(String.format("@%s>", HIVE_MQ.getHost()));
@@ -292,7 +330,7 @@ class ShellConnectST {
         assertConnectPacket(HIVE_MQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
-                connectAssertion.setRequestProblemInformation(false);
+                connectAssertion.setRequestProblemInformation(true);
             }
         });
     }
@@ -329,8 +367,7 @@ class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_noClientId(final char mqttVersion) throws Exception {
-        final List<String> connectCommand = List.of(
-                "con",
+        final List<String> connectCommand = List.of("con",
                 "-h",
                 HIVE_MQ.getHost(),
                 "-p",
@@ -556,8 +593,7 @@ class ShellConnectST {
     @ValueSource(chars = {'3', '5'})
     void test_sessionExpiryInterval(final char mqttVersion) throws Exception {
         final String clientId = "sessionTest_V" + mqttVersion;
-        final List<String> connectCommand = List.of(
-                "con",
+        final List<String> connectCommand = List.of("con",
                 "-h",
                 HIVE_MQ.getHost(),
                 "-p",
@@ -620,8 +656,7 @@ class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_identifierPrefix(final char mqttVersion) throws Exception {
-        final List<String> connectCommand = List.of(
-                "con",
+        final List<String> connectCommand = List.of("con",
                 "-h",
                 HIVE_MQ.getHost(),
                 "-p",
@@ -647,9 +682,9 @@ class ShellConnectST {
     @ValueSource(chars = {'3', '5'})
     void test_userProperties(final char mqttVersion) throws Exception {
         final List<String> connectCommand = defaultConnectCommand(mqttVersion);
-        connectCommand.add("-up");
+        connectCommand.add("-Cup");
         connectCommand.add("key1=value1");
-        connectCommand.add("-up");
+        connectCommand.add("-Cup");
         connectCommand.add("key2=value2");
 
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(connectCommand);
@@ -683,8 +718,7 @@ class ShellConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_keepAlive(final char mqttVersion) throws Exception {
-        final List<String> connectCommand = List.of(
-                "con",
+        final List<String> connectCommand = List.of("con",
                 "-h",
                 HIVE_MQ.getHost(),
                 "-p",

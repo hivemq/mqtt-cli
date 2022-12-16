@@ -26,8 +26,12 @@ import org.jetbrains.annotations.Nullable;
 import org.tinylog.Level;
 
 import javax.inject.Singleton;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
@@ -70,9 +74,12 @@ public class DefaultCLIProperties {
         put(CLIENT_ID_PREFIX, "mqtt");
         put(CLIENT_ID_LENGTH, "8");
         put(SUBSCRIBE_OUTPUT_FILE, null);
-        put(
-                LOGFILE_PATH,
-                System.getProperty("user.home") + File.separator + ".mqtt-cli" + File.separator + "logs" +
+        put(LOGFILE_PATH,
+                System.getProperty("user.home") +
+                        File.separator +
+                        ".mqtt-cli" +
+                        File.separator +
+                        "logs" +
                         File.separator);
         put(USERNAME, null);
         put(PASSWORD, null);
@@ -108,9 +115,9 @@ public class DefaultCLIProperties {
         if (!storePropertiesFile.exists()) {
             createFile();
         } else if (!storePropertiesFile.isFile()) {
-            throw new IllegalArgumentException(
-                    "The given file path does not lead to a valid properties file ('" + storePropertiesFile.getPath() +
-                            "')");
+            throw new IllegalArgumentException("The given file path does not lead to a valid properties file ('" +
+                    storePropertiesFile.getPath() +
+                    "')");
         } else {
             readFromFile();
         }
@@ -119,7 +126,7 @@ public class DefaultCLIProperties {
     private void readFromFile() throws IOException {
         final Properties fileProperties = new Properties();
 
-        try (final InputStream input = new FileInputStream(storePropertiesFile)) {
+        try (final InputStream input = Files.newInputStream(storePropertiesFile.toPath())) {
             fileProperties.load(input);
         }
 
@@ -133,7 +140,7 @@ public class DefaultCLIProperties {
     private void createFile() throws IOException {
         storePropertiesFile.getParentFile().mkdirs();
         assert storePropertiesFile.createNewFile();
-        try (final OutputStream output = new FileOutputStream(storePropertiesFile)) {
+        try (final OutputStream output = Files.newOutputStream(storePropertiesFile.toPath())) {
             final Properties properties = getProperties();
             properties.store(output, null);
         }

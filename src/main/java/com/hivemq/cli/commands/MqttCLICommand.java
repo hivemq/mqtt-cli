@@ -22,18 +22,23 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 
-@CommandLine.Command(name = "mqtt", description = "MQTT Command Line Interpreter.",
-        synopsisHeading = "%n@|bold Usage:|@  ",
-        synopsisSubcommandLabel = "{ pub | sub | shell | test | hivemq | swarm }", descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options:|@%n", commandListHeading = "%n@|bold Commands:|@%n",
-        versionProvider = MqttCLIMain.CLIVersionProvider.class, mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "mqtt",
+                     description = "MQTT Command Line Interpreter.",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     synopsisSubcommandLabel = "{ pub | sub | shell | test | hivemq | swarm }",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class MqttCLICommand {
 
     @SuppressWarnings("unused")
     public static final @NotNull String VERSION_STRING = "1.0";
 
     @Inject
-    MqttCLICommand() {}
+    MqttCLICommand() {
+    }
 
     @Override
     public @NotNull String toString() {
