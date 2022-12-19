@@ -74,7 +74,7 @@ class PublishConnectST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(1, executionResult.getExitCode());
         assertTrue(
-                executionResult.getErrorOutput().contains("Unable to connect."));
+                executionResult.getErrorOutput().contains("Unable to connect"));
     }
 
     @ParameterizedTest
@@ -96,7 +96,7 @@ class PublishConnectST {
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(1, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput().contains("Unable to connect."));
+        assertTrue(executionResult.getErrorOutput().contains("Unable to connect"));
     }
 
     @ParameterizedTest

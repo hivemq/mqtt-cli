@@ -84,7 +84,8 @@ public class PublishCommand implements Callable<Integer> {
         try {
             client = mqttClientExecutor.connect(connectOptions, null);
         } catch (final Exception exception) {
-            LoggerUtils.logCommandError("Unable to connect", exception, debugOptions);
+            System.out.println("RANDOMMMM");
+            LoggerUtils.logCommandError("Unable to connect this thing", exception, debugOptions);
             return 1;
         }
 
