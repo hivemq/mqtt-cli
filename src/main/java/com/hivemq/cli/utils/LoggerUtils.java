@@ -122,7 +122,7 @@ public class LoggerUtils {
         } else {
             final String exceptionMessage = Throwables.getRootCause(exception).getMessage();
             if (exceptionMessage != null) {
-                Logger.error("{}. {}", message, exceptionMessage);
+                Logger.error("{}. Reason: '{}'", message, exceptionMessage);
             } else {
                 Logger.error("{}. Use '-d' option to get more detailed information.", message);
             }
@@ -132,7 +132,7 @@ public class LoggerUtils {
     public static void logShellError(final @NotNull String message, final @NotNull Exception exception) {
         final String exceptionMessage = Throwables.getRootCause(exception).getMessage();
         if (exceptionMessage != null) {
-            Logger.error(exception, "{}. {}", message, exceptionMessage);
+            Logger.error(exception, "{}. Reason: '{}'", message, exceptionMessage);
         } else {
             Logger.error(exception, "{}. Use 'mqtt sh -l' to see more detailed information in the logfile.", message);
         }

@@ -74,8 +74,7 @@ class PublishConnectST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(1, executionResult.getExitCode());
         assertTrue(
-                executionResult.getErrorOutput().contains("unreachable-host: Temporary failure in name resolution") ||
-                        executionResult.getErrorOutput().contains("nodename nor servname provided, or not known"));
+                executionResult.getErrorOutput().contains("Unable to connect."));
     }
 
     @ParameterizedTest
@@ -97,8 +96,7 @@ class PublishConnectST {
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(1, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput().contains("readAddress(..) failed: Connection reset by peer") ||
-                executionResult.getErrorOutput().contains("Connection refused"));
+        assertTrue(executionResult.getErrorOutput().contains("Unable to connect."));
     }
 
     @ParameterizedTest

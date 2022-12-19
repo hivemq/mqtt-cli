@@ -134,9 +134,9 @@ class ShellConnectST {
                 List.of("con", "-h", HIVE_MQ.getHost(), "-p", "22", "-V", String.valueOf(mqttVersion), "-i", "cliTest");
 
         mqttCliShell.executeAsync(connectCommand)
-                .awaitStdErr("Connection refused")
+                .awaitStdErr("Unable to connect.")
                 .awaitStdOut("mqtt>")
-                .awaitLog("Connection refused");
+                .awaitLog("Unable to connect.");
 
         assertEquals(0, HIVE_MQ.getConnectPackets().size());
     }
@@ -156,9 +156,9 @@ class ShellConnectST {
                 "cliTest");
 
         mqttCliShell.executeAsync(connectCommand)
-                .awaitStdErr("nodename nor servname provided, or not known")
+                .awaitStdErr("Unable to connect.")
                 .awaitStdOut("mqtt>")
-                .awaitLog("nodename nor servname provided, or not known");
+                .awaitLog("Unable to connect.");
 
         assertEquals(0, HIVE_MQ.getConnectPackets().size());
     }
