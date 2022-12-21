@@ -1,7 +1,7 @@
 MASTER_BRANCH = 'master'
 
 pipeline {
-    agent { label 'master' }
+    agent { label 'jenkins-worker' }
     options {
         skipDefaultCheckout() // no checkout needed
         buildDiscarder(logRotator(numToKeepStr: '100'))
