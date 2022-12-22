@@ -27,7 +27,6 @@ import java.security.Security;
  * This class is used to register and validate BouncyCastle providers for the native image.
  */
 @SuppressWarnings("unused")
-@AutomaticFeature
 public class BouncyCastleFeature implements Feature {
 
     @Override

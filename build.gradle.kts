@@ -505,11 +505,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
     buildArgs.add("-H:+TraceServiceLoaderFeature")
     buildArgs.add("--no-fallback")
     buildArgs.add("--enable-https")
-    buildArgs.add(
-        "--rerun-class-initialization-at-runtime=" +
-                "org.bouncycastle.jcajce.provider.drbg.DRBG\$Default," +
-                "org.bouncycastle.jcajce.provider.drbg.DRBG\$NonceAndIV"
-    )
+    buildArgs.add("--features=com.hivemq.cli.graal.BouncyCastleFeature")
     buildArgs.add(
         "--initialize-at-build-time=" +
                 "org.bouncycastle," +
@@ -530,6 +526,8 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
     )
     buildArgs.add(
         "--initialize-at-run-time=" +
+                "org.bouncycastle.jcajce.provider.drbg.DRBG\$Default," +
+                "org.bouncycastle.jcajce.provider.drbg.DRBG\$NonceAndIV," +
                 "io.netty," +
                 "io.netty.bootstrap," +
                 "io.netty.channel," +
