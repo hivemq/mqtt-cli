@@ -17,11 +17,13 @@ pipeline {
                         build job: "${multiBranchJobPath}/${branchJobName}", wait: false
                     } catch (e) {
                         try {
-                            sh """
-                                git clone git@github.com:hivemq/hivemq.git --branch=${MASTER_BRANCH} --single-branch --depth 1 .
-                                git push origin HEAD:${BRANCH_NAME}
-                            """
-                        } catch (e2) { // if push failed, branch already exists
+                            withCredentials([gitUsernamePassword(credentialsId: 'hivemq-jenkins')]) {
+                                sh("git clone https://github.com/hivemq/hivemq.git --branch=${MASTER_BRANCH} --single-branch --depth 1 .")
+                                try {
+                                    sh("git push origin HEAD:${BRANCH_NAME}")
+                                } catch (e2) { // if push failed, branch already exists
+                                }
+                            }
                         } finally {
                             cleanWs()
                             build job: multiBranchJobPath, wait: false
