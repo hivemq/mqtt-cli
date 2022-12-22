@@ -23,10 +23,14 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "swarm", description = "HiveMQ Swarm Command Line Interpreter.",
-        synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
+@CommandLine.Command(name = "swarm",
+                     description = "HiveMQ Swarm Command Line Interpreter.",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class SwarmCLICommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
@@ -34,11 +38,17 @@ public class SwarmCLICommand implements Callable<Integer> {
     private @NotNull CommandLine.Model.CommandSpec spec;
 
     @Inject
-    public SwarmCLICommand() {}
+    public SwarmCLICommand() {
+    }
 
     @Override
     public @NotNull Integer call() {
         System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
         return 0;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "SwarmCLICommand{" + ", spec=" + spec + '}';
     }
 }

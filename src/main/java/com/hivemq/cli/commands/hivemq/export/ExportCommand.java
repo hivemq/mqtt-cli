@@ -23,10 +23,14 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "export", description = "Exports the specified details from HiveMQ",
-        synopsisHeading = "%n@|bold Usage:|@  ", descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
+@CommandLine.Command(name = "export",
+                     description = "Exports the specified details from HiveMQ",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class ExportCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
@@ -34,11 +38,17 @@ public class ExportCommand implements Callable<Integer> {
     private @NotNull CommandLine.Model.CommandSpec spec;
 
     @Inject
-    public ExportCommand() {}
+    public ExportCommand() {
+    }
 
     @Override
     public @NotNull Integer call() {
         System.out.println(spec.commandLine().getUsageMessage(spec.commandLine().getColorScheme()));
         return 0;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "ExportCommand{" + ", spec=" + spec + '}';
     }
 }

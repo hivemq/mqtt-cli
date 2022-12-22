@@ -17,7 +17,14 @@
 package com.hivemq.cli.mqtt.test;
 
 import com.google.common.base.Strings;
-import com.hivemq.cli.mqtt.test.results.*;
+import com.hivemq.cli.mqtt.test.results.AsciiCharsInClientIdTestResults;
+import com.hivemq.cli.mqtt.test.results.ClientIdLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.PayloadTestResults;
+import com.hivemq.cli.mqtt.test.results.QosTestResult;
+import com.hivemq.cli.mqtt.test.results.SharedSubscriptionTestResult;
+import com.hivemq.cli.mqtt.test.results.TestResult;
+import com.hivemq.cli.mqtt.test.results.TopicLengthTestResults;
+import com.hivemq.cli.mqtt.test.results.WildcardSubscriptionsTestResult;
 import com.hivemq.cli.utils.TopicUtils;
 import com.hivemq.cli.utils.Tuple;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
@@ -38,7 +45,11 @@ import org.tinylog.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -688,7 +699,9 @@ public class Mqtt3FeatureTester {
         maxTopicLength = topicLength;
     }
 
-    public void setMaxQos(final @NotNull MqttQos qos) {maxQos = qos;}
+    public void setMaxQos(final @NotNull MqttQos qos) {
+        maxQos = qos;
+    }
 
     // Helpers
     private @NotNull Mqtt3Client buildClient() {

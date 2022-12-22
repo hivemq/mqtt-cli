@@ -21,7 +21,11 @@ import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.utility.DockerImageName;
 
 @Disabled("Tests are only used to check output")

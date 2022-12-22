@@ -102,8 +102,8 @@ dependencies {
     implementation("org.tinylog:tinylog-api:${property("tinylog.version")}")
     implementation("org.tinylog:tinylog-impl:${property("tinylog.version")}")
     implementation("org.jetbrains:annotations:${property("jetbrains-annotations.version")}")
-    implementation("org.bouncycastle:bcprov-jdk15on:${property("bouncycastle.version")}")
-    implementation("org.bouncycastle:bcpkix-jdk15on:${property("bouncycastle.version")}")
+    implementation("org.bouncycastle:bcprov-jdk18on:${property("bouncycastle.version")}")
+    implementation("org.bouncycastle:bcpkix-jdk18on:${property("bouncycastle.version")}")
     implementation("com.hivemq:hivemq-mqtt-client:${property("hivemq-client.version")}")
     implementation("io.netty:netty-handler:${property("netty.version")}")
     implementation("io.netty:netty-codec-http:${property("netty.version")}")
@@ -111,8 +111,10 @@ dependencies {
     implementation("com.opencsv:opencsv:${property("open-csv.version")}")
     constraints {
         implementation("org.apache.commons:commons-text:1.10.0") {
-            because("Force a commons-text version that does not contain CVE-2022-42889, " +
-                    "because opencsv brings the vulnerable version 1.9 as transitive dependency")
+            because(
+                "Force a commons-text version that does not contain CVE-2022-42889, " +
+                        "because opencsv brings the vulnerable version 1.9 as transitive dependency"
+            )
         }
     }
 }
@@ -277,6 +279,8 @@ val systemTestRuntimeOnly: Configuration by configurations.getting {
 dependencies {
     systemTestImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemq-testcontainer.version")}")
     systemTestImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
+    systemTestImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
+    systemTestImplementation("com.hivemq:hivemq-community-edition-embedded:${property("hivemq-community-edition-embedded.version")}")
 }
 
 tasks.named<JavaCompile>("compileSystemTestJava") {
@@ -298,6 +302,7 @@ val systemTest by tasks.registering(Test::class) {
     dependsOn(tasks.shadowJar)
     systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
             tasks.shadowJar.map { it.outputs.files.singleFile }.get()
+    systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
 }
 
 val systemTestNative by tasks.registering(Test::class) {
@@ -313,6 +318,7 @@ val systemTestNative by tasks.registering(Test::class) {
     dependsOn(tasks.nativeCompile)
     systemProperties["cliExec"] =
         tasks.nativeCompile.map { it.outputs.files.singleFile }.get().resolve(project.name).absolutePath
+    systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
     testLogging {
         showCauses = true
         showExceptions = true
@@ -473,6 +479,9 @@ cliNative {
     javaVersion.set(property("java-native.version").toString())
 }
 
+//reflection configuration files are currently created manually with the command: ./gradlew -Pagent agentMainRun --stacktrace
+//this yields an exception as the Graal plugin is currently quite buggy. The files are created nonetheless.
+//build/native/agent-output/agentMainRun/session-*****-*Date*T*Time*Z -> src/main/resources/META-INF/native-image
 val agentMainRun by tasks.registering(JavaExec::class) {
     group = "native"
 
@@ -497,7 +506,13 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
     buildArgs.add("--no-fallback")
     buildArgs.add("--enable-https")
     buildArgs.add(
+        "--rerun-class-initialization-at-runtime=" +
+                "org.bouncycastle.jcajce.provider.drbg.DRBG\$Default," +
+                "org.bouncycastle.jcajce.provider.drbg.DRBG\$NonceAndIV"
+    )
+    buildArgs.add(
         "--initialize-at-build-time=" +
+                "org.bouncycastle," +
                 "org.jctools.queues.BaseMpscLinkedArrayQueue," +
                 "org.jctools.queues.BaseSpscLinkedArrayQueue," +
                 "org.jctools.util.UnsafeAccess," +
@@ -545,6 +560,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
 graalvmNative {
     toolchainDetection.set(false)
     agent {
+        defaultMode.set("standard")
         tasksToInstrumentPredicate.set { t -> t == agentMainRun.get() }
     }
     binaries {

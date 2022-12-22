@@ -31,7 +31,11 @@ import picocli.CommandLine;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
-import java.security.*;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -43,43 +47,53 @@ public class SslOptions {
     private static final @NotNull String DEFAULT_TLS_VERSION = "TLSv1.2";
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-s", "--secure"}, defaultValue = "false",
-            description = "Use default ssl configuration if no other ssl options are specified (default: false)",
-            order = 2)
+    @CommandLine.Option(names = {"-s", "--secure"},
+                        defaultValue = "false",
+                        description = "Use default ssl configuration if no other ssl options are specified (default: false)")
     private boolean useSsl;
 
-    @CommandLine.Option(names = {"--cafile"}, paramLabel = "FILE", converter = FileToCertificatesConverter.class,
-            description = "Path to a file containing trusted CA certificates to enable encrypted certificate based communication",
-            order = 2)
+    @CommandLine.Option(names = {"--cafile"},
+                        paramLabel = "FILE",
+                        converter = FileToCertificatesConverter.class,
+                        description = "Path to a file containing trusted CA certificates to enable encrypted certificate based communication")
     private @Nullable Collection<X509Certificate> serverCertificateChain;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--capath"}, paramLabel = "DIR", converter = DirectoryToCertificatesConverter.class,
-            description = {
-                    "Path to a directory containing certificate files to import to enable encrypted certificate based communication"
-            }, order = 2)
+    @CommandLine.Option(names = {"--capath"},
+                        paramLabel = "DIR",
+                        converter = DirectoryToCertificatesConverter.class,
+                        description = {
+                                "Path to a directory containing certificate files to import to enable encrypted certificate based communication"})
     private @Nullable Collection<X509Certificate> serverCertificateChainFromDir;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--ciphers"}, split = ":",
-            description = "The client supported cipher suites list in IANA format separated with ':'", order = 2)
+    @CommandLine.Option(names = {"--ciphers"},
+                        split = ":",
+                        description = "The client supported cipher suites list in IANA format separated with ':'")
     private @Nullable Collection<String> cipherSuites;
 
     @CommandLine.Option(names = {"--tls-version"},
-            description = "The TLS protocol version to use (default: {'TLSv.1.2'})", order = 2)
+                        description = "The TLS protocol version to use (default: {'TLSv.1.2'})")
     private @Nullable Collection<String> supportedTLSVersions;
 
-    @CommandLine.Option(names = {"--cert"}, converter = FileToCertificatesConverter.class,
-            description = "The client certificate to use for client side authentication", order = 2)
+    @CommandLine.Option(names = {"--cert"},
+                        converter = FileToCertificatesConverter.class,
+                        description = "The client certificate to use for client side authentication")
     private @Nullable Collection<X509Certificate> clientCertificateChain;
 
-    @CommandLine.Option(names = {"--key"}, converter = FileToPrivateKeyConverter.class,
-            description = "The path to the client private key for client side authentication", order = 2)
+    @CommandLine.Option(names = {"--key"},
+                        converter = FileToPrivateKeyConverter.class,
+                        description = "The path to the client private key for client side authentication")
     private @Nullable PrivateKey clientPrivateKey;
 
     private boolean useBuiltSslConfig() {
-        return serverCertificateChain != null || serverCertificateChainFromDir != null || cipherSuites != null ||
-                supportedTLSVersions != null || clientPrivateKey != null || clientCertificateChain != null || useSsl;
+        return serverCertificateChain != null ||
+                serverCertificateChainFromDir != null ||
+                cipherSuites != null ||
+                supportedTLSVersions != null ||
+                clientPrivateKey != null ||
+                clientCertificateChain != null ||
+                useSsl;
     }
 
     public @Nullable MqttClientSslConfig buildSslConfig() throws Exception {
@@ -207,9 +221,21 @@ public class SslOptions {
 
     @Override
     public @NotNull String toString() {
-        return "SslOptions{" + "useSsl=" + useSsl + ", serverCertificates=" + serverCertificateChain +
-                ", serverCertificatesFromDir=" + serverCertificateChainFromDir + ", cipherSuites=" + cipherSuites +
-                ", supportedTLSVersions=" + supportedTLSVersions + ", clientCertificates=" + clientCertificateChain +
-                ", clientPrivateKey=" + clientPrivateKey + '}';
+        return "SslOptions{" +
+                "useSsl=" +
+                useSsl +
+                ", serverCertificates=" +
+                serverCertificateChain +
+                ", serverCertificatesFromDir=" +
+                serverCertificateChainFromDir +
+                ", cipherSuites=" +
+                cipherSuites +
+                ", supportedTLSVersions=" +
+                supportedTLSVersions +
+                ", clientCertificates=" +
+                clientCertificateChain +
+                ", clientPrivateKey=" +
+                clientPrivateKey +
+                '}';
     }
 }

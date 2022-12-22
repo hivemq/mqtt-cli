@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
@@ -25,23 +24,22 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
-@CommandLine.Command(sortOptions = false, name = "> ",
-        description = "In context mode all MQTT commands relate to the currently active client.",
-        synopsisHeading = "%n@|bold Usage|@:  ",
-        synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch | ls | cls | exit }", descriptionHeading = "%n",
-        optionListHeading = "%n@|bold Options|@:%n", commandListHeading = "%n@|bold Commands|@:%n", separator = " ")
-public class ShellContextCommand implements Runnable, CliCommand {
+@CommandLine.Command(sortOptions = false,
+                     name = "> ",
+                     description = "In context mode all MQTT commands relate to the currently active client.",
+                     synopsisHeading = "%n@|bold Usage|@:  ",
+                     synopsisSubcommandLabel = "{ pub | sub | unsub | dis | switch | ls | cls | exit }",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options|@:%n",
+                     commandListHeading = "%n@|bold Commands|@:%n",
+                     separator = " ")
+public class ShellContextCommand implements Callable<Integer> {
 
     public static @Nullable MqttClient contextClient;
 
     @NotNull MqttClientExecutor mqttClientExecutor;
-
-    //needed for pico cli - reflection code generation
-    public ShellContextCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
 
     @Inject
     public ShellContextCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -61,31 +59,13 @@ public class ShellContextCommand implements Runnable, CliCommand {
     }
 
     @Override
-    public void run() {
+    public @NotNull Integer call() {
         Objects.requireNonNull(ShellCommand.TERMINAL_WRITER).println(ShellCommand.getUsageMessage());
+        return 0;
     }
 
-    public @NotNull String getKey() {
-        return "client {" + "identifier='" + Objects.requireNonNull(contextClient)
-                .getConfig()
-                .getClientIdentifier()
-                .map(Object::toString)
-                .orElse("") + '\'' + ", host='" + contextClient.getConfig().getServerHost() + '\'' + '}';
-    }
-
-    public @NotNull String getIdentifier() {
-        return Objects.requireNonNull(contextClient)
-                .getConfig()
-                .getClientIdentifier()
-                .map(Object::toString)
-                .orElse("");
-    }
-
-    public boolean isDebug() {
-        return ShellCommand.isDebug();
-    }
-
-    public boolean isVerbose() {
-        return ShellCommand.isVerbose();
+    @Override
+    public @NotNull String toString() {
+        return "ShellContextCommand{}";
     }
 }

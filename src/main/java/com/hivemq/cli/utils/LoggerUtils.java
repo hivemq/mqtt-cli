@@ -16,19 +16,26 @@
 
 package com.hivemq.cli.utils;
 
+import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
+import com.hivemq.cli.commands.options.DebugOptions;
 import com.hivemq.client.mqtt.MqttClientConfig;
 import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Level;
+import org.tinylog.Logger;
 import org.tinylog.configuration.Configuration;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 public class LoggerUtils {
 
@@ -67,7 +74,11 @@ public class LoggerUtils {
         // TinyLog configuration
         final Map<String, String> configurationMap = new HashMap<String, String>() {{
             put("writer1", "console");
-            put("writer1.format", "{message-only}");
+            if (logLevel.equals("debug") || logLevel.equals("trace")) {
+                put("writer1.format", "{message}");
+            } else {
+                put("writer1.format", "{message-only}");
+            }
             put("writer1.level", logLevel);
         }};
 
@@ -100,5 +111,30 @@ public class LoggerUtils {
             id = "UNKNOWN";
         }
         return "Client '" + id + "@" + config.getServerHost() + "'";
+    }
+
+    public static void logCommandError(
+            final @NotNull String message,
+            final @NotNull Exception exception,
+            final @NotNull DebugOptions debugOptions) {
+        if (debugOptions.isDebug() || debugOptions.isVerbose()) {
+            Logger.error(exception, message);
+        } else {
+            final String exceptionMessage = Throwables.getRootCause(exception).getMessage();
+            if (exceptionMessage != null) {
+                Logger.error("{}. Reason: '{}'", message, exceptionMessage);
+            } else {
+                Logger.error("{}. Use '-d' option to get more detailed information.", message);
+            }
+        }
+    }
+
+    public static void logShellError(final @NotNull String message, final @NotNull Exception exception) {
+        final String exceptionMessage = Throwables.getRootCause(exception).getMessage();
+        if (exceptionMessage != null) {
+            Logger.error(exception, "{}. Reason: '{}'", message, exceptionMessage);
+        } else {
+            Logger.error(exception, "{}. Use 'mqtt sh -l' to see more detailed information in the logfile.", message);
+        }
     }
 }

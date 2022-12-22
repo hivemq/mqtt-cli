@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.Subscribe;
+import com.hivemq.cli.commands.options.SubscribeOptions;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.cli.utils.MqttPublishUtils;
 import com.hivemq.cli.utils.json.JsonMqttPublish;
@@ -39,12 +39,12 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
     private final boolean isJsonOutput;
     private final boolean showTopics;
 
-    SubscribeMqtt5PublishCallback(final @NotNull Subscribe subscribe, final @NotNull Mqtt5Client client) {
-        printToStdout = subscribe.isPrintToSTDOUT();
-        outputFile = subscribe.getOutputFile();
-        isBase64 = subscribe.isBase64();
-        isJsonOutput = subscribe.isJsonOutput();
-        showTopics = subscribe.showTopics();
+    SubscribeMqtt5PublishCallback(final @NotNull SubscribeOptions subscribeOptions, final @NotNull Mqtt5Client client) {
+        printToStdout = subscribeOptions.isPrintToSTDOUT();
+        outputFile = subscribeOptions.getOutputFile();
+        isBase64 = subscribeOptions.isBase64();
+        isJsonOutput = subscribeOptions.isJsonOutput();
+        showTopics = subscribeOptions.isShowTopics();
         this.client = client;
     }
 
@@ -70,8 +70,7 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
                 System.out.println(message);
             }
 
-            Logger.debug(
-                    "{} received PUBLISH ('{}') {}",
+            Logger.debug("{} received PUBLISH ('{}') {}",
                     LoggerUtils.getClientPrefix(client.getConfig()),
                     new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
                     mqtt5Publish);

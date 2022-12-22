@@ -17,7 +17,6 @@
 package com.hivemq.cli.commands.swarm.run;
 
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.swarm.AbstractSwarmCommand;
 import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiException;
@@ -35,16 +34,24 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.PrintStream;
+import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "stop", description = "Stop HiveMQ Swarm runs.", synopsisHeading = "%n@|bold Usage:|@  ",
-        descriptionHeading = "%n", optionListHeading = "%n@|bold Options:|@%n",
-        commandListHeading = "%n@|bold Commands:|@%n", mixinStandardHelpOptions = true,
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
-public class SwarmRunStopCommand extends AbstractSwarmCommand {
+@CommandLine.Command(name = "stop",
+                     description = "Stop HiveMQ Swarm runs.",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
+public class SwarmRunStopCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = {"-r", "--run-id"},
-            description = "The id of the run to stop. If none is given the current run is stopped.", order = 3)
+                        description = "The id of the run to stop. If none is given the current run is stopped.")
     private @Nullable Integer runId;
+
+    @CommandLine.Mixin
+    private @NotNull SwarmOptions swarmOptions = new SwarmOptions();
 
     private final @NotNull RunsApi runsApi;
     private final @NotNull CommanderApi commanderApi;
@@ -72,7 +79,7 @@ public class SwarmRunStopCommand extends AbstractSwarmCommand {
             final @NotNull SwarmApiErrorTransformer errorTransformer,
             final @NotNull PrintStream out) {
         this(() -> runsApi, () -> commanderApi, errorTransformer, out);
-        this.commanderUrl = commanderUrl;
+        this.swarmOptions = new SwarmOptions(commanderUrl);
         this.runId = runId;
     }
 
@@ -81,14 +88,14 @@ public class SwarmRunStopCommand extends AbstractSwarmCommand {
         Logger.trace("Command {}", this);
 
         // Check if given URL is valid
-        final HttpUrl httpUrl = HttpUrl.parse(commanderUrl);
+        final HttpUrl httpUrl = HttpUrl.parse(swarmOptions.getCommanderUrl());
         if (httpUrl == null) {
-            Logger.error("URL is not in a valid format: {}", commanderUrl);
-            System.err.println("URL is not in a valid format: " + commanderUrl);
+            Logger.error("URL is not in a valid format: {}", swarmOptions.getCommanderUrl());
+            System.err.println("URL is not in a valid format: " + swarmOptions.getCommanderUrl());
             return -1;
         }
 
-        runsApi.getApiClient().setBasePath(commanderUrl);
+        runsApi.getApiClient().setBasePath(swarmOptions.getCommanderUrl());
 
         final int usedRunID;
         if (runId == null) {
@@ -126,6 +133,19 @@ public class SwarmRunStopCommand extends AbstractSwarmCommand {
 
     @Override
     public @NotNull String toString() {
-        return "SwarmRunStopCommand{" + "commanderUrl='" + commanderUrl + '\'' + ", runId=" + runId + '}';
+        return "SwarmRunStopCommand{" +
+                "runId=" +
+                runId +
+                ", swarmOptions=" +
+                swarmOptions +
+                ", runsApi=" +
+                runsApi +
+                ", commanderApi=" +
+                commanderApi +
+                ", errorTransformer=" +
+                errorTransformer +
+                ", out=" +
+                out +
+                '}';
     }
 }

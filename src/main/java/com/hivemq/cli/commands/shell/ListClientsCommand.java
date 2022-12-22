@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.CliCommand;
 import com.hivemq.cli.mqtt.ClientData;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.client.mqtt.MqttClient;
@@ -27,16 +26,19 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-@CommandLine.Command(name = "ls", aliases = "list",
-        description = "List all connected clients of this mqtt-cli session with their respective identifiers")
-public class ListClientsCommand implements Runnable, CliCommand {
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
+@CommandLine.Command(name = "ls",
+                     aliases = "list",
+                     description = "List all connected clients with their respective identifiers",
+                     mixinStandardHelpOptions = true)
+public class ListClientsCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-t"}, defaultValue = "false", description = "sort by creation time, newest first")
@@ -47,8 +49,9 @@ public class ListClientsCommand implements Runnable, CliCommand {
     private boolean doNotSort;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-r", "--reverse"}, defaultValue = "false",
-            description = "reverse order while sorting")
+    @CommandLine.Option(names = {"-r", "--reverse"},
+                        defaultValue = "false",
+                        description = "reverse order while sorting")
     private boolean reverse;
 
     @SuppressWarnings("unused")
@@ -56,17 +59,17 @@ public class ListClientsCommand implements Runnable, CliCommand {
     private boolean longOutput;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-s", "--subscriptions"}, defaultValue = "false",
-            description = "list subscribed topics of clients")
+    @CommandLine.Option(names = {"-s", "--subscriptions"},
+                        defaultValue = "false",
+                        description = "list subscribed topics of clients")
     private boolean listSubscriptions;
 
     @Inject
-    //needed for pico cli - reflection code generation
     public ListClientsCommand() {
     }
 
     @Override
-    public void run() {
+    public @NotNull Integer call() {
         Logger.trace("Command {}", this);
 
         final List<ClientData> sortedClientData = getSortedClientData();
@@ -77,7 +80,7 @@ public class ListClientsCommand implements Runnable, CliCommand {
             Objects.requireNonNull(writer).println("total " + sortedClientData.size());
 
             if (sortedClientData.size() == 0) {
-                return;
+                return 0;
             }
 
             final Set<MqttClient> clients =
@@ -107,17 +110,30 @@ public class ListClientsCommand implements Runnable, CliCommand {
                     .max(Integer::compareTo)
                     .orElse("NO_SSL".length());
 
-            final String format =
-                    "%-" + longestState + "s " + "%02d:%02d:%02d " + "%-" + longestID + "s " + "%-" + longestHost +
-                            "s " + "%5d " + "%-" + longestVersion + "s " + "%-" + longestSSLVersion + "s\n";
+            final String format = "%-" +
+                    longestState +
+                    "s " +
+                    "%02d:%02d:%02d " +
+                    "%-" +
+                    longestID +
+                    "s " +
+                    "%-" +
+                    longestHost +
+                    "s " +
+                    "%5d " +
+                    "%-" +
+                    longestVersion +
+                    "s " +
+                    "%-" +
+                    longestSSLVersion +
+                    "s\n";
 
             for (final ClientData clientData : sortedClientData) {
                 final MqttClient client = clientData.getClient();
                 final LocalDateTime dateTime = clientData.getCreationTime();
                 final String connectionState = client.getState().toString();
 
-                writer.printf(
-                        format,
+                writer.printf(format,
                         connectionState,
                         dateTime.getHour(),
                         dateTime.getMinute(),
@@ -148,22 +164,8 @@ public class ListClientsCommand implements Runnable, CliCommand {
                 }
             }
         }
-    }
 
-    @Override
-    public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "sortByTime=" + sortByTime + ", doNotSort=" + doNotSort +
-                ", reverse=" + reverse + ", listSubscriptions" + listSubscriptions + ", longOutput=" + longOutput + '}';
-    }
-
-    @Override
-    public boolean isVerbose() {
-        return ShellCommand.isVerbose();
-    }
-
-    @Override
-    public boolean isDebug() {
-        return ShellCommand.isDebug();
+        return 0;
     }
 
     public @NotNull List<ClientData> getSortedClientData() {
@@ -189,5 +191,21 @@ public class ListClientsCommand implements Runnable, CliCommand {
 
         sortedClientData.sort(comparator);
         return sortedClientData;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "ListClientsCommand{" +
+                "sortByTime=" +
+                sortByTime +
+                ", doNotSort=" +
+                doNotSort +
+                ", reverse=" +
+                reverse +
+                ", longOutput=" +
+                longOutput +
+                ", listSubscriptions=" +
+                listSubscriptions +
+                '}';
     }
 }

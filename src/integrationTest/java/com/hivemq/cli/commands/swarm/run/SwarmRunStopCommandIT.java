@@ -20,7 +20,14 @@ import com.google.gson.Gson;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.Configuration;
-import com.hivemq.cli.openapi.swarm.*;
+import com.hivemq.cli.openapi.swarm.CommanderApi;
+import com.hivemq.cli.openapi.swarm.CommanderStateResponse;
+import com.hivemq.cli.openapi.swarm.RunResponse;
+import com.hivemq.cli.openapi.swarm.RunsApi;
+import com.hivemq.cli.openapi.swarm.ScenariosApi;
+import com.hivemq.cli.openapi.swarm.StartRunRequest;
+import com.hivemq.cli.openapi.swarm.UploadScenarioRequest;
+import com.hivemq.cli.openapi.swarm.UploadScenarioResponse;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
@@ -50,7 +57,9 @@ import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class SwarmRunStopCommandIT {
 
@@ -127,8 +136,8 @@ public class SwarmRunStopCommandIT {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void stopRun() throws Exception {
         // no current run
-        final int execute0 = commandLine.execute(
-                "-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT));
+        final int execute0 =
+                commandLine.execute("-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT));
         assertEquals(0, execute0);
         verify(out, times(1)).println("No run in progress.");
 
@@ -153,9 +162,8 @@ public class SwarmRunStopCommandIT {
         // stop the scenario
         //TODO: not sure why here a logger reset is necessary (local machine)
         TestLoggerUtils.resetLogger();
-        final int execute = commandLine.execute(
-                "-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT),
-                "-r" + 1);
+        final int execute =
+                commandLine.execute("-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT), "-r" + 1);
         assertEquals(0, execute);
 
         await().atMost(Duration.ofSeconds(3)).until(() -> {
@@ -170,9 +178,8 @@ public class SwarmRunStopCommandIT {
         // stop a run that does not exist
         //TODO: however here a logger reset is not necessary (local machine)
         //TestLoggerUtils.resetLogger();
-        final int execute2 = commandLine.execute(
-                "-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT),
-                "-r" + 1);
+        final int execute2 =
+                commandLine.execute("-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT), "-r" + 1);
         assertEquals(-1, execute2);
     }
 }

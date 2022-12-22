@@ -17,9 +17,11 @@
 package com.hivemq.cli.mqtt;
 
 import com.google.common.base.Throwables;
-import com.hivemq.cli.commands.*;
+import com.hivemq.cli.commands.options.DisconnectOptions;
+import com.hivemq.cli.commands.options.PublishOptions;
+import com.hivemq.cli.commands.options.SubscribeOptions;
+import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.utils.LoggerUtils;
-import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttTopicFilter;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -31,7 +33,6 @@ import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3Subscribe;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3SubscribeBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.unsubscribe.Mqtt3Unsubscribe;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 import com.hivemq.client.mqtt.mqtt5.message.disconnect.Mqtt5Disconnect;
@@ -41,7 +42,6 @@ import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.subscribe.Mqtt5Subscribe;
 import com.hivemq.client.mqtt.mqtt5.message.subscribe.Mqtt5SubscribeBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.unsubscribe.Mqtt5Unsubscribe;
-import com.hivemq.client.mqtt.mqtt5.message.unsubscribe.unsuback.Mqtt5UnsubAck;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
@@ -54,12 +54,11 @@ import java.nio.charset.StandardCharsets;
 public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     @Inject
-    MqttClientExecutor() {}
+    MqttClientExecutor() {
+    }
 
     void mqtt5Connect(
-            final @NotNull Mqtt5Client client,
-            final @NotNull Mqtt5Connect connectMessage,
-            final @NotNull Connect connect) {
+            final @NotNull Mqtt5Client client, final @NotNull Mqtt5Connect connectMessage) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
 
         Logger.debug("{} sending CONNECT {}", clientLogPrefix, connectMessage);
@@ -70,9 +69,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     void mqtt3Connect(
-            final @NotNull Mqtt3Client client,
-            final @NotNull Mqtt3Connect connectMessage,
-            final @NotNull Connect connect) {
+            final @NotNull Mqtt3Client client, final @NotNull Mqtt3Connect connectMessage) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
 
         Logger.debug("{} sending CONNECT {}", clientLogPrefix, connectMessage);
@@ -84,15 +81,15 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     void mqtt5Subscribe(
             final @NotNull Mqtt5Client client,
-            final @NotNull Subscribe subscribe,
+            final @NotNull SubscribeOptions subscribeOptions,
             final @NotNull String topic,
             final @NotNull MqttQos qos) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
         final Mqtt5SubscribeBuilder.Start.Complete builder = Mqtt5Subscribe.builder().topicFilter(topic).qos(qos);
 
-        if (subscribe.getUserProperties() != null) {
+        if (subscribeOptions.getUserProperties() != null) {
             //noinspection ResultOfMethodCallIgnored
-            builder.userProperties(subscribe.getUserProperties());
+            builder.userProperties(subscribeOptions.getUserProperties());
         }
 
         final Mqtt5Subscribe subscribeMessage = builder.build();
@@ -100,7 +97,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         Logger.debug("{} sending SUBSCRIBE {}", clientLogPrefix, subscribeMessage);
 
         client.toAsync()
-                .subscribe(subscribeMessage, new SubscribeMqtt5PublishCallback(subscribe, client))
+                .subscribe(subscribeMessage, new SubscribeMqtt5PublishCallback(subscribeOptions, client))
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
                         Logger.error(throwable,
@@ -109,14 +106,8 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                                 topic,
                                 Throwables.getRootCause(throwable).getMessage());
                     } else {
-                        final String clientKey = MqttUtils.buildKey(client.getConfig()
-                                        .getClientIdentifier()
-                                        .map(Object::toString)
-                                        .orElse(""),
-                                client.getConfig().getServerHost());
-
+                        final ClientKey clientKey = ClientKey.of(client);
                         getClientDataMap().get(clientKey).addSubscription(MqttTopicFilter.of(topic));
-
                         Logger.debug("{} received SUBACK {}", clientLogPrefix, subAck);
                     }
                 })
@@ -125,7 +116,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     void mqtt3Subscribe(
             final @NotNull Mqtt3Client client,
-            final @NotNull Subscribe subscribe,
+            final @NotNull SubscribeOptions subscribeOptions,
             final @NotNull String topic,
             final @NotNull MqttQos qos) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
@@ -135,7 +126,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         Logger.debug("{} sending SUBSCRIBE {}", clientLogPrefix, subscribeMessage);
 
         client.toAsync()
-                .subscribe(subscribeMessage, new SubscribeMqtt3PublishCallback(subscribe, client))
+                .subscribe(subscribeMessage, new SubscribeMqtt3PublishCallback(subscribeOptions, client))
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
                         Logger.error(throwable,
@@ -144,13 +135,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                                 topic,
                                 Throwables.getRootCause(throwable).getMessage());
                     } else {
-                        final String clientKey = MqttUtils.buildKey(client.getConfig()
-                                        .getClientIdentifier()
-                                        .map(Object::toString)
-                                        .orElse(""),
-                                client.getConfig().getServerHost());
-
-                        getClientDataMap().get(clientKey).addSubscription(MqttTopicFilter.of(topic));
+                        getClientDataMap().get(ClientKey.of(client)).addSubscription(MqttTopicFilter.of(topic));
 
                         Logger.debug("{} received SUBACK {}", clientLogPrefix, subAck);
                     }
@@ -160,7 +145,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     void mqtt5Publish(
             final @NotNull Mqtt5Client client,
-            final @NotNull Publish publish,
+            final @NotNull PublishOptions publishOptions,
             final @NotNull String topic,
             final @NotNull MqttQos qos) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
@@ -168,30 +153,30 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         final Mqtt5PublishBuilder.Complete publishBuilder = Mqtt5Publish.builder()
                 .topic(topic)
                 .qos(qos)
-                .payload(publish.getMessage())
-                .payloadFormatIndicator(publish.getPayloadFormatIndicator())
-                .contentType(publish.getContentType())
-                .responseTopic(publish.getResponseTopic())
-                .correlationData(publish.getCorrelationData());
+                .payload(publishOptions.getMessage())
+                .payloadFormatIndicator(publishOptions.getPayloadFormatIndicator())
+                .contentType(publishOptions.getContentType())
+                .responseTopic(publishOptions.getResponseTopic())
+                .correlationData(publishOptions.getCorrelationData());
 
-        if (publish.getRetain() != null) {
+        if (publishOptions.getRetain() != null) {
             //noinspection ResultOfMethodCallIgnored
-            publishBuilder.retain(publish.getRetain());
+            publishBuilder.retain(publishOptions.getRetain());
         }
-        if (publish.getMessageExpiryInterval() != null) {
+        if (publishOptions.getMessageExpiryInterval() != null) {
             //noinspection ResultOfMethodCallIgnored
-            publishBuilder.messageExpiryInterval(publish.getMessageExpiryInterval());
+            publishBuilder.messageExpiryInterval(publishOptions.getMessageExpiryInterval());
         }
-        if (publish.getUserProperties() != null) {
+        if (publishOptions.getUserProperties() != null) {
             //noinspection ResultOfMethodCallIgnored
-            publishBuilder.userProperties(publish.getUserProperties());
+            publishBuilder.userProperties(publishOptions.getUserProperties());
         }
 
         final Mqtt5Publish publishMessage = publishBuilder.build();
 
         Logger.debug("{} sending PUBLISH ('{}') {}",
                 clientLogPrefix,
-                bufferToString(publish.getMessage()),
+                bufferToString(publishOptions.getMessage()),
                 publishMessage);
 
         client.toAsync().publish(publishMessage).whenComplete((publishResult, throwable) -> {
@@ -209,24 +194,24 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
     void mqtt3Publish(
             final @NotNull Mqtt3Client client,
-            final @NotNull Publish publish,
+            final @NotNull PublishOptions publishOptions,
             final @NotNull String topic,
             final @NotNull MqttQos qos) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
 
         final Mqtt3PublishBuilder.Complete publishBuilder =
-                Mqtt3Publish.builder().topic(topic).qos(qos).payload(publish.getMessage());
+                Mqtt3Publish.builder().topic(topic).qos(qos).payload(publishOptions.getMessage());
 
-        if (publish.getRetain() != null) {
+        if (publishOptions.getRetain() != null) {
             //noinspection ResultOfMethodCallIgnored
-            publishBuilder.retain(publish.getRetain());
+            publishBuilder.retain(publishOptions.getRetain());
         }
 
         final Mqtt3Publish publishMessage = publishBuilder.build();
 
         Logger.debug("{} sending PUBLISH ('{}') {}",
                 clientLogPrefix,
-                bufferToString(publish.getMessage()),
+                bufferToString(publishOptions.getMessage()),
                 publishMessage);
 
         client.toAsync().publish(publishMessage).whenComplete((publishResult, throwable) -> {
@@ -243,46 +228,44 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull Unsubscribe unsubscribe) {
+    void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull UnsubscribeOptions unsubscribeOptions) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
-        final Mqtt5UserProperties userProperties = unsubscribe.getUserProperties() != null? unsubscribe.getUserProperties() : Mqtt5UserProperties.of();
 
-        for (final String topic : unsubscribe.getTopics()) {
-            final Mqtt5Unsubscribe unsubscribeMessage =
-                    Mqtt5Unsubscribe.builder().topicFilter(topic).userProperties(userProperties).build();
+        for (final String topic : unsubscribeOptions.getTopics()) {
+            final Mqtt5Unsubscribe unsubscribeMessage = Mqtt5Unsubscribe.builder()
+                    .topicFilter(topic)
+                    .userProperties(unsubscribeOptions.getUserProperties())
+                    .build();
 
             Logger.debug("{} sending UNSUBSCRIBE {}", clientLogPrefix, unsubscribeMessage);
 
-            client.toAsync()
-                    .unsubscribe(unsubscribeMessage)
-                    .whenComplete((Mqtt5UnsubAck unsubAck, Throwable throwable) -> {
-                        if (throwable != null) {
+            client.toAsync().unsubscribe(unsubscribeMessage).whenComplete((unsubAck, throwable) -> {
+                if (throwable != null) {
 
-                            Logger.error(throwable,
-                                    "{} failed UNSUBSCRIBE from TOPIC '{}': {}",
-                                    clientLogPrefix,
-                                    topic,
-                                    Throwables.getRootCause(throwable).getMessage());
-                        } else {
-                            getClientDataMap().get(unsubscribe.getKey()).removeSubscription(MqttTopicFilter.of(topic));
+                    Logger.error(throwable,
+                            "{} failed UNSUBSCRIBE from TOPIC '{}': {}",
+                            clientLogPrefix,
+                            topic,
+                            Throwables.getRootCause(throwable).getMessage());
+                } else {
+                    getClientDataMap().get(ClientKey.of(client)).removeSubscription(MqttTopicFilter.of(topic));
 
-                            Logger.debug("{} received UNSUBACK {}", clientLogPrefix, unsubAck);
-                        }
-                    })
-                    .join();
+                    Logger.debug("{} received UNSUBACK {}", clientLogPrefix, unsubAck);
+                }
+            }).join();
         }
     }
 
     @Override
-    void mqtt3Unsubscribe(final @NotNull Mqtt3Client client, final @NotNull Unsubscribe unsubscribe) {
+    void mqtt3Unsubscribe(final @NotNull Mqtt3Client client, final @NotNull UnsubscribeOptions unsubscribeOptions) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
 
-        for (final String topic : unsubscribe.getTopics()) {
+        for (final String topic : unsubscribeOptions.getTopics()) {
             final Mqtt3Unsubscribe unsubscribeMessage = Mqtt3Unsubscribe.builder().topicFilter(topic).build();
 
-            Logger.debug("{} Sending UNSUBSCRIBE {}", clientLogPrefix, unsubscribeMessage);
+            Logger.debug("{} sending UNSUBSCRIBE {}", clientLogPrefix, unsubscribeMessage);
 
-            client.toAsync().unsubscribe(unsubscribeMessage).whenComplete((Void unsubAck, Throwable throwable) -> {
+            client.toAsync().unsubscribe(unsubscribeMessage).whenComplete((unsubAck, throwable) -> {
                 if (throwable != null) {
                     Logger.error(throwable,
                             "{} failed UNSUBSCRIBE from TOPIC '{}': {}",
@@ -290,7 +273,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                             topic,
                             Throwables.getRootCause(throwable).getMessage());
                 } else {
-                    getClientDataMap().get(unsubscribe.getKey()).removeSubscription(MqttTopicFilter.of(topic));
+                    getClientDataMap().get(ClientKey.of(client)).removeSubscription(MqttTopicFilter.of(topic));
                     Logger.debug("{} received UNSUBACK", clientLogPrefix);
                 }
             }).join();
@@ -298,21 +281,21 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    void mqtt5Disconnect(final @NotNull Mqtt5Client client, final @NotNull Disconnect disconnect) {
+    void mqtt5Disconnect(final @NotNull Mqtt5Client client, final @NotNull DisconnectOptions disconnectOptions) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
         final Mqtt5DisconnectBuilder disconnectBuilder = Mqtt5Disconnect.builder();
 
-        if (disconnect.getReasonString() != null) {
+        if (disconnectOptions.getReasonString() != null) {
             //noinspection ResultOfMethodCallIgnored
-            disconnectBuilder.reasonString(disconnect.getReasonString());
+            disconnectBuilder.reasonString(disconnectOptions.getReasonString());
         }
-        if (disconnect.getSessionExpiryInterval() != null) {
+        if (disconnectOptions.getSessionExpiryInterval() != null) {
             //noinspection ResultOfMethodCallIgnored
-            disconnectBuilder.sessionExpiryInterval(disconnect.getSessionExpiryInterval());
+            disconnectBuilder.sessionExpiryInterval(disconnectOptions.getSessionExpiryInterval());
         }
-        if (disconnect.getUserProperties() != null) {
+        if (disconnectOptions.getUserProperties() != null) {
             //noinspection ResultOfMethodCallIgnored
-            disconnectBuilder.userProperties(disconnect.getUserProperties());
+            disconnectBuilder.userProperties(disconnectOptions.getUserProperties());
         }
 
         final Mqtt5Disconnect disconnectMessage = disconnectBuilder.build();
@@ -323,8 +306,8 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
     }
 
     @Override
-    void mqtt3Disconnect(final @NotNull Mqtt3Client client, final @NotNull Disconnect disconnect) {
-        Logger.debug("{} Sending DISCONNECT", LoggerUtils.getClientPrefix(client.getConfig()));
+    void mqtt3Disconnect(final @NotNull Mqtt3Client client, final @NotNull DisconnectOptions disconnectOptions) {
+        Logger.debug("{} sending DISCONNECT", LoggerUtils.getClientPrefix(client.getConfig()));
 
         client.toBlocking().disconnect();
     }

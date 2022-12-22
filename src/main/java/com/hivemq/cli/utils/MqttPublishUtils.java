@@ -48,8 +48,7 @@ public class MqttPublishUtils {
         }
 
         try {
-            Files.write(
-                    publishFile.toPath(),
+            Files.write(publishFile.toPath(),
                     (message + System.lineSeparator()).getBytes(StandardCharsets.UTF_8),
                     StandardOpenOption.APPEND);
         } catch (final @NotNull IOException e) {

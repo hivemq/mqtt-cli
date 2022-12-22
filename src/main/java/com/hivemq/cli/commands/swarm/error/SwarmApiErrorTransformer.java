@@ -35,8 +35,7 @@ public class SwarmApiErrorTransformer {
 
     public @NotNull Error transformError(final @NotNull ApiException apiException) {
         if (Logger.isDebugEnabled()) {
-            Logger.debug(
-                    "Error Code: {}\nError Message: {}",
+            Logger.debug("Error Code: {}\nError Message: {}",
                     apiException.getCode(),
                     apiException.getMessage(),
                     apiException);

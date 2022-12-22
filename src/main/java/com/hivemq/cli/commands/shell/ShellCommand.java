@@ -41,20 +41,23 @@ import picocli.shell.jline3.PicocliJLineCompleter;
 import javax.inject.Inject;
 import java.io.PrintWriter;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "shell", aliases = "sh", versionProvider = MqttCLIMain.CLIVersionProvider.class,
-        description = "Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.",
-        footer = {"", "@|bold Press Ctl-C to exit.|@"}, synopsisHeading = "%n@|bold Usage|@:  ",
-        descriptionHeading = "%n", optionListHeading = "%n@|bold Options|@:%n",
-        commandListHeading = "%n@|bold Commands|@:%n", separator = " ")
-public class ShellCommand implements Runnable {
+@CommandLine.Command(name = "shell",
+                     aliases = "sh",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     description = "Starts MqttCLI in shell mode, to enable interactive mode with further sub commands.",
+                     footer = {"", "@|bold Press Ctl-C to exit.|@"},
+                     synopsisHeading = "%n@|bold Usage|@:  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options|@:%n",
+                     commandListHeading = "%n@|bold Commands|@:%n",
+                     separator = " ",
+                     mixinStandardHelpOptions = true)
+public class ShellCommand implements Callable<Integer> {
 
     private static final @NotNull String DEFAULT_PROMPT = "mqtt> ";
     private static @NotNull String prompt = DEFAULT_PROMPT;
-
-    //TODO: This is never set
-    public static boolean DEBUG;
-    public static boolean VERBOSE;
 
     public static @Nullable PrintWriter TERMINAL_WRITER;
 
@@ -67,17 +70,9 @@ public class ShellCommand implements Runnable {
     private static boolean exitShell = false;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--version", "-V"}, versionHelp = true, description = "display version info")
-    private boolean versionInfoRequested;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help", "-h"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-l"}, defaultValue = "false",
-            description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
-            order = 1)
+    @CommandLine.Option(names = {"-l"},
+                        defaultValue = "false",
+                        description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
@@ -94,14 +89,14 @@ public class ShellCommand implements Runnable {
     }
 
     @Override
-    public void run() {
+    public @NotNull Integer call() {
         LoggerUtils.setupConsoleLogging(logToLogfile, "warn");
         logfilePath = Configuration.get("writer.file");
 
-        interact();
+        return interact();
     }
 
-    private void interact() {
+    private @NotNull Integer interact() {
         shellCommandLine = Objects.requireNonNull(MqttCLIMain.MQTTCLI).shell();
         contextCommandLine = MqttCLIMain.MQTTCLI.shellContext();
 
@@ -125,11 +120,9 @@ public class ShellCommand implements Runnable {
             TERMINAL_WRITER.println(shellCommandLine.getUsageMessage());
             TERMINAL_WRITER.flush();
 
-            TERMINAL_WRITER.printf(
-                    "Using default values from properties file %s:\n",
+            TERMINAL_WRITER.printf("Using default values from properties file %s:\n",
                     Objects.requireNonNull(defaultCLIProperties.getFile()).getPath());
-            TERMINAL_WRITER.printf(
-                    "Host: %s, Port: %d, Mqtt-Version %s, Logfile-Debug-Level: %s\n",
+            TERMINAL_WRITER.printf("Host: %s, Port: %d, Mqtt-Version %s, Logfile-Debug-Level: %s\n",
                     defaultCLIProperties.getHost(),
                     defaultCLIProperties.getPort(),
                     defaultCLIProperties.getMqttVersion(),
@@ -153,15 +146,18 @@ public class ShellCommand implements Runnable {
                     }
                 } catch (final UserInterruptException e) {
                     Logger.trace("--- User interrupted shell ---");
-                    return;
+                    return 0;
                 } catch (final Exception ex) {
                     Logger.error(ex, Throwables.getRootCause(ex).getMessage());
+                    return 1;
                 }
             }
             Logger.info("--- Shell-Mode exited ---");
         } catch (final Exception ex) {
             Logger.error(ex, Throwables.getRootCause(ex).getMessage());
+            return 1;
         }
+        return 0;
     }
 
     static void exitShell() {
@@ -204,17 +200,18 @@ public class ShellCommand implements Runnable {
         Objects.requireNonNull(currentReader).clearScreen();
     }
 
-    static boolean isVerbose() {
-        return VERBOSE;
-    }
-
-    static boolean isDebug() {
-        return DEBUG;
-    }
-
     @Override
     public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "logfilePath=" + logfilePath + ", debug=" + DEBUG + ", verbose=" +
-                VERBOSE + "}";
+        return "ShellCommand{" +
+                "logToLogfile=" +
+                logToLogfile +
+                ", spec=" +
+                spec +
+                ", defaultCLIProperties=" +
+                defaultCLIProperties +
+                ", logfilePath='" +
+                logfilePath +
+                '\'' +
+                '}';
     }
 }

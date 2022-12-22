@@ -46,6 +46,7 @@ abstract class CommonErrorMessageHandler implements CommandLine.IParameterExcept
         final CommandLine cmd = parameterException.getCommandLine();
         final CommandLine.Model.CommandSpec spec = cmd.getCommandSpec();
         return cmd.getExitCodeExceptionMapper() != null ?
-                cmd.getExitCodeExceptionMapper().getExitCode(parameterException) : spec.exitCodeOnInvalidInput();
+                cmd.getExitCodeExceptionMapper().getExitCode(parameterException) :
+                spec.exitCodeOnInvalidInput();
     }
 }

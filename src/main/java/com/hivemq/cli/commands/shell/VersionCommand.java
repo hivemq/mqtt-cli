@@ -21,10 +21,12 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "version", description = "Prints version information",
-        versionProvider = MqttCLIMain.CLIVersionProvider.class)
-public class VersionCommand implements Runnable {
+@CommandLine.Command(name = "version",
+                     description = "Prints version information",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class)
+public class VersionCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Spec
@@ -35,7 +37,13 @@ public class VersionCommand implements Runnable {
     }
 
     @Override
-    public void run() {
+    public @NotNull Integer call() {
         spec.commandLine().printVersionHelp(System.out);
+        return 0;
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "VersionCommand{" + "spec=" + spec + '}';
     }
 }

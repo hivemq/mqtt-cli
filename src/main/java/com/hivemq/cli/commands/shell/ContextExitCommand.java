@@ -21,19 +21,10 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "exit", description = "Exit the current context")
-public class ContextExitCommand extends ShellContextCommand implements Runnable {
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextExitCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
+@CommandLine.Command(name = "exit", description = "Exit the current context", mixinStandardHelpOptions = true)
+public class ContextExitCommand extends ShellContextCommand implements Callable<Integer> {
 
     @Inject
     public ContextExitCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -41,12 +32,13 @@ public class ContextExitCommand extends ShellContextCommand implements Runnable 
     }
 
     @Override
-    public void run() {
+    public @NotNull Integer call() {
         removeContext();
+        return 0;
     }
 
     @Override
     public @NotNull String toString() {
-        return getClass().getSimpleName();
+        return "ContextExitCommand{}";
     }
 }

@@ -26,8 +26,7 @@ import javax.inject.Singleton;
 
 @Singleton
 @Component(modules = {
-        CLIModule.class, HiveMQCLIModule.class, ShellModule.class, SwarmCLIModule.class
-})
+        CLIModule.class, HiveMQCLIModule.class, ShellModule.class, SwarmCLIModule.class})
 public interface MqttCLI {
 
     @SuppressWarnings("NullableProblems") //Dagger implemented methods do not create @NotNull annotations

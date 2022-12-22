@@ -16,11 +16,15 @@
 
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.*;
-import com.hivemq.cli.commands.cli.PublishCommand;
-import com.hivemq.cli.commands.cli.SubscribeCommand;
+import com.hivemq.cli.commands.options.AuthenticationOptions;
+import com.hivemq.cli.commands.options.ConnectOptions;
+import com.hivemq.cli.commands.options.ConnectRestrictionOptions;
+import com.hivemq.cli.commands.options.DisconnectOptions;
+import com.hivemq.cli.commands.options.PublishOptions;
+import com.hivemq.cli.commands.options.SubscribeOptions;
+import com.hivemq.cli.commands.options.UnsubscribeOptions;
+import com.hivemq.cli.commands.options.WillOptions;
 import com.hivemq.cli.utils.IntersectionUtil;
-import com.hivemq.cli.utils.MqttUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.MqttClientBuilder;
 import com.hivemq.client.mqtt.MqttClientState;
@@ -50,92 +54,112 @@ import org.tinylog.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 abstract class AbstractMqttClientExecutor {
 
-    private static final @NotNull Map<String, ClientData> clientKeyToClientData = new ConcurrentHashMap<>();
+    private static final @NotNull Map<ClientKey, ClientData> clientKeyToClientData = new ConcurrentHashMap<>();
 
     abstract void mqtt5Connect(
-            final @NotNull Mqtt5Client client,
-            final @NotNull Mqtt5Connect connectMessage,
-            final @NotNull Connect connect);
+            final @NotNull Mqtt5Client client, final @NotNull Mqtt5Connect connectMessage);
 
     abstract void mqtt3Connect(
-            final @NotNull Mqtt3Client client,
-            final @NotNull Mqtt3Connect connectMessage,
-            final @NotNull Connect connect);
+            final @NotNull Mqtt3Client client, final @NotNull Mqtt3Connect connectMessage);
 
     abstract void mqtt5Subscribe(
             final @NotNull Mqtt5Client client,
-            final @NotNull Subscribe subscribe,
+            final @NotNull SubscribeOptions subscribeOptions,
             final @NotNull String topic,
             final @NotNull MqttQos qos);
 
     abstract void mqtt3Subscribe(
             final @NotNull Mqtt3Client client,
-            final @NotNull Subscribe subscribe,
+            final @NotNull SubscribeOptions subscribeOptions,
             final @NotNull String topic,
             final @NotNull MqttQos qos);
 
     abstract void mqtt5Publish(
             final @NotNull Mqtt5Client client,
-            final @NotNull Publish publish,
+            final @NotNull PublishOptions publishOptions,
             final @NotNull String topic,
             final @NotNull MqttQos qos);
 
     abstract void mqtt3Publish(
             final @NotNull Mqtt3Client client,
-            final @NotNull Publish publish,
+            final @NotNull PublishOptions publishOptions,
             final @NotNull String topic,
             final @NotNull MqttQos qos);
 
-    abstract void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull Unsubscribe unsubscribe);
+    abstract void mqtt5Unsubscribe(
+            final @NotNull Mqtt5Client client, final @NotNull UnsubscribeOptions unsubscribeOptions);
 
-    abstract void mqtt3Unsubscribe(final @NotNull Mqtt3Client client, final @NotNull Unsubscribe unsubscribe);
+    abstract void mqtt3Unsubscribe(
+            final @NotNull Mqtt3Client client, final @NotNull UnsubscribeOptions unsubscribeOptions);
 
-    abstract void mqtt5Disconnect(final @NotNull Mqtt5Client client, final @NotNull Disconnect disconnect);
+    abstract void mqtt5Disconnect(
+            final @NotNull Mqtt5Client client, final @NotNull DisconnectOptions disconnectOptions);
 
-    abstract void mqtt3Disconnect(final @NotNull Mqtt3Client client, final @NotNull Disconnect disconnect);
+    abstract void mqtt3Disconnect(
+            final @NotNull Mqtt3Client client, final @NotNull DisconnectOptions disconnectOptions);
 
-    public @NotNull MqttClient subscribe(final @NotNull SubscribeCommand subscribeCommand) {
-        final MqttClient client = connect(subscribeCommand);
-
-        subscribe(client, subscribeCommand);
-
-        return client;
+    public @NotNull MqttClient connect(final @NotNull ConnectOptions connectOptions) throws Exception {
+        return connect(connectOptions, null);
     }
 
-    public void subscribe(final @NotNull MqttClient client, final @NotNull Subscribe subscribe) {
-        for (int i = 0; i < subscribe.getTopics().length; i++) {
-            final String topic = subscribe.getTopics()[i];
+    public @NotNull MqttClient connect(
+            final @NotNull ConnectOptions connectOptions, final @Nullable SubscribeOptions subscribeOptions)
+            throws Exception {
 
-            final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
-                    client.getConfig().getServerHost());
+        final ClientKey clientKey = ClientKey.of(connectOptions.getIdentifier(), connectOptions.getHost());
+        if (isConnected(clientKey)) {
+            Logger.debug("Client is already connected ({})", clientKey);
+            Logger.info("Using already connected  ({})", clientKey);
+            return clientKeyToClientData.get(clientKey).getClient();
+        }
+
+        switch (connectOptions.getVersion()) {
+            case MQTT_5_0:
+                return connectMqtt5Client(connectOptions, subscribeOptions);
+            case MQTT_3_1_1:
+                return connectMqtt3Client(connectOptions, subscribeOptions);
+        }
+
+        throw new IllegalStateException("The MQTT Version specified is not supported. Version was " +
+                connectOptions.getVersion());
+    }
+
+    public void subscribe(final @NotNull MqttClient client, final @NotNull SubscribeOptions subscribeOptions) {
+        for (int i = 0; i < subscribeOptions.getTopics().length; i++) {
+            final String topic = subscribeOptions.getTopics()[i];
 
             // This check only works as subscribes are implemented blocking.
             // Otherwise, we would need to check the topics before they are iterated as they are added to the client data after a successful subscribe.
             final List<MqttTopicFilter> intersectingFilters =
-                    checkForSharedTopicDuplicate(clientKeyToClientData.get(key).getSubscribedTopics(),
+                    checkForSharedTopicDuplicate(clientKeyToClientData.get(ClientKey.of(client)).getSubscribedTopics(),
                             topic);
-
+            // Client{clientIdentifier='hmq_RcrDi_18591249_30a12e2c4bbd17e322a300a4257d76bd', hostname='broker.hivemq.com'} -> {ClientData@3806}
+            // Client{clientIdentifier='hmq_RcrDi_18591249_30a12e2c4bbd17e322a300a4257d76bd', hostname='broker.hivemq.com'}
             if (!intersectingFilters.isEmpty()) {
                 Logger.warn("WARN: New subscription to '{}' intersects with already existing subscription(s) {}",
                         topic,
                         intersectingFilters);
             }
 
-            final int qosI = i < subscribe.getQos().length ? i : subscribe.getQos().length - 1;
-            final MqttQos qos = subscribe.getQos()[qosI];
+            final int qosI = i < subscribeOptions.getQos().length ? i : subscribeOptions.getQos().length - 1;
+            final MqttQos qos = subscribeOptions.getQos()[qosI];
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    mqtt5Subscribe((Mqtt5Client) client, subscribe, topic, qos);
+                    mqtt5Subscribe((Mqtt5Client) client, subscribeOptions, topic, qos);
                     break;
                 case MQTT_3_1_1:
-                    mqtt3Subscribe((Mqtt3Client) client, subscribe, topic, qos);
+                    mqtt3Subscribe((Mqtt3Client) client, subscribeOptions, topic, qos);
                     break;
             }
         }
@@ -169,108 +193,86 @@ abstract class AbstractMqttClientExecutor {
         return intersectingFilters;
     }
 
-    public void publish(final @NotNull PublishCommand publishCommand) {
-        final MqttClient client = connect(publishCommand);
-
-        publish(client, publishCommand);
-    }
-
-    public void publish(final @NotNull MqttClient client, final @NotNull Publish publish) {
-        for (int i = 0; i < publish.getTopics().length; i++) {
-            final String topic = publish.getTopics()[i];
-            final int qosI = i < publish.getQos().length ? i : publish.getQos().length - 1;
-            final MqttQos qos = publish.getQos()[qosI];
+    public void publish(final @NotNull MqttClient client, final @NotNull PublishOptions publishOptions) {
+        for (int i = 0; i < publishOptions.getTopics().length; i++) {
+            final String topic = publishOptions.getTopics()[i];
+            final int qosI = i < publishOptions.getQos().length ? i : publishOptions.getQos().length - 1;
+            final MqttQos qos = publishOptions.getQos()[qosI];
 
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    mqtt5Publish((Mqtt5Client) client, publish, topic, qos);
+                    mqtt5Publish((Mqtt5Client) client, publishOptions, topic, qos);
                     break;
                 case MQTT_3_1_1:
-                    mqtt3Publish((Mqtt3Client) client, publish, topic, qos);
+                    mqtt3Publish((Mqtt3Client) client, publishOptions, topic, qos);
                     break;
             }
         }
     }
 
-    public void disconnect(final @NotNull Disconnect disconnect) {
-        final String clientKey = disconnect.getKey();
-
-        if (clientKeyToClientData.containsKey(clientKey)) {
-            final MqttClient client = clientKeyToClientData.get(clientKey).getClient();
-
-            switch (client.getConfig().getMqttVersion()) {
-                case MQTT_5_0:
-                    mqtt5Disconnect((Mqtt5Client) client, disconnect);
-                    break;
-                case MQTT_3_1_1:
-                    mqtt3Disconnect((Mqtt3Client) client, disconnect);
-                    break;
-            }
-            clientKeyToClientData.remove(clientKey);
-        } else {
-            Logger.error("client to disconnect is not connected ({}) ", clientKey);
+    public void disconnect(final @NotNull ClientKey clientKey, final @NotNull DisconnectOptions disconnectOptions) {
+        final ClientData clientData = clientKeyToClientData.get(clientKey);
+        if (clientData != null) {
+            disconnect(clientData.getClient(), disconnectOptions);
         }
     }
 
-    public void disconnectAllClients(final @NotNull Disconnect disconnect) {
-        for (final Map.Entry<String, ClientData> entry : clientKeyToClientData.entrySet()) {
+    public void disconnect(final @NotNull MqttClient client, final @NotNull DisconnectOptions disconnectOptions) {
+        switch (client.getConfig().getMqttVersion()) {
+            case MQTT_5_0:
+                mqtt5Disconnect((Mqtt5Client) client, disconnectOptions);
+                break;
+            case MQTT_3_1_1:
+                mqtt3Disconnect((Mqtt3Client) client, disconnectOptions);
+                break;
+        }
+        clientKeyToClientData.remove(ClientKey.of(client));
+    }
+
+    public void disconnectAllClients(final @NotNull DisconnectOptions disconnectOptions) {
+        for (final Map.Entry<ClientKey, ClientData> entry : clientKeyToClientData.entrySet()) {
             final MqttClient client = entry.getValue().getClient();
             switch (client.getConfig().getMqttVersion()) {
                 case MQTT_5_0:
-                    mqtt5Disconnect((Mqtt5Client) client, disconnect);
+                    mqtt5Disconnect((Mqtt5Client) client, disconnectOptions);
                     break;
                 case MQTT_3_1_1:
-                    mqtt3Disconnect((Mqtt3Client) client, disconnect);
+                    mqtt3Disconnect((Mqtt3Client) client, disconnectOptions);
                     break;
             }
         }
         clientKeyToClientData.clear();
     }
 
-    public void unsubscribe(final @NotNull MqttClient client, final @NotNull Unsubscribe unsubscribe) {
+    public void unsubscribe(final @NotNull MqttClient client, final @NotNull UnsubscribeOptions unsubscribeOptions) {
         switch (client.getConfig().getMqttVersion()) {
             case MQTT_5_0:
-                mqtt5Unsubscribe((Mqtt5Client) client, unsubscribe);
+                mqtt5Unsubscribe((Mqtt5Client) client, unsubscribeOptions);
                 break;
             case MQTT_3_1_1:
-                mqtt3Unsubscribe((Mqtt3Client) client, unsubscribe);
+                mqtt3Unsubscribe((Mqtt3Client) client, unsubscribeOptions);
                 break;
         }
 
     }
 
-    public boolean isConnected(final @NotNull Context context) {
-        if (clientKeyToClientData.containsKey(context.getKey())) {
-            final MqttClient client = clientKeyToClientData.get(context.getKey()).getClient();
+    public boolean isConnected(final @NotNull ClientKey key) {
+        if (clientKeyToClientData.containsKey(key)) {
+            final MqttClient client = clientKeyToClientData.get(key).getClient();
             final MqttClientState state = client.getState();
             return state.isConnected();
         }
         return false;
     }
 
-    public @NotNull MqttClient connect(final @NotNull Connect connect) {
-        if (isConnected(connect)) {
-            Logger.debug("Client is already connected ({})", connect.getKey());
-            Logger.info("Using already connected  ({})", connect.getKey());
-            return clientKeyToClientData.get(connect.getKey()).getClient();
-        }
-
-        switch (connect.getVersion()) {
-            case MQTT_5_0:
-                return connectMqtt5Client(connect);
-            case MQTT_3_1_1:
-                return connectMqtt3Client(connect);
-        }
-
-        throw new IllegalStateException(
-                "The MQTT Version specified is not supported. Version was " + connect.getVersion());
-    }
-
-    private @NotNull Mqtt5Client connectMqtt5Client(final @NotNull Connect connect) {
-        final MqttClientBuilder clientBuilder = createBuilder(connect);
+    private @NotNull Mqtt5Client connectMqtt5Client(
+            final @NotNull ConnectOptions connectOptions, final @Nullable SubscribeOptions subscribeOptions)
+            throws Exception {
+        final MqttClientBuilder clientBuilder = createBuilder(connectOptions);
         final Mqtt5Client client = clientBuilder.useMqttVersion5().build();
-        final Mqtt5Publish willPublish = createMqtt5WillPublish(connect);
-        final Mqtt5ConnectRestrictions connectRestrictions = createMqtt5ConnectRestrictions(connect);
+        final Mqtt5Publish willPublish = createMqtt5WillPublish(connectOptions.getWillOptions());
+        final Mqtt5ConnectRestrictions connectRestrictions =
+                createMqtt5ConnectRestrictions(connectOptions.getConnectRestrictionOptions());
 
         final Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder().willPublish(willPublish);
 
@@ -281,219 +283,226 @@ abstract class AbstractMqttClientExecutor {
             connectBuilder.restrictions(connectRestrictions);
         }
 
-        if (connect.getCleanStart() != null) {
+        if (connectOptions.getCleanStart() != null) {
             //noinspection ResultOfMethodCallIgnored
-            connectBuilder.cleanStart(connect.getCleanStart());
+            connectBuilder.cleanStart(connectOptions.getCleanStart());
         }
-        if (connect.getKeepAlive() != null) {
+        if (connectOptions.getKeepAlive() != null) {
             //noinspection ResultOfMethodCallIgnored
-            connectBuilder.keepAlive(connect.getKeepAlive());
+            connectBuilder.keepAlive(connectOptions.getKeepAlive());
         }
-        if (connect.getSessionExpiryInterval() != null) {
+        if (connectOptions.getSessionExpiryInterval() != null) {
             //noinspection ResultOfMethodCallIgnored
-            connectBuilder.sessionExpiryInterval(connect.getSessionExpiryInterval());
+            connectBuilder.sessionExpiryInterval(connectOptions.getSessionExpiryInterval());
         }
-        if (connect.getConnectUserProperties() != null) {
+        if (connectOptions.getConnectUserProperties() != null) {
             //noinspection ResultOfMethodCallIgnored
-            connectBuilder.userProperties(connect.getConnectUserProperties());
+            connectBuilder.userProperties(connectOptions.getConnectUserProperties());
         }
 
         //noinspection ResultOfMethodCallIgnored
-        connectBuilder.simpleAuth(buildMqtt5Authentication(connect));
+        connectBuilder.simpleAuth(buildMqtt5Authentication(connectOptions.getAuthenticationOptions()));
 
         client.toAsync()
-                .publishes(MqttGlobalPublishFilter.REMAINING, buildRemainingMqtt5PublishesCallback(connect, client));
+                .publishes(MqttGlobalPublishFilter.REMAINING,
+                        buildRemainingMqtt5PublishesCallback(subscribeOptions, client));
 
-        mqtt5Connect(client, connectBuilder.build(), connect);
+
+        mqtt5Connect(client, connectBuilder.build());
 
         final ClientData clientData = new ClientData(client);
 
-        final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
-                client.getConfig().getServerHost());
-
-        clientKeyToClientData.put(key, clientData);
+        clientKeyToClientData.put(ClientKey.of(client), clientData);
 
         return client;
     }
 
-    private @NotNull Mqtt3Client connectMqtt3Client(final @NotNull Connect connect) {
-        final MqttClientBuilder clientBuilder = createBuilder(connect);
+    private @NotNull Mqtt3Client connectMqtt3Client(
+            final @NotNull ConnectOptions connectOptions, final @Nullable SubscribeOptions subscribeOptions)
+            throws Exception {
+        final MqttClientBuilder clientBuilder = createBuilder(connectOptions);
         final Mqtt3Client client = clientBuilder.useMqttVersion3().build();
 
-        final Mqtt3Publish willPublish = createMqtt3WillPublish(connect);
+        final Mqtt3Publish willPublish = createMqtt3WillPublish(connectOptions.getWillOptions());
 
         final Mqtt3ConnectBuilder connectBuilder = Mqtt3Connect.builder().willPublish(willPublish);
 
-        if (connect.getCleanStart() != null) {
+        if (connectOptions.getCleanStart() != null) {
             //noinspection ResultOfMethodCallIgnored
-            connectBuilder.cleanSession(connect.getCleanStart());
+            connectBuilder.cleanSession(connectOptions.getCleanStart());
         }
-        if (connect.getKeepAlive() != null) {
+        if (connectOptions.getKeepAlive() != null) {
             //noinspection ResultOfMethodCallIgnored
-            connectBuilder.keepAlive(connect.getKeepAlive());
+            connectBuilder.keepAlive(connectOptions.getKeepAlive());
         }
 
         //noinspection ResultOfMethodCallIgnored
-        connectBuilder.simpleAuth(buildMqtt3Authentication(connect));
+        connectBuilder.simpleAuth(buildMqtt3Authentication(connectOptions.getAuthenticationOptions()));
 
         client.toAsync()
-                .publishes(MqttGlobalPublishFilter.REMAINING, buildRemainingMqtt3PublishesCallback(connect, client));
+                .publishes(MqttGlobalPublishFilter.REMAINING,
+                        buildRemainingMqtt3PublishesCallback(subscribeOptions, client));
 
-        mqtt3Connect(client, connectBuilder.build(), connect);
+        mqtt3Connect(client, connectBuilder.build());
 
         final ClientData clientData = new ClientData(client);
 
-        final String key = MqttUtils.buildKey(client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
-                client.getConfig().getServerHost());
-
-        clientKeyToClientData.put(key, clientData);
+        clientKeyToClientData.put(ClientKey.of(client), clientData);
 
         return client;
     }
 
-    private @Nullable Mqtt5Publish createMqtt5WillPublish(final @NotNull Will will) {
+    private @Nullable Mqtt5Publish createMqtt5WillPublish(final @NotNull WillOptions willOptions) {
         // only topic is mandatory for will message creation
-        if (will.getWillTopic() != null) {
-            final ByteBuffer willPayload = will.getWillMessage();
+        if (willOptions.getWillTopic() != null) {
+            final ByteBuffer willPayload = willOptions.getWillMessage();
             final Mqtt5WillPublishBuilder.Complete builder = Mqtt5WillPublish.builder()
-                    .topic(will.getWillTopic())
+                    .topic(willOptions.getWillTopic())
                     .payload(willPayload)
-                    .qos(Objects.requireNonNull(will.getWillQos()))
-                    .payloadFormatIndicator(will.getWillPayloadFormatIndicator())
-                    .contentType(will.getWillContentType())
-                    .responseTopic(will.getWillResponseTopic())
-                    .correlationData(will.getWillCorrelationData());
+                    .qos(Objects.requireNonNull(willOptions.getWillQos()))
+                    .payloadFormatIndicator(willOptions.getWillPayloadFormatIndicator())
+                    .contentType(willOptions.getWillContentType())
+                    .responseTopic(willOptions.getWillResponseTopic())
+                    .correlationData(willOptions.getWillCorrelationData());
 
-            if (will.getWillRetain() != null) {
+            if (willOptions.getWillRetain() != null) {
                 //noinspection ResultOfMethodCallIgnored
-                builder.retain(will.getWillRetain());
+                builder.retain(willOptions.getWillRetain());
             }
-            if (will.getWillMessageExpiryInterval() != null) {
+            if (willOptions.getWillMessageExpiryInterval() != null) {
                 //noinspection ResultOfMethodCallIgnored
-                builder.messageExpiryInterval(will.getWillMessageExpiryInterval());
+                builder.messageExpiryInterval(willOptions.getWillMessageExpiryInterval());
             }
-            if (will.getWillDelayInterval() != null) {
+            if (willOptions.getWillDelayInterval() != null) {
                 //noinspection ResultOfMethodCallIgnored
-                builder.delayInterval(will.getWillDelayInterval());
+                builder.delayInterval(willOptions.getWillDelayInterval());
             }
-            if (will.getWillUserProperties() != null) { // user Properties can't be completed with null
+            if (willOptions.getWillUserProperties() != null) { // user Properties can't be completed with null
                 //noinspection ResultOfMethodCallIgnored
-                builder.userProperties(will.getWillUserProperties());
+                builder.userProperties(willOptions.getWillUserProperties());
             }
             return builder.build().asWill();
-        } else if (will.getWillMessage() != null) {
-            Logger.warn("option -wt is missing if a will message is configured - command was: {} ", will.toString());
+        } else if (willOptions.getWillMessage() != null) {
+            Logger.warn("option -wt is missing if a will message is configured - will options were: {} ",
+                    willOptions.toString());
         }
         return null;
     }
 
-    private @Nullable Mqtt3Publish createMqtt3WillPublish(final @NotNull Will will) {
-        if (will.getWillTopic() != null) {
-            final ByteBuffer willPayload = will.getWillMessage();
+    private @Nullable Mqtt3Publish createMqtt3WillPublish(final @NotNull WillOptions willOptions) {
+        if (willOptions.getWillTopic() != null) {
+            final ByteBuffer willPayload = willOptions.getWillMessage();
             final Mqtt3PublishBuilder.Complete builder = Mqtt3Publish.builder()
-                    .topic(will.getWillTopic())
+                    .topic(willOptions.getWillTopic())
                     .payload(willPayload)
-                    .qos(Objects.requireNonNull(will.getWillQos()));
+                    .qos(Objects.requireNonNull(willOptions.getWillQos()));
 
-            if (will.getWillRetain() != null) {
+            if (willOptions.getWillRetain() != null) {
                 //noinspection ResultOfMethodCallIgnored
-                builder.retain(will.getWillRetain());
+                builder.retain(willOptions.getWillRetain());
             }
             return builder.build();
-        } else if (will.getWillMessage() != null) {
-            Logger.warn("option -wt is missing if a will message is configured - command was: {} ", will.toString());
+        } else if (willOptions.getWillMessage() != null) {
+            Logger.warn("option -wt is missing if a will message is configured - will options were: {} ",
+                    willOptions.toString());
         }
         return null;
     }
 
-    private @NotNull Mqtt5ConnectRestrictions createMqtt5ConnectRestrictions(final @NotNull ConnectRestrictions connectRestrictions) {
+    private @NotNull Mqtt5ConnectRestrictions createMqtt5ConnectRestrictions(final @NotNull ConnectRestrictionOptions connectRestrictionOptions) {
         final Mqtt5ConnectRestrictionsBuilder restrictionsBuilder = Mqtt5ConnectRestrictions.builder();
 
-        if (connectRestrictions.getReceiveMaximum() != null) {
+        if (connectRestrictionOptions.getReceiveMaximum() != null) {
             //noinspection ResultOfMethodCallIgnored
-            restrictionsBuilder.receiveMaximum(connectRestrictions.getReceiveMaximum());
+            restrictionsBuilder.receiveMaximum(connectRestrictionOptions.getReceiveMaximum());
         }
-        if (connectRestrictions.getSendMaximum() != null) {
+        if (connectRestrictionOptions.getSendMaximum() != null) {
             //noinspection ResultOfMethodCallIgnored
-            restrictionsBuilder.sendMaximum(connectRestrictions.getSendMaximum());
+            restrictionsBuilder.sendMaximum(connectRestrictionOptions.getSendMaximum());
         }
-        if (connectRestrictions.getMaximumPacketSize() != null) {
+        if (connectRestrictionOptions.getMaximumPacketSize() != null) {
             //noinspection ResultOfMethodCallIgnored
-            restrictionsBuilder.maximumPacketSize(connectRestrictions.getMaximumPacketSize());
+            restrictionsBuilder.maximumPacketSize(connectRestrictionOptions.getMaximumPacketSize());
         }
-        if (connectRestrictions.getSendMaximumPacketSize() != null) {
+        if (connectRestrictionOptions.getSendMaximumPacketSize() != null) {
             //noinspection ResultOfMethodCallIgnored
-            restrictionsBuilder.sendMaximumPacketSize(connectRestrictions.getSendMaximumPacketSize());
+            restrictionsBuilder.sendMaximumPacketSize(connectRestrictionOptions.getSendMaximumPacketSize());
         }
-        if (connectRestrictions.getTopicAliasMaximum() != null) {
+        if (connectRestrictionOptions.getTopicAliasMaximum() != null) {
             //noinspection ResultOfMethodCallIgnored
-            restrictionsBuilder.topicAliasMaximum(connectRestrictions.getTopicAliasMaximum());
+            restrictionsBuilder.topicAliasMaximum(connectRestrictionOptions.getTopicAliasMaximum());
         }
-        if (connectRestrictions.getSendTopicAliasMaximum() != null) {
+        if (connectRestrictionOptions.getSendTopicAliasMaximum() != null) {
             //noinspection ResultOfMethodCallIgnored
-            restrictionsBuilder.sendTopicAliasMaximum(connectRestrictions.getSendTopicAliasMaximum());
+            restrictionsBuilder.sendTopicAliasMaximum(connectRestrictionOptions.getSendTopicAliasMaximum());
         }
-        if (connectRestrictions.getRequestProblemInformation() != null) {
+        if (connectRestrictionOptions.getRequestProblemInformation() != null) {
             //noinspection ResultOfMethodCallIgnored
-            restrictionsBuilder.requestProblemInformation(connectRestrictions.getRequestProblemInformation());
+            restrictionsBuilder.requestProblemInformation(connectRestrictionOptions.getRequestProblemInformation());
         }
-        if (connectRestrictions.getRequestResponseInformation() != null) {
+        if (connectRestrictionOptions.getRequestResponseInformation() != null) {
             //noinspection ResultOfMethodCallIgnored
-            restrictionsBuilder.requestResponseInformation(connectRestrictions.getRequestResponseInformation());
+            restrictionsBuilder.requestResponseInformation(connectRestrictionOptions.getRequestResponseInformation());
         }
         return restrictionsBuilder.build();
     }
 
-    private @NotNull MqttClientBuilder createBuilder(final @NotNull Connect connect) {
+    private @NotNull MqttClientBuilder createBuilder(final @NotNull ConnectOptions connectOptions) throws Exception {
         return MqttClient.builder()
                 .addDisconnectedListener(new ContextClientDisconnectListener())
-                .webSocketConfig(connect.getWebSocketConfig())
-                .serverHost(connect.getHost())
-                .serverPort(connect.getPort())
-                .sslConfig(connect.getSslConfig())
-                .identifier(connect.getIdentifier());
+                .webSocketConfig(connectOptions.getWebSocketConfig())
+                .serverHost(connectOptions.getHost())
+                .serverPort(connectOptions.getPort())
+                .sslConfig(connectOptions.buildSslConfig())
+                .identifier(connectOptions.getIdentifier());
     }
 
-    private @Nullable Mqtt5SimpleAuth buildMqtt5Authentication(final @NotNull Connect connect) {
-        if (connect.getUser() != null && connect.getPassword() != null) {
-            return Mqtt5SimpleAuth.builder().username(connect.getUser()).password(connect.getPassword()).build();
-        } else if (connect.getPassword() != null) {
-            return Mqtt5SimpleAuth.builder().password(connect.getPassword()).build();
-        } else if (connect.getUser() != null) {
-            return Mqtt5SimpleAuth.builder().username(connect.getUser()).build();
+    private @Nullable Mqtt5SimpleAuth buildMqtt5Authentication(final @NotNull AuthenticationOptions authenticationOptions) {
+        if (authenticationOptions.getUser() != null && authenticationOptions.getPassword() != null) {
+            return Mqtt5SimpleAuth.builder()
+                    .username(authenticationOptions.getUser())
+                    .password(authenticationOptions.getPassword())
+                    .build();
+        } else if (authenticationOptions.getPassword() != null) {
+            return Mqtt5SimpleAuth.builder().password(authenticationOptions.getPassword()).build();
+        } else if (authenticationOptions.getUser() != null) {
+            return Mqtt5SimpleAuth.builder().username(authenticationOptions.getUser()).build();
         }
         return null;
     }
 
-    private @Nullable Mqtt3SimpleAuth buildMqtt3Authentication(final @NotNull Connect connect) {
-        if (connect.getUser() != null && connect.getPassword() != null) {
-            return Mqtt3SimpleAuth.builder().username(connect.getUser()).password(connect.getPassword()).build();
-        } else if (connect.getUser() != null) {
-            return Mqtt3SimpleAuth.builder().username(connect.getUser()).build();
-        } else if (connect.getPassword() != null) {
+    private @Nullable Mqtt3SimpleAuth buildMqtt3Authentication(final @NotNull AuthenticationOptions authenticationOptions) {
+        if (authenticationOptions.getUser() != null && authenticationOptions.getPassword() != null) {
+            return Mqtt3SimpleAuth.builder()
+                    .username(authenticationOptions.getUser())
+                    .password(authenticationOptions.getPassword())
+                    .build();
+        } else if (authenticationOptions.getUser() != null) {
+            return Mqtt3SimpleAuth.builder().username(authenticationOptions.getUser()).build();
+        } else if (authenticationOptions.getPassword() != null) {
             throw new IllegalArgumentException("Password-Only Authentication is not allowed in MQTT 3");
         }
         return null;
     }
 
-    public static @NotNull Map<String, ClientData> getClientDataMap() {
+    public static @NotNull Map<ClientKey, ClientData> getClientDataMap() {
         return clientKeyToClientData;
     }
 
-    public @Nullable MqttClient getMqttClient(final @NotNull Context context) {
+    public @Nullable MqttClient getMqttClient(final @NotNull ClientKey clientKey) {
         MqttClient client = null;
 
-        if (clientKeyToClientData.containsKey(context.getKey())) {
-            client = clientKeyToClientData.get(context.getKey()).getClient();
+        if (clientKeyToClientData.containsKey(clientKey)) {
+            client = clientKeyToClientData.get(clientKey).getClient();
         }
 
         return client;
     }
 
     private @NotNull Consumer<Mqtt5Publish> buildRemainingMqtt5PublishesCallback(
-            final @NotNull Connect connect, final @NotNull Mqtt5Client client) {
-        if (connect instanceof Subscribe) {
-            return new SubscribeMqtt5PublishCallback((Subscribe) connect, client);
+            final @Nullable SubscribeOptions subscribeOptions, final @NotNull Mqtt5Client client) {
+        if (subscribeOptions != null) {
+            return new SubscribeMqtt5PublishCallback(subscribeOptions, client);
         } else {
             return mqtt5Publish -> Logger.debug("received PUBLISH: {}, MESSAGE: '{}'",
                     mqtt5Publish,
@@ -502,13 +511,14 @@ abstract class AbstractMqttClientExecutor {
     }
 
     private @NotNull Consumer<Mqtt3Publish> buildRemainingMqtt3PublishesCallback(
-            final @NotNull Connect connect, final @NotNull Mqtt3Client client) {
-        if (connect instanceof Subscribe) {
-            return new SubscribeMqtt3PublishCallback((Subscribe) connect, client);
+            final @Nullable SubscribeOptions subscribeOptions, final @NotNull Mqtt3Client client) {
+        if (subscribeOptions != null) {
+            return new SubscribeMqtt3PublishCallback(subscribeOptions, client);
         } else {
             return mqtt3Publish -> Logger.debug("received PUBLISH: {}, MESSAGE: '{}'",
                     mqtt3Publish,
                     new String(mqtt3Publish.getPayloadAsBytes(), StandardCharsets.UTF_8));
         }
     }
+
 }

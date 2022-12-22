@@ -16,8 +16,7 @@
 
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.*;
-import com.hivemq.cli.utils.Tuple;
+import com.hivemq.cli.commands.options.*;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttSharedTopicFilter;
@@ -48,22 +47,30 @@ class AbstractMqttClientExecutorTest {
 
     private final @NotNull MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
 
-    private @NotNull Connect connect;
+    private @NotNull ConnectOptions connectOptions;
+    private @NotNull ConnectRestrictionOptions connectRestrictionOptions;
+    private @NotNull AuthenticationOptions authenticationOptions;
+    private @NotNull WillOptions willOptions;
 
     @BeforeEach
     void setUp() {
-        connect = mock(Connect.class);
-        when(connect.getKey()).thenReturn("0");
-        when(connect.getHost()).thenReturn("localhost");
-        when(connect.getIdentifier()).thenReturn("client");
-        when(connect.getReceiveMaximum()).thenReturn(null);
-        when(connect.getSendMaximum()).thenReturn(null);
-        when(connect.getMaximumPacketSize()).thenReturn(null);
-        when(connect.getSendMaximumPacketSize()).thenReturn(null);
-        when(connect.getTopicAliasMaximum()).thenReturn(null);
-        when(connect.getSendTopicAliasMaximum()).thenReturn(null);
-        when(connect.getRequestProblemInformation()).thenReturn(null);
-        when(connect.getRequestResponseInformation()).thenReturn(null);
+        connectOptions = mock(ConnectOptions.class);
+        connectRestrictionOptions = mock(ConnectRestrictionOptions.class);
+        authenticationOptions = mock(AuthenticationOptions.class);
+        willOptions = mock(WillOptions.class);
+        when(connectOptions.getConnectRestrictionOptions()).thenReturn(connectRestrictionOptions);
+        when(connectOptions.getAuthenticationOptions()).thenReturn(authenticationOptions);
+        when(connectOptions.getWillOptions()).thenReturn(willOptions);
+        when(connectOptions.getHost()).thenReturn("localhost");
+        when(connectOptions.getIdentifier()).thenReturn("client");
+        when(connectRestrictionOptions.getReceiveMaximum()).thenReturn(null);
+        when(connectRestrictionOptions.getSendMaximum()).thenReturn(null);
+        when(connectRestrictionOptions.getMaximumPacketSize()).thenReturn(null);
+        when(connectRestrictionOptions.getSendMaximumPacketSize()).thenReturn(null);
+        when(connectRestrictionOptions.getTopicAliasMaximum()).thenReturn(null);
+        when(connectRestrictionOptions.getSendTopicAliasMaximum()).thenReturn(null);
+        when(connectRestrictionOptions.getRequestProblemInformation()).thenReturn(null);
+        when(connectRestrictionOptions.getRequestResponseInformation()).thenReturn(null);
     }
 
     @Test
@@ -187,27 +194,27 @@ class AbstractMqttClientExecutorTest {
     }
 
     @Test
-    void simpleAuth_whenNoAuthIsConfigured_thenNoAuthIsSet_Mqtt5() {
-        when(connect.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
+    void simpleAuth_whenNoAuthIsConfigured_thenNoAuthIsSet_Mqtt5() throws Exception {
+        when(connectOptions.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
 
-        final Mqtt5Client mqtt5Client = (Mqtt5Client) mqttClientExecutor.connect(connect);
+        final Mqtt5Client mqtt5Client = (Mqtt5Client) mqttClientExecutor.connect(connectOptions);
         assertFalse(mqtt5Client.getConfig().getSimpleAuth().isPresent());
     }
 
     @Test
-    void simpleAuth_whenNoAuthIsConfigured_thenNoAuthIsSet_Mqtt3() {
-        when(connect.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
+    void simpleAuth_whenNoAuthIsConfigured_thenNoAuthIsSet_Mqtt3() throws Exception {
+        when(connectOptions.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
 
-        final Mqtt3Client mqtt5Client = (Mqtt3Client) mqttClientExecutor.connect(connect);
+        final Mqtt3Client mqtt5Client = (Mqtt3Client) mqttClientExecutor.connect(connectOptions);
         assertFalse(mqtt5Client.getConfig().getSimpleAuth().isPresent());
     }
 
     @Test
-    void simpleAuth_whenUsernameIsConfigured_setUsername_Mqtt5() {
-        when(connect.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
-        when(connect.getUser()).thenReturn("Test");
+    void simpleAuth_whenUsernameIsConfigured_setUsername_Mqtt5() throws Exception {
+        when(connectOptions.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
+        when(authenticationOptions.getUser()).thenReturn("Test");
 
-        mqttClientExecutor.connect(connect);
+        mqttClientExecutor.connect(connectOptions);
 
         assertNotNull(mqttClientExecutor.getMqtt5ConnectMessage());
         final Optional<Mqtt5SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt5ConnectMessage().getSimpleAuth();
@@ -217,11 +224,11 @@ class AbstractMqttClientExecutorTest {
     }
 
     @Test
-    void simpleAuth_whenUsernameIsConfigured_setUsername_Mqtt3() {
-        when(connect.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
-        when(connect.getUser()).thenReturn("Test");
+    void simpleAuth_whenUsernameIsConfigured_setUsername_Mqtt3() throws Exception {
+        when(connectOptions.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
+        when(authenticationOptions.getUser()).thenReturn("Test");
 
-        mqttClientExecutor.connect(connect);
+        mqttClientExecutor.connect(connectOptions);
 
         assertNotNull(mqttClientExecutor.getMqtt3ConnectMessage());
         final Optional<Mqtt3SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt3ConnectMessage().getSimpleAuth();
@@ -230,11 +237,11 @@ class AbstractMqttClientExecutorTest {
     }
 
     @Test
-    void simpleAuth_whenPasswordIsConfigured_setPassword_Mqtt5() {
-        when(connect.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
-        when(connect.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
+    void simpleAuth_whenPasswordIsConfigured_setPassword_Mqtt5() throws Exception {
+        when(connectOptions.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
+        when(authenticationOptions.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
 
-        mqttClientExecutor.connect(connect);
+        mqttClientExecutor.connect(connectOptions);
 
         assertNotNull(mqttClientExecutor.getMqtt5ConnectMessage());
         final Optional<Mqtt5SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt5ConnectMessage().getSimpleAuth();
@@ -245,18 +252,18 @@ class AbstractMqttClientExecutorTest {
 
     @Test
     void simpleAuth_whenPasswordIsConfigured_setPassword_Mqtt3() {
-        when(connect.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
-        when(connect.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
-        assertThrows(IllegalArgumentException.class, () -> mqttClientExecutor.connect(connect));
+        when(connectOptions.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
+        when(authenticationOptions.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
+        assertThrows(IllegalArgumentException.class, () -> mqttClientExecutor.connect(connectOptions));
     }
 
     @Test
-    void simpleAuth_whenUserNameAndPasswordIsConfigured_setUsernameAndPassword_Mqtt5() {
-        when(connect.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
-        when(connect.getUser()).thenReturn("Test");
-        when(connect.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
+    void simpleAuth_whenUserNameAndPasswordIsConfigured_setUsernameAndPassword_Mqtt5() throws Exception {
+        when(connectOptions.getVersion()).thenReturn(MqttVersion.MQTT_5_0);
+        when(authenticationOptions.getUser()).thenReturn("Test");
+        when(authenticationOptions.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
 
-        mqttClientExecutor.connect(connect);
+        mqttClientExecutor.connect(connectOptions);
 
         assertNotNull(mqttClientExecutor.getMqtt5ConnectMessage());
         final Optional<Mqtt5SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt5ConnectMessage().getSimpleAuth();
@@ -268,12 +275,12 @@ class AbstractMqttClientExecutorTest {
     }
 
     @Test
-    void simpleAuth_whenUserNameAndPasswordIsConfigured_setUsernameAndPassword_Mqtt3() {
-        when(connect.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
-        when(connect.getUser()).thenReturn("Test");
-        when(connect.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
+    void simpleAuth_whenUserNameAndPasswordIsConfigured_setUsernameAndPassword_Mqtt3() throws Exception {
+        when(connectOptions.getVersion()).thenReturn(MqttVersion.MQTT_3_1_1);
+        when(authenticationOptions.getUser()).thenReturn("Test");
+        when(authenticationOptions.getPassword()).thenReturn(ByteBuffer.wrap("Test".getBytes(StandardCharsets.UTF_8)));
 
-        mqttClientExecutor.connect(connect);
+        mqttClientExecutor.connect(connectOptions);
 
         assertNotNull(mqttClientExecutor.getMqtt3ConnectMessage());
         final Optional<Mqtt3SimpleAuth> simpleAuth = mqttClientExecutor.getMqtt3ConnectMessage().getSimpleAuth();
@@ -291,62 +298,60 @@ class AbstractMqttClientExecutorTest {
         @Override
         void mqtt5Connect(
                 final @NotNull Mqtt5Client client,
-                final @NotNull Mqtt5Connect connectMessage,
-                final @NotNull Connect connect) {
+                final @NotNull Mqtt5Connect connectMessage) {
             this.mqtt5ConnectMessage = connectMessage;
         }
 
         @Override
         void mqtt3Connect(
                 final @NotNull Mqtt3Client client,
-                final @NotNull Mqtt3Connect connectMessage,
-                final @NotNull Connect connect) {
+                final @NotNull Mqtt3Connect connectMessage) {
             this.mqtt3ConnectMessage = connectMessage;
         }
 
         @Override
         void mqtt5Subscribe(
                 final @NotNull Mqtt5Client client,
-                final @NotNull Subscribe subscribe,
+                final @NotNull SubscribeOptions subscribeOptions,
                 final @NotNull String topic,
                 final @NotNull MqttQos qos) {}
 
         @Override
         void mqtt3Subscribe(
                 final @NotNull Mqtt3Client client,
-                final @NotNull Subscribe subscribe,
+                final @NotNull SubscribeOptions subscribeOptions,
                 final @NotNull String topic,
                 final @NotNull MqttQos qos) {}
 
         @Override
         void mqtt5Publish(
                 final @NotNull Mqtt5Client client,
-                final @NotNull Publish publish,
+                final @NotNull PublishOptions publishOptions,
                 final @NotNull String topic,
                 final @NotNull MqttQos qos) {}
 
         @Override
         void mqtt3Publish(
                 final @NotNull Mqtt3Client client,
-                final @NotNull Publish publish,
+                final @NotNull PublishOptions publishOptions,
                 final @NotNull String topic,
                 final @NotNull MqttQos qos) {}
 
         @Override
         void mqtt5Unsubscribe(
-                final @NotNull Mqtt5Client client, final @NotNull Unsubscribe unsubscribe) {}
+                final @NotNull Mqtt5Client client, final @NotNull UnsubscribeOptions unsubscribeOptions) {}
 
         @Override
         void mqtt3Unsubscribe(
-                final @NotNull Mqtt3Client client, final @NotNull Unsubscribe unsubscribe) {}
+                final @NotNull Mqtt3Client client, final @NotNull UnsubscribeOptions unsubscribeOptions) {}
 
         @Override
         void mqtt5Disconnect(
-                final @NotNull Mqtt5Client client, final @NotNull Disconnect disconnect) {}
+                final @NotNull Mqtt5Client client, final @NotNull DisconnectOptions disconnectOptions) {}
 
         @Override
         void mqtt3Disconnect(
-                final @NotNull Mqtt3Client client, final @NotNull Disconnect disconnect) {}
+                final @NotNull Mqtt3Client client, final @NotNull DisconnectOptions disconnectOptions) {}
 
         public @Nullable Mqtt5Connect getMqtt5ConnectMessage() {
             return mqtt5ConnectMessage;

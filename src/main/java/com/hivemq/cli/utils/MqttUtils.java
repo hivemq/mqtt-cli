@@ -44,7 +44,8 @@ public class MqttUtils {
     // The returned qos array will be filled with the default value represented by the first element in the given qos array
     // if the sizes do not match up. Else this method throws an IllegalArgument exception
     public static @NotNull MqttQos @NotNull [] arrangeQosToMatchTopics(
-            final @NotNull String @NotNull [] topics, final @NotNull MqttQos @NotNull [] qos) {
+            final @NotNull String @NotNull [] topics, final @NotNull MqttQos @NotNull [] qos)
+            throws IllegalArgumentException {
         if (topics.length != qos.length && qos.length == 1) {
             final MqttQos defaultQos = qos[0];
             final MqttQos[] newQos = new MqttQos[topics.length];
@@ -53,9 +54,11 @@ public class MqttUtils {
         } else if (topics.length == qos.length) {
             return qos;
         }
-        throw new IllegalArgumentException(
-                "Topics do not match up to the QoS given. Topics Size {" + topics.length + "}, QoS Size {" +
-                        qos.length + "}");
+        throw new IllegalArgumentException("Topics do not match up to the QoS given. Topics Size {" +
+                topics.length +
+                "}, QoS Size {" +
+                qos.length +
+                "}");
     }
 
     public static @Nullable Mqtt5UserProperties convertToMqtt5UserProperties(final @Nullable Mqtt5UserProperty @Nullable ... userProperties) {
@@ -66,18 +69,6 @@ public class MqttUtils {
                     Arrays.stream(userProperties).filter(Objects::nonNull).collect(Collectors.toList());
             return Mqtt5UserProperties.of(nonNullUserProperties);
         }
-    }
-
-    public static @NotNull Throwable getRootCause(final @NotNull Throwable t) {
-        Throwable currentThrowable = t;
-        while (currentThrowable.getCause() != null) {
-            currentThrowable = currentThrowable.getCause();
-        }
-        return currentThrowable;
-    }
-
-    public static @NotNull String buildKey(final @NotNull String identifier, final @NotNull String host) {
-        return "client {" + "identifier='" + identifier + '\'' + ", host='" + host + '\'' + '}';
     }
 
     // See http://docs.oasis-open.org/mqtt/mqtt/v5.0/cs02/mqtt-v5.0-cs02.html#_Toc514345331

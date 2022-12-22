@@ -16,9 +16,9 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.google.common.base.Throwables;
-import com.hivemq.cli.commands.Context;
+import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,31 +27,23 @@ import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "switch", description = "Switch the current context")
-public class ContextSwitchCommand extends ShellContextCommand implements Runnable, Context {
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "display this help message")
-    private boolean usageHelpRequested;
+@CommandLine.Command(name = "switch", description = "Switch the current context", mixinStandardHelpOptions = true)
+public class ContextSwitchCommand extends ShellContextCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
     private @Nullable String contextName;
 
     @CommandLine.Option(names = {"-i", "--identifier"},
-            description = "The client identifier UTF-8 String (default randomly generated string)")
+                        description = "The client identifier UTF-8 String (default randomly generated string)")
     private @Nullable String identifier;
 
-    @CommandLine.Option(names = {"-h", "--host"}, defaultValue = "localhost",
-            description = "The hostname of the message broker (default 'localhost')")
+    @CommandLine.Option(names = {"-h", "--host"},
+                        defaultValue = "localhost",
+                        description = "The hostname of the message broker (default 'localhost')")
     private @Nullable String host;
-
-    @SuppressWarnings("unused") //needed for pico cli - reflection code generation
-    public ContextSwitchCommand() {
-        //noinspection ConstantConditions
-        this(null);
-    }
 
     @Inject
     public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -59,30 +51,34 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     }
 
     @Override
-    public void run() {
+    public @NotNull Integer call() {
+        Logger.trace("Command {} ", this);
+
         if (contextName == null && identifier == null) {
             ShellCommand.usage(this);
-            return;
+            return 0;
         }
 
         if (contextName != null) {
             try {
                 extractKeyFromContextName(contextName);
             } catch (final IllegalArgumentException ex) {
-                Logger.error(ex, Throwables.getRootCause(ex).getMessage());
-                return;
+                LoggerUtils.logShellError("Unable to switch context", ex);
+                return 1;
             }
         }
 
-        Logger.trace("Command {} ", this);
-
-        final MqttClient client = mqttClientExecutor.getMqttClient(this);
+        final MqttClient client =
+                mqttClientExecutor.getMqttClient(ClientKey.of(identifier, Objects.requireNonNull(host)));
 
         if (client != null) {
             updateContext(client);
         } else {
             Logger.error("Context {}@{} not found", identifier, host);
+            return 1;
         }
+
+        return 0;
     }
 
     private void extractKeyFromContextName(final String contextName) {
@@ -99,17 +95,17 @@ public class ContextSwitchCommand extends ShellContextCommand implements Runnabl
     }
 
     @Override
-    public @NotNull String getKey() {
-        return "client {" + "identifier='" + getIdentifier() + '\'' + ", host='" + host + '\'' + '}';
-    }
-
-    @Override
     public @NotNull String toString() {
-        return getClass().getSimpleName() + "{" + "identifier=" + identifier + ", host=" + host + '}';
-    }
-
-    @Override
-    public @NotNull String getIdentifier() {
-        return Objects.requireNonNull(identifier);
+        return "ContextSwitchCommand{" +
+                "contextName='" +
+                contextName +
+                '\'' +
+                ", identifier='" +
+                identifier +
+                '\'' +
+                ", host='" +
+                host +
+                '\'' +
+                '}';
     }
 }
