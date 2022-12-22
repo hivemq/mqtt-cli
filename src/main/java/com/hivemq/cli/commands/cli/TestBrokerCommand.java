@@ -126,6 +126,8 @@ public class TestBrokerCommand implements Callable<Integer> {
             port = defaultCLIProperties.getPort();
         }
 
+        authenticationOptions.setDefaultOptions();
+
         try {
             sslConfig = sslOptions.buildSslConfig();
         } catch (final Exception e) {
