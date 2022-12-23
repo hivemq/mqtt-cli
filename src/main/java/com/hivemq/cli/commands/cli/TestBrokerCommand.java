@@ -136,21 +136,27 @@ public class TestBrokerCommand implements Callable<Integer> {
             return 1;
         }
 
+        int mqtt3ExitCode = 0;
+        int mqtt5ExitCode = 0;
         if (version != null) {
             if (version == MqttVersion.MQTT_3_1_1) {
-                testMqtt3Features();
+                mqtt3ExitCode  = testMqtt3Features();
             } else if (version == MqttVersion.MQTT_5_0) {
-                testMqtt5Features();
+                mqtt5ExitCode = testMqtt5Features();
             }
         } else {
-            testMqtt3Features();
-            testMqtt5Features();
+            mqtt3ExitCode = testMqtt3Features();
+            mqtt5ExitCode = testMqtt5Features();
         }
 
-        return 0;
+        if (mqtt3ExitCode != 0 || mqtt5ExitCode != 0) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
-    public void testMqtt5Features() {
+    public int testMqtt5Features() {
         final Mqtt5FeatureTester mqtt5Tester = new Mqtt5FeatureTester(Objects.requireNonNull(host),
                 Objects.requireNonNull(port),
                 authenticationOptions.getUser(),
@@ -168,16 +174,16 @@ public class TestBrokerCommand implements Callable<Integer> {
             connAck = mqtt5Tester.testConnect();
         } catch (final Exception e) {
             Logger.error(e, "Could not connect MQTT 5 client");
-            System.out.println("Could not connect MQTT 5 client - " + Throwables.getRootCause(e).getMessage());
-            return;
+            System.err.println("Could not connect MQTT 5 client - " + Throwables.getRootCause(e).getMessage());
+            return 1;
         }
 
         if (connAck == null) {
             System.out.println("NO");
-            return;
+            return 1;
         } else if (connAck.getReasonCode() != Mqtt5ConnAckReasonCode.SUCCESS) {
             System.out.println(connAck.getReasonCode());
-            return;
+            return 1;
         } else {
             System.out.println("OK");
         }
@@ -299,9 +305,10 @@ public class TestBrokerCommand implements Callable<Integer> {
         }
 
         Logger.info("Finished testing MQTT 5");
+        return 0;
     }
 
-    public void testMqtt3Features() {
+    public int testMqtt3Features() {
         final Mqtt3FeatureTester mqtt3Tester = new Mqtt3FeatureTester(Objects.requireNonNull(host),
                 Objects.requireNonNull(port),
                 authenticationOptions.getUser(),
@@ -319,15 +326,15 @@ public class TestBrokerCommand implements Callable<Integer> {
             connAck = mqtt3Tester.testConnect();
         } catch (final Exception e) {
             Logger.error(e, "Could not connect MQTT 3 client");
-            System.out.println("Could not connect MQTT 3 client - " + Throwables.getRootCause(e).getMessage());
-            return;
+            System.err.println("Could not connect MQTT 3 client - " + Throwables.getRootCause(e).getMessage());
+            return 1;
         }
         if (connAck == null) {
             System.out.println("NO");
-            return;
+            return 1;
         } else if (connAck.getReturnCode() != Mqtt3ConnAckReturnCode.SUCCESS) {
             System.out.println(connAck.getReturnCode());
-            return;
+            return 1;
         } else {
             System.out.println("OK");
         }
@@ -407,6 +414,7 @@ public class TestBrokerCommand implements Callable<Integer> {
         }
 
         Logger.info("Finished testing MQTT 3");
+        return 0;
     }
 
     @Override
