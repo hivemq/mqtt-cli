@@ -207,6 +207,23 @@ class TestBrokerConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
+    void test_connectUserNameAndPasswordProperties(final char mqttVersion) throws Exception {
+        final List<String> publishCommand = defaultTestCommand(mqttVersion);
+        final Map<String, String> properties = Map.of("auth.username", "testuser", "auth.password", "testpassword");
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
+
+        assertTestOutput(executionResult, mqttVersion);
+
+        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
+            connectAssertion.setUserName("testuser");
+            connectAssertion.setPassword(ByteBuffer.wrap("testpassword".getBytes(StandardCharsets.UTF_8)));
+        });
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
     void test_connectUserNameAndPasswordEnv(final char mqttVersion) throws Exception {
         final List<String> testCommand = defaultTestCommand(mqttVersion);
         testCommand.add("-u");
@@ -221,6 +238,24 @@ class TestBrokerConnectST {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
+        });
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectUserNameAndPasswordEnvProperties(final char mqttVersion) throws Exception {
+        final List<String> publishCommand = defaultTestCommand(mqttVersion);
+        final Map<String, String> environments = Map.of("PASSWORD", "testpassword");
+        final Map<String, String> properties = Map.of("auth.username", "testuser", "auth.password.env", "PASSWORD");
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, environments, properties);
+
+        assertTestOutput(executionResult, mqttVersion);
+
+        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
+            connectAssertion.setUserName("testuser");
+            connectAssertion.setPassword(ByteBuffer.wrap("testpassword".getBytes(StandardCharsets.UTF_8)));
         });
     }
 
@@ -245,6 +280,27 @@ class TestBrokerConnectST {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
+        });
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectUserNameAndPasswordFileProperties(final char mqttVersion) throws Exception {
+        final List<String> publishCommand = defaultTestCommand(mqttVersion);
+        final Path passwordFile = Files.createTempFile("password-file", ".txt");
+        passwordFile.toFile().deleteOnExit();
+        Files.writeString(passwordFile, "testpassword");
+        final Map<String, String> properties =
+                Map.of("auth.username", "testuser", "auth.password.file", passwordFile.toString());
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
+
+        assertTestOutput(executionResult, mqttVersion);
+
+        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
+            connectAssertion.setUserName("testuser");
+            connectAssertion.setPassword(ByteBuffer.wrap("testpassword".getBytes(StandardCharsets.UTF_8)));
         });
     }
 
