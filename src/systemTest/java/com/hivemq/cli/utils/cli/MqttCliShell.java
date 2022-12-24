@@ -117,7 +117,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
     }
 
     private @NotNull LogWaiter setupLogWaiter(final @NotNull Path homeDir) {
-        final File logFolder = homeDir.resolve(".mqtt-cli/logs").toFile();
+        final File logFolder = homeDir.resolve(".mqtt-cli").resolve("logs").toFile();
         final File[] logFiles = logFolder.listFiles();
         assertNotNull(logFiles);
         assertEquals(1, logFiles.length);
@@ -144,8 +144,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
      */
     public void connectClient(final @NotNull HiveMQ hivemq, final char mqttVersion, final @NotNull String clientId)
             throws IOException {
-        final List<String> connectCommand = List.of(
-                "con",
+        final List<String> connectCommand = List.of("con",
                 "-h",
                 hivemq.getHost(),
                 "-p",
