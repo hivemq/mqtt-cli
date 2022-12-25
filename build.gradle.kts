@@ -295,6 +295,7 @@ val systemTest by tasks.registering(Test::class) {
     useJUnitPlatform()
     testClassesDirs = sourceSets["systemTest"].output.classesDirs
     classpath = sourceSets["systemTest"].runtimeClasspath
+    maxHeapSize = "2g"
     shouldRunAfter(tasks.test)
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(11))
