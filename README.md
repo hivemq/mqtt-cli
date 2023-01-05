@@ -52,6 +52,12 @@ can be found here:
 [Installation/Packages](https://hivemq.github.io/mqtt-cli/docs/installation/packages.html)!
 
 ## Building from source
+
+### Prerequisites
+In order to be able to execute all tests a running Docker environment is required.
+
+### Build
+
 To do a clean build, issue the following command:
 
 `$ ./gradlew clean build
