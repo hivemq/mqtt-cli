@@ -35,7 +35,8 @@ import static com.hivemq.cli.utils.broker.assertions.TestConnectAssertion.assert
 class TestBrokerConnectTlsST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withTlsEnabled(true).build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withTlsEnabled(true).build();
 
     @RegisterExtension
     private final @NotNull MqttCliAsync mqttCli = new MqttCliAsync();

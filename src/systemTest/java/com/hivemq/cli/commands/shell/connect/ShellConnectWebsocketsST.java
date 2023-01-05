@@ -34,7 +34,8 @@ import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConn
 class ShellConnectWebsocketsST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().withWebsocketEnabled(true).build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withWebsocketEnabled(true).build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -46,23 +47,23 @@ class ShellConnectWebsocketsST {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h",
-                HIVE_MQ.getHost(),
+                HIVEMQ.getHost(),
                 "-p",
-                String.valueOf(HIVE_MQ.getWebsocketsPort()),
+                String.valueOf(HIVEMQ.getWebsocketsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
                 "cliTest",
                 "-ws",
                 "-ws:path",
-                HIVE_MQ.getWebsocketsPath());
+                HIVEMQ.getWebsocketsPath());
 
         mqttCliShell.executeAsync(connectCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        final ConnectPacket connectPacket = HIVE_MQ.getConnectPackets().get(0);
+        final ConnectPacket connectPacket = HIVEMQ.getConnectPackets().get(0);
         assertConnectPacket(connectPacket,
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));

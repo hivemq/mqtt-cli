@@ -56,7 +56,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SubscribeST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliAsync mqttCli = new MqttCliAsync();
@@ -74,11 +75,11 @@ class SubscribeST {
 
         executionResult.awaitStdOut("message");
 
-        assertConnectPacket(HIVE_MQ.getConnectPackets().get(0),
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -95,7 +96,7 @@ class SubscribeST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribe(executionResult);
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.AT_LEAST_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -130,17 +131,17 @@ class SubscribeST {
         executionResult.awaitStdOut("message3");
 
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic1", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(1), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(1), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic2", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(2), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(2), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic3", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -181,17 +182,17 @@ class SubscribeST {
         executionResult.awaitStdOut("message3");
 
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic1", Qos.AT_MOST_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(1), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(1), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic2", Qos.AT_LEAST_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(2), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(2), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic3", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -219,7 +220,7 @@ class SubscribeST {
         assertEquals(1, readLines.size());
         assertEquals("message", readLines.get(0));
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -246,7 +247,7 @@ class SubscribeST {
 
         executionResult.awaitStdOut("message");
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
 
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
@@ -274,7 +275,7 @@ class SubscribeST {
         final String encodedPayload = Base64.getEncoder().encodeToString("message".getBytes(StandardCharsets.UTF_8));
         executionResult.awaitStdOut(encodedPayload);
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -294,7 +295,7 @@ class SubscribeST {
 
         executionResult.awaitStdOut("topic: message");
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -324,7 +325,7 @@ class SubscribeST {
         executionResult.awaitStdOut("\"retain\": false");
         executionResult.awaitStdOut("}");
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -334,7 +335,7 @@ class SubscribeST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_subscribeMissingTopic() throws Exception {
         final List<String> subscribeCommand =
-                List.of("sub", "-h", HIVE_MQ.getHost(), "-p", String.valueOf(HIVE_MQ.getMqttPort()));
+                List.of("sub", "-h", HIVEMQ.getHost(), "-p", String.valueOf(HIVEMQ.getMqttPort()));
 
         final ExecutionResult executionResult = MqttCli.execute(subscribeCommand);
 
@@ -346,9 +347,9 @@ class SubscribeST {
         final ArrayList<String> subscribeCommand = new ArrayList<>();
         subscribeCommand.add("sub");
         subscribeCommand.add("-h");
-        subscribeCommand.add(HIVE_MQ.getHost());
+        subscribeCommand.add(HIVEMQ.getHost());
         subscribeCommand.add("-p");
-        subscribeCommand.add(String.valueOf(HIVE_MQ.getMqttPort()));
+        subscribeCommand.add(String.valueOf(HIVEMQ.getMqttPort()));
         subscribeCommand.add("-V");
         subscribeCommand.add(String.valueOf(mqttVersion));
         subscribeCommand.add("-i");
@@ -369,8 +370,8 @@ class SubscribeST {
     private void publishMessage(final @NotNull String topic, final @NotNull String message) {
         final Mqtt5BlockingClient publisher = Mqtt5Client.builder()
                 .identifier("publisher")
-                .serverHost(HIVE_MQ.getHost())
-                .serverPort(HIVE_MQ.getMqttPort())
+                .serverHost(HIVEMQ.getHost())
+                .serverPort(HIVEMQ.getMqttPort())
                 .buildBlocking();
         publisher.connect();
         publisher.publishWith()

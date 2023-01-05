@@ -38,7 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ShellUnsubscribeST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -48,14 +49,14 @@ class ShellUnsubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_successfulUnsubscribe(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("unsub", "-t", "test");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending UNSUBSCRIBE")
                 .awaitLog("received UNSUBACK");
 
         assertUnsubscribePacket(
-                HIVE_MQ.getUnsubscribePackets().get(0),
+                HIVEMQ.getUnsubscribePackets().get(0),
                 unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test")));
     }
 
@@ -64,9 +65,9 @@ class ShellUnsubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_multipleTopics(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("unsub", "-t", "test1", "-t", "test2", "-t", "test3");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending UNSUBSCRIBE")
                 .awaitLog("received UNSUBACK")
                 .awaitLog("sending UNSUBSCRIBE")
@@ -76,15 +77,15 @@ class ShellUnsubscribeST {
 
 
         assertUnsubscribePacket(
-                HIVE_MQ.getUnsubscribePackets().get(0),
+                HIVEMQ.getUnsubscribePackets().get(0),
                 unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test1")));
 
         assertUnsubscribePacket(
-                HIVE_MQ.getUnsubscribePackets().get(1),
+                HIVEMQ.getUnsubscribePackets().get(1),
                 unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test2")));
 
         assertUnsubscribePacket(
-                HIVE_MQ.getUnsubscribePackets().get(2),
+                HIVEMQ.getUnsubscribePackets().get(2),
                 unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test3")));
     }
 
@@ -94,18 +95,18 @@ class ShellUnsubscribeST {
     void test_userProperties(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand =
                 List.of("unsub", "-t", "test", "-up", "key1=value1", "-up", "key2=value2");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(subscribeCommand);
 
         if (mqttVersion == '3') {
             awaitOutput.awaitStdErr("Unsubscribe user properties were set but are unused in MQTT Version MQTT_3_1_1");
             awaitOutput.awaitLog("Unsubscribe user properties were set but are unused in MQTT Version MQTT_3_1_1");
         }
-        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()));
+        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
         awaitOutput.awaitLog("sending UNSUBSCRIBE");
         awaitOutput.awaitLog("received UNSUBACK");
 
-        assertUnsubscribePacket(HIVE_MQ.getUnsubscribePackets().get(0), unsubscribeAssertion -> {
+        assertUnsubscribePacket(HIVEMQ.getUnsubscribePackets().get(0), unsubscribeAssertion -> {
             unsubscribeAssertion.setTopicFilters(List.of("test"));
 
             if (mqttVersion == '5') {
@@ -124,13 +125,13 @@ class ShellUnsubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_missingTopic(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("unsub");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitStdErr("Missing required option: '--topic <topics>'")
                 .awaitStdErr("Try 'help unsub' for more information.");
 
-        assertEquals(0, HIVE_MQ.getUnsubscribePackets().size());
+        assertEquals(0, HIVEMQ.getUnsubscribePackets().size());
     }
 
     @Test
@@ -141,6 +142,6 @@ class ShellUnsubscribeST {
                 .awaitStdErr("Unmatched argument at index 0: 'unsub'")
                 .awaitStdErr("Try 'help' to get a list of commands.");
 
-        assertEquals(0, HIVE_MQ.getUnsubscribePackets().size());
+        assertEquals(0, HIVEMQ.getUnsubscribePackets().size());
     }
 }

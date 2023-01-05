@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ShellDisconnectST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -49,10 +50,10 @@ class ShellDisconnectST {
     @ValueSource(chars = {'3', '5'})
     void test_successfulDisconnect(final char mqttVersion) throws Exception {
         final List<String> disconnectCommand = List.of("dis");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "myClient");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "myClient");
         mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>").awaitLog("sending DISCONNECT");
         assertDisconnectPacket(
-                HIVE_MQ.getDisconnectInformations().get(0),
+                HIVEMQ.getDisconnectInformations().get(0),
                 disconnectAssertion -> disconnectAssertion.setDisconnectedClient("myClient"));
     }
 
@@ -63,9 +64,9 @@ class ShellDisconnectST {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h",
-                HIVE_MQ.getHost(),
+                HIVEMQ.getHost(),
                 "-p",
-                String.valueOf(HIVE_MQ.getMqttPort()),
+                String.valueOf(HIVEMQ.getMqttPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -73,9 +74,9 @@ class ShellDisconnectST {
                 "-se",
                 "120");
         final List<String> disconnectCommand = List.of("dis", "-e", "60");
-        mqttCliShell.executeAsync(connectCommand).awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()));
+        mqttCliShell.executeAsync(connectCommand).awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
         mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>").awaitLog("sending DISCONNECT");
-        assertDisconnectPacket(HIVE_MQ.getDisconnectInformations().get(0), disconnectAssertion -> {
+        assertDisconnectPacket(HIVEMQ.getDisconnectInformations().get(0), disconnectAssertion -> {
             if (mqttVersion == '5') {
                 disconnectAssertion.setSessionExpiryInterval(60);
             }
@@ -88,7 +89,7 @@ class ShellDisconnectST {
     void test_reasonString(final char mqttVersion) throws Exception {
         final List<String> disconnectCommand = List.of("dis", "-r", "test-reason");
 
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>").awaitLog("sending DISCONNECT");
 
@@ -96,7 +97,7 @@ class ShellDisconnectST {
             awaitOutput.awaitStdErr("Reason string was set but is unused in Mqtt version MQTT_3_1_1");
         }
 
-        assertDisconnectPacket(HIVE_MQ.getDisconnectInformations().get(0), disconnectAssertion -> {
+        assertDisconnectPacket(HIVEMQ.getDisconnectInformations().get(0), disconnectAssertion -> {
             if (mqttVersion == '5') {
                 disconnectAssertion.setReasonString("test-reason");
             }
@@ -109,7 +110,7 @@ class ShellDisconnectST {
     void test_userProperties(final char mqttVersion) throws Exception {
         final List<String> disconnectCommand = List.of("dis", "-up", "key1=value1", "-up", "key2=value2");
 
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>").awaitLog("sending DISCONNECT");
 
@@ -117,7 +118,7 @@ class ShellDisconnectST {
             awaitOutput.awaitStdErr("User properties were set but are unused in Mqtt version MQTT_3_1_1");
         }
 
-        assertDisconnectPacket(HIVE_MQ.getDisconnectInformations().get(0), disconnectAssertion -> {
+        assertDisconnectPacket(HIVEMQ.getDisconnectInformations().get(0), disconnectAssertion -> {
             if (mqttVersion == '5') {
                 final UserPropertiesImpl expectedUserProperties =
                         UserPropertiesImpl.of(ImmutableList.<MqttUserProperty>builder()
@@ -136,12 +137,12 @@ class ShellDisconnectST {
         final String clientId = "myTestClient";
         final List<String> disconnectCommand = List.of("dis", "-i", clientId);
 
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, clientId);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, clientId);
         mqttCliShell.executeAsync(List.of("exit")).awaitStdOut("mqtt>");
         mqttCliShell.executeAsync(disconnectCommand).awaitStdOut("mqtt>").awaitLog("sending DISCONNECT");
 
         assertDisconnectPacket(
-                HIVE_MQ.getDisconnectInformations().get(0),
+                HIVEMQ.getDisconnectInformations().get(0),
                 disconnectAssertion -> disconnectAssertion.setDisconnectedClient(clientId));
     }
 
@@ -150,9 +151,9 @@ class ShellDisconnectST {
     @ValueSource(chars = {'3', '5'})
     void test_disconnectAll(final char mqttVersion) throws Exception {
         final List<String> disconnectAllCommand = List.of("dis", "-a");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client2");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client3");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client1");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client2");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client3");
 
         mqttCliShell.executeAsync(disconnectAllCommand)
                 .awaitStdOut("mqtt>")
@@ -160,9 +161,9 @@ class ShellDisconnectST {
                 .awaitLog("sending DISCONNECT")
                 .awaitLog("sending DISCONNECT");
 
-        final String clientId1 = HIVE_MQ.getDisconnectInformations().get(0).getClientId();
-        final String clientId2 = HIVE_MQ.getDisconnectInformations().get(1).getClientId();
-        final String clientId3 = HIVE_MQ.getDisconnectInformations().get(2).getClientId();
+        final String clientId1 = HIVEMQ.getDisconnectInformations().get(0).getClientId();
+        final String clientId2 = HIVEMQ.getDisconnectInformations().get(1).getClientId();
+        final String clientId3 = HIVEMQ.getDisconnectInformations().get(2).getClientId();
         final ArrayList<String> clientIdPool = new ArrayList<>();
         clientIdPool.add(clientId1);
         clientIdPool.add(clientId2);
@@ -171,15 +172,15 @@ class ShellDisconnectST {
         assertTrue(clientIdPool.containsAll(List.of("client1", "client2", "client3")));
 
         assertDisconnectPacket(
-                HIVE_MQ.getDisconnectInformations().get(0),
+                HIVEMQ.getDisconnectInformations().get(0),
                 disconnectAssertion -> disconnectAssertion.setDisconnectedClient(clientId1));
 
         assertDisconnectPacket(
-                HIVE_MQ.getDisconnectInformations().get(1),
+                HIVEMQ.getDisconnectInformations().get(1),
                 disconnectAssertion -> disconnectAssertion.setDisconnectedClient(clientId2));
 
         assertDisconnectPacket(
-                HIVE_MQ.getDisconnectInformations().get(2),
+                HIVEMQ.getDisconnectInformations().get(2),
                 disconnectAssertion -> disconnectAssertion.setDisconnectedClient(clientId3));
     }
 

@@ -40,7 +40,8 @@ import static com.hivemq.cli.utils.broker.assertions.SubscribeAssertion.assertSu
 class SubscribeConnectTlsST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().withTlsEnabled(true).build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withTlsEnabled(true).build();
 
     @RegisterExtension
     private final @NotNull MqttCliAsync mqttCli = new MqttCliAsync();
@@ -56,9 +57,9 @@ class SubscribeConnectTlsST {
         final List<String> subscribeCommand = List.of(
                 "sub",
                 "-h",
-                HIVE_MQ.getHost(),
+                HIVEMQ.getHost(),
                 "-p",
-                String.valueOf(HIVE_MQ.getMqttTlsPort()),
+                String.valueOf(HIVEMQ.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -80,11 +81,11 @@ class SubscribeConnectTlsST {
         executionResult.awaitStdOut("received SUBACK");
 
         assertConnectPacket(
-                HIVE_MQ.getConnectPackets().get(0),
+                HIVEMQ.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);

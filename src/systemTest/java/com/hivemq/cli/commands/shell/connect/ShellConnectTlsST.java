@@ -34,7 +34,8 @@ import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConn
 class ShellConnectTlsST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().withTlsEnabled(true).build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withTlsEnabled(true).build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -50,9 +51,9 @@ class ShellConnectTlsST {
         final List<String> connectCommand = List.of(
                 "con",
                 "-h",
-                HIVE_MQ.getHost(),
+                HIVEMQ.getHost(),
                 "-p",
-                String.valueOf(HIVE_MQ.getMqttTlsPort()),
+                String.valueOf(HIVEMQ.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -67,12 +68,12 @@ class ShellConnectTlsST {
         mqttCliShell.executeAsync(connectCommand).awaitStdOut("Enter private key password:");
 
         mqttCliShell.executeAsync(List.of("changeme"))
-                .awaitStdOut(String.format("cliTest@%s", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s", HIVEMQ.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
         assertConnectPacket(
-                HIVE_MQ.getConnectPackets().get(0),
+                HIVEMQ.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }

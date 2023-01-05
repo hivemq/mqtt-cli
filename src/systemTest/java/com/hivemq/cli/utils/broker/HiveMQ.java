@@ -52,6 +52,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -148,8 +149,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
                         Services.initializerRegistry().setClientInitializer((initializerInput, clientContext) -> {
 
                             clientContext.addDisconnectInboundInterceptor((disconnectInboundInput, disconnectInboundOutput) -> disconnectInformations.add(
-                                    new DisconnectInformation(
-                                            disconnectInboundInput.getDisconnectPacket(),
+                                    new DisconnectInformation(disconnectInboundInput.getDisconnectPacket(),
                                             disconnectInboundInput.getClientInformation().getClientId())));
 
                             clientContext.addPublishInboundInterceptor((publishInboundInput, publishInboundOutput) -> publishPackets.add(
@@ -181,15 +181,18 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
             hivemq = builder.build();
             InternalConfigurations.PAYLOAD_PERSISTENCE_TYPE.set(PersistenceType.FILE);
             InternalConfigurations.RETAINED_MESSAGE_PERSISTENCE_TYPE.set(PersistenceType.FILE);
-            hivemq.start().join();
+            hivemq.start().get();
         } catch (final Exception ex) {
             ex.printStackTrace();
         }
     }
 
     @Override
-    public void afterAll(final @NotNull ExtensionContext context) throws IOException {
-        Objects.requireNonNull(hivemq).stop();
+    public void afterAll(final @NotNull ExtensionContext context)
+            throws IOException, ExecutionException, InterruptedException {
+        Objects.requireNonNull(hivemq).stop().get();
+        //This allows gc of embedded hivemq even if the JUnit Extension is still referenced (static)
+        hivemq = null;
         FileUtils.deleteDirectory(Objects.requireNonNull(hivemqConfigFolder).toFile());
         FileUtils.deleteDirectory(Objects.requireNonNull(hivemqDataFolder).toFile());
     }
@@ -293,12 +296,20 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         String websocketsConfig = "";
         if (websocketEnabled) {
             this.websocketsPort = generatePort();
-            websocketsConfig = "<websocket-listener>\n" + "          <port>" + websocketsPort + "</port>\n" +
-                    "          <bind-address>" + BIND_ADDRESS + "</bind-address>\n" + "          <path>" +
-                    WEBSOCKETS_PATH + "</path>\n" + "          <name>my-websocket-listener</name>\n" +
-                    "          <subprotocols>\n" + "              <subprotocol>mqttv3.1</subprotocol>\n" +
-                    "              <subprotocol>mqtt</subprotocol>\n" + "          </subprotocols>\n" +
-                    "          <allow-extensions>true</allow-extensions>\n" + "</websocket-listener>";
+            //@formatter:off
+            websocketsConfig =
+                    "<websocket-listener>\n" +
+                    "          <port>" + websocketsPort + "</port>\n" +
+                    "          <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
+                    "          <path>" + WEBSOCKETS_PATH + "</path>\n" +
+                    "          <name>my-websocket-listener</name>\n" +
+                    "          <subprotocols>\n" +
+                    "              <subprotocol>mqttv3.1</subprotocol>\n" +
+                    "              <subprotocol>mqtt</subprotocol>\n" +
+                    "          </subprotocols>\n" +
+                    "          <allow-extensions>true</allow-extensions>\n" +
+                    "</websocket-listener>";
+            //@formatter:on
         }
         return websocketsConfig;
     }

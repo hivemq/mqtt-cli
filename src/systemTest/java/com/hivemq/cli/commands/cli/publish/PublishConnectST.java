@@ -52,7 +52,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PublishConnectST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)

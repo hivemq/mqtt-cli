@@ -295,12 +295,12 @@ val systemTest by tasks.registering(Test::class) {
     useJUnitPlatform()
     testClassesDirs = sourceSets["systemTest"].output.classesDirs
     classpath = sourceSets["systemTest"].runtimeClasspath
-    maxHeapSize = "2g"
     shouldRunAfter(tasks.test)
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(11))
     })
     dependsOn(tasks.shadowJar)
+    systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
     systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
             tasks.shadowJar.map { it.outputs.files.singleFile }.get()
     systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
@@ -317,6 +317,7 @@ val systemTestNative by tasks.registering(Test::class) {
         languageVersion.set(JavaLanguageVersion.of(11))
     })
     dependsOn(tasks.nativeCompile)
+    systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
     systemProperties["cliExec"] =
         tasks.nativeCompile.map { it.outputs.files.singleFile }.get().resolve(project.name).absolutePath
     systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath

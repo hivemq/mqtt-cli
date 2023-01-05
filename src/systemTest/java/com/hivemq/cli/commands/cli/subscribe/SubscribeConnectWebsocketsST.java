@@ -39,7 +39,8 @@ import static com.hivemq.cli.utils.broker.assertions.SubscribeAssertion.assertSu
 public class SubscribeConnectWebsocketsST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().withWebsocketEnabled(true).build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withWebsocketEnabled(true).build();
 
     @RegisterExtension
     private final @NotNull MqttCliAsync mqttCli = new MqttCliAsync();
@@ -51,9 +52,9 @@ public class SubscribeConnectWebsocketsST {
         final List<String> subscribeCommand = List.of(
                 "sub",
                 "-h",
-                HIVE_MQ.getHost(),
+                HIVEMQ.getHost(),
                 "-p",
-                String.valueOf(HIVE_MQ.getWebsocketsPort()),
+                String.valueOf(HIVEMQ.getWebsocketsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -62,7 +63,7 @@ public class SubscribeConnectWebsocketsST {
                 "topic",
                 "-ws",
                 "-ws:path",
-                HIVE_MQ.getWebsocketsPath(),
+                HIVEMQ.getWebsocketsPath(),
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
@@ -70,11 +71,11 @@ public class SubscribeConnectWebsocketsST {
         executionResult.awaitStdOut("received SUBACK");
 
         assertConnectPacket(
-                HIVE_MQ.getConnectPackets().get(0),
+                HIVEMQ.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertSubscribePacket(HIVE_MQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
