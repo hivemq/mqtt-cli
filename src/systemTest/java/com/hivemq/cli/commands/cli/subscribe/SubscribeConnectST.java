@@ -53,7 +53,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SubscribeConnectST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliAsync mqttCli = new MqttCliAsync();

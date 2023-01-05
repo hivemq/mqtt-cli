@@ -33,7 +33,8 @@ import java.util.concurrent.TimeUnit;
 class ShellListST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -50,13 +51,13 @@ class ShellListST {
     @ValueSource(chars = {'3', '5'})
     void test_listConnectedClients(final char mqttVersion) throws Exception {
         final List<String> listCommand = List.of("ls");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client2");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client3");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client1");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client2");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client3");
         mqttCliShell.executeAsync(listCommand)
-                .awaitStdOut(String.format("client1@%s", HIVE_MQ.getHost()))
-                .awaitStdOut(String.format("client2@%s", HIVE_MQ.getHost()))
-                .awaitStdOut(String.format("client3@%s", HIVE_MQ.getHost()));
+                .awaitStdOut(String.format("client1@%s", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("client2@%s", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("client3@%s", HIVEMQ.getHost()));
     }
 
     @ParameterizedTest
@@ -64,13 +65,13 @@ class ShellListST {
     @ValueSource(chars = {'3', '5'})
     void test_listConnectedClientsReverse(final char mqttVersion) throws Exception {
         final List<String> listCommand = List.of("ls", "-r");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client2");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client3");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client1");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client2");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client3");
         mqttCliShell.executeAsync(listCommand)
-                .awaitStdOut(String.format("client3@%s", HIVE_MQ.getHost()))
-                .awaitStdOut(String.format("client2@%s", HIVE_MQ.getHost()))
-                .awaitStdOut(String.format("client1@%s", HIVE_MQ.getHost()));
+                .awaitStdOut(String.format("client3@%s", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("client2@%s", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("client1@%s", HIVEMQ.getHost()));
     }
 
     @ParameterizedTest
@@ -78,29 +79,29 @@ class ShellListST {
     @ValueSource(chars = {'3', '5'})
     void test_listLongConnectedClients(final char mqttVersion) throws Exception {
         final List<String> listCommand = List.of("ls", "-l");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client1");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client2");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "client3");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client1");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client2");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client3");
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(listCommand);
 
         awaitOutput.awaitStdOut("CONNECTED")
                 .awaitStdOut("client1")
-                .awaitStdOut(HIVE_MQ.getHost())
-                .awaitStdOut(String.valueOf(HIVE_MQ.getMqttPort()))
+                .awaitStdOut(HIVEMQ.getHost())
+                .awaitStdOut(String.valueOf(HIVEMQ.getMqttPort()))
                 .awaitStdOut(MqttVersionConverter.toClientVersion(mqttVersion).name())
                 .awaitStdOut("NO_SSL");
 
         awaitOutput.awaitStdOut("CONNECTED")
                 .awaitStdOut("client2")
-                .awaitStdOut(HIVE_MQ.getHost())
-                .awaitStdOut(String.valueOf(HIVE_MQ.getMqttPort()))
+                .awaitStdOut(HIVEMQ.getHost())
+                .awaitStdOut(String.valueOf(HIVEMQ.getMqttPort()))
                 .awaitStdOut(MqttVersionConverter.toClientVersion(mqttVersion).name())
                 .awaitStdOut("NO_SSL");
 
         awaitOutput.awaitStdOut("CONNECTED")
                 .awaitStdOut("client3")
-                .awaitStdOut(HIVE_MQ.getHost())
-                .awaitStdOut(String.valueOf(HIVE_MQ.getMqttPort()))
+                .awaitStdOut(HIVEMQ.getHost())
+                .awaitStdOut(String.valueOf(HIVEMQ.getMqttPort()))
                 .awaitStdOut(MqttVersionConverter.toClientVersion(mqttVersion).name())
                 .awaitStdOut("NO_SSL");
     }
@@ -111,20 +112,20 @@ class ShellListST {
     void test_listSubscriptions(final char mqttVersion) throws Exception {
         final List<String> listCommand = List.of("ls", "-s");
 
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "subscription-client1");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "subscription-client1");
         mqttCliShell.executeAsync(List.of("sub", "-t", "topic1"))
-                .awaitStdOut(String.format("subscription-client1@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("subscription-client1@%s>", HIVEMQ.getHost()))
                 .awaitLog("received SUBACK");
 
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion, "subscription-client2");
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "subscription-client2");
         mqttCliShell.executeAsync(List.of("sub", "-t", "topic2"))
-                .awaitStdOut(String.format("subscription-client2@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("subscription-client2@%s>", HIVEMQ.getHost()))
                 .awaitLog("received SUBACK");
 
         mqttCliShell.executeAsync(listCommand)
-                .awaitStdOut(String.format("subscription-client1@%s", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("subscription-client1@%s", HIVEMQ.getHost()))
                 .awaitStdOut("-subscribed topics: [topic1]")
-                .awaitStdOut(String.format("subscription-client2@%s", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("subscription-client2@%s", HIVEMQ.getHost()))
                 .awaitStdOut("-subscribed topics: [topic2]");
     }
 

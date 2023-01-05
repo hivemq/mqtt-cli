@@ -77,6 +77,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
         // We can only initialize the logger after starting up the shell because the startup initializes the logfile
         this.logWaiter = setupLogWaiter(homeDir);
+        this.connectClientMarker = 0;
     }
 
     @Override

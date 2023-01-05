@@ -47,7 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ShellPublishST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVE_MQ = HiveMQ.builder().build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
@@ -57,13 +58,13 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_successfulPublish(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(publishCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending PUBLISH")
                 .awaitLog("received PUBLISH acknowledgement");
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
         });
@@ -76,13 +77,13 @@ class ShellPublishST {
         final Path publishFile = Files.createTempFile("publish", "txt");
         Files.write(publishFile, "message".getBytes(StandardCharsets.UTF_8));
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m:file", publishFile.toString());
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(publishCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending PUBLISH")
                 .awaitLog("received PUBLISH acknowledgement");
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
         });
@@ -93,30 +94,30 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_multipleTopics(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test1", "-t", "test2", "-t", "test3", "-m", "test");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(publishCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending PUBLISH")
                 .awaitLog("received PUBLISH acknowledgement");
 
-        final PublishPacket publishPacket1 = HIVE_MQ.getPublishPackets().get(0);
-        final PublishPacket publishPacket2 = HIVE_MQ.getPublishPackets().get(1);
-        final PublishPacket publishPacket3 = HIVE_MQ.getPublishPackets().get(2);
+        final PublishPacket publishPacket1 = HIVEMQ.getPublishPackets().get(0);
+        final PublishPacket publishPacket2 = HIVEMQ.getPublishPackets().get(1);
+        final PublishPacket publishPacket3 = HIVEMQ.getPublishPackets().get(2);
         final Set<String> topicSet =
                 Set.of(publishPacket1.getTopic(), publishPacket2.getTopic(), publishPacket3.getTopic());
         assertTrue(topicSet.containsAll(List.of("test1", "test2", "test3")));
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic(publishPacket1.getTopic());
         });
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(1), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(1), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic(publishPacket2.getTopic());
         });
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(2), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(2), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic(publishPacket3.getTopic());
         });
@@ -127,13 +128,13 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_qos(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "1");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(publishCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending PUBLISH")
                 .awaitLog("received PUBLISH acknowledgement");
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             publishAssertion.setQos(Qos.AT_LEAST_ONCE);
@@ -159,22 +160,22 @@ class ShellPublishST {
                 "2",
                 "-m",
                 "test");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(publishCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending PUBLISH")
                 .awaitLog("received PUBLISH acknowledgement");
 
         final Optional<PublishPacket> optionalPublishPacket1 =
-                HIVE_MQ.getPublishPackets().stream().filter(publish -> publish.getTopic().equals("test1")).findFirst();
+                HIVEMQ.getPublishPackets().stream().filter(publish -> publish.getTopic().equals("test1")).findFirst();
         assertTrue(optionalPublishPacket1.isPresent());
         final PublishPacket publishPacket1 = optionalPublishPacket1.get();
         final Optional<PublishPacket> optionalPublishPacket2 =
-                HIVE_MQ.getPublishPackets().stream().filter(publish -> publish.getTopic().equals("test2")).findFirst();
+                HIVEMQ.getPublishPackets().stream().filter(publish -> publish.getTopic().equals("test2")).findFirst();
         assertTrue(optionalPublishPacket2.isPresent());
         final PublishPacket publishPacket2 = optionalPublishPacket2.get();
         final Optional<PublishPacket> optionalPublishPacket3 =
-                HIVE_MQ.getPublishPackets().stream().filter(publish -> publish.getTopic().equals("test3")).findFirst();
+                HIVEMQ.getPublishPackets().stream().filter(publish -> publish.getTopic().equals("test3")).findFirst();
         assertTrue(optionalPublishPacket3.isPresent());
         final PublishPacket publishPacket3 = optionalPublishPacket3.get();
         final Set<String> topicSet =
@@ -205,13 +206,13 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_retain(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-r");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(publishCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending PUBLISH")
                 .awaitLog("received PUBLISH acknowledgement");
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             publishAssertion.setRetain(true);
@@ -223,23 +224,23 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_messageExpiryInterval(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-e", "120");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(publishCommand);
 
         if (mqttVersion == '3') {
             awaitOutput.awaitStdErr("Publish message expiry was set but is unused in MQTT Version MQTT_3_1_1");
             awaitOutput.awaitLog("Publish message expiry was set but is unused in MQTT Version MQTT_3_1_1");
-            awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()));
+            awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
             awaitOutput.awaitLog("sending PUBLISH");
             awaitOutput.awaitLog("received PUBLISH acknowledgement");
         } else {
-            awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()));
+            awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
             awaitOutput.awaitLog("sending PUBLISH");
             awaitOutput.awaitLog("received PUBLISH acknowledgement");
             awaitOutput.awaitLog("messageExpiryInterval=120");
         }
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -253,7 +254,7 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_payloadFormatIndicator(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-pf", "utf8");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(publishCommand);
 
         if (mqttVersion == '3') {
@@ -261,11 +262,11 @@ class ShellPublishST {
             awaitOutput.awaitLog("Publish payload format indicator was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()));
+        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("received PUBLISH acknowledgement");
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -279,7 +280,7 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_contentType(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-ct", "my-content");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(publishCommand);
 
         if (mqttVersion == '3') {
@@ -287,11 +288,11 @@ class ShellPublishST {
             awaitOutput.awaitLog("Publish content type was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()));
+        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("received PUBLISH acknowledgement");
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -305,7 +306,7 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_responseTopic(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-rt", "response-topic");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(publishCommand);
 
         if (mqttVersion == '3') {
@@ -313,11 +314,11 @@ class ShellPublishST {
             awaitOutput.awaitLog("Publish response topic was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()));
+        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("received PUBLISH acknowledgement");
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -331,7 +332,7 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_correlationData(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-cd", "correlation-data");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(publishCommand);
 
         if (mqttVersion == '3') {
@@ -339,11 +340,11 @@ class ShellPublishST {
             awaitOutput.awaitLog("Publish correlation data was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()));
+        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("received PUBLISH acknowledgement");
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -358,7 +359,7 @@ class ShellPublishST {
     void test_userProperties(final char mqttVersion) throws Exception {
         final List<String> publishCommand =
                 List.of("pub", "-t", "test", "-m", "test", "-up", "key1=value1", "-up", "key2=value2");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(publishCommand);
 
         if (mqttVersion == '3') {
@@ -366,11 +367,11 @@ class ShellPublishST {
             awaitOutput.awaitLog("Publish user properties were set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVE_MQ.getHost()));
+        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("received PUBLISH acknowledgement");
 
-        assertPublishPacket(HIVE_MQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -389,10 +390,10 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_publishMissingTopic(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(publishCommand)
                 .awaitStdErr("Missing required option: '--topic <topics>'")
-                .awaitStdOut("cliTest@" + HIVE_MQ.getHost() + ">");
+                .awaitStdOut("cliTest@" + HIVEMQ.getHost() + ">");
     }
 
     @ParameterizedTest
@@ -400,10 +401,10 @@ class ShellPublishST {
     @ValueSource(chars = {'3', '5'})
     void test_publishMissingMessage(final char mqttVersion) throws Exception {
         final List<String> publishCommand = List.of("pub", "-t", "test");
-        mqttCliShell.connectClient(HIVE_MQ, mqttVersion);
+        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(publishCommand)
                 .awaitStdErr("Error: Missing required argument (specify one of these)")
-                .awaitStdOut("cliTest@" + HIVE_MQ.getHost() + ">");
+                .awaitStdOut("cliTest@" + HIVEMQ.getHost() + ">");
     }
 
     @Test

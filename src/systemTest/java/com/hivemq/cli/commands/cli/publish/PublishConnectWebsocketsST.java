@@ -39,7 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PublishConnectWebsocketsST {
 
     @RegisterExtension
-    private static final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withWebsocketEnabled(true).build();
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withWebsocketEnabled(true).build();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
