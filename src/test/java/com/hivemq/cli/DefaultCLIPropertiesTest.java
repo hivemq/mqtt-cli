@@ -28,16 +28,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultCLIPropertiesTest {
 
     private @NotNull Path pathToTmpDir;
     private @NotNull Path pathToNoProperties;
-    private @NotNull String pathToPropertiesDir;
-    private @NotNull String pathToEmptyProperties;
-    private @NotNull String pathToOverrideProperties;
+    private @NotNull Path pathToPropertiesDir;
+    private @NotNull Path pathToEmptyProperties;
+    private @NotNull Path pathToOverrideProperties;
 
     @BeforeEach
     void setUp(@TempDir final @NotNull Path pathToTmpDir, @TempDir final @NotNull Path pathToNoProperties)
@@ -45,29 +50,29 @@ class DefaultCLIPropertiesTest {
         this.pathToTmpDir = pathToTmpDir;
         this.pathToNoProperties = pathToNoProperties;
         System.setProperty("user.home", pathToTmpDir.toString());
-        final File mqttDir = new File(pathToTmpDir + "/.mqtt-cli");
+        final File mqttDir = pathToTmpDir.resolve(".mqtt-cli").toFile();
         assertTrue(mqttDir.createNewFile());
         final URL resource = getClass().getResource("/PropertyFiles");
         assertNotNull(resource);
-        pathToPropertiesDir = resource.getPath();
-        pathToEmptyProperties = pathToPropertiesDir + "/empty.properties";
-        pathToOverrideProperties = pathToPropertiesDir + "/override.properties";
+        pathToPropertiesDir = Paths.get(resource.getPath());
+        pathToEmptyProperties = pathToPropertiesDir.resolve("empty.properties");
+        pathToOverrideProperties = pathToPropertiesDir.resolve("override.properties");
     }
 
     @Test
     void noPropertyFile() throws Exception {
-        final File missingProperties = pathToNoProperties.resolve("missing.properties").toFile();
-        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties(missingProperties.getPath());
+        final Path missingProperties = pathToNoProperties.resolve("missing.properties");
+        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties(missingProperties);
 
         defaultCLIProperties.init();
 
-        assertTrue(missingProperties.exists());
+        assertTrue(missingProperties.toFile().exists());
         assertEquals(MqttVersion.MQTT_5_0, defaultCLIProperties.getMqttVersion());
         assertEquals("localhost", defaultCLIProperties.getHost());
         assertEquals(1883, defaultCLIProperties.getPort());
         assertEquals(Level.DEBUG, defaultCLIProperties.getLogfileDebugLevel());
         assertEquals("mqtt", defaultCLIProperties.getClientPrefix());
-        assertEquals(pathToTmpDir + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
+        assertEquals(pathToTmpDir.resolve(".mqtt-cli").resolve("logs"), defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertNull(defaultCLIProperties.getUsername());
         assertNull(defaultCLIProperties.getPassword());
@@ -86,7 +91,7 @@ class DefaultCLIPropertiesTest {
         assertEquals(1883, defaultCLIProperties.getPort());
         assertEquals(Level.DEBUG, defaultCLIProperties.getLogfileDebugLevel());
         assertEquals("mqtt", defaultCLIProperties.getClientPrefix());
-        assertEquals(pathToTmpDir + "/.mqtt-cli/logs/", defaultCLIProperties.getLogfilePath());
+        assertEquals(pathToTmpDir.resolve(".mqtt-cli").resolve("logs"), defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertNull(defaultCLIProperties.getUsername());
         assertNull(defaultCLIProperties.getPassword());
@@ -105,7 +110,7 @@ class DefaultCLIPropertiesTest {
         assertEquals(1884, defaultCLIProperties.getPort());
         assertEquals(Level.TRACE, defaultCLIProperties.getLogfileDebugLevel());
         assertEquals("testprefix", defaultCLIProperties.getClientPrefix());
-        assertEquals("/.mqtt-cli/logs", defaultCLIProperties.getLogfilePath());
+        assertEquals(Paths.get("some_folder", ".mqtt-cli", "logs"), defaultCLIProperties.getLogfilePath());
         assertNull(defaultCLIProperties.getClientSubscribeOutputFile());
         assertEquals("mqtt", defaultCLIProperties.getUsername());
         assertEquals(ByteBuffer.wrap("password".getBytes()), defaultCLIProperties.getPassword());

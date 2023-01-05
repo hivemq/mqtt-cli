@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
@@ -74,13 +76,7 @@ public class DefaultCLIProperties {
         put(CLIENT_ID_PREFIX, "mqtt");
         put(CLIENT_ID_LENGTH, "8");
         put(SUBSCRIBE_OUTPUT_FILE, null);
-        put(LOGFILE_PATH,
-                System.getProperty("user.home") +
-                        File.separator +
-                        ".mqtt-cli" +
-                        File.separator +
-                        "logs" +
-                        File.separator);
+        put(LOGFILE_PATH, Paths.get(System.getProperty("user.home"), ".mqtt-cli", "logs").toString());
         put(USERNAME, null);
         put(PASSWORD, null);
         put(PASSWORD_FILE, null);
@@ -99,8 +95,8 @@ public class DefaultCLIProperties {
      *
      * @param filePath the path to where the properties file shall be written oder read from
      */
-    public DefaultCLIProperties(final @NotNull String filePath) {
-        storePropertiesFile = new File(filePath);
+    public DefaultCLIProperties(final @NotNull Path filePath) {
+        storePropertiesFile = filePath.toFile();
     }
 
     /**
@@ -212,8 +208,8 @@ public class DefaultCLIProperties {
         return propertyToValue.get(SUBSCRIBE_OUTPUT_FILE);
     }
 
-    public @NotNull String getLogfilePath() {
-        return propertyToValue.get(LOGFILE_PATH);
+    public @NotNull Path getLogfilePath() {
+        return Paths.get(propertyToValue.get(LOGFILE_PATH));
     }
 
     public @Nullable String getUsername() {
