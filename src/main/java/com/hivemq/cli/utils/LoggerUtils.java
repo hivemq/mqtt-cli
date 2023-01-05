@@ -47,7 +47,7 @@ public class LoggerUtils {
         final Level logLevel = defaultCLIProperties.getLogfileDebugLevel();
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final Date date = new Date();
-        final Path logfilePath = dir.resolve("mqtt_cli_").resolve(dateFormat.format(date)).resolve(".log");
+        final Path logfilePath = dir.resolve("mqtt_cli_" + dateFormat.format(date) + ".log");
         final String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {pid} | {{level}|min-size=5} | {message}";
         final File dirFile = dir.toFile();
 
