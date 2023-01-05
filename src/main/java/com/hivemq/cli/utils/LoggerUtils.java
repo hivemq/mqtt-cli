@@ -29,6 +29,7 @@ import org.tinylog.Logger;
 import org.tinylog.configuration.Configuration;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,13 +43,13 @@ public class LoggerUtils {
     public static void useDefaultLogging(final @Nullable Map<String, String> extendedProperties) {
         final DefaultCLIProperties defaultCLIProperties =
                 Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
-        final String dir = defaultCLIProperties.getLogfilePath();
+        final Path dir = defaultCLIProperties.getLogfilePath();
         final Level logLevel = defaultCLIProperties.getLogfileDebugLevel();
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final Date date = new Date();
-        final String logfilePath = dir + "mqtt_cli_" + dateFormat.format(date) + ".log";
+        final Path logfilePath = dir.resolve("mqtt_cli_").resolve(dateFormat.format(date)).resolve(".log");
         final String logfileFormatPattern = "{date: yyyy-MM-dd HH:mm:ss} | {pid} | {{level}|min-size=5} | {message}";
-        final File dirFile = new File(dir);
+        final File dirFile = dir.toFile();
 
         //noinspection ResultOfMethodCallIgnored
         dirFile.mkdirs();
@@ -58,7 +59,7 @@ public class LoggerUtils {
         final Map<String, String> configurationMap = new HashMap<String, String>() {{
             put("writer", "file");
             put("writer.format", logfileFormatPattern);
-            put("writer.file", logfilePath);
+            put("writer.file", logfilePath.toString());
             put("writer.append", "true");
             put("writer.level", logLevel.name().toLowerCase());
         }};

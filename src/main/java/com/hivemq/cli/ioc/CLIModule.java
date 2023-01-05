@@ -31,13 +31,14 @@ import picocli.CommandLine;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Module(includes = HiveMQCLIModule.class)
 class CLIModule {
 
-    private static final @NotNull String PROPERTIES_FILE_PATH =
-            System.getProperty("user.home") + File.separator + ".mqtt-cli" + File.separator + "config.properties";
+    private static final @NotNull Path PROPERTIES_FILE_PATH =
+            Paths.get(System.getProperty("user.home")).resolve(".mqtt-cli").resolve("config.properties");
 
     @Provides
     @Singleton
