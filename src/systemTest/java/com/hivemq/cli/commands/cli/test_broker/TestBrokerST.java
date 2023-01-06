@@ -17,7 +17,7 @@
 package com.hivemq.cli.commands.cli.test_broker;
 
 import com.hivemq.cli.utils.MqttVersionConverter;
-import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.broker.HiveMQExtension;
 import com.hivemq.cli.utils.cli.MqttCli;
 import com.hivemq.cli.utils.cli.results.ExecutionResult;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +38,7 @@ class TestBrokerST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
+    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)

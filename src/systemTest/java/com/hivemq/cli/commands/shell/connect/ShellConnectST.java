@@ -18,8 +18,8 @@ package com.hivemq.cli.commands.shell.connect;
 
 import com.google.common.collect.ImmutableList;
 import com.hivemq.cli.utils.MqttVersionConverter;
-import com.hivemq.cli.utils.broker.HiveMQ;
-import com.hivemq.cli.utils.cli.MqttCliShell;
+import com.hivemq.cli.utils.broker.HiveMQExtension;
+import com.hivemq.cli.utils.cli.MqttCliShellExtension;
 import com.hivemq.cli.utils.cli.results.AwaitOutput;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
 import com.hivemq.extension.sdk.api.packets.general.Qos;
@@ -51,10 +51,10 @@ class ShellConnectST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
+    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
+    private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)

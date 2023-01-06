@@ -17,8 +17,8 @@
 package com.hivemq.cli.commands.shell.connect;
 
 import com.hivemq.cli.utils.MqttVersionConverter;
-import com.hivemq.cli.utils.broker.HiveMQ;
-import com.hivemq.cli.utils.cli.MqttCliShell;
+import com.hivemq.cli.utils.broker.HiveMQExtension;
+import com.hivemq.cli.utils.cli.MqttCliShellExtension;
 import com.hivemq.cli.utils.cli.results.AwaitOutput;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
@@ -41,10 +41,11 @@ class ShellConnectEnvST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
+    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell(Map.of(PASSWORD_ENV, "password"));
+    private final @NotNull MqttCliShellExtension
+            mqttCliShell = new MqttCliShellExtension(Map.of(PASSWORD_ENV, "password"));
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)

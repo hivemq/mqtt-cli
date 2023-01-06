@@ -56,7 +56,7 @@ import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCallback {
+public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, AfterEachCallback {
 
     private static final @NotNull String WEBSOCKETS_PATH = "/mqtt-custom";
     private static final @NotNull String BIND_ADDRESS = "localhost";
@@ -84,7 +84,7 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         return new Builder();
     }
 
-    private HiveMQ(final boolean tlsEnabled, final boolean websocketEnabled) {
+    private HiveMQExtension(final boolean tlsEnabled, final boolean websocketEnabled) {
         this.tlsEnabled = tlsEnabled;
         this.websocketEnabled = websocketEnabled;
     }
@@ -322,8 +322,8 @@ public class HiveMQ implements BeforeAllCallback, AfterAllCallback, AfterEachCal
         private Builder() {
         }
 
-        public @NotNull HiveMQ build() {
-            return new HiveMQ(tlsEnabled, websocketEnabled);
+        public @NotNull HiveMQExtension build() {
+            return new HiveMQExtension(tlsEnabled, websocketEnabled);
         }
 
         public @NotNull Builder withTlsEnabled(final boolean tlsEnabled) {

@@ -31,7 +31,7 @@ import java.util.Map;
 import static com.hivemq.cli.utils.cli.MqttCli.CLI_EXEC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MqttCliAsync implements AfterEachCallback {
+public class MqttCliAsyncExtension implements AfterEachCallback {
 
     private final @NotNull List<Process> startedProcesses = new ArrayList<>();
 

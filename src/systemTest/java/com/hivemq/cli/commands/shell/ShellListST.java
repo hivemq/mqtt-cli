@@ -17,8 +17,8 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.utils.MqttVersionConverter;
-import com.hivemq.cli.utils.broker.HiveMQ;
-import com.hivemq.cli.utils.cli.MqttCliShell;
+import com.hivemq.cli.utils.broker.HiveMQExtension;
+import com.hivemq.cli.utils.cli.MqttCliShellExtension;
 import com.hivemq.cli.utils.cli.results.AwaitOutput;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -34,10 +34,10 @@ class ShellListST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
+    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
+    private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
