@@ -17,7 +17,7 @@
 package com.hivemq.cli.commands.cli.publish;
 
 import com.hivemq.cli.utils.MqttVersionConverter;
-import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.broker.HiveMQExtension;
 import com.hivemq.cli.utils.cli.MqttCli;
 import com.hivemq.cli.utils.cli.results.ExecutionResult;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ class PublishConnectWebsocketsST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withWebsocketEnabled(true).build();
+    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().withWebsocketEnabled(true).build();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)

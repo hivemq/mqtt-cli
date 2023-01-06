@@ -18,8 +18,8 @@ package com.hivemq.cli.commands.shell;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
-import com.hivemq.cli.utils.broker.HiveMQ;
-import com.hivemq.cli.utils.cli.MqttCliShell;
+import com.hivemq.cli.utils.broker.HiveMQExtension;
+import com.hivemq.cli.utils.cli.MqttCliShellExtension;
 import com.hivemq.cli.utils.cli.results.AwaitOutput;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
@@ -50,10 +50,10 @@ class ShellSubscribeST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().build();
+    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    private final @NotNull MqttCliShell mqttCliShell = new MqttCliShell();
+    private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)

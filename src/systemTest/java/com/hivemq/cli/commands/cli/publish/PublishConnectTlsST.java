@@ -18,8 +18,8 @@ package com.hivemq.cli.commands.cli.publish;
 
 import com.google.common.io.Resources;
 import com.hivemq.cli.utils.MqttVersionConverter;
-import com.hivemq.cli.utils.broker.HiveMQ;
-import com.hivemq.cli.utils.cli.MqttCliAsync;
+import com.hivemq.cli.utils.broker.HiveMQExtension;
+import com.hivemq.cli.utils.cli.MqttCliAsyncExtension;
 import com.hivemq.cli.utils.cli.results.ExecutionResultAsync;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
@@ -39,10 +39,10 @@ class PublishConnectTlsST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQ HIVEMQ = HiveMQ.builder().withTlsEnabled(true).build();
+    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().withTlsEnabled(true).build();
 
     @RegisterExtension
-    private final @NotNull MqttCliAsync mqttCli = new MqttCliAsync();
+    private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)

@@ -18,7 +18,7 @@ package com.hivemq.cli.utils.cli;
 
 import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.OrphanProcessCleanup;
-import com.hivemq.cli.utils.broker.HiveMQ;
+import com.hivemq.cli.utils.broker.HiveMQExtension;
 import com.hivemq.cli.utils.cli.io.LogWaiter;
 import com.hivemq.cli.utils.cli.io.ProcessIO;
 import com.hivemq.cli.utils.cli.results.AwaitOutput;
@@ -43,7 +43,7 @@ import static com.hivemq.cli.utils.cli.MqttCli.CLI_EXEC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
+public class MqttCliShellExtension implements BeforeEachCallback, AfterEachCallback {
 
     public static @NotNull String DEFAULT_CLIENT_NAME = "cliTest";
 
@@ -56,11 +56,11 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
 
     private final @NotNull Map<String, String> envVariables;
 
-    public MqttCliShell() {
+    public MqttCliShellExtension() {
         envVariables = Map.of();
     }
 
-    public MqttCliShell(final @NotNull Map<String, String> envVariables) {
+    public MqttCliShellExtension(final @NotNull Map<String, String> envVariables) {
         this.envVariables = envVariables;
     }
 
@@ -132,7 +132,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
      * @param hivemq the HiveMQ instance to which the client should connect
      * @throws IOException when the cli command to connect could not be written to the shell
      */
-    public void connectClient(final @NotNull HiveMQ hivemq, final char mqttVersion) throws IOException {
+    public void connectClient(final @NotNull HiveMQExtension hivemq, final char mqttVersion) throws IOException {
         connectClient(hivemq, mqttVersion, DEFAULT_CLIENT_NAME);
     }
 
@@ -143,7 +143,7 @@ public class MqttCliShell implements BeforeEachCallback, AfterEachCallback {
      * @param hivemq the HiveMQ instance to which the client should connect
      * @throws IOException when the cli command to connect could not be written to the shell
      */
-    public void connectClient(final @NotNull HiveMQ hivemq, final char mqttVersion, final @NotNull String clientId)
+    public void connectClient(final @NotNull HiveMQExtension hivemq, final char mqttVersion, final @NotNull String clientId)
             throws IOException {
         final List<String> connectCommand = List.of("con",
                 "-h",
