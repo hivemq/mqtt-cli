@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Exec
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.support.unzipTo
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 
@@ -36,7 +37,14 @@ class CliNativeImagePlugin : Plugin<Project> {
             dependsOn(downloadTask)
 
             workingDir(downloadTask.flatMap { it.jdksDirectory })
-            commandLine("tar", "-xzf", downloadTask.flatMap { it.graalDownload }.get())
+            if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
+                unzipTo(
+                    downloadTask.flatMap { it.jdksDirectory }.get().asFile,
+                    downloadTask.flatMap { it.graalDownload }.get().asFile
+                )
+            } else {
+                commandLine("tar", "-xzf", downloadTask.flatMap { it.graalDownload }.get())
+            }
             outputs.dir(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
         }
 
