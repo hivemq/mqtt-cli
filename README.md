@@ -33,28 +33,33 @@ A detailed documentation can be found [here](https://hivemq.github.io/mqtt-cli)
 - Various distributions available
 
 ## Prerequisites
+
 At least Java 8 is required to run MqttCLI.
 
 ## Quickstart
+
 The simplest way to start the MQTT CLI is typing:
 
-``` $ mqtt ```
+``$ mqtt``
 
 See also:
- 
- ``mqtt --help``.
+
+``mqtt --help``.
 
 ### Download latest MQTT CLI package
 
-Packages 
- for **Linux, Mac OS and Windows**
-can be found here: 
+Packages
+for **Linux, Mac OS and Windows**
+can be found here:
 [Installation/Packages](https://hivemq.github.io/mqtt-cli/docs/installation/packages.html)!
 
 ## Building from source
 
 ### Prerequisites
-In order to be able to execute all tests a running Docker environment is required.
+
+- To be able to execute integration tests a running **Docker environment** is required.
+- To be able to build and test the native image a **GraalVM installation** is required. You can set it up
+  with ``$ ./gradlew installNativeImageTooling``. This needs to be done prior a gradle build.
 
 ### Build
 
@@ -62,23 +67,22 @@ To do a clean build, issue the following command:
 
 `$ ./gradlew clean build
 `
-This runs the unit tests and compiles a new mqtt-cli-<version>.jar into build/libs. 
+This runs the unit tests and compiles a new mqtt-cli-<version>.jar into build/libs.
 You can then update an existing MQTT CLI installation by replacing its mqtt-cli-<version>.jar with this one.
 
-The `build.gradle` file contains further instructions for building the platform specific distribution packages. 
+The `build.gradle` file contains further instructions for building the platform specific distribution packages.
 In a nutshell:
-
 
 For MacOS/Linux brew:
 `$ ./gradlew buildBrewFormula
 `
 
 For the Debian package:
-`$ ./gradlew buildDebianPackage 
+`$ ./gradlew buildDebianPackage
 `
 
 For the RPM package:
-`$ ./gradlew buildRpmPackage 
+`$ ./gradlew buildRpmPackage
 `
 
 For the Windows installer:
@@ -87,33 +91,35 @@ For the Windows installer:
 
 ## Subscribe
 
-|Command                                         |Explanation                                                              |
-|------------------------------------------------|-------------------------------------------------------------------------|
-| ``mqtt sub -t topic`` | Subscribe to a topic on default settings and block the console.
-| ``mqtt sub -t test1 -t test2``| Subscribe to the topics test1 and test2 on default settings and block the console.
-| ``mqtt sub -t test -h localhost -p 1884``| Subscribe to topic test at localhost:1884.
-
+| Command                                   | Explanation                                                                        |
+|-------------------------------------------|------------------------------------------------------------------------------------|
+| ``mqtt sub -t topic``                     | Subscribe to a topic on default settings and block the console.                    |
+| ``mqtt sub -t test1 -t test2``            | Subscribe to the topics test1 and test2 on default settings and block the console. |
+| ``mqtt sub -t test -h localhost -p 1884`` | Subscribe to topic test at localhost:1884.                                         |
 
 See also ``mqtt sub --help``
 
 ## Publish
-|Command                                                |Explanation                                                              |
-|-------------------------------------------------------|-------------------------------------------------------------------------|
-| ``mqtt pub -t test -m "Hello" `` | Publish the message "Hello" to the test topics with the default settings
-| ``mqtt pub -t test1 -t test2 -m "Hello Tests"`` | Publish the message "Hello Tests" on both test topics with the default settings
-| ``mqtt pub -t test -m "Hello" -h localhost -p 1884``| Publish the message "Hello" on localhost:1884|
+
+| Command                                              | Explanation                                                                     |
+|------------------------------------------------------|---------------------------------------------------------------------------------|
+| ``mqtt pub -t test -m "Hello" ``                     | Publish the message "Hello" to the test topics with the default settings        |
+| ``mqtt pub -t test1 -t test2 -m "Hello Tests"``      | Publish the message "Hello Tests" on both test topics with the default settings |
+| ``mqtt pub -t test -m "Hello" -h localhost -p 1884`` | Publish the message "Hello" on localhost:1884                                   |
 
 See also ``mqtt pub --help``
 
 ## Shell
 
-* If interacting with several clients, using different contexts and publishing and subscribing with them in various ways, 
-the shell mode with further sub commands is useful.
+* If interacting with several clients, using different contexts and publishing and subscribing with them in various
+  ways,
+  the shell mode with further sub commands is useful.
 
 ``$ mqtt shell``
 
 The Shell-Mode is based around a client context driven use case.
-Therefore methods like Connect and Disconnect switch the current context of the shell and commands like Publish and Subscribe always relate to the currently active client context.
+Therefore methods like Connect and Disconnect switch the current context of the shell and commands like Publish and
+Subscribe always relate to the currently active client context.
 
 ```
 mqtt shell                # starts the shell
@@ -123,15 +129,17 @@ myClient> pub -t test -m msg    # publish with new context client
 myClient> dis                   # disconnect and remove context
 mqtt> ...
 ```
+
 In Shell-Mode the following Commands are available **without** an active context:
 
-**Commands** 
-* con, connect     Connect an MQTT client
-* dis, disconnect  Disconnect an MQTT client
-* switch           Switch the current context
-* ls               List all connected clients of this mqtt-cli session with their respective identifiers
-* cls, clear       Clear the screen
-* exit  
+**Commands**
+
+* con, connect Connect an MQTT client
+* dis, disconnect Disconnect an MQTT client
+* switch Switch the current context
+* ls List all connected clients of this mqtt-cli session with their respective identifiers
+* cls, clear Clear the screen
+* exit
 
 When connected you are switched to the context mode.
 In context mode all MQTT commands relate to the currently active client.
@@ -139,16 +147,16 @@ In context mode all MQTT commands relate to the currently active client.
 The following Commands are available **with** an active context:
 
 **Commands:**
-*  pub, publish        Publish a message to a list of topics
-*  sub, subscribe      Subscribe this MQTT client to a list of topics
-*  unsub, unsubscribe  Unsubscribe this MQTT client from a list of topics
-*  dis, disconnect     Disconnect this MQTT client
-*  switch              Switch the current context
-*  ls, list            List all connected clients of this mqtt-cli session with their respective identifiers
-*  cls, clear          Clear the screen
-*  exit                Exit the current context
 
-  
+* pub, publish Publish a message to a list of topics
+* sub, subscribe Subscribe this MQTT client to a list of topics
+* unsub, unsubscribe Unsubscribe this MQTT client from a list of topics
+* dis, disconnect Disconnect this MQTT client
+* switch Switch the current context
+* ls, list List all connected clients of this mqtt-cli session with their respective identifiers
+* cls, clear Clear the screen
+* exit Exit the current context
+
 ## Test
 
 The test command runs various tests against the specified broker to find out its features and limitations.
@@ -157,6 +165,7 @@ and will afterwards check the connect restrictions returned by a connect of a MQ
 You can alter this behavior by specifying different options when using the command.
 
 Test the public HiveMQ broker:
+
 ``` 
 $ mqtt test -h broker.hivemq.com
 MQTT 3: OK
@@ -193,7 +202,8 @@ Show all available commands:
 
 ``$ mqtt hivemq``
 
-The export command of the HiveMQ command line offers a set of commands to export various resources from a HiveMQ API endpoint.
+The export command of the HiveMQ command line offers a set of commands to export various resources from a HiveMQ API
+endpoint.
 
 ``$ mqtt hivemq export``
 
@@ -201,16 +211,12 @@ Export client details from a HiveMQ node via the export clients command.
 
 ``$ mqtt hivemq export clients``
 
-
-
 Please refer to the detailed documentation [MQTT CLI Documentation](https://hivemq.github.io/mqtt-cli)
 for more examples and complete command descriptions.
-
 
 ## Versioning
 
 [Semantic Versioning](https://semver.org/) is used.
-
 
 ## Contributing
 
