@@ -210,7 +210,8 @@ class TestBrokerConnectST {
     @ValueSource(chars = {'3', '5'})
     void test_connectUserNameAndPasswordProperties(final char mqttVersion) throws Exception {
         final List<String> publishCommand = defaultTestCommand(mqttVersion);
-        final Map<String, String> properties = Map.of("auth.username", "testuser", "auth.password", "testpassword");
+        final Map<String, String> properties =
+                Map.of("auth.username", "testuser", "auth.password", "testpasswordproperties");
         final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
 
         assertTestOutput(executionResult, mqttVersion);
@@ -218,7 +219,7 @@ class TestBrokerConnectST {
         assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("testuser");
-            connectAssertion.setPassword(ByteBuffer.wrap("testpassword".getBytes(StandardCharsets.UTF_8)));
+            connectAssertion.setPassword(ByteBuffer.wrap("testpasswordproperties".getBytes(StandardCharsets.UTF_8)));
         });
     }
 
@@ -247,7 +248,7 @@ class TestBrokerConnectST {
     @ValueSource(chars = {'3', '5'})
     void test_connectUserNameAndPasswordEnvProperties(final char mqttVersion) throws Exception {
         final List<String> publishCommand = defaultTestCommand(mqttVersion);
-        final Map<String, String> environments = Map.of("PASSWORD", "testpassword");
+        final Map<String, String> environments = Map.of("PASSWORD", "testpasswordenvproperties");
         final Map<String, String> properties = Map.of("auth.username", "testuser", "auth.password.env", "PASSWORD");
         final ExecutionResult executionResult = MqttCli.execute(publishCommand, environments, properties);
 
@@ -256,7 +257,7 @@ class TestBrokerConnectST {
         assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("testuser");
-            connectAssertion.setPassword(ByteBuffer.wrap("testpassword".getBytes(StandardCharsets.UTF_8)));
+            connectAssertion.setPassword(ByteBuffer.wrap("testpasswordenvproperties".getBytes(StandardCharsets.UTF_8)));
         });
     }
 
@@ -291,7 +292,7 @@ class TestBrokerConnectST {
         final List<String> publishCommand = defaultTestCommand(mqttVersion);
         final Path passwordFile = Files.createTempFile("password-file", ".txt");
         passwordFile.toFile().deleteOnExit();
-        Files.writeString(passwordFile, "testpassword");
+        Files.writeString(passwordFile, "testpasswordfile");
         final Map<String, String> properties =
                 Map.of("auth.username", "testuser", "auth.password.file", passwordFile.toString());
         final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
@@ -301,7 +302,7 @@ class TestBrokerConnectST {
         assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("testuser");
-            connectAssertion.setPassword(ByteBuffer.wrap("testpassword".getBytes(StandardCharsets.UTF_8)));
+            connectAssertion.setPassword(ByteBuffer.wrap("testpasswordfile".getBytes(StandardCharsets.UTF_8)));
         });
     }
 

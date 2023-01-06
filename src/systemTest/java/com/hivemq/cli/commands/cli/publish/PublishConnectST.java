@@ -74,8 +74,28 @@ class PublishConnectST {
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(1, executionResult.getExitCode());
-        assertTrue(
-                executionResult.getErrorOutput().contains("Unable to connect"));
+        assertTrue(executionResult.getErrorOutput().contains("Unable to connect"));
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectHostProperties(final char mqttVersion) throws Exception {
+        final Map<String, String> properties = Map.of("mqtt.host", HIVEMQ.getHost());
+
+        final List<String> publishCommand = List.of("pub",
+                "-p",
+                String.valueOf(HIVEMQ.getMqttPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-t",
+                "test",
+                "-m",
+                "test",
+                "-d");
+
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
+        assertPublishOutput(executionResult);
     }
 
     @ParameterizedTest
@@ -98,6 +118,54 @@ class PublishConnectST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(1, executionResult.getExitCode());
         assertTrue(executionResult.getErrorOutput().contains("Unable to connect"));
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectPortProperties(final char mqttVersion) throws Exception {
+        final Map<String, String> properties = Map.of("mqtt.port", String.valueOf(HIVEMQ.getMqttPort()));
+
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                HIVEMQ.getHost(),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-t",
+                "test",
+                "-m",
+                "test",
+                "-d");
+
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
+        assertPublishOutput(executionResult);
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_connectMqttVersionProperties(final char mqttVersion) throws Exception {
+        final Map<String, String> properties = Map.of("mqtt.version", String.valueOf(mqttVersion));
+
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                HIVEMQ.getHost(),
+                "-p",
+                String.valueOf(HIVEMQ.getMqttPort()),
+                "-i",
+                "cliTest",
+                "-t",
+                "test",
+                "-m",
+                "test",
+                "-d");
+
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
+        assertPublishOutput(executionResult);
+
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
     }
 
     @ParameterizedTest
