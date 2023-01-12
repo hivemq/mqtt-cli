@@ -34,7 +34,7 @@ jobs:
       #    username: ${{ secrets.DOCKER_USERNAME }}
       #    password: ${{ secrets.DOCKER_TOKEN }}
       - name: Setup GraalVM
-        run: ./gradlew installNativeImageTooling
+        run: ./gradlew installNativeImageTooling --stacktrace
       - name: Check
         run: ./gradlew check --stacktrace
       - name: Upload Test Results
