@@ -45,6 +45,9 @@ class CliNativeImagePlugin : Plugin<Project> {
         }
 
         val extractTaskWindows = project.tasks.register<Copy>("extractGraalJvmWindows") {
+            group = "native"
+            description = "Unzips the Graal JVM into the auto provisioning JDKS folder"
+            dependsOn(downloadTask)
             from(project.zipTree(downloadTask.flatMap { it.graalDownload }.get()))
             into(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
         }
