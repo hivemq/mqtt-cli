@@ -5,10 +5,10 @@ import com.hivemq.cli.native_image.extensions.CliNativeExtensionImpl
 import com.hivemq.cli.native_image.tasks.DownloadGraalJVMTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Exec
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.support.unzipTo
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 
@@ -37,27 +37,34 @@ class CliNativeImagePlugin : Plugin<Project> {
             dependsOn(downloadTask)
 
             workingDir(downloadTask.flatMap { it.jdksDirectory })
-            if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
-                unzipTo(
-                    downloadTask.flatMap { it.jdksDirectory }.get().asFile,
-                    downloadTask.flatMap { it.graalDownload }.get().asFile
-                )
-            } else {
-                commandLine("tar", "-xzf", downloadTask.flatMap { it.graalDownload }.get())
-            }
+            commandLine("tar", "-xzf", downloadTask.flatMap { it.graalDownload }.get())
             outputs.dir(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
         }
+
+        val extractTaskWindows = project.tasks.register<Copy>("extractGraalJvmWindows") {
+            from(project.zipTree(downloadTask.flatMap { it.graalDownload }.get()))
+            into(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
+        }
+
 
         project.tasks.register<Exec>("installNativeImageTooling") {
             group = "native"
             description = "Installs the native-image tooling and declares the Graal as auto provisioned"
-            dependsOn(extractTask)
 
-            workingDir(extractTask.map { it.outputs.files.singleFile })
-            commandLine(getGuPath(), "install", "native-image")
-
-            doLast {
-                extractTask.map { it.outputs.files.singleFile }.get().resolve("provisioned.ok").createNewFile()
+            if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
+                dependsOn(extractTaskWindows)
+                workingDir(extractTaskWindows.map { it.outputs.files.singleFile })
+                commandLine(getGuPath(), "install", "native-image")
+                doLast {
+                    extractTaskWindows.map { it.outputs.files.singleFile }.get().resolve("provisioned.ok").createNewFile()
+                }
+            } else {
+                dependsOn(extractTask)
+                workingDir(extractTask.map { it.outputs.files.singleFile })
+                commandLine(getGuPath(), "install", "native-image")
+                doLast {
+                    extractTask.map { it.outputs.files.singleFile }.get().resolve("provisioned.ok").createNewFile()
+                }
             }
         }
     }
@@ -66,7 +73,7 @@ class CliNativeImagePlugin : Plugin<Project> {
         return if (DefaultNativePlatform.getCurrentOperatingSystem().isLinux) {
             "./bin/gu"
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
-            "bin\\gu"
+            "bin\\gu.cmd"
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX) {
             "./Contents/Home/bin/gu"
         } else {
