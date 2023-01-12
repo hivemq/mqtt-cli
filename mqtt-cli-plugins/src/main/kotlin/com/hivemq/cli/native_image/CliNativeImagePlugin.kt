@@ -29,6 +29,9 @@ class CliNativeImagePlugin : Plugin<Project> {
             graalVersion.set(extension.graalVersion)
             javaVersion.set(extension.javaVersion)
             downloadBaseUrl.set(extension.graalBaseUrl)
+            doLast {
+                println(jdksDirectory.get().asFileTree.files.toString())
+            }
         }
 
         val extractTask = project.tasks.register<Exec>("extractGraalJvm") {
@@ -56,7 +59,8 @@ class CliNativeImagePlugin : Plugin<Project> {
                 workingDir(extractTaskWindows.map { it.outputs.files.singleFile })
                 commandLine(getGuPath(), "install", "native-image")
                 doLast {
-                    extractTaskWindows.map { it.outputs.files.singleFile }.get().resolve("provisioned.ok").createNewFile()
+                    extractTaskWindows.map { it.outputs.files.singleFile }.get().resolve("provisioned.ok")
+                        .createNewFile()
                 }
             } else {
                 dependsOn(extractTask)
