@@ -56,7 +56,7 @@ class CliNativeImagePlugin : Plugin<Project> {
 
             if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
                 dependsOn(extractTaskWindows)
-                workingDir(extractTaskWindows.map { it.outputs.files.singleFile })
+                workingDir(extractTaskWindows.map { it.outputs.files.singleFile.resolve("bin") })
                 commandLine(getGuPath(), "install", "native-image")
                 doLast {
                     println(extractTaskWindows.map { it.outputs.files.files }.get().toString())
@@ -78,7 +78,7 @@ class CliNativeImagePlugin : Plugin<Project> {
         return if (DefaultNativePlatform.getCurrentOperatingSystem().isLinux) {
             "./bin/gu"
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
-            "bin\\gu.cmd"
+            "gu"
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX) {
             "./Contents/Home/bin/gu"
         } else {
