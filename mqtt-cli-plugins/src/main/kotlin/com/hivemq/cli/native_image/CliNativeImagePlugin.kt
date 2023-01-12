@@ -29,9 +29,6 @@ class CliNativeImagePlugin : Plugin<Project> {
             graalVersion.set(extension.graalVersion)
             javaVersion.set(extension.javaVersion)
             downloadBaseUrl.set(extension.graalBaseUrl)
-            doLast {
-                println(jdksDirectory.get().asFileTree.files.toString())
-            }
         }
 
         val extractTask = project.tasks.register<Exec>("extractGraalJvm") {
@@ -80,7 +77,7 @@ class CliNativeImagePlugin : Plugin<Project> {
         return if (DefaultNativePlatform.getCurrentOperatingSystem().isLinux) {
             "./bin/gu"
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
-            "bin\\gu.cmd"
+            "bin\\gu"
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX) {
             "./Contents/Home/bin/gu"
         } else {
