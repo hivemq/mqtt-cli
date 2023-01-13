@@ -21,11 +21,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DirectoryToCertificatesConverterTest {
 
@@ -35,7 +39,7 @@ class DirectoryToCertificatesConverterTest {
     private @NotNull String pathToDirectoryWithoutCertificates;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws URISyntaxException {
         directoryToCertificatesConverter = new DirectoryToCertificatesConverter();
         final URL validCertificateDirResource =
                 getClass().getResource("/FileToCertificateConverter/directory_with_certificates");
@@ -47,9 +51,9 @@ class DirectoryToCertificatesConverterTest {
         assertNotNull(validCertificateResource);
         assertNotNull(noCertificatesDir);
 
-        pathToValidDirectory = validCertificateDirResource.getPath();
-        pathToValidCertificate = validCertificateResource.getPath();
-        pathToDirectoryWithoutCertificates = noCertificatesDir.getPath();
+        pathToValidDirectory = Paths.get(validCertificateDirResource.toURI()).toString();
+        pathToValidCertificate = Paths.get(validCertificateResource.toURI()).toString();
+        pathToDirectoryWithoutCertificates = Paths.get(noCertificatesDir.toURI()).toString();
     }
 
     @Test
