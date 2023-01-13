@@ -57,15 +57,14 @@ class CliNativeImagePlugin : Plugin<Project> {
 
             if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
                 dependsOn(extractTaskWindows)
-                val graalDirectory = extractTaskWindows.map { it.outputs.files.singleFile }
+                val graalDirectory = extractTaskWindows.map { it.destinationDir }
                     .zip(downloadTask.flatMap { it.graalFolderName }) { jdkFolder, graalFolder ->
                         jdkFolder.resolve(graalFolder)
                     }
                 workingDir(graalDirectory)
                 commandLine("cmd", "/C", getGuPath(), "install", "native-image")
                 doLast {
-                    graalDirectory.get().resolve("provisioned.ok")
-                        .createNewFile()
+                    graalDirectory.get().resolve("provisioned.ok").createNewFile()
                 }
             } else {
                 dependsOn(extractTask)
