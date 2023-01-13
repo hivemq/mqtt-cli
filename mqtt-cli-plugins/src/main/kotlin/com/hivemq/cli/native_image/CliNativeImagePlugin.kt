@@ -45,8 +45,9 @@ class CliNativeImagePlugin : Plugin<Project> {
             group = "native"
             description = "Unzips the Graal JVM into the auto provisioning JDKS folder"
             dependsOn(downloadTask)
+
             from(project.zipTree(downloadTask.flatMap { it.graalDownload }.get()))
-            into(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
+            into(downloadTask.flatMap { it.jdksDirectory })
         }
 
 
@@ -56,11 +57,14 @@ class CliNativeImagePlugin : Plugin<Project> {
 
             if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
                 dependsOn(extractTaskWindows)
-                workingDir(extractTaskWindows.map { it.outputs.files.singleFile.resolve("bin") })
-                commandLine(getGuPath(), "install", "native-image")
+                val graalDirectory = extractTaskWindows.map { it.outputs.files.singleFile }
+                    .zip(downloadTask.flatMap { it.graalFolderName }) { jdkFolder, graalFolder ->
+                        jdkFolder.resolve(graalFolder)
+                    }
+                workingDir(graalDirectory)
+                commandLine("cmd", "/C", getGuPath(), "install", "native-image")
                 doLast {
-                    println(extractTaskWindows.map { it.outputs.files.files }.get().toString())
-                    extractTaskWindows.map { it.outputs.files.singleFile }.get().resolve("provisioned.ok")
+                    graalDirectory.get().resolve("provisioned.ok")
                         .createNewFile()
                 }
             } else {
@@ -78,7 +82,7 @@ class CliNativeImagePlugin : Plugin<Project> {
         return if (DefaultNativePlatform.getCurrentOperatingSystem().isLinux) {
             "./bin/gu"
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
-            "gu.cmd"
+            "bin\\gu"
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX) {
             "./Contents/Home/bin/gu"
         } else {
