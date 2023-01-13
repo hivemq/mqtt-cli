@@ -103,9 +103,9 @@ public class SwarmRunStopCommandIT {
 
         out = mock(PrintStream.class);
 
-        final URL resource = getClass().getResource("/SwarmRunStopCommandIT/blockScenario.xml");
-        assertNotNull(resource);
-        final byte[] bytes = Files.readAllBytes(Paths.get(resource.getPath()));
+        final URL blockScenarioResource = getClass().getResource("/SwarmRunStopCommandIT/blockScenario.xml");
+        assertNotNull(blockScenarioResource);
+        final byte[] bytes = Files.readAllBytes(Paths.get(blockScenarioResource.toURI()));
         final String scenarioString = new String(bytes, StandardCharsets.UTF_8).replace("localhost", "broker");
         scenarioBase64 = Base64.getEncoder().encodeToString(scenarioString.getBytes(StandardCharsets.UTF_8));
 

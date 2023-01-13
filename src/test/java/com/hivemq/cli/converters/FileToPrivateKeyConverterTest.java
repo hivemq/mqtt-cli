@@ -21,10 +21,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.security.PrivateKey;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FileToPrivateKeyConverterTest {
 
@@ -35,7 +39,7 @@ class FileToPrivateKeyConverterTest {
     private @NotNull String pathToDecryptedMalformedRSAKey;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws URISyntaxException {
         fileToPrivateKeyConverter = new FileToPrivateKeyConverter();
         final URL encryptedRSAKeyResource = getClass().getResource("/FileToPrivateKeyConverter/encrypted_RSA_key.pem");
         final URL decryptedRSAKeyResource = getClass().getResource("/FileToPrivateKeyConverter/decrypted_RSA_key.pem");
@@ -48,10 +52,10 @@ class FileToPrivateKeyConverterTest {
         assertNotNull(decryptedECKeyResource);
         assertNotNull(decryptedMalformedRSAKeyResource);
 
-        pathToEncryptedRSAKey = encryptedRSAKeyResource.getPath();
-        pathToDecryptedRSAKey = decryptedRSAKeyResource.getPath();
-        pathToDecryptedECKey = decryptedECKeyResource.getPath();
-        pathToDecryptedMalformedRSAKey = decryptedMalformedRSAKeyResource.getPath();
+        pathToEncryptedRSAKey = Paths.get(encryptedRSAKeyResource.toURI()).toString();
+        pathToDecryptedRSAKey = Paths.get(decryptedRSAKeyResource.toURI()).toString();
+        pathToDecryptedECKey = Paths.get(decryptedECKeyResource.toURI()).toString();
+        pathToDecryptedMalformedRSAKey = Paths.get(decryptedMalformedRSAKeyResource.toURI()).toString();
 
     }
 

@@ -24,12 +24,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CertificateConverterUtilsTest {
 
@@ -37,15 +43,15 @@ class CertificateConverterUtilsTest {
     private @NotNull String pathToInvalidCertificate;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws URISyntaxException {
         final URL validCertificateResource = getClass().getResource("/FileToCertificateConverter/validCertificate.pem");
         final URL invalidCertificate = getClass().getResource("/FileToCertificateConverter/invalidCertificate.pem");
 
         assertNotNull(validCertificateResource);
         assertNotNull(invalidCertificate);
 
-        pathToValidCertificate = validCertificateResource.getPath();
-        pathToInvalidCertificate = invalidCertificate.getPath();
+        pathToValidCertificate = Paths.get(validCertificateResource.toURI()).toString();
+        pathToInvalidCertificate = Paths.get(invalidCertificate.toURI()).toString();
     }
 
     @Test
@@ -58,23 +64,28 @@ class CertificateConverterUtilsTest {
 
     @Test
     void generateX509Certificate_Failure() {
-        final Exception e = assertThrows(
-                CertificateException.class,
+        final Exception e = assertThrows(CertificateException.class,
                 () -> CertificateConverterUtils.generateX509Certificates(new File(pathToInvalidCertificate)));
         assertEquals(CertificateConverterUtils.NO_VALID_CERTIFICATE, e.getMessage());
     }
 
     @ParameterizedTest
-    @ValueSource(
-            strings = {"test.pem", "test.cer", "test.crt", "pem.pem", "cert.cer", "crt.crt", "pem.cert.crt", "cer.crt"})
+    @ValueSource(strings = {
+            "test.pem",
+            "test.cer",
+            "test.crt",
+            "pem.pem",
+            "cert.cer",
+            "crt.crt",
+            "pem.cert.crt",
+            "cer.crt"})
     void endsWithValidExtension_Success(final @NotNull String fileName) {
         assertTrue(CertificateConverterUtils.endsWithValidExtension(fileName));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "test.pe", "test.cr", "test.cert", "cer.ctr", "", " ", "pem", "crt", "cer", "pempem", "test.pem.ext"
-    })
+            "test.pe", "test.cr", "test.cert", "cer.ctr", "", " ", "pem", "crt", "cer", "pempem", "test.pem.ext"})
     void endsWithValidExtension_Failure(final @NotNull String fileName) {
         assertFalse(CertificateConverterUtils.endsWithValidExtension(fileName));
     }

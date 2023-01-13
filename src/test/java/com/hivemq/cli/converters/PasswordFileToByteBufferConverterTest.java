@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -62,9 +63,9 @@ class PasswordFileToByteBufferConverterTest {
         assertArrayEquals(expected, actual);
     }
 
-    private @NotNull File getFile(final @NotNull String fileName) {
+    private @NotNull File getFile(final @NotNull String fileName) throws URISyntaxException {
         final URL resource = getClass().getResource("/" + getClass().getSimpleName() + "/" + fileName);
         assertNotNull(resource);
-        return new File(resource.getPath());
+        return new File(resource.toURI());
     }
 }

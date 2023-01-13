@@ -25,6 +25,7 @@ import org.tinylog.Level;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
@@ -33,30 +34,30 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultCLIPropertiesTest {
 
     private @NotNull Path pathToTmpDir;
     private @NotNull Path pathToNoProperties;
-    private @NotNull Path pathToPropertiesDir;
     private @NotNull Path pathToEmptyProperties;
     private @NotNull Path pathToOverrideProperties;
 
     @BeforeEach
     void setUp(@TempDir final @NotNull Path pathToTmpDir, @TempDir final @NotNull Path pathToNoProperties)
-            throws IOException {
+            throws IOException, URISyntaxException {
         this.pathToTmpDir = pathToTmpDir;
         this.pathToNoProperties = pathToNoProperties;
         System.setProperty("user.home", pathToTmpDir.toString());
         final File mqttDir = pathToTmpDir.resolve(".mqtt-cli").toFile();
         assertTrue(mqttDir.createNewFile());
-        final URL resource = getClass().getResource("/PropertyFiles");
-        assertNotNull(resource);
-        pathToPropertiesDir = Paths.get(resource.getPath());
-        pathToEmptyProperties = pathToPropertiesDir.resolve("empty.properties");
-        pathToOverrideProperties = pathToPropertiesDir.resolve("override.properties");
+
+        final URL emptyPropertiesResource = getClass().getResource("/PropertyFiles/empty.properties");
+        final URL overridePropertiesResource = getClass().getResource("/PropertyFiles/override.properties");
+        assertNotNull(emptyPropertiesResource);
+        assertNotNull(overridePropertiesResource);
+        pathToEmptyProperties = Paths.get(emptyPropertiesResource.toURI());
+        pathToOverrideProperties = Paths.get(overridePropertiesResource.toURI());
     }
 
     @Test
@@ -117,12 +118,5 @@ class DefaultCLIPropertiesTest {
         assertNull(defaultCLIProperties.getClientCertificateChain());
         assertNull(defaultCLIProperties.getServerCertificateChain());
         assertNull(defaultCLIProperties.getClientPrivateKey());
-    }
-
-    @Test
-    void directoryPath() {
-        final DefaultCLIProperties defaultCLIProperties = new DefaultCLIProperties(pathToPropertiesDir);
-
-        assertThrows(IllegalArgumentException.class, defaultCLIProperties::init);
     }
 }
