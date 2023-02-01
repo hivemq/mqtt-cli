@@ -10,15 +10,13 @@ We recommend to develop your changes by using [IntelliJ IDEA](https://www.jetbra
 Therefore, the following guide will focus on creating your changes using IntelliJ. 
 
 Furthermore, the following is needed to make your development efforts as smoothly as possible:
-- A Java 11 JDK (we recommend [temurin](https://adoptium.net/de/temurin/releases/?version=11)) => [Set the JDK in IntelliJ](https://www.jetbrains.com/help/idea/sdk.html)
+- A Java 8 JDK (for example [Azul Zulu JDK](https://www.azul.com/downloads/)) 
 - [Docker](https://www.docker.com/) 
 - Fill out and sign the [Contributor License Agreement](https://www.hivemq.com/downloads/Contributor_License_Agreement.pdf)
   - Send the signed agreement  to (contributing@hivemq.com) with the subject `CLA for Project: <Project Name>`.
   - Please read this document carefully before signing it and keep a copy for your own records
   - Once we've received your signed CLA, you will be added to the list of contributors and our HiveMQ Development Team will review your contributions
   - In case the rights to all intellectual property created by you are maintained by your employer, including your work on HiveMQ Open Source Projects, you must ensure you have retained all rights to grant the license, or that your employer has agreed to a separate [Corporate CLA](https://www.hivemq.com/downloads/Corporate_Contributor_License_Agreement.pdf)
-
-
 
 ## 1. Setup project
 
@@ -73,7 +71,6 @@ Furthermore, the following is needed to make your development efforts as smoothl
 - Tip: To quickly test your changes manually you can directly execute commands from your IDE by going to <i>Run > Edit Configurations...</i> and adding your cli arguments
 
 ![run-config.png](img/run-config.png)
-
 
 ## 6. Commit and Push
 - Before committing execute `./gradlew licenseFormat` to add license headers to each file
