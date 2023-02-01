@@ -77,11 +77,33 @@ sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v4.11.0
 
 ## Building from source
 
-The MQTT CLI project uses [Gradle](https://gradle.org/) to build. A gradle wrapper configuration is included, so that after cloning the 
-[repository](https://github.com/hivemq/mqtt-cli) from GitHub, you can simply change into the directory containing the project and execute 
+- mqtt-cli uses [Gradle](https://gradle.org/) to build.
+- To be able to execute integration tests a running **Docker environment** is required
+- To be able to build and test the native image a **GraalVM installation** is required. You can set it up
+  with ``$ ./gradlew installNativeImageTooling``.
 
-```
-./gradlew build
-```
+To do a clean build, issue the following command:
+`$ ./gradlew clean build`
+
+This runs the unit tests and compiles a new mqtt-cli-<version>.jar into build/libs.
+You can then update an existing MQTT CLI installation by replacing its mqtt-cli-<version>.jar with this one.
+
+The `build.gradle.kts` file contains further instructions for building the platform specific distribution packages.
+In a nutshell:
+
+For MacOS/Linux brew:
+`$ ./gradlew buildBrewFormula`
+
+For the Debian package:
+`$ ./gradlew buildDebianPackage`
+
+For the RPM package:
+`$ ./gradlew buildRpmPackage`
+
+For the Windows installer:
+`$ ./gradlew buildWindowsZip`
+
+For building a local docker image:
+`$ ./gradlew jibDockerBuild`
 
 
