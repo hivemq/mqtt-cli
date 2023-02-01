@@ -7,7 +7,7 @@ our [HiveMQ Community Repo](https://github.com/hivemq/hivemq-community).
 ## Prerequisites
 
 We recommend to develop your changes by using [IntelliJ IDEA](https://www.jetbrains.com/idea/). 
-Therefore, the following guide will focus on creating your changes by using IntelliJ. 
+Therefore, the following guide will focus on creating your changes using IntelliJ. 
 
 Furthermore, the following is needed to make your development efforts as smoothly as possible:
 - A Java 11 JDK (we recommend [temurin](https://adoptium.net/de/temurin/releases/?version=11)) => [Set the JDK in IntelliJ](https://www.jetbrains.com/help/idea/sdk.html)
@@ -53,7 +53,7 @@ Furthermore, the following is needed to make your development efforts as smoothl
 - Implement your changes under `src/main/java`
 - You can use the existing code as a guide
 - The project uses Nullability annotations to avoid NullPointerExceptions: `@NotNull`, `@Nullable`. 
-  Every non-primitive parameter/return type/field should be annotated with one of them.
+  Every non-primitive parameter, return type and field should be annotated with one of them.
 
 ## 4. Write tests
 
@@ -67,10 +67,7 @@ Furthermore, the following is needed to make your development efforts as smoothl
 
 ## 5. Build and test
 
-- Before you build mqtt-cli, make sure that 
-  - a Docker daemon is running
-  - you have installed the native image tooling by using `./gradlew installNativeImageTooling`
-- To build mqtt-cli use `./gradlew build`
+- See [Building from source](https://hivemq.github.io/mqtt-cli/docs/installation/#building-from-source) for instructions on how to build mqtt-cli
 - Before proceeding to the next step, please make sure that your changes build and all tests succeed
 - Tip: After building mqtt-cli you can execute the cli by using the generated jar file `java -jar build/libs/mqtt-cli-<version>.jar` (you can also just build this jar by using `./gradlew shadowJar`)
 - Tip: To quickly test your changes manually you can directly execute commands from your IDE by going to <i>Run > Edit Configurations...</i> and adding your cli arguments
@@ -80,6 +77,7 @@ Furthermore, the following is needed to make your development efforts as smoothl
 
 ## 6. Commit and Push
 - Before committing execute `./gradlew licenseFormat` to add license headers to each file
+- [Reformat each changed file](https://www.jetbrains.com/help/idea/reformat-and-rearrange-code.html#reformat_file) using the .editorconfig settings of the project
 - Commit your changes directly from IntelliJ by pressing `Command` + `K` OR via the command `git commit -m "your commit mesage"`
   - Commits should be as atomic as possible
   - Commit messages should describe the changes clearly
