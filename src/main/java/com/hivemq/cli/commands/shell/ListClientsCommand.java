@@ -16,9 +16,8 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.mqtt.ClientData;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -26,13 +25,10 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "ls",
                      aliases = "list",
@@ -63,50 +59,50 @@ public class ListClientsCommand implements Callable<Integer> {
                         defaultValue = "false",
                         description = "list subscribed topics of clients")
     private boolean listSubscriptions;
+    private final @NotNull ShellClients shellClients;
 
     @Inject
-    public ListClientsCommand() {
+    public ListClientsCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     @Override
     public @NotNull Integer call() {
         Logger.trace("Command {}", this);
 
-        final List<ClientData> sortedClientData = getSortedClientData();
+        final List<CliMqttClient> sortedClients = getSortedClientData();
 
         final PrintWriter writer = ShellCommand.TERMINAL_WRITER;
 
         if (longOutput) {
-            Objects.requireNonNull(writer).println("total " + sortedClientData.size());
+            Objects.requireNonNull(writer).println("total " + sortedClients.size());
 
-            if (sortedClientData.size() == 0) {
+            if (sortedClients.size() == 0) {
                 return 0;
             }
 
-            final Set<MqttClient> clients =
-                    sortedClientData.stream().map(ClientData::getClient).collect(Collectors.toSet());
-
-            final int longestID = clients.stream()
-                    .filter(c -> c.getConfig().getClientIdentifier().isPresent())
-                    .map(c -> c.getConfig().getClientIdentifier().get().toString().length())
+            final int longestId = sortedClients.stream()
+                    .map(client -> client.getClientIdentifier().length())
                     .max(Integer::compareTo)
                     .orElse(0);
 
-            final int longestHost =
-                    clients.stream().map(c -> c.getConfig().getServerHost().length()).max(Integer::compareTo).orElse(0);
-
-            final int longestState = clients.stream()
-                    .map(c -> c.getConfig().getState().toString().length())
+            final int longestHost = sortedClients.stream()
+                    .map(client -> client.getServerHost().length())
                     .max(Integer::compareTo)
                     .orElse(0);
 
-            final int longestVersion = clients.stream()
-                    .map(c -> c.getConfig().getMqttVersion().toString().length())
+            final int longestState = sortedClients.stream()
+                    .map(client -> client.getState().toString().length())
                     .max(Integer::compareTo)
                     .orElse(0);
 
-            final int longestSSLVersion = clients.stream()
-                    .map(c -> c.getConfig().getSslConfig().toString().length())
+            final int longestVersion = sortedClients.stream()
+                    .map(client -> client.getMqttVersion().toString().length())
+                    .max(Integer::compareTo)
+                    .orElse(0);
+
+            final int longestSslVersion = sortedClients.stream()
+                    .map(client -> client.getSslProtocols().length())
                     .max(Integer::compareTo)
                     .orElse("NO_SSL".length());
 
@@ -115,7 +111,7 @@ public class ListClientsCommand implements Callable<Integer> {
                     "s " +
                     "%02d:%02d:%02d " +
                     "%-" +
-                    longestID +
+                    longestId +
                     "s " +
                     "%-" +
                     longestHost +
@@ -125,12 +121,11 @@ public class ListClientsCommand implements Callable<Integer> {
                     longestVersion +
                     "s " +
                     "%-" +
-                    longestSSLVersion +
+                    longestSslVersion +
                     "s\n";
 
-            for (final ClientData clientData : sortedClientData) {
-                final MqttClient client = clientData.getClient();
-                final LocalDateTime dateTime = clientData.getCreationTime();
+            for (final CliMqttClient client : sortedClients) {
+                final LocalDateTime dateTime = client.getConnectedTime();
                 final String connectionState = client.getState().toString();
 
                 writer.printf(format,
@@ -138,29 +133,22 @@ public class ListClientsCommand implements Callable<Integer> {
                         dateTime.getHour(),
                         dateTime.getMinute(),
                         dateTime.getSecond(),
-                        client.getConfig().getClientIdentifier().map(Object::toString).orElse(""),
-                        client.getConfig().getServerHost(),
-                        client.getConfig().getServerPort(),
-                        client.getConfig().getMqttVersion().name(),
-                        client.getConfig()
-                                .getSslConfig()
-                                .flatMap(ssl -> ssl.getProtocols().map(Objects::toString))
-                                .orElse("NO_SSL"));
+                        client.getClientIdentifier(),
+                        client.getServerHost(),
+                        client.getServerPort(),
+                        client.getMqttVersion().name(),
+                        client.getSslProtocols());
 
                 if (listSubscriptions) {
-                    writer.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
+                    writer.printf(" -subscribed topics: %s\n", client.getSubscribedTopics());
                 }
             }
         } else {
-            for (final ClientData clientData : sortedClientData) {
+            for (final CliMqttClient client : sortedClients) {
                 Objects.requireNonNull(writer)
-                        .println(clientData.getClient()
-                                .getConfig()
-                                .getClientIdentifier()
-                                .map(Object::toString)
-                                .orElse("") + "@" + clientData.getClient().getConfig().getServerHost());
+                        .println(client.getClientIdentifier() + "@" + client.getServerHost());
                 if (listSubscriptions) {
-                    writer.printf(" -subscribed topics: %s\n", clientData.getSubscribedTopics());
+                    writer.printf(" -subscribed topics: %s\n", client.getSubscribedTopics());
                 }
             }
         }
@@ -168,29 +156,22 @@ public class ListClientsCommand implements Callable<Integer> {
         return 0;
     }
 
-    public @NotNull List<ClientData> getSortedClientData() {
-        final List<ClientData> sortedClientData = new ArrayList<>(MqttClientExecutor.getClientDataMap().values());
+    public @NotNull List<CliMqttClient> getSortedClientData() {
+        Comparator<CliMqttClient> comparator;
 
         if (doNotSort) {
-            return sortedClientData;
+            comparator = (client1, client2) -> 0; // No-op comparator
+        } else if (sortByTime) {
+            comparator = Comparator.comparing(CliMqttClient::getConnectedTime);
+        } else {
+            comparator = Comparator.comparing(CliMqttClient::getClientIdentifier);
         }
 
-        Comparator<ClientData> comparator;
-        if (sortByTime) {
-            comparator = Comparator.comparing(ClientData::getCreationTime);
-        } else {
-            comparator = Comparator.comparing(clientData -> clientData.getClient()
-                    .getConfig()
-                    .getClientIdentifier()
-                    .map(Object::toString)
-                    .orElse(""));
-        }
         if (reverse) {
             comparator = comparator.reversed();
         }
 
-        sortedClientData.sort(comparator);
-        return sortedClientData;
+        return shellClients.listClients(comparator);
     }
 
     @Override

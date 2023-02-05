@@ -116,10 +116,16 @@ class SubscribeST {
         subscribeCommand.add("-t");
         subscribeCommand.add("topic3");
 
-        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand)
-                .awaitStdOut("received SUBACK")
-                .awaitStdOut("received SUBACK")
-                .awaitStdOut("received SUBACK");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        if (mqttVersion == '3') {
+            executionResult.awaitStdOut(
+                    "received SUBACK MqttSubAck{returnCodes=[SUCCESS_MAXIMUM_QOS_2, SUCCESS_MAXIMUM_QOS_2, SUCCESS_MAXIMUM_QOS_2]}");
+
+        } else {
+            executionResult.awaitStdOut(
+                    "received SUBACK MqttSubAck{reasonCodes=[GRANTED_QOS_2, GRANTED_QOS_2, GRANTED_QOS_2], packetIdentifier=65526}");
+        }
 
         publishMessage("topic1", "message1");
         executionResult.awaitStdOut("message1");
@@ -130,21 +136,13 @@ class SubscribeST {
         publishMessage("topic3", "message3");
         executionResult.awaitStdOut("message3");
 
-
         assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic1", Qos.EXACTLY_ONCE));
+            final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic1", Qos.EXACTLY_ONCE),
+                    createSubscription("topic2", Qos.EXACTLY_ONCE),
+                    createSubscription("topic3", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(1), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic2", Qos.EXACTLY_ONCE));
-            subscribeAssertion.setSubscriptions(expectedSubscriptions);
-        });
-
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(2), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic3", Qos.EXACTLY_ONCE));
-            subscribeAssertion.setSubscriptions(expectedSubscriptions);
-        });
     }
 
     @ParameterizedTest
@@ -317,9 +315,13 @@ class SubscribeST {
         jsonObject.addProperty("property3", "value3");
         publishMessage("topic", jsonObject.toString());
 
-        executionResult.awaitStdOut(
-                "{\n" + "  \"topic\": \"topic\",\n" + "  \"payload\": {\n" + "    \"property1\": \"value1\",\n" +
-                        "    \"property2\": \"value2\",\n" + "    \"property3\": \"value3\"\n" + "  },\n");
+        executionResult.awaitStdOut("{\n" +
+                "  \"topic\": \"topic\",\n" +
+                "  \"payload\": {\n" +
+                "    \"property1\": \"value1\",\n" +
+                "    \"property2\": \"value2\",\n" +
+                "    \"property3\": \"value3\"\n" +
+                "  },\n");
         executionResult.awaitStdOut("\"qos\": \"EXACTLY_ONCE\",");
         executionResult.awaitStdOut("\"receivedAt\":");
         executionResult.awaitStdOut("\"retain\": false");

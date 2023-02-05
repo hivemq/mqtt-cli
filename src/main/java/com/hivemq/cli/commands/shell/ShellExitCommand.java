@@ -16,6 +16,8 @@
 
 package com.hivemq.cli.commands.shell;
 
+import com.hivemq.cli.commands.options.DisconnectOptions;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -25,12 +27,16 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "exit", description = "Exit the shell", mixinStandardHelpOptions = true)
 public class ShellExitCommand implements Callable<Integer> {
 
+    private final @NotNull ShellClients shellClients;
+
     @Inject
-    public ShellExitCommand() {
+    public ShellExitCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     @Override
     public @NotNull Integer call() {
+        shellClients.disconnectAllClients(new DisconnectOptions());
         ShellCommand.exitShell();
         return 0;
     }

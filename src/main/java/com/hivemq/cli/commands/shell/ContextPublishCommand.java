@@ -17,7 +17,8 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.options.PublishOptions;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -30,26 +31,28 @@ import java.util.concurrent.Callable;
                      aliases = "publish",
                      description = "Publish a message to a list of topics",
                      mixinStandardHelpOptions = true)
-public class ContextPublishCommand extends ShellContextCommand implements Callable<Integer> {
+public class ContextPublishCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private final @NotNull PublishOptions publishOptions = new PublishOptions();
+    private final @NotNull ShellClients shellClients;
 
     @Inject
-    public ContextPublishCommand(final @NotNull MqttClientExecutor executor) {
-        super(executor);
+    public ContextPublishCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     @Override
     public @NotNull Integer call() {
         Logger.trace("Command {} ", this);
 
-        if (contextClient != null) {
-            publishOptions.logUnusedOptions(contextClient.getConfig().getMqttVersion());
+        final CliMqttClient client = shellClients.getContextClient();
+        if (client != null) {
+            publishOptions.logUnusedOptions(client.getMqttVersion());
             publishOptions.arrangeQosToMatchTopics();
 
             try {
-                mqttClientExecutor.publish(contextClient, publishOptions);
+                client.publish(publishOptions);
             } catch (final Exception ex) {
                 LoggerUtils.logShellError("Unable to publish", ex);
                 return 1;

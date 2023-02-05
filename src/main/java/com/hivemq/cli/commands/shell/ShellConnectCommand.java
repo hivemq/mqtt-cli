@@ -18,9 +18,9 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.options.ConnectOptions;
 import com.hivemq.cli.commands.options.DefaultOptions;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import com.hivemq.cli.utils.LoggerUtils;
-import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -39,12 +39,11 @@ public class ShellConnectCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
-
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
+    private final @NotNull ShellClients shellClients;
 
     @Inject
-    public ShellConnectCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        this.mqttClientExecutor = mqttClientExecutor;
+    public ShellConnectCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     public @NotNull Integer call() {
@@ -53,15 +52,15 @@ public class ShellConnectCommand implements Callable<Integer> {
         connectOptions.setDefaultOptions();
         connectOptions.logUnusedOptions();
 
-        final MqttClient client;
+        final CliMqttClient client;
         try {
-            client = mqttClientExecutor.connect(connectOptions);
+            client = shellClients.connect(connectOptions);
         } catch (final Exception exception) {
             LoggerUtils.logShellError("Unable to connect", exception);
             return 1;
         }
 
-        ShellContextCommand.updateContext(client);
+        shellClients.updateContextClient(client);
 
         return 0;
     }
@@ -73,8 +72,6 @@ public class ShellConnectCommand implements Callable<Integer> {
                 connectOptions +
                 ", defaultOptions=" +
                 defaultOptions +
-                ", mqttClientExecutor=" +
-                mqttClientExecutor +
                 '}';
     }
 }

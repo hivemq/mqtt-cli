@@ -17,7 +17,8 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.options.UnsubscribeOptions;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -30,29 +31,31 @@ import java.util.concurrent.Callable;
                      aliases = "unsubscribe",
                      description = "Unsubscribe this MQTT client from a list of topics",
                      mixinStandardHelpOptions = true)
-public class ContextUnsubscribeCommand extends ShellContextCommand implements Callable<Integer> {
+public class ContextUnsubscribeCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private final @NotNull UnsubscribeOptions unsubscribeOptions = new UnsubscribeOptions();
+    private final @NotNull ShellClients shellClients;
 
     @Inject
-    public ContextUnsubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
+    public ContextUnsubscribeCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     @Override
     public @NotNull Integer call() {
         Logger.trace("Command {} ", this);
 
-        if (contextClient == null) {
+        final CliMqttClient client = shellClients.getContextClient();
+        if (client == null) {
             Logger.error("The client to unsubscribe with does not exist");
             return 1;
         }
 
-        unsubscribeOptions.logUnusedUnsubscribeOptions(contextClient.getConfig().getMqttVersion());
+        unsubscribeOptions.logUnusedUnsubscribeOptions(client.getMqttVersion());
 
         try {
-            mqttClientExecutor.unsubscribe(contextClient, unsubscribeOptions);
+            client.unsubscribe(unsubscribeOptions);
         } catch (final Exception ex) {
             LoggerUtils.logShellError("Unable to unsubscribe", ex);
             return 1;

@@ -16,21 +16,19 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.mqtt.ClientKey;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import com.hivemq.cli.utils.LoggerUtils;
-import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "switch", description = "Switch the current context", mixinStandardHelpOptions = true)
-public class ContextSwitchCommand extends ShellContextCommand implements Callable<Integer> {
+public class ContextSwitchCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Parameters(index = "0", arity = "0..1", description = "The name of the context, e.g. client@localhost")
@@ -45,9 +43,11 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
                         description = "The hostname of the message broker (default 'localhost')")
     private @Nullable String host;
 
+    private final @NotNull ShellClients shellClients;
+
     @Inject
-    public ContextSwitchCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
+    public ContextSwitchCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     @Override
@@ -60,38 +60,28 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
         }
 
         if (contextName != null) {
-            try {
-                extractKeyFromContextName(contextName);
-            } catch (final IllegalArgumentException ex) {
-                LoggerUtils.logShellError("Unable to switch context", ex);
+            final String[] context = contextName.split("@");
+            if (context.length == 1) {
+                identifier = context[0];
+            } else if (context.length == 2) {
+                identifier = context[0];
+                host = context[1];
+            } else {
+                LoggerUtils.logShellError("Unable to switch context", new IllegalArgumentException("Context name is not valid: " + contextName));
                 return 1;
             }
         }
 
-        final MqttClient client =
-                mqttClientExecutor.getMqttClient(ClientKey.of(identifier, Objects.requireNonNull(host)));
+        final CliMqttClient client = shellClients.getClient(identifier, host);
 
         if (client != null) {
-            updateContext(client);
+            shellClients.updateContextClient(client);
         } else {
             Logger.error("Context {}@{} not found", identifier, host);
             return 1;
         }
 
         return 0;
-    }
-
-    private void extractKeyFromContextName(final String contextName) {
-        final String[] context = contextName.split("@");
-
-        if (context.length == 1) {
-            identifier = context[0];
-        } else if (context.length == 2) {
-            identifier = context[0];
-            host = context[1];
-        } else {
-            throw new IllegalArgumentException("Context name is not valid: " + contextName);
-        }
     }
 
     @Override

@@ -16,10 +16,8 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
@@ -37,25 +35,11 @@ import java.util.concurrent.Callable;
                      separator = " ")
 public class ShellContextCommand implements Callable<Integer> {
 
-    public static @Nullable MqttClient contextClient;
-
-    @NotNull MqttClientExecutor mqttClientExecutor;
+    final @NotNull ShellClients shellClients;
 
     @Inject
-    public ShellContextCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        this.mqttClientExecutor = mqttClientExecutor;
-    }
-
-    static void updateContext(final @Nullable MqttClient client) {
-        if (client != null && client.getConfig().getState().isConnectedOrReconnect()) {
-            contextClient = client;
-            ShellCommand.readFromContext();
-        }
-    }
-
-    public static void removeContext() {
-        contextClient = null;
-        ShellCommand.readFromShell();
+    public ShellContextCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     @Override

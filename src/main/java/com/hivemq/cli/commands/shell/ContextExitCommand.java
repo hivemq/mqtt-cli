@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -24,16 +24,18 @@ import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "exit", description = "Exit the current context", mixinStandardHelpOptions = true)
-public class ContextExitCommand extends ShellContextCommand implements Callable<Integer> {
+public class ContextExitCommand implements Callable<Integer> {
+
+    private final @NotNull ShellClients shellClients;
 
     @Inject
-    public ContextExitCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
+    public ContextExitCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     @Override
     public @NotNull Integer call() {
-        removeContext();
+        shellClients.removeContextClient();
         return 0;
     }
 
