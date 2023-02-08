@@ -9,6 +9,14 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
 
+buildscript {
+    if (gradle.includedBuilds.any { it.name == "plugins" }) {
+        plugins {
+            id("com.hivemq.third-party-license-generator")
+        }
+    }
+}
+
 plugins {
     java
     application
@@ -438,19 +446,12 @@ tasks.downloadLicenses {
     dependsOn(tasks.clean)
 }
 
-val updateThirdPartyLicenses by tasks.registering {
-    group = "license"
-    dependsOn(tasks.downloadLicenses)
-    doLast {
-        javaexec {
-            classpath("gradle/tools/license-third-party-tool-3.0.jar")
-            args(
-                "The MQTT Cli",
-                "$buildDir/reports/license/dependency-license.xml",
-                "$projectDir/src/distribution/third-party-licenses/licenses",
-                "$projectDir/src/distribution/third-party-licenses/licenses.html"
-            )
-        }
+plugins.withId("com.hivemq.third-party-license-generator") {
+    tasks.named("updateThirdPartyLicenses") {
+        dependsOn(tasks.downloadLicenses)
+        extra["projectName"] = "MQTT CLI"
+        extra["dependencyLicenseDirectory"] = tasks.downloadLicenses.get().xmlDestination
+        extra["outputDirectory"] = layout.projectDirectory.dir("src/distribution/third-party-licenses")
     }
 }
 
