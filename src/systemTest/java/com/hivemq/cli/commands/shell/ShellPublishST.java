@@ -392,7 +392,7 @@ class ShellPublishST {
         final List<String> publishCommand = List.of("pub");
         mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(publishCommand)
-                .awaitStdErr("Missing required option: '--topic <topics>'")
+                .awaitStdErr("Missing required option: '--topic=<topics>'")
                 .awaitStdOut("cliTest@" + HIVEMQ.getHost() + ">");
     }
 

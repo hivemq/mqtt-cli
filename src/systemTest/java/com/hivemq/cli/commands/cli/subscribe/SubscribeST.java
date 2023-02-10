@@ -165,10 +165,15 @@ class SubscribeST {
         subscribeCommand.add("-q");
         subscribeCommand.add("2");
 
-        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand)
-                .awaitStdOut("received SUBACK")
-                .awaitStdOut("received SUBACK")
-                .awaitStdOut("received SUBACK");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        if (mqttVersion == '3') {
+            executionResult.awaitStdOut(
+                    "received SUBACK MqttSubAck{returnCodes=[SUCCESS_MAXIMUM_QOS_0, SUCCESS_MAXIMUM_QOS_1, SUCCESS_MAXIMUM_QOS_2]}");
+        } else {
+            executionResult.awaitStdOut(
+                    "received SUBACK MqttSubAck{reasonCodes=[GRANTED_QOS_0, GRANTED_QOS_1, GRANTED_QOS_2], packetIdentifier=65526}");
+        }
 
         publishMessage("topic1", "message1");
         executionResult.awaitStdOut("message1");
@@ -181,19 +186,12 @@ class SubscribeST {
 
 
         assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic1", Qos.AT_MOST_ONCE));
+            final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic1", Qos.AT_MOST_ONCE),
+                    createSubscription("topic2", Qos.AT_LEAST_ONCE),
+                    createSubscription("topic3", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(1), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic2", Qos.AT_LEAST_ONCE));
-            subscribeAssertion.setSubscriptions(expectedSubscriptions);
-        });
-
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(2), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic3", Qos.EXACTLY_ONCE));
-            subscribeAssertion.setSubscriptions(expectedSubscriptions);
-        });
     }
 
     @ParameterizedTest
