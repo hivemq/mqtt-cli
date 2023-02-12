@@ -74,7 +74,7 @@ public class DisconnectOptions {
         return reasonString;
     }
 
-    public @Nullable Mqtt5UserProperties getUserProperties() {
+    public @NotNull Mqtt5UserProperties getUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(userProperties);
     }
 

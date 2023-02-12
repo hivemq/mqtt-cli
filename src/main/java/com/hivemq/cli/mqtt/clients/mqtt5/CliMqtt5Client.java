@@ -26,6 +26,7 @@ import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.mqtt.clients.CliMqttClient;
 import com.hivemq.cli.mqtt.clients.listeners.SubscribeMqtt5PublishCallback;
 import com.hivemq.cli.utils.LoggerUtils;
+import com.hivemq.client.internal.util.collections.ImmutableList;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -42,6 +43,7 @@ import com.hivemq.client.mqtt.mqtt5.message.disconnect.Mqtt5Disconnect;
 import com.hivemq.client.mqtt.mqtt5.message.disconnect.Mqtt5DisconnectBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishBuilder;
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PublishResult;
 import com.hivemq.client.mqtt.mqtt5.message.subscribe.Mqtt5Subscribe;
 import com.hivemq.client.mqtt.mqtt5.message.subscribe.Mqtt5SubscribeBuilder;
 import com.hivemq.client.mqtt.mqtt5.message.subscribe.Mqtt5Subscription;
@@ -56,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -63,7 +66,7 @@ public class CliMqtt5Client implements CliMqttClient {
 
     private final @NotNull Mqtt5Client delegate;
     private final @NotNull List<Mqtt5Subscription> subscriptions = new CopyOnWriteArrayList<>();
-    private @Nullable LocalDateTime connectedTime;
+    private @Nullable LocalDateTime connectedAt;
 
     public CliMqtt5Client(final @NotNull Mqtt5Client delegate) {
         this.delegate = delegate;
@@ -74,15 +77,24 @@ public class CliMqtt5Client implements CliMqttClient {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(delegate.getConfig());
         Logger.debug("{} sending CONNECT {}", clientLogPrefix, connect);
         final Mqtt5ConnAck connAck = delegate.toBlocking().connect(connect);
-        this.connectedTime = LocalDateTime.now();
+        this.connectedAt = LocalDateTime.now();
         Logger.debug("{} received CONNACK {} ", clientLogPrefix, connAck);
     }
 
     @Override
     public void publish(final @NotNull PublishOptions publishOptions) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(delegate.getConfig());
+        final ArrayList<CompletableFuture<Mqtt5PublishResult>> publishFutures = new ArrayList<>();
 
-        for (int i = 0; i < publishOptions.getTopics().length; i++) {
+        final int topicsSize = publishOptions.getTopics().length;
+        final int qosSize = publishOptions.getQos().length;
+        if (topicsSize != qosSize) {
+            throw new IllegalArgumentException(String.format("Topics size (%d) does not match QoS size (%d)",
+                    topicsSize,
+                    qosSize));
+        }
+
+        for (int i = 0; i < topicsSize; i++) {
             final String topic = publishOptions.getTopics()[i];
             final MqttQos qos = publishOptions.getQos()[i];
 
@@ -93,7 +105,8 @@ public class CliMqtt5Client implements CliMqttClient {
                     .payloadFormatIndicator(publishOptions.getPayloadFormatIndicator())
                     .contentType(publishOptions.getContentType())
                     .responseTopic(publishOptions.getResponseTopic())
-                    .correlationData(publishOptions.getCorrelationData());
+                    .correlationData(publishOptions.getCorrelationData())
+                    .userProperties(publishOptions.getUserProperties());
 
             if (publishOptions.getRetain() != null) {
                 //noinspection ResultOfMethodCallIgnored
@@ -103,10 +116,6 @@ public class CliMqtt5Client implements CliMqttClient {
                 //noinspection ResultOfMethodCallIgnored
                 publishBuilder.messageExpiryInterval(publishOptions.getMessageExpiryInterval());
             }
-            if (publishOptions.getUserProperties() != null) {
-                //noinspection ResultOfMethodCallIgnored
-                publishBuilder.userProperties(publishOptions.getUserProperties());
-            }
 
             final Mqtt5Publish publishMessage = publishBuilder.build();
 
@@ -115,7 +124,9 @@ public class CliMqtt5Client implements CliMqttClient {
                     new String(publishOptions.getMessage().array(), StandardCharsets.UTF_8),
                     publishMessage);
 
-            delegate.toAsync().publish(publishMessage).whenComplete((publishResult, throwable) -> {
+            final CompletableFuture<Mqtt5PublishResult> future = delegate.toAsync().publish(publishMessage);
+            publishFutures.add(future);
+            future.whenComplete((publishResult, throwable) -> {
                 if (throwable != null) {
                     Logger.error(throwable,
                             "{} failed PUBLISH to topic '{}': {}",
@@ -125,7 +136,9 @@ public class CliMqtt5Client implements CliMqttClient {
                 } else {
                     Logger.debug("{} received PUBLISH acknowledgement {}", clientLogPrefix, publishResult);
                 }
-            }).join();
+            });
+
+            CompletableFuture.allOf(publishFutures.toArray(new CompletableFuture[]{})).join();
         }
     }
 
@@ -135,6 +148,11 @@ public class CliMqtt5Client implements CliMqttClient {
 
         final String[] topics = subscribeOptions.getTopics();
         final MqttQos[] qos = subscribeOptions.getQos();
+        if (topics.length != qos.length) {
+            throw new IllegalArgumentException(String.format("Topics size (%d) does not match QoS size (%d)",
+                    topics.length,
+                    qos.length));
+        }
         final ArrayList<Mqtt5Subscription> subscriptions = new ArrayList<>(topics.length);
         for (int i = 0; i < topics.length; i++) {
             final Mqtt5Subscription subscription =
@@ -142,13 +160,9 @@ public class CliMqtt5Client implements CliMqttClient {
             subscriptions.add(subscription);
         }
 
-        final Mqtt5SubscribeBuilder.Complete builder = Mqtt5Subscribe.builder().addSubscriptions(subscriptions);
-
-        if (subscribeOptions.getUserProperties() != null) {
-            //noinspection ResultOfMethodCallIgnored
-            builder.userProperties(subscribeOptions.getUserProperties());
-        }
-
+        final Mqtt5SubscribeBuilder.Complete builder = Mqtt5Subscribe.builder()
+                .addSubscriptions(subscriptions)
+                .userProperties(subscribeOptions.getUserProperties());
         final Mqtt5Subscribe subscribeMessage = builder.build();
 
         Logger.debug("{} sending SUBSCRIBE {}", clientLogPrefix, subscribeMessage);
@@ -187,7 +201,7 @@ public class CliMqtt5Client implements CliMqttClient {
         delegate.toAsync().unsubscribe(unsubscribeMessage).whenComplete((unsubAck, throwable) -> {
             if (throwable != null) {
                 Logger.error(throwable,
-                        "{} failed UNSUBSCRIBE from topic(s) '[{}]': {}",
+                        "{} failed UNSUBSCRIBE from topic(s) '{}': {}",
                         clientLogPrefix,
                         Arrays.toString(unsubscribeOptions.getTopics()),
                         Throwables.getRootCause(throwable).getMessage());
@@ -201,7 +215,7 @@ public class CliMqtt5Client implements CliMqttClient {
     @Override
     public void disconnect(final @NotNull DisconnectOptions disconnectOptions) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(delegate.getConfig());
-        final Mqtt5DisconnectBuilder disconnectBuilder = Mqtt5Disconnect.builder();
+        final Mqtt5DisconnectBuilder disconnectBuilder = Mqtt5Disconnect.builder().userProperties(disconnectOptions.getUserProperties());
 
         if (disconnectOptions.getReasonString() != null) {
             //noinspection ResultOfMethodCallIgnored
@@ -211,16 +225,21 @@ public class CliMqtt5Client implements CliMqttClient {
             //noinspection ResultOfMethodCallIgnored
             disconnectBuilder.sessionExpiryInterval(disconnectOptions.getSessionExpiryInterval());
         }
-        if (disconnectOptions.getUserProperties() != null) {
-            //noinspection ResultOfMethodCallIgnored
-            disconnectBuilder.userProperties(disconnectOptions.getUserProperties());
-        }
 
         final Mqtt5Disconnect disconnectMessage = disconnectBuilder.build();
 
         Logger.debug("{} sending DISCONNECT {}", clientLogPrefix, disconnectMessage);
 
-        delegate.toBlocking().disconnect(disconnectMessage);
+        delegate.toAsync().disconnect(disconnectMessage).whenComplete((result, throwable) -> {
+            if (throwable != null) {
+                Logger.error(throwable,
+                        "{} failed to DISCONNECT gracefully: {}",
+                        clientLogPrefix,
+                        Throwables.getRootCause(throwable).getMessage());
+            } else {
+                Logger.debug("{} disconnected successfully", clientLogPrefix);
+            }
+        }).join();
     }
 
     @Override
@@ -245,11 +264,10 @@ public class CliMqtt5Client implements CliMqttClient {
 
     @Override
     public @NotNull LocalDateTime getConnectedAt() {
-        if (connectedTime == null) {
-            // TODO
-            connectedTime = LocalDateTime.now();
+        if (connectedAt == null) {
+            throw new IllegalStateException("connectedAt must not be null after a client has connected successfully");
         }
-        return connectedTime;
+        return connectedAt;
     }
 
     @Override
@@ -259,11 +277,13 @@ public class CliMqtt5Client implements CliMqttClient {
 
     @Override
     public @NotNull String getSslProtocols() {
-        return delegate.getConfig()
-                .getSslConfig()
-                .map(MqttClientSslConfig::getProtocols)
-                .map(Optional::toString)
-                .orElse("NO_SSL");
+        final Optional<MqttClientSslConfig> sslConfig = delegate.getConfig().getSslConfig();
+        if (sslConfig.isPresent()) {
+            final Optional<List<String>> protocols = sslConfig.get().getProtocols();
+            return protocols.orElse(ImmutableList.of()).toString();
+        } else {
+            return "NO_SSL";
+        }
     }
 
     @Override
@@ -274,11 +294,14 @@ public class CliMqtt5Client implements CliMqttClient {
     @Override
     public @NotNull List<MqttTopicFilter> getSubscribedTopics() {
         return subscriptions.stream().map(Mqtt5Subscription::getTopicFilter).collect(Collectors.toList());
+    }
 
+    public @NotNull Mqtt5Client getDelegate() {
+        return delegate;
     }
 
     private static @NotNull Mqtt5Connect buildConnect(final @NotNull ConnectOptions connectOptions) {
-        final Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder();
+        final Mqtt5ConnectBuilder connectBuilder = Mqtt5Connect.builder().userProperties(connectOptions.getUserProperties());
 
         final Mqtt5ConnectRestrictions restrictions = buildRestrictions(connectOptions.getConnectRestrictionOptions());
         if (restrictions != null) {
@@ -297,10 +320,6 @@ public class CliMqtt5Client implements CliMqttClient {
         if (connectOptions.getSessionExpiryInterval() != null) {
             //noinspection ResultOfMethodCallIgnored
             connectBuilder.sessionExpiryInterval(connectOptions.getSessionExpiryInterval());
-        }
-        if (connectOptions.getConnectUserProperties() != null) {
-            //noinspection ResultOfMethodCallIgnored
-            connectBuilder.userProperties(connectOptions.getConnectUserProperties());
         }
 
         //noinspection ResultOfMethodCallIgnored

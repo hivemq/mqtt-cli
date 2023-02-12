@@ -87,7 +87,8 @@ public class CliMqtt5ClientFactory {
                     .payloadFormatIndicator(willOptions.getWillPayloadFormatIndicator())
                     .contentType(willOptions.getWillContentType())
                     .responseTopic(willOptions.getWillResponseTopic())
-                    .correlationData(willOptions.getWillCorrelationData());
+                    .correlationData(willOptions.getWillCorrelationData())
+                    .userProperties(willOptions.getUserProperties());
 
             if (willOptions.getWillRetain() != null) {
                 //noinspection ResultOfMethodCallIgnored
@@ -101,15 +102,11 @@ public class CliMqtt5ClientFactory {
                 //noinspection ResultOfMethodCallIgnored
                 builder.delayInterval(willOptions.getWillDelayInterval());
             }
-            if (willOptions.getWillUserProperties() != null) { // user Properties can't be completed with null
-                //noinspection ResultOfMethodCallIgnored
-                builder.userProperties(willOptions.getWillUserProperties());
-            }
             return builder.build().asWill();
         } else if (willOptions.getWillMessage() != null) {
-            Logger.warn("option -wt is missing if a will message is configured - will options were: {} ",
-                    willOptions.toString());
-            return null;
+            throw new IllegalArgumentException(String.format(
+                    "option -wt is missing if a will message is configured - will options were: %s",
+                    willOptions));
         } else {
             return null;
         }
