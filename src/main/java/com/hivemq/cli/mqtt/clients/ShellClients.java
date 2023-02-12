@@ -142,6 +142,7 @@ public class ShellClients {
                 if (isContextClient(clientId, serverHost)) {
                     Logger.error(context.getCause(), Throwables.getRootCause(context.getCause()).getMessage());
                     removeContextClient();
+                    // TODO refactor static variable
                     Objects.requireNonNull(ShellCommand.TERMINAL_WRITER).printf("Press ENTER to resume: ");
                     ShellCommand.TERMINAL_WRITER.flush();
                 }

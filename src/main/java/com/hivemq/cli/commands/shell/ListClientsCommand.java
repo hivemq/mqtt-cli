@@ -125,7 +125,7 @@ public class ListClientsCommand implements Callable<Integer> {
                     "s\n";
 
             for (final CliMqttClient client : sortedClients) {
-                final LocalDateTime dateTime = client.getConnectedTime();
+                final LocalDateTime dateTime = client.getConnectedAt();
                 final String connectionState = client.getState().toString();
 
                 writer.printf(format,
@@ -162,7 +162,7 @@ public class ListClientsCommand implements Callable<Integer> {
         if (doNotSort) {
             comparator = (client1, client2) -> 0; // No-op comparator
         } else if (sortByTime) {
-            comparator = Comparator.comparing(CliMqttClient::getConnectedTime);
+            comparator = Comparator.comparing(CliMqttClient::getConnectedAt);
         } else {
             comparator = Comparator.comparing(CliMqttClient::getClientIdentifier);
         }

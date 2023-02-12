@@ -25,6 +25,7 @@ import com.hivemq.cli.commands.options.UnsubscribeOptions;
 import com.hivemq.cli.mqtt.clients.CliMqttClient;
 import com.hivemq.cli.mqtt.clients.listeners.SubscribeMqtt3PublishCallback;
 import com.hivemq.cli.utils.LoggerUtils;
+import com.hivemq.client.internal.util.collections.ImmutableList;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.MqttClientState;
 import com.hivemq.client.mqtt.MqttVersion;
@@ -50,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -57,7 +59,7 @@ public class CliMqtt3Client implements CliMqttClient {
 
     private final @NotNull Mqtt3Client delegate;
     private final @NotNull List<Mqtt3Subscription> subscriptions = new CopyOnWriteArrayList<>();
-    private @Nullable LocalDateTime connectedTime;
+    private @Nullable LocalDateTime connectedAt;
 
     public CliMqtt3Client(final @NotNull Mqtt3Client delegate) {
         this.delegate = delegate;
@@ -68,15 +70,24 @@ public class CliMqtt3Client implements CliMqttClient {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(delegate.getConfig());
         Logger.debug("{} sending CONNECT {}", clientLogPrefix, connect);
         final Mqtt3ConnAck connAck = delegate.toBlocking().connect(connect);
-        this.connectedTime = LocalDateTime.now();
+        this.connectedAt = LocalDateTime.now();
         Logger.debug("{} received CONNACK {} ", clientLogPrefix, connAck);
     }
 
     @Override
     public void publish(final @NotNull PublishOptions publishOptions) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(delegate.getConfig());
+        final ArrayList<CompletableFuture<Mqtt3Publish>> publishFutures = new ArrayList<>();
 
-        for (int i = 0; i < publishOptions.getTopics().length; i++) {
+        final int topicsSize = publishOptions.getTopics().length;
+        final int qosSize = publishOptions.getQos().length;
+        if (topicsSize != qosSize) {
+            throw new IllegalArgumentException(String.format("Topics size (%d) does not match QoS size (%d)",
+                    topicsSize,
+                    qosSize));
+        }
+
+        for (int i = 0; i < topicsSize; i++) {
             final String topic = publishOptions.getTopics()[i];
             final MqttQos qos = publishOptions.getQos()[i];
 
@@ -95,7 +106,9 @@ public class CliMqtt3Client implements CliMqttClient {
                     new String(publishOptions.getMessage().array(), StandardCharsets.UTF_8),
                     publishMessage);
 
-            delegate.toAsync().publish(publishMessage).whenComplete((publishResult, throwable) -> {
+            final CompletableFuture<Mqtt3Publish> publishFuture = delegate.toAsync().publish(publishMessage);
+            publishFutures.add(publishFuture);
+            publishFuture.whenComplete((publishResult, throwable) -> {
                 if (throwable != null) {
                     Logger.error(throwable,
                             "{} failed PUBLISH to topic '{}': {}",
@@ -105,8 +118,10 @@ public class CliMqtt3Client implements CliMqttClient {
                 } else {
                     Logger.debug("{} received PUBLISH acknowledgement {}", clientLogPrefix, publishResult);
                 }
-            }).join();
+            });
         }
+
+        CompletableFuture.allOf(publishFutures.toArray(new CompletableFuture[]{})).join();
     }
 
     @Override
@@ -115,6 +130,11 @@ public class CliMqtt3Client implements CliMqttClient {
 
         final String[] topics = subscribeOptions.getTopics();
         final MqttQos[] qos = subscribeOptions.getQos();
+        if (topics.length != qos.length) {
+            throw new IllegalArgumentException(String.format("Topics size (%d) does not match QoS size (%d)",
+                    topics.length,
+                    qos.length));
+        }
         final ArrayList<Mqtt3Subscription> subscriptions = new ArrayList<>();
         for (int i = 0; i < topics.length; i++) {
             final Mqtt3Subscription subscription =
@@ -170,8 +190,18 @@ public class CliMqtt3Client implements CliMqttClient {
 
     @Override
     public void disconnect(final @NotNull DisconnectOptions disconnectOptions) {
-        Logger.debug("{} sending DISCONNECT", LoggerUtils.getClientPrefix(delegate.getConfig()));
-        delegate.toBlocking().disconnect();
+        final String clientLogPrefix = LoggerUtils.getClientPrefix(delegate.getConfig());
+        Logger.debug("{} sending DISCONNECT", clientLogPrefix);
+        delegate.toAsync().disconnect().whenComplete((result, throwable) -> {
+            if (throwable != null) {
+                Logger.error(throwable,
+                        "{} failed to DISCONNECT gracefully: {}",
+                        clientLogPrefix,
+                        Throwables.getRootCause(throwable).getMessage());
+            } else {
+                Logger.debug("{} disconnected successfully", clientLogPrefix);
+            }
+        }).join();
     }
 
     @Override
@@ -195,12 +225,11 @@ public class CliMqtt3Client implements CliMqttClient {
     }
 
     @Override
-    public @NotNull LocalDateTime getConnectedTime() {
-        if (connectedTime == null) {
-            // TODO
-            connectedTime = LocalDateTime.now();
+    public @NotNull LocalDateTime getConnectedAt() {
+        if (connectedAt == null) {
+            throw new IllegalStateException("connectedAt must not be null after a client has connected successfully");
         }
-        return connectedTime;
+        return connectedAt;
     }
 
     @Override
@@ -210,10 +239,13 @@ public class CliMqtt3Client implements CliMqttClient {
 
     @Override
     public @NotNull String getSslProtocols() {
-        return delegate.getConfig().getSslConfig()
-                .map(MqttClientSslConfig::getProtocols)
-                .map(Optional::toString)
-                .orElse("NO_SSL");
+        final Optional<MqttClientSslConfig> sslConfig = delegate.getConfig().getSslConfig();
+        if (sslConfig.isPresent()) {
+            final Optional<List<String>> protocols = sslConfig.get().getProtocols();
+            return protocols.orElse(ImmutableList.of()).toString();
+        } else {
+            return "NO_SSL";
+        }
     }
 
     @Override
@@ -223,9 +255,11 @@ public class CliMqtt3Client implements CliMqttClient {
 
     @Override
     public @NotNull List<MqttTopicFilter> getSubscribedTopics() {
-        return subscriptions.stream()
-                .map(Mqtt3Subscription::getTopicFilter)
-                .collect(Collectors.toList());
+        return subscriptions.stream().map(Mqtt3Subscription::getTopicFilter).collect(Collectors.toList());
+    }
+
+    public @NotNull Mqtt3Client getDelegate() {
+        return delegate;
     }
 
     private static @NotNull Mqtt3Connect buildConnect(final @NotNull ConnectOptions connectOptions) {

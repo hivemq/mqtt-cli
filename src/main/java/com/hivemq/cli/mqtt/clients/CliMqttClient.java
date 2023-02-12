@@ -52,7 +52,7 @@ public interface CliMqttClient {
 
     @NotNull MqttVersion getMqttVersion();
 
-    @NotNull LocalDateTime getConnectedTime();
+    @NotNull LocalDateTime getConnectedAt();
 
     @NotNull MqttClientState getState();
 

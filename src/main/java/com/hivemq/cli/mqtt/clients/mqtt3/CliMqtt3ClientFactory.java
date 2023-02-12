@@ -89,8 +89,9 @@ public class CliMqtt3ClientFactory {
             }
             return builder.build();
         } else if (willOptions.getWillMessage() != null) {
-            Logger.warn("option -wt is missing if a will message is configured - will options were: {} ",
-                    willOptions.toString());
+            throw new IllegalArgumentException(String.format(
+                    "option -wt is missing if a will message is configured - will options were: %s",
+                    willOptions));
         }
         return null;
     }

@@ -244,7 +244,7 @@ public class CliMqtt5Client implements CliMqttClient {
     }
 
     @Override
-    public @NotNull LocalDateTime getConnectedTime() {
+    public @NotNull LocalDateTime getConnectedAt() {
         if (connectedTime == null) {
             // TODO
             connectedTime = LocalDateTime.now();
