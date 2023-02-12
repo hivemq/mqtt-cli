@@ -78,69 +78,45 @@ class ShellSubscribeST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_multipleTopics(final char mqttVersion) throws Exception {
-        //FIXME Subscribe command should subscribe to all topics in one packet and not send separate subscribes
         final List<String> subscribeCommand = List.of("sub", "-t", "test1", "-t", "test2", "-t", "test3");
         mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
                 .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
                 .awaitLog("sending SUBSCRIBE")
-                .awaitLog("received SUBACK")
-                .awaitLog("sending SUBSCRIBE")
-                .awaitLog("received SUBACK")
-                .awaitLog("sending SUBSCRIBE")
                 .awaitLog("received SUBACK");
 
         assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
-                    List.of(new SubscriptionImpl("test1", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
+                    List.of(new SubscriptionImpl("test1", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false),
+                            new SubscriptionImpl("test2", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false),
+                            new SubscriptionImpl("test3", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(1), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions =
-                    List.of(new SubscriptionImpl("test2", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
-            subscribeAssertion.setSubscriptions(expectedSubscriptions);
-        });
-
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(2), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions =
-                    List.of(new SubscriptionImpl("test3", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
-            subscribeAssertion.setSubscriptions(expectedSubscriptions);
-        });
     }
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_multipleTopicsMultipleQos(final char mqttVersion) throws Exception {
-        //FIXME Subscribe command should subscribe to all topics in one packet and not send separate subscribes
         final List<String> subscribeCommand =
                 List.of("sub", "-t", "test1", "-t", "test2", "-t", "test3", "-q", "0", "-q", "1", "-q", "2");
         mqttCliShell.connectClient(HIVEMQ, mqttVersion);
-        mqttCliShell.executeAsync(subscribeCommand)
+        final AwaitOutput awaitOutput = mqttCliShell.executeAsync(subscribeCommand)
                 .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
-                .awaitLog("sending SUBSCRIBE")
-                .awaitLog("received SUBACK")
-                .awaitLog("sending SUBSCRIBE")
-                .awaitLog("received SUBACK")
-                .awaitLog("sending SUBSCRIBE")
-                .awaitLog("received SUBACK");
+                .awaitLog("sending SUBSCRIBE");
+
+        if (mqttVersion == '3') {
+            awaitOutput.awaitLog("received SUBACK MqttSubAck{returnCodes=[SUCCESS_MAXIMUM_QOS_0, SUCCESS_MAXIMUM_QOS_1, SUCCESS_MAXIMUM_QOS_2]}");
+        } else {
+            awaitOutput.awaitLog("received SUBACK MqttSubAck{reasonCodes=[GRANTED_QOS_0, GRANTED_QOS_1, GRANTED_QOS_2], packetIdentifier=65526}");
+        }
 
         assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
-                    List.of(new SubscriptionImpl("test1", Qos.AT_MOST_ONCE, RetainHandling.SEND, false, false));
-            subscribeAssertion.setSubscriptions(expectedSubscriptions);
-        });
-
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(1), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions =
-                    List.of(new SubscriptionImpl("test2", Qos.AT_LEAST_ONCE, RetainHandling.SEND, false, false));
-            subscribeAssertion.setSubscriptions(expectedSubscriptions);
-        });
-
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(2), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions =
-                    List.of(new SubscriptionImpl("test3", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
+                    List.of(new SubscriptionImpl("test1", Qos.AT_MOST_ONCE, RetainHandling.SEND, false, false),
+                            new SubscriptionImpl("test2", Qos.AT_LEAST_ONCE, RetainHandling.SEND, false, false),
+                            new SubscriptionImpl("test3", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
     }
@@ -353,9 +329,13 @@ class ShellSubscribeST {
 
         publisher.publishWith().topic("test").payload(jsonObject.toString().getBytes(StandardCharsets.UTF_8)).send();
 
-        awaitOutput.awaitStdOut(
-                "{\n" + "  \"topic\": \"test\",\n" + "  \"payload\": {\n" + "    \"property1\": \"value1\",\n" +
-                        "    \"property2\": \"value2\",\n" + "    \"property3\": \"value3\"\n" + "  },\n");
+        awaitOutput.awaitStdOut("{\n" +
+                "  \"topic\": \"test\",\n" +
+                "  \"payload\": {\n" +
+                "    \"property1\": \"value1\",\n" +
+                "    \"property2\": \"value2\",\n" +
+                "    \"property3\": \"value3\"\n" +
+                "  },\n");
         awaitOutput.awaitStdOut("\"qos\": \"AT_MOST_ONCE\",");
         awaitOutput.awaitStdOut("\"receivedAt\":");
         awaitOutput.awaitStdOut("\"retain\": false");
@@ -370,7 +350,7 @@ class ShellSubscribeST {
         final List<String> subscribeCommand = List.of("sub");
         mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdErr("Missing required option: '--topic <topics>'")
+                .awaitStdErr("Missing required option: '--topic=<topics>'")
                 .awaitStdOut("cliTest@" + HIVEMQ.getHost() + ">");
     }
 

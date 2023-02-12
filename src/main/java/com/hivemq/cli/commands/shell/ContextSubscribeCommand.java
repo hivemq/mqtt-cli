@@ -18,14 +18,14 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.options.SubscribeOptions;
 import com.hivemq.cli.commands.options.UnsubscribeOptions;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -36,7 +36,7 @@ import java.util.concurrent.Executors;
                      aliases = "subscribe",
                      description = "Subscribe this MQTT client to a list of topics",
                      mixinStandardHelpOptions = true)
-public class ContextSubscribeCommand extends ShellContextCommand implements Callable<Integer> {
+public class ContextSubscribeCommand implements Callable<Integer> {
 
     private static final int IDLE_TIME = 1000;
 
@@ -57,22 +57,25 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
     @CommandLine.Mixin
     private final @NotNull SubscribeOptions subscribeOptions = new SubscribeOptions();
 
+    private final @NotNull ShellClients shellClients;
+
     @Inject
-    public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        super(mqttClientExecutor);
+    public ContextSubscribeCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     @Override
     public @NotNull Integer call() {
         Logger.trace("Command {} ", this);
 
-        if (contextClient == null) {
+        final CliMqttClient client = shellClients.getContextClient();
+        if (client == null) {
             Logger.error("The client to subscribe with does not exist");
             return 1;
         }
 
         subscribeOptions.setDefaultOptions();
-        subscribeOptions.logUnusedOptions(contextClient.getConfig().getMqttVersion());
+        subscribeOptions.logUnusedOptions(client.getMqttVersion());
         subscribeOptions.arrangeQosToMatchTopics();
 
         if (stay) {
@@ -84,7 +87,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
         }
 
         try {
-            mqttClientExecutor.subscribe(Objects.requireNonNull(contextClient), subscribeOptions);
+            client.subscribe(subscribeOptions);
         } catch (final Exception ex) {
             LoggerUtils.logShellError("Unable to subscribe", ex);
             return 1;
@@ -92,7 +95,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
 
         if (stay) {
             try {
-                stay();
+                stay(client);
             } catch (final InterruptedException ex) {
                 LoggerUtils.logShellError("Unable to stay", ex);
                 return 1;
@@ -102,11 +105,11 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
         return 0;
     }
 
-    private void stay() throws InterruptedException {
+    private void stay(final @NotNull CliMqttClient client) throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
         final Runnable waitForDisconnectRunnable = () -> {
-            while (Objects.requireNonNull(contextClient).getState().isConnected()) {
+            while (client.isConnected()) {
                 try {
                     Thread.sleep(IDLE_TIME);
                 } catch (final InterruptedException e) {
@@ -131,12 +134,10 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
 
         WORKER_THREADS.shutdownNow();
 
-        if (contextClient != null) {
-            if (!contextClient.getState().isConnectedOrReconnect()) {
-                removeContext();
-            } else {
-                mqttClientExecutor.unsubscribe(contextClient, UnsubscribeOptions.of(subscribeOptions));
-            }
+        if (!client.isConnected()) {
+            shellClients.removeContextClient();
+        } else {
+            client.unsubscribe(UnsubscribeOptions.of(subscribeOptions));
         }
     }
 

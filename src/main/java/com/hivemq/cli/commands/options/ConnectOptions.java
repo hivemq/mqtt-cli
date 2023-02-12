@@ -125,7 +125,7 @@ public class ConnectOptions {
         return sessionExpiryInterval;
     }
 
-    public @Nullable Mqtt5UserProperties getConnectUserProperties() {
+    public @NotNull Mqtt5UserProperties getUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(connectUserProperties);
     }
 

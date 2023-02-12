@@ -21,9 +21,8 @@ import com.hivemq.cli.commands.options.ConnectOptions;
 import com.hivemq.cli.commands.options.DebugOptions;
 import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.PublishOptions;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
 import com.hivemq.cli.utils.LoggerUtils;
-import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import picocli.CommandLine;
@@ -55,11 +54,8 @@ public class PublishCommand implements Callable<Integer> {
     @CommandLine.Mixin
     private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
-
     @Inject
-    public PublishCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        this.mqttClientExecutor = mqttClientExecutor;
+    public PublishCommand() {
     }
 
     @Override
@@ -80,17 +76,17 @@ public class PublishCommand implements Callable<Integer> {
         publishOptions.logUnusedOptions(connectOptions.getVersion());
         publishOptions.arrangeQosToMatchTopics();
 
-        final MqttClient client;
+        final CliMqttClient client;
         try {
-            client = mqttClientExecutor.connect(connectOptions, null);
-        } catch (final Exception exception) {
+            client = CliMqttClient.connectWith(connectOptions).send();
+        } catch (final @NotNull Exception exception) {
             LoggerUtils.logCommandError("Unable to connect", exception, debugOptions);
             return 1;
         }
 
         try {
-            mqttClientExecutor.publish(client, publishOptions);
-        } catch (final Exception exception) {
+            client.publish(publishOptions);
+        } catch (final @NotNull Exception exception) {
             LoggerUtils.logCommandError("Unable to publish", exception, debugOptions);
             return 1;
         }
@@ -111,8 +107,6 @@ public class PublishCommand implements Callable<Integer> {
                 debugOptions +
                 ", defaultOptions=" +
                 defaultOptions +
-                ", mqttClientExecutor=" +
-                mqttClientExecutor +
                 '}';
     }
 }

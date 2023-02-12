@@ -18,21 +18,11 @@ package com.hivemq.cli;
 
 import com.hivemq.cli.ioc.DaggerMqttCLI;
 import com.hivemq.cli.ioc.MqttCLI;
-import com.hivemq.cli.mqtt.ClientData;
-import com.hivemq.cli.mqtt.ClientKey;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
-import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
 import java.security.Security;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public class MqttCLIMain {
 
@@ -58,37 +48,10 @@ public class MqttCLIMain {
             System.exit(0);
         }
 
-        Runtime.getRuntime().addShutdownHook(new DisconnectAllClientsTask());
-
         final int exitCode = commandLine.execute(args);
 
         System.exit(exitCode);
 
-    }
-
-    private static class DisconnectAllClientsTask extends Thread {
-
-        @Override
-        public void run() {
-            final Map<ClientKey, ClientData> clientKeyToClientData = MqttClientExecutor.getClientDataMap();
-
-            final List<CompletableFuture<Void>> disconnectFutures = new ArrayList<>();
-
-            for (final Map.Entry<ClientKey, ClientData> entry : clientKeyToClientData.entrySet()) {
-                final MqttClient client = entry.getValue().getClient();
-                if (client.getConfig().getState().isConnectedOrReconnect()) {
-                    switch (client.getConfig().getMqttVersion()) {
-                        case MQTT_5_0:
-                            disconnectFutures.add(((Mqtt5Client) client).toAsync().disconnect());
-                            break;
-                        case MQTT_3_1_1:
-                            disconnectFutures.add(((Mqtt3Client) client).toAsync().disconnect());
-                            break;
-                    }
-                }
-            }
-            CompletableFuture.allOf(disconnectFutures.toArray(new CompletableFuture<?>[0])).join();
-        }
     }
 
     public static class CLIVersionProvider implements CommandLine.IVersionProvider {

@@ -19,8 +19,9 @@ package com.hivemq.cli.commands.shell;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import com.hivemq.cli.utils.LoggerUtils;
-import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jline.reader.LineReaderBuilder;
@@ -80,12 +81,14 @@ public class ShellCommand implements Callable<Integer> {
     private @NotNull CommandLine.Model.CommandSpec spec;
 
     private final @NotNull DefaultCLIProperties defaultCLIProperties;
+    private final @NotNull ShellClients shellClients;
 
     private @Nullable String logfilePath;
 
     @Inject
-    ShellCommand(final @NotNull DefaultCLIProperties defaultCLIProperties) {
+    ShellCommand(final @NotNull DefaultCLIProperties defaultCLIProperties, final @NotNull ShellClients shellClients) {
         this.defaultCLIProperties = defaultCLIProperties;
+        this.shellClients = shellClients;
     }
 
     @Override
@@ -133,6 +136,14 @@ public class ShellCommand implements Callable<Integer> {
                 TERMINAL_WRITER.printf("No Logfile used - Activate logging with the 'mqtt sh -l' option\n");
             }
 
+            shellClients.addContextClientChangedListener(client -> {
+                if (client == null) {
+                    readFromShell();
+                } else {
+                    readFromContext(client);
+                }
+            });
+
             Logger.info("--- Shell-Mode started ---");
 
             String line;
@@ -164,25 +175,21 @@ public class ShellCommand implements Callable<Integer> {
         exitShell = true;
     }
 
-    static void readFromContext() {
+    void readFromContext(final @NotNull CliMqttClient client) {
         currentReader = contextReader;
         currentCommandLine = contextCommandLine;
         prompt = new AttributedStringBuilder().style(AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW))
-                .append(Objects.requireNonNull(ShellContextCommand.contextClient)
-                        .getConfig()
-                        .getClientIdentifier()
-                        .orElse(MqttClientIdentifier.of(""))
-                        .toString())
+                .append(client.getClientIdentifier())
                 .style(AttributedStyle.DEFAULT)
                 .append("@")
                 .style(AttributedStyle.BOLD.foreground(AttributedStyle.YELLOW))
-                .append(ShellContextCommand.contextClient.getConfig().getServerHost())
+                .append(client.getServerHost())
                 .style(AttributedStyle.DEFAULT)
                 .append("> ")
                 .toAnsi();
     }
 
-    static void readFromShell() {
+    void readFromShell() {
         currentReader = shellReader;
         currentCommandLine = shellCommandLine;
         prompt = new AttributedStringBuilder().style(AttributedStyle.DEFAULT).append(DEFAULT_PROMPT).toAnsi();

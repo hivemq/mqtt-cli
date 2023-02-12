@@ -19,6 +19,7 @@ package com.hivemq.cli.utils;
 import org.tinylog.configuration.Configuration;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 public class TestLoggerUtils {
 
@@ -31,6 +32,7 @@ public class TestLoggerUtils {
             frozen = Configuration.class.getDeclaredField("frozen");
             frozen.setAccessible(true);
             frozen.set(null, false);
+            Configuration.replace(new HashMap<>());
         } catch (final NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }

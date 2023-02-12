@@ -20,18 +20,15 @@ import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.options.ConnectOptions;
 import com.hivemq.cli.commands.options.DebugOptions;
 import com.hivemq.cli.commands.options.DefaultOptions;
+import com.hivemq.cli.commands.options.DisconnectOptions;
 import com.hivemq.cli.commands.options.SubscribeOptions;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
 import com.hivemq.cli.utils.LoggerUtils;
-import com.hivemq.client.mqtt.MqttClient;
-import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "sub",
@@ -41,8 +38,6 @@ import java.util.concurrent.Callable;
 public class SubscribeCommand implements Callable<Integer> {
 
     private static final int IDLE_TIME = 5000;
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
-    private @Nullable MqttClient subscribeClient;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-l"},
@@ -73,8 +68,7 @@ public class SubscribeCommand implements Callable<Integer> {
     private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
     @Inject
-    public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
-        this.mqttClientExecutor = mqttClientExecutor;
+    public SubscribeCommand() {
     }
 
     @Override
@@ -100,23 +94,28 @@ public class SubscribeCommand implements Callable<Integer> {
             return 1;
         }
 
+        final CliMqttClient client;
         try {
-            subscribeClient = mqttClientExecutor.connect(connectOptions, subscribeOptions);
-        } catch (final Exception exception) {
+            client = CliMqttClient.connectWith(connectOptions)
+                    .subscribeOptions(subscribeOptions)
+                    .send();
+        } catch (final @NotNull Exception exception) {
             LoggerUtils.logCommandError("Unable to connect", exception, debugOptions);
             return 1;
         }
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> client.disconnect(new DisconnectOptions())));
+
         try {
-            mqttClientExecutor.subscribe(subscribeClient, subscribeOptions);
-        } catch (final ConnectionFailedException exception) {
+            client.subscribe(subscribeOptions);
+        } catch (final @NotNull Exception exception) {
             LoggerUtils.logCommandError("Unable to subscribe", exception, debugOptions);
             return 1;
         }
 
         try {
-            stay();
-        } catch (final InterruptedException exception) {
+            stay(client);
+        } catch (final @NotNull InterruptedException exception) {
             LoggerUtils.logCommandError("Unable to stay", exception, debugOptions);
             return 1;
         }
@@ -124,8 +123,8 @@ public class SubscribeCommand implements Callable<Integer> {
         return 0;
     }
 
-    private void stay() throws InterruptedException {
-        while (Objects.requireNonNull(subscribeClient).getState().isConnectedOrReconnect()) {
+    private void stay(final @NotNull CliMqttClient client) throws InterruptedException {
+        while (client.isConnected()) {
             Thread.sleep(IDLE_TIME);
         }
     }
@@ -133,10 +132,6 @@ public class SubscribeCommand implements Callable<Integer> {
     @Override
     public @NotNull String toString() {
         return "SubscribeCommand{" +
-                "mqttClientExecutor=" +
-                mqttClientExecutor +
-                ", subscribeClient=" +
-                subscribeClient +
                 ", logToLogfile=" +
                 logToLogfile +
                 ", connectOptions=" +

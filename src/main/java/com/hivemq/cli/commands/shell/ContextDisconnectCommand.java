@@ -18,8 +18,8 @@ package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.DisconnectOptions;
-import com.hivemq.cli.mqtt.ClientKey;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.CliMqttClient;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -29,7 +29,7 @@ import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "dis", aliases = "disconnect", description = "Disconnects this MQTT client")
-public class ContextDisconnectCommand extends ShellContextCommand implements Callable<Integer> {
+public class ContextDisconnectCommand implements Callable<Integer> {
 
     @CommandLine.Mixin
     private final @NotNull DisconnectOptions disconnectOptions = new DisconnectOptions();
@@ -37,28 +37,29 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
     @CommandLine.Mixin
     private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
+    private final @NotNull ShellClients shellClients;
+
     @Inject
-    public ContextDisconnectCommand(final @NotNull MqttClientExecutor executor) {
-        super(executor);
+    public ContextDisconnectCommand(final @NotNull ShellClients shellClients) {
+        this.shellClients = shellClients;
     }
 
     @Override
     public @NotNull Integer call() {
         Logger.trace("Command {} ", this);
 
-        if (contextClient != null) {
-            disconnectOptions.logUnusedDisconnectOptions(contextClient.getConfig().getMqttVersion());
+        final CliMqttClient client = shellClients.getContextClient();
+        if (client != null) {
+            disconnectOptions.logUnusedDisconnectOptions(client.getMqttVersion());
         }
 
         try {
             if (disconnectOptions.isDisconnectAll()) {
-                mqttClientExecutor.disconnectAllClients(disconnectOptions);
-            } else if (disconnectOptions.getClientIdentifier() != null && disconnectOptions.getHost() != null) {
-                final ClientKey clientKey =
-                        ClientKey.of(disconnectOptions.getClientIdentifier(), disconnectOptions.getHost());
-                mqttClientExecutor.disconnect(clientKey, disconnectOptions);
-            } else if (contextClient != null) {
-                mqttClientExecutor.disconnect(contextClient, disconnectOptions);
+                shellClients.disconnectAllClients(disconnectOptions);
+            } else if (disconnectOptions.getClientIdentifier() != null) {
+                shellClients.disconnect(disconnectOptions);
+            } else if (client != null) {
+                client.disconnect(disconnectOptions);
             }
         } catch (final Exception ex) {
             LoggerUtils.logShellError("Unable to disconnect", ex);

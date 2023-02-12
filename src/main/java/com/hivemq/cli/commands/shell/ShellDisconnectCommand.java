@@ -19,8 +19,7 @@ package com.hivemq.cli.commands.shell;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.DisconnectOptions;
-import com.hivemq.cli.mqtt.ClientKey;
-import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.clients.ShellClients;
 import com.hivemq.cli.utils.LoggerUtils;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -38,14 +37,14 @@ public class ShellDisconnectCommand implements Callable<Integer> {
     @CommandLine.Mixin
     private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
 
-    private final @NotNull MqttClientExecutor mqttClientExecutor;
+    private final @NotNull ShellClients shellClients;
     private final @NotNull DefaultCLIProperties defaultCLIProperties;
 
     @Inject
     ShellDisconnectCommand(
-            final @NotNull MqttClientExecutor mqttClientExecutor,
+            final @NotNull ShellClients shellClients,
             final @NotNull DefaultCLIProperties defaultCLIProperties) {
-        this.mqttClientExecutor = mqttClientExecutor;
+        this.shellClients = shellClients;
         this.defaultCLIProperties = defaultCLIProperties;
     }
 
@@ -58,15 +57,13 @@ public class ShellDisconnectCommand implements Callable<Integer> {
 
         try {
             if (disconnectOptions.isDisconnectAll()) {
-                mqttClientExecutor.disconnectAllClients(disconnectOptions);
+                shellClients.disconnectAllClients(disconnectOptions);
             } else {
                 if (disconnectOptions.getClientIdentifier() == null) {
                     Logger.error("Missing required option '--identifier=<identifier>'");
                     return 1;
                 }
-                final ClientKey clientKey =
-                        ClientKey.of(disconnectOptions.getClientIdentifier(), disconnectOptions.getHost());
-                mqttClientExecutor.disconnect(clientKey, disconnectOptions);
+                shellClients.disconnect(disconnectOptions);
             }
         } catch (final Exception ex) {
             LoggerUtils.logShellError("Unable to disconnect", ex);
@@ -82,8 +79,6 @@ public class ShellDisconnectCommand implements Callable<Integer> {
                 disconnectOptions +
                 ", defaultOptions=" +
                 defaultOptions +
-                ", mqttClientExecutor=" +
-                mqttClientExecutor +
                 ", defaultCLIProperties=" +
                 defaultCLIProperties +
                 '}';

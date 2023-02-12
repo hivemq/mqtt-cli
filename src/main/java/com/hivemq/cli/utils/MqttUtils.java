@@ -61,9 +61,9 @@ public class MqttUtils {
                 "}");
     }
 
-    public static @Nullable Mqtt5UserProperties convertToMqtt5UserProperties(final @Nullable Mqtt5UserProperty @Nullable ... userProperties) {
+    public static @NotNull Mqtt5UserProperties convertToMqtt5UserProperties(final @Nullable Mqtt5UserProperty @Nullable ... userProperties) {
         if (userProperties == null) {
-            return null;
+            return Mqtt5UserProperties.of();
         } else {
             final List<Mqtt5UserProperty> nonNullUserProperties =
                     Arrays.stream(userProperties).filter(Objects::nonNull).collect(Collectors.toList());

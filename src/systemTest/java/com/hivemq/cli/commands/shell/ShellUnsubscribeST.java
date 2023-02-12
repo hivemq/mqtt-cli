@@ -66,27 +66,15 @@ class ShellUnsubscribeST {
     void test_multipleTopics(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("unsub", "-t", "test1", "-t", "test2", "-t", "test3");
         mqttCliShell.connectClient(HIVEMQ, mqttVersion);
-        mqttCliShell.executeAsync(subscribeCommand)
+        final AwaitOutput awaitOutput = mqttCliShell.executeAsync(subscribeCommand)
                 .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
-                .awaitLog("sending UNSUBSCRIBE")
-                .awaitLog("received UNSUBACK")
-                .awaitLog("sending UNSUBSCRIBE")
-                .awaitLog("received UNSUBACK")
-                .awaitLog("sending UNSUBSCRIBE")
+                .awaitLog("sending UNSUBSCRIBE MqttUnsubscribe{topicFilters=[test1, test2, test3]}")
                 .awaitLog("received UNSUBACK");
 
 
         assertUnsubscribePacket(
                 HIVEMQ.getUnsubscribePackets().get(0),
-                unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test1")));
-
-        assertUnsubscribePacket(
-                HIVEMQ.getUnsubscribePackets().get(1),
-                unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test2")));
-
-        assertUnsubscribePacket(
-                HIVEMQ.getUnsubscribePackets().get(2),
-                unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test3")));
+                unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test1", "test2", "test3")));
     }
 
     @ParameterizedTest
@@ -128,7 +116,7 @@ class ShellUnsubscribeST {
         mqttCliShell.connectClient(HIVEMQ, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
                 .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
-                .awaitStdErr("Missing required option: '--topic <topics>'")
+                .awaitStdErr("Missing required option: '--topic=<topics>'")
                 .awaitStdErr("Try 'help unsub' for more information.");
 
         assertEquals(0, HIVEMQ.getUnsubscribePackets().size());

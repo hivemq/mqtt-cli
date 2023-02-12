@@ -143,7 +143,7 @@ public class WillOptions {
         return willCorrelationData;
     }
 
-    public @Nullable Mqtt5UserProperties getWillUserProperties() {
+    public @NotNull Mqtt5UserProperties getUserProperties() {
         return MqttUtils.convertToMqtt5UserProperties(willUserProperties);
     }
 

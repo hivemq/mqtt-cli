@@ -229,6 +229,8 @@ dependencies {
     testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
     testImplementation("com.squareup.okhttp3:mockwebserver:${property("ok-http.version")}")
     testImplementation("com.ginsberg:junit5-system-exit:${property("system-exit.version")}")
+    testImplementation("com.github.stefanbirkner:system-lambda:${property("system-lambda.version")}")
+    testImplementation("org.assertj:assertj-core:${property("assertj.version")}")
 }
 
 /* ******************** integration Tests ******************** */
