@@ -292,9 +292,9 @@ tasks.named<JavaCompile>("compileSystemTestJava") {
 val systemTest by tasks.registering(Test::class) {
     group = "verification"
     description = "Runs system tests."
-    useJUnitPlatform()
     testClassesDirs = sourceSets["systemTest"].output.classesDirs
     classpath = sourceSets["systemTest"].runtimeClasspath
+    useJUnitPlatform()
     shouldRunAfter(tasks.test)
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(11))
@@ -309,9 +309,9 @@ val systemTest by tasks.registering(Test::class) {
 val systemTestNative by tasks.registering(Test::class) {
     group = "verification"
     description = "Runs native system tests."
-    useJUnitPlatform()
     testClassesDirs = sourceSets["systemTest"].output.classesDirs
     classpath = sourceSets["systemTest"].runtimeClasspath
+    useJUnitPlatform()
     shouldRunAfter(tasks.test)
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion.set(JavaLanguageVersion.of(11))
@@ -322,9 +322,6 @@ val systemTestNative by tasks.registering(Test::class) {
         tasks.nativeCompile.map { it.outputs.files.singleFile }.get().resolve(project.name).absolutePath
     systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
     testLogging {
-        showCauses = true
-        showExceptions = true
-        showStackTraces = true
         showStandardStreams = true
     }
 }
