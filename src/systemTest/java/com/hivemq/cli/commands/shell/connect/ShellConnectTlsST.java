@@ -20,12 +20,14 @@ import com.google.common.io.Resources;
 import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.broker.HiveMQExtension;
 import com.hivemq.cli.utils.broker.TlsConfiguration;
+import com.hivemq.cli.utils.broker.TlsVersion;
 import com.hivemq.cli.utils.cli.MqttCliShellExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junitpioneer.jupiter.cartesian.CartesianTest;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -37,19 +39,21 @@ class ShellConnectTlsST {
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder()
-            .withTlsConfiguration(TlsConfiguration.builder().withTlsEnabled(true).build())
+            .withTlsConfiguration(TlsConfiguration.builder()
+                    .withTlsEnabled(true)
+                    .withTlsVersions(List.of(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3))
+                    .build())
             .build();
 
     @RegisterExtension
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
-    @ParameterizedTest
+    @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    @ValueSource(chars = {'3', '5'})
-    void test_mutualTls(final char mqttVersion) throws Exception {
-        final String clientKeyPem = Resources.getResource("tls/client-key.pem").getPath();
-        final String clientCertPem = Resources.getResource("tls/client-cert.pem").getPath();
-        final String serverPem = Resources.getResource("tls/server.pem").getPath();
+    void test_tls_pem_format(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/ca.pem").getPath();
 
         final List<String> connectCommand = List.of("con",
                 "-h",
@@ -60,22 +64,63 @@ class ShellConnectTlsST {
                 String.valueOf(mqttVersion),
                 "-i",
                 "cliTest",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
                 "--cafile",
-                serverPem,
-                "--key",
-                clientKeyPem,
-                "--cert",
-                clientCertPem);
+                certificateAuthorityPublicKey);
 
-        mqttCliShell.executeAsync(connectCommand).awaitStdOut("Enter private key password:");
-
-        mqttCliShell.executeAsync(List.of("changeme"))
-                .awaitStdOut(String.format("cliTest@%s", HIVEMQ.getHost()))
-                .awaitLog("sending CONNECT")
-                .awaitLog("received CONNACK");
+        mqttCliShell.executeAsync(connectCommand).awaitLog("sending CONNECT").awaitLog("received CONNACK");
 
         assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_tls_der_format(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/ca.cer").getPath();
+
+        final List<String> connectCommand = List.of("con",
+                "-h",
+                HIVEMQ.getHost(),
+                "-p",
+                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--cafile",
+                certificateAuthorityPublicKey);
+
+        mqttCliShell.executeAsync(connectCommand).awaitLog("sending CONNECT").awaitLog("received CONNACK");
+
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+    }
+
+    @ParameterizedTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    @ValueSource(chars = {'3', '5'})
+    void test_tls_no_cert(final char mqttVersion) throws Exception {
+        final List<String> connectCommand = List.of("con",
+                "-h",
+                HIVEMQ.getHost(),
+                "-p",
+                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-s");
+
+        mqttCliShell.executeAsync(connectCommand).awaitStdErr("Unable to connect.");
     }
 }
