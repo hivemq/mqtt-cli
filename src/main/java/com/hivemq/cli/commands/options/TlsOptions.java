@@ -42,15 +42,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class SslOptions {
+public class TlsOptions {
 
     private static final @NotNull String DEFAULT_TLS_VERSION = "TLSv1.2";
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-s", "--secure"},
                         defaultValue = "false",
-                        description = "Use default ssl configuration if no other ssl options are specified (default: false)")
-    private boolean useSsl;
+                        description = "Use default tls configuration if no other tls options are specified (default: false)")
+    private boolean useTls;
 
     @CommandLine.Option(names = {"--cafile"},
                         paramLabel = "FILE",
@@ -93,7 +93,7 @@ public class SslOptions {
                 supportedTLSVersions != null ||
                 clientPrivateKey != null ||
                 clientCertificateChain != null ||
-                useSsl;
+                useTls;
     }
 
     public @Nullable MqttClientSslConfig buildSslConfig() throws Exception {
@@ -221,9 +221,9 @@ public class SslOptions {
 
     @Override
     public @NotNull String toString() {
-        return "SslOptions{" +
+        return "TlsOptions{" +
                 "useSsl=" +
-                useSsl +
+                useTls +
                 ", serverCertificates=" +
                 serverCertificateChain +
                 ", serverCertificatesFromDir=" +
