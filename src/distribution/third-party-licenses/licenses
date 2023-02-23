@@ -3,7 +3,7 @@ MQTT CLI Third Party Libraries
 
 MQTT CLI uses the following third party libraries:
 
-Library                                                            | License                                    | License text                                                      | Notes
+ Library                                                           | License                                    | License text                                                      | Notes
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  com.google.code.findbugs:jsr305                                   | Apache License, Version 2.0                | https://opensource.org/licenses/Apache-2.0                        |
  com.google.code.gson:gson                                         | Apache License, Version 2.0                | https://opensource.org/licenses/Apache-2.0                        |
@@ -61,7 +61,6 @@ Library                                                            | License    
  org.reactivestreams:reactive-streams                              | CC0                                        | https://creativecommons.org/publicdomain/zero/1.0/                |
  org.tinylog:tinylog-api                                           | Apache License, Version 2.0                | https://opensource.org/licenses/Apache-2.0                        |
  org.tinylog:tinylog-impl                                          | Apache License, Version 2.0                | https://opensource.org/licenses/Apache-2.0                        |
-
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 The open source code of the libraries can be obtained by sending an email to legal@hivemq.com.
