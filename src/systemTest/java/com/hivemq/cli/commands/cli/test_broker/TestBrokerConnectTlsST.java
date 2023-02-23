@@ -124,6 +124,6 @@ class TestBrokerConnectTlsST {
 
         final ExecutionResult executionResult = MqttCli.execute(testCommand);
         assertEquals(1, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput().contains("Unable to connect"));
+        assertTrue(executionResult.getErrorOutput().contains("Could not connect MQTT " + mqttVersion + " client"));
     }
 }
