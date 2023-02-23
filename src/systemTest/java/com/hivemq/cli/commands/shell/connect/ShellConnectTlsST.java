@@ -19,6 +19,7 @@ package com.hivemq.cli.commands.shell.connect;
 import com.google.common.io.Resources;
 import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.broker.HiveMQExtension;
+import com.hivemq.cli.utils.broker.TlsConfiguration;
 import com.hivemq.cli.utils.cli.MqttCliShellExtension;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
@@ -35,7 +36,9 @@ class ShellConnectTlsST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().withTlsEnabled(true).build();
+    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder()
+            .withTlsConfiguration(TlsConfiguration.builder().withTlsEnabled(true).build())
+            .build();
 
     @RegisterExtension
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
@@ -48,8 +51,7 @@ class ShellConnectTlsST {
         final String clientCertPem = Resources.getResource("tls/client-cert.pem").getPath();
         final String serverPem = Resources.getResource("tls/server.pem").getPath();
 
-        final List<String> connectCommand = List.of(
-                "con",
+        final List<String> connectCommand = List.of("con",
                 "-h",
                 HIVEMQ.getHost(),
                 "-p",
@@ -72,8 +74,7 @@ class ShellConnectTlsST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(
-                HIVEMQ.getConnectPackets().get(0),
+        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }

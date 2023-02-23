@@ -209,10 +209,10 @@ class TestBrokerConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_connectUserNameAndPasswordProperties(final char mqttVersion) throws Exception {
-        final List<String> publishCommand = defaultTestCommand(mqttVersion);
+        final List<String> testCommand = defaultTestCommand(mqttVersion);
         final Map<String, String> properties =
                 Map.of("auth.username", "testuser", "auth.password", "testpasswordproperties");
-        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
+        final ExecutionResult executionResult = MqttCli.execute(testCommand, Map.of(), properties);
 
         assertTestOutput(executionResult, mqttVersion);
 
@@ -247,10 +247,10 @@ class TestBrokerConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_connectUserNameAndPasswordEnvProperties(final char mqttVersion) throws Exception {
-        final List<String> publishCommand = defaultTestCommand(mqttVersion);
+        final List<String> testCommand = defaultTestCommand(mqttVersion);
         final Map<String, String> environments = Map.of("PASSWORD", "testpasswordenvproperties");
         final Map<String, String> properties = Map.of("auth.username", "testuser", "auth.password.env", "PASSWORD");
-        final ExecutionResult executionResult = MqttCli.execute(publishCommand, environments, properties);
+        final ExecutionResult executionResult = MqttCli.execute(testCommand, environments, properties);
 
         assertTestOutput(executionResult, mqttVersion);
 
@@ -289,13 +289,13 @@ class TestBrokerConnectST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_connectUserNameAndPasswordFileProperties(final char mqttVersion) throws Exception {
-        final List<String> publishCommand = defaultTestCommand(mqttVersion);
+        final List<String> testCommand = defaultTestCommand(mqttVersion);
         final Path passwordFile = Files.createTempFile("password-file", ".txt");
         passwordFile.toFile().deleteOnExit();
         Files.writeString(passwordFile, "testpasswordfile");
         final Map<String, String> properties =
                 Map.of("auth.username", "testuser", "auth.password.file", passwordFile.toString());
-        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
+        final ExecutionResult executionResult = MqttCli.execute(testCommand, Map.of(), properties);
 
         assertTestOutput(executionResult, mqttVersion);
 

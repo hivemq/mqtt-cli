@@ -44,8 +44,8 @@ class TestBrokerST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_successfulConnectAndTest(final char mqttVersion) throws Exception {
-        final List<String> publishCommand = defaultTestCommand(mqttVersion);
-        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+        final List<String> testCommand = defaultTestCommand(mqttVersion);
+        final ExecutionResult executionResult = MqttCli.execute(testCommand);
 
         assertTestOutput(executionResult, mqttVersion);
 
@@ -58,9 +58,9 @@ class TestBrokerST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_AllTests(final char mqttVersion) throws Exception {
-        final List<String> publishCommand = defaultTestCommand(mqttVersion);
-        publishCommand.add("-a");
-        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+        final List<String> testCommand = defaultTestCommand(mqttVersion);
+        testCommand.add("-a");
+        final ExecutionResult executionResult = MqttCli.execute(testCommand);
 
         assertTestOutput(executionResult, mqttVersion);
 
@@ -73,10 +73,10 @@ class TestBrokerST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_Timeout(final char mqttVersion) throws Exception {
-        final List<String> publishCommand = defaultTestCommand(mqttVersion);
-        publishCommand.add("-t");
-        publishCommand.add("10");
-        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+        final List<String> testCommand = defaultTestCommand(mqttVersion);
+        testCommand.add("-t");
+        testCommand.add("10");
+        final ExecutionResult executionResult = MqttCli.execute(testCommand);
 
         assertTestOutput(executionResult, mqttVersion);
 
@@ -89,10 +89,10 @@ class TestBrokerST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_QosTries(final char mqttVersion) throws Exception {
-        final List<String> publishCommand = defaultTestCommand(mqttVersion);
-        publishCommand.add("-q");
-        publishCommand.add("10");
-        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+        final List<String> testCommand = defaultTestCommand(mqttVersion);
+        testCommand.add("-q");
+        testCommand.add("10");
+        final ExecutionResult executionResult = MqttCli.execute(testCommand);
 
         assertTestOutput(executionResult, mqttVersion);
 
