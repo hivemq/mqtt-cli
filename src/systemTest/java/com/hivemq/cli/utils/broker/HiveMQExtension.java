@@ -71,50 +71,36 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     private @Nullable List<PublishPacket> publishPackets;
     private @Nullable List<SubscribePacket> subscribePackets;
     private @Nullable List<UnsubscribePacket> unsubscribePackets;
-    private @Nullable List<DisconnectInformation> disconnectInformations;
+    private @Nullable List<DisconnectInformation> disconnectInformation;
 
     private int port = -1;
     private int tlsPort = -1;
     private int websocketsPort = -1;
 
-    private final boolean tlsEnabled;
+    private final @NotNull TlsConfiguration tlsConfiguration;
     private final boolean websocketEnabled;
 
     public static @NotNull Builder builder() {
         return new Builder();
     }
 
-    private HiveMQExtension(final boolean tlsEnabled, final boolean websocketEnabled) {
-        this.tlsEnabled = tlsEnabled;
+    private HiveMQExtension(final @NotNull TlsConfiguration tlsConfiguration, final boolean websocketEnabled) {
+        this.tlsConfiguration = tlsConfiguration;
         this.websocketEnabled = websocketEnabled;
     }
 
     @Override
     public void beforeAll(final @NotNull ExtensionContext context) throws IOException {
-        this.port = generatePort();
-        this.connectPackets = new ArrayList<>();
-        this.connackPackets = new ArrayList<>();
-        this.publishPackets = new ArrayList<>();
-        this.disconnectInformations = new ArrayList<>();
-        this.subscribePackets = new ArrayList<>();
-        this.unsubscribePackets = new ArrayList<>();
+        port = generatePort();
+        connectPackets = new ArrayList<>();
+        connackPackets = new ArrayList<>();
+        publishPackets = new ArrayList<>();
+        disconnectInformation = new ArrayList<>();
+        subscribePackets = new ArrayList<>();
+        unsubscribePackets = new ArrayList<>();
 
-        final String tlsConfig = setupTls();
-        final String websocketsConfig = setupWebsockets();
-        //@formatter:off
-        final String hivemqConfig =
-                "<hivemq>\n" + "    " +
-                "   <listeners>\n" + "        " +
-                "       <tcp-listener>\n" +
-                "            <port>" + port + "</port>\n" +
-                "            <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
-                "        </tcp-listener>\n" +
-                        tlsConfig +
-                        websocketsConfig +
-                "    </listeners>\n" +
-                "</hivemq>";
-        //@formatter:on
-        this.hivemqConfigFolder = Files.createTempDirectory("hivemq-config-folder");
+        final String hivemqConfig = setupHivemqConfig();
+        hivemqConfigFolder = Files.createTempDirectory("hivemq-config-folder");
         hivemqConfigFolder.toFile().deleteOnExit();
         final File configXml = new File(hivemqConfigFolder.toAbsolutePath().toString(), "config.xml");
         assertTrue(configXml.createNewFile());
@@ -148,7 +134,7 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
                         // Add all the other interceptors
                         Services.initializerRegistry().setClientInitializer((initializerInput, clientContext) -> {
 
-                            clientContext.addDisconnectInboundInterceptor((disconnectInboundInput, disconnectInboundOutput) -> disconnectInformations.add(
+                            clientContext.addDisconnectInboundInterceptor((disconnectInboundInput, disconnectInboundOutput) -> disconnectInformation.add(
                                     new DisconnectInformation(disconnectInboundInput.getDisconnectPacket(),
                                             disconnectInboundInput.getClientInformation().getClientId())));
 
@@ -201,7 +187,7 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     public void afterEach(final @NotNull ExtensionContext context) {
         Objects.requireNonNull(connectPackets).clear();
         Objects.requireNonNull(connackPackets).clear();
-        Objects.requireNonNull(disconnectInformations).clear();
+        Objects.requireNonNull(disconnectInformation).clear();
         Objects.requireNonNull(publishPackets).clear();
         Objects.requireNonNull(subscribePackets).clear();
         Objects.requireNonNull(unsubscribePackets).clear();
@@ -227,8 +213,8 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
         return Objects.requireNonNull(unsubscribePackets);
     }
 
-    public @NotNull List<DisconnectInformation> getDisconnectInformations() {
-        return Objects.requireNonNull(disconnectInformations);
+    public @NotNull List<DisconnectInformation> getDisconnectInformation() {
+        return Objects.requireNonNull(disconnectInformation);
     }
 
     public int getMqttPort() {
@@ -263,31 +249,98 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
         }
     }
 
+    private @NotNull String setupHivemqConfig() throws IOException {
+        final String tlsConfig = setupTls();
+        final String websocketsConfig = setupWebsockets();
+        //@formatter:off
+        return "<hivemq>\n" + "    " +
+                "   <listeners>\n" + "        " +
+                "       <tcp-listener>\n" +
+                "            <port>" + port + "</port>\n" +
+                "            <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
+                "        </tcp-listener>\n" +
+                tlsConfig +
+                websocketsConfig +
+                "    </listeners>\n" +
+                "</hivemq>";
+        //@formatter:on
+    }
+
     private @NotNull String setupTls() throws IOException {
-        String tlsConfig = "";
-        if (tlsEnabled) {
+        final String tlsConfig;
+        if (tlsConfiguration.isTlsEnabled()) {
             this.tlsPort = generatePort();
-            final String brokerKeyStorePath = Resources.getResource("tls/broker-keystore.jks").getPath();
-            final String brokerTrustStorePath = Resources.getResource("tls/client-keystore.jks").getPath();
+            final String keyStorePath = Resources.getResource("tls/server/server-keystore.jks").getPath();
+            final String keyStorePassword = "serverKeystorePassword";
+            final String keyStorePrivatePassword = "serverKeyPassword";
+            final String trustStorePath = Resources.getResource("tls/server/server-truststore.jks").getPath();
+            final String trustStorePassword = "serverTruststorePassword";
+
+            final String tlsVersionsString;
+            if (!tlsConfiguration.getTlsVersions().isEmpty()) {
+                final StringBuilder tlsVersions = new StringBuilder();
+                for (final TlsVersion tlsVersion : tlsConfiguration.getTlsVersions()) {
+                    tlsVersions.append("                   <protocol>").append(tlsVersion).append("</protocol>\n");
+                }
+
+                //@formatter:off
+                tlsVersionsString =
+                        "                <protocols>\n" +
+                        tlsVersions +
+                        "                </protocols>\n";
+                //@formatter:on
+            } else {
+                tlsVersionsString = "";
+            }
+
+            final String cipherSuitesString;
+            if (!tlsConfiguration.getCipherSuites().isEmpty()) {
+                final StringBuilder cipherSuites = new StringBuilder();
+                for (final String cipherSuite : tlsConfiguration.getCipherSuites()) {
+                    cipherSuites.append("                   <cipher-suite>")
+                            .append(cipherSuite)
+                            .append("</cipher-suite>\n");
+                }
+                //@formatter:off
+                cipherSuitesString =
+                        "                <cipher-suites>\n" +
+                        cipherSuites +
+                        "                </cipher-suites>\n";
+                //@formatter:on
+            } else {
+                cipherSuitesString = "";
+            }
+
+            final String clientAuthentication;
+            if (tlsConfiguration.isClientAuthentication()) {
+                clientAuthentication = "REQUIRED";
+            } else {
+                clientAuthentication = "NONE";
+            }
+
             //@formatter:off
             tlsConfig =
                     "<tls-tcp-listener>\n" +
                     "           <port>" + tlsPort + "</port>\n" +
                     "           <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
                     "           <tls>\n" +
-                    "                <keystore>" +
-                    "                   <path>" + brokerKeyStorePath +  "</path>\n" +
-                    "                   <password>changeme</password>\n" +
-                    "                   <private-key-password>changeme</private-key-password>\n" +
+                    tlsVersionsString +
+                    cipherSuitesString +
+                    "                <keystore\n>" +
+                    "                   <path>" + keyStorePath +  "</path>\n" +
+                    "                   <password>" + keyStorePassword + "</password>\n" +
+                    "                   <private-key-password>" + keyStorePrivatePassword + "</private-key-password>\n" +
                     "                </keystore>\n" +
-                    "                <client-authentication-mode>REQUIRED</client-authentication-mode>\n" +
+                    "                <client-authentication-mode>" + clientAuthentication + "</client-authentication-mode>\n" +
                     "                <truststore>\n" +
-                    "                   <path>" + brokerTrustStorePath + "</path>\n" +
-                    "                   <password>changeme</password>\n" +
+                    "                   <path>" + trustStorePath + "</path>\n" +
+                    "                   <password>" + trustStorePassword + "</password>\n" +
                     "                </truststore>\n" +
                     "           </tls>\n" +
                     "</tls-tcp-listener>\n";
             //@formatter:on
+        } else {
+            tlsConfig = "";
         }
         return tlsConfig;
     }
@@ -315,19 +368,18 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     }
 
     public static class Builder {
-
-        private boolean tlsEnabled = false;
+        private @NotNull TlsConfiguration tlsConfiguration = TlsConfiguration.builder().build();
         private boolean websocketEnabled = false;
 
         private Builder() {
         }
 
         public @NotNull HiveMQExtension build() {
-            return new HiveMQExtension(tlsEnabled, websocketEnabled);
+            return new HiveMQExtension(tlsConfiguration, websocketEnabled);
         }
 
-        public @NotNull Builder withTlsEnabled(final boolean tlsEnabled) {
-            this.tlsEnabled = tlsEnabled;
+        public @NotNull Builder withTlsConfiguration(final @NotNull TlsConfiguration tlsConfiguration) {
+            this.tlsConfiguration = tlsConfiguration;
             return this;
         }
 
