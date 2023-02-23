@@ -103,7 +103,7 @@ public class ConnectOptions {
     private final @NotNull AuthenticationOptions authenticationOptions = new AuthenticationOptions();
 
     @CommandLine.Mixin
-    private final @NotNull SslOptions sslOptions = new SslOptions();
+    private final @NotNull TlsOptions tlsOptions = new TlsOptions();
 
     public @NotNull MqttVersion getVersion() {
         return Objects.requireNonNull(version);
@@ -142,7 +142,7 @@ public class ConnectOptions {
     }
 
     public @Nullable MqttClientSslConfig buildSslConfig() throws Exception {
-        return sslOptions.buildSslConfig();
+        return tlsOptions.buildSslConfig();
     }
 
     public @Nullable Integer getKeepAlive() {
@@ -280,8 +280,8 @@ public class ConnectOptions {
                 connectRestrictionOptions +
                 ", authenticationOptions=" +
                 authenticationOptions +
-                ", sslOptions=" +
-                sslOptions +
+                ", tlsOptions=" +
+                tlsOptions +
                 '}';
     }
 }

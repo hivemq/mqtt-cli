@@ -21,7 +21,7 @@ import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.options.AuthenticationOptions;
 import com.hivemq.cli.commands.options.DefaultOptions;
-import com.hivemq.cli.commands.options.SslOptions;
+import com.hivemq.cli.commands.options.TlsOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
 import com.hivemq.cli.mqtt.test.Mqtt5FeatureTester;
@@ -99,7 +99,7 @@ public class TestBrokerCommand implements Callable<Integer> {
     private final @NotNull AuthenticationOptions authenticationOptions = new AuthenticationOptions();
 
     @CommandLine.Mixin
-    private final @NotNull SslOptions sslOptions = new SslOptions();
+    private final @NotNull TlsOptions tlsOptions = new TlsOptions();
 
     @CommandLine.Mixin
     private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
@@ -129,7 +129,7 @@ public class TestBrokerCommand implements Callable<Integer> {
         authenticationOptions.setDefaultOptions();
 
         try {
-            sslConfig = sslOptions.buildSslConfig();
+            sslConfig = tlsOptions.buildSslConfig();
         } catch (final Exception e) {
             Logger.error(e, "Could not build SSL configuration");
             System.err.println("Could not build SSL config - " + Throwables.getRootCause(e).getMessage());
@@ -140,7 +140,7 @@ public class TestBrokerCommand implements Callable<Integer> {
         int mqtt5ExitCode = 0;
         if (version != null) {
             if (version == MqttVersion.MQTT_3_1_1) {
-                mqtt3ExitCode  = testMqtt3Features();
+                mqtt3ExitCode = testMqtt3Features();
             } else if (version == MqttVersion.MQTT_5_0) {
                 mqtt5ExitCode = testMqtt5Features();
             }
@@ -437,8 +437,8 @@ public class TestBrokerCommand implements Callable<Integer> {
                 logToLogfile +
                 ", authenticationOptions=" +
                 authenticationOptions +
-                ", sslOptions=" +
-                sslOptions +
+                ", tlsOptions=" +
+                tlsOptions +
                 ", defaultOptions=" +
                 defaultOptions +
                 ", defaultCLIProperties=" +
