@@ -18,12 +18,16 @@ package com.hivemq.cli.utils.broker;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public enum TlsVersion {
-    TLS_1_3("TLSv1.3"),
-    TLS_1_2("TLSv1.2");
-    //TLS_1_1("TLSv1.1"),
+    //SSL_3_0("SSLv3"),
     //TLS_1_0("TLSv1"),
-    //SSL_3_0("SSLv3");
+    //TLS_1_1("TLSv1.1"),
+    TLS_1_2("TLSv1.2"),
+    TLS_1_3("TLSv1.3");
 
     private final @NotNull String tlsString;
 
@@ -34,5 +38,9 @@ public enum TlsVersion {
 
     TlsVersion(final @NotNull String asString) {
         tlsString = asString;
+    }
+
+    public static @NotNull List<TlsVersion> supportedAsList() {
+        return Arrays.stream(TlsVersion.values()).collect(Collectors.toList());
     }
 }

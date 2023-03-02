@@ -46,7 +46,7 @@ class SubscribeConnectMTlsST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder()
             .withTlsConfiguration(TlsConfiguration.builder()
                     .withTlsEnabled(true)
-                    .withTlsVersions(List.of(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3))
+                    .withTlsVersions(TlsVersion.supportedAsList())
                     .withClientAuthentication(true)
                     .build())
             .build();

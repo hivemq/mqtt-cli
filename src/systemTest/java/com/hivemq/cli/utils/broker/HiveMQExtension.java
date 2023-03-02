@@ -254,8 +254,8 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
         final String websocketsConfig = setupWebsockets();
         //@formatter:off
         return "<hivemq>\n" + "    " +
-                "   <listeners>\n" + "        " +
-                "       <tcp-listener>\n" +
+                "    <listeners>\n" + "        " +
+                "        <tcp-listener>\n" +
                 "            <port>" + port + "</port>\n" +
                 "            <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
                 "        </tcp-listener>\n" +
