@@ -272,10 +272,7 @@ tasks.check { dependsOn(integrationTest) }
 
 /* ******************** system Tests ******************** */
 
-sourceSets.create("systemTest") {
-    compileClasspath += sourceSets.main.get().output
-    runtimeClasspath += sourceSets.main.get().output
-}
+sourceSets.create("systemTest")
 
 val systemTestImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.testImplementation.get())
