@@ -43,7 +43,7 @@ public class CipherSuitesTlsST {
     @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder()
             .withTlsConfiguration(TlsConfiguration.builder()
-                    .withTlsVersions(List.of(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3))
+                    .withTlsVersions(TlsVersion.supportedAsList())
                     .withCipherSuites(CipherSuite.getAllAsString())
                     .withTlsEnabled(true)
                     .build())
