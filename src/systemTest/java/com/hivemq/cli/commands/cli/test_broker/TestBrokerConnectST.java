@@ -43,7 +43,7 @@ class TestBrokerConnectST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -53,7 +53,7 @@ class TestBrokerConnectST {
                 "-h",
                 "wrong-host",
                 "-p",
-                String.valueOf(HIVEMQ.getMqttPort()),
+                String.valueOf(hivemq.getMqttPort()),
                 "-V",
                 String.valueOf(mqttVersion));
 
@@ -67,7 +67,7 @@ class TestBrokerConnectST {
     @ValueSource(chars = {'3', '5'})
     void test_connectWrongPort(final char mqttVersion) throws Exception {
         final List<String> testCommand =
-                List.of("test", "-h", HIVEMQ.getHost(), "-p", "22", "-V", String.valueOf(mqttVersion));
+                List.of("test", "-h", hivemq.getHost(), "-p", "22", "-V", String.valueOf(mqttVersion));
 
         final ExecutionResult executionResult = MqttCli.execute(testCommand);
         assertEquals(1, executionResult.getExitCode());
@@ -80,9 +80,9 @@ class TestBrokerConnectST {
     void test_connectInvalidTimeOut(final char mqttVersion) throws Exception {
         final List<String> testCommand = List.of("test",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttPort()),
+                String.valueOf(hivemq.getMqttPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-t",
@@ -105,7 +105,7 @@ class TestBrokerConnectST {
         final ExecutionResult executionResult = MqttCli.execute(testCommand);
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
         });
@@ -127,7 +127,7 @@ class TestBrokerConnectST {
             assertEquals(1, executionResult.getExitCode());
         } else {
             assertTestOutput(executionResult, mqttVersion);
-            assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -150,7 +150,7 @@ class TestBrokerConnectST {
             assertEquals(1, executionResult.getExitCode());
         } else {
             assertTestOutput(executionResult, mqttVersion);
-            assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -177,7 +177,7 @@ class TestBrokerConnectST {
             assertEquals(1, executionResult.getExitCode());
         } else {
             assertTestOutput(executionResult, mqttVersion);
-            assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -198,7 +198,7 @@ class TestBrokerConnectST {
         assertTestOutput(executionResult, mqttVersion);
 
         assertTestOutput(executionResult, mqttVersion);
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -216,7 +216,7 @@ class TestBrokerConnectST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("testuser");
             connectAssertion.setPassword(ByteBuffer.wrap("testpasswordproperties".getBytes(StandardCharsets.UTF_8)));
@@ -236,7 +236,7 @@ class TestBrokerConnectST {
         final ExecutionResult executionResult = MqttCli.execute(testCommand, Map.of("PASSWORD", "password"));
 
         assertTestOutput(executionResult, mqttVersion);
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -254,7 +254,7 @@ class TestBrokerConnectST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("testuser");
             connectAssertion.setPassword(ByteBuffer.wrap("testpasswordenvproperties".getBytes(StandardCharsets.UTF_8)));
@@ -278,7 +278,7 @@ class TestBrokerConnectST {
         final ExecutionResult executionResult = MqttCli.execute(testCommand);
 
         assertTestOutput(executionResult, mqttVersion);
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -299,7 +299,7 @@ class TestBrokerConnectST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("testuser");
             connectAssertion.setPassword(ByteBuffer.wrap("testpasswordfile".getBytes(StandardCharsets.UTF_8)));
@@ -315,9 +315,9 @@ class TestBrokerConnectST {
         final ArrayList<String> testCommand = new ArrayList<>();
         testCommand.add("test");
         testCommand.add("-h");
-        testCommand.add(HIVEMQ.getHost());
+        testCommand.add(hivemq.getHost());
         testCommand.add("-p");
-        testCommand.add(String.valueOf(HIVEMQ.getMqttPort()));
+        testCommand.add(String.valueOf(hivemq.getMqttPort()));
         testCommand.add("-V");
         testCommand.add(String.valueOf(mqttVersion));
         return testCommand;

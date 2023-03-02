@@ -41,7 +41,7 @@ class ShellConnectEnvST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShellExtension
@@ -62,10 +62,10 @@ class ShellConnectEnvST {
             awaitOutput.awaitStdOut("mqtt>");
             awaitOutput.awaitLog("Password-Only Authentication is not allowed in MQTT 3");
         } else {
-            awaitOutput.awaitStdOut(String.format("@%s>", HIVEMQ.getHost()))
+            awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
-            assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -84,10 +84,10 @@ class ShellConnectEnvST {
 
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(connectCommand);
 
-        awaitOutput.awaitStdOut(String.format("@%s>", HIVEMQ.getHost()))
+        awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
-        assertConnectPacket(HIVEMQ.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("user");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -99,9 +99,9 @@ class ShellConnectEnvST {
         final ArrayList<String> defaultConnectCommand = new ArrayList<>();
         defaultConnectCommand.add("con");
         defaultConnectCommand.add("-h");
-        defaultConnectCommand.add(HIVEMQ.getHost());
+        defaultConnectCommand.add(hivemq.getHost());
         defaultConnectCommand.add("-p");
-        defaultConnectCommand.add(String.valueOf(HIVEMQ.getMqttPort()));
+        defaultConnectCommand.add(String.valueOf(hivemq.getMqttPort()));
         defaultConnectCommand.add("-i");
         defaultConnectCommand.add("cliTest");
         return defaultConnectCommand;

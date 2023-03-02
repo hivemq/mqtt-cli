@@ -31,7 +31,7 @@ class ShellSwitchST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
@@ -40,39 +40,39 @@ class ShellSwitchST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_successfulSwitchFromContext(final char mqttVersion) throws Exception {
-        final List<String> switchCommand = List.of("switch", String.format("client1@%s", HIVEMQ.getHost()));
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client1");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client2");
-        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", HIVEMQ.getHost()));
+        final List<String> switchCommand = List.of("switch", String.format("client1@%s", hivemq.getHost()));
+        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
+        mqttCliShell.connectClient(hivemq, mqttVersion, "client2");
+        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", hivemq.getHost()));
     }
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_successfulSwitchWithoutContext(final char mqttVersion) throws Exception {
-        final List<String> switchCommand = List.of("switch", String.format("client1@%s", HIVEMQ.getHost()));
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client1");
+        final List<String> switchCommand = List.of("switch", String.format("client1@%s", hivemq.getHost()));
+        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
         mqttCliShell.executeAsync(List.of("exit")).awaitStdOut("mqtt>");
-        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", HIVEMQ.getHost()));
+        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", hivemq.getHost()));
     }
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_hostAndIdentifierWithContext(final char mqttVersion) throws Exception {
-        final List<String> switchCommand = List.of("switch", "-i", "client1", "-h", HIVEMQ.getHost());
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client1");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client2");
-        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", HIVEMQ.getHost()));
+        final List<String> switchCommand = List.of("switch", "-i", "client1", "-h", hivemq.getHost());
+        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
+        mqttCliShell.connectClient(hivemq, mqttVersion, "client2");
+        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", hivemq.getHost()));
     }
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_hostAndIdentifierWithoutContext(final char mqttVersion) throws Exception {
-        final List<String> switchCommand = List.of("switch", "-i", "client1", "-h", HIVEMQ.getHost());
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client1");
+        final List<String> switchCommand = List.of("switch", "-i", "client1", "-h", hivemq.getHost());
+        mqttCliShell.connectClient(hivemq, mqttVersion, "client1");
         mqttCliShell.executeAsync(List.of("exit")).awaitStdOut("mqtt>");
-        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", HIVEMQ.getHost()));
+        mqttCliShell.executeAsync(switchCommand).awaitStdOut(String.format("client1@%s>", hivemq.getHost()));
     }
 }

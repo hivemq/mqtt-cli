@@ -37,7 +37,7 @@ class ShellConnectMTlsST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder()
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder()
             .withTlsConfiguration(TlsConfiguration.builder()
                     .withTlsEnabled(true)
                     .withTlsVersions(List.of(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3))
@@ -61,9 +61,9 @@ class ShellConnectMTlsST {
 
         final List<String> connectCommand = List.of("con",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -79,11 +79,11 @@ class ShellConnectMTlsST {
                 clientPublicKey);
 
         mqttCliShell.executeAsync(connectCommand)
-                .awaitStdOut(String.format("cliTest@%s", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -107,9 +107,9 @@ class ShellConnectMTlsST {
 
         final List<String> connectCommand = List.of("con",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -127,11 +127,11 @@ class ShellConnectMTlsST {
         mqttCliShell.executeAsync(connectCommand).awaitStdOut("Enter private key password:");
 
         mqttCliShell.executeAsync(List.of("clientKeyPassword"))
-                .awaitStdOut(String.format("cliTest@%s", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -151,9 +151,9 @@ class ShellConnectMTlsST {
 
         final List<String> connectCommand = List.of("con",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -169,11 +169,11 @@ class ShellConnectMTlsST {
                 clientPublicKey);
 
         mqttCliShell.executeAsync(connectCommand)
-                .awaitStdOut(String.format("cliTest@%s", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -199,9 +199,9 @@ class ShellConnectMTlsST {
 
         final List<String> connectCommand = List.of("con",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -219,11 +219,11 @@ class ShellConnectMTlsST {
         mqttCliShell.executeAsync(connectCommand).awaitStdOut("Enter private key password:");
 
         mqttCliShell.executeAsync(List.of("clientKeyPassword"))
-                .awaitStdOut(String.format("cliTest@%s", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }

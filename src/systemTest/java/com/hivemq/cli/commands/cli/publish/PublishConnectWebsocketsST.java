@@ -40,7 +40,7 @@ class PublishConnectWebsocketsST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().withWebsocketEnabled(true).build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().withWebsocketEnabled(true).build();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -49,9 +49,9 @@ class PublishConnectWebsocketsST {
         final List<String> publishCommand = List.of(
                 "pub",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getWebsocketsPort()),
+                String.valueOf(hivemq.getWebsocketsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -62,7 +62,7 @@ class PublishConnectWebsocketsST {
                 "message",
                 "-ws",
                 "-ws:path",
-                HIVEMQ.getWebsocketsPath(),
+                hivemq.getWebsocketsPath(),
                 "-d");
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
@@ -71,11 +71,11 @@ class PublishConnectWebsocketsST {
         assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
 
         assertConnectPacket(
-                HIVEMQ.getConnectPackets().get(0),
+                hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("topic");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });

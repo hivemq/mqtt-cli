@@ -38,7 +38,7 @@ class ShellConnectTlsST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder()
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder()
             .withTlsConfiguration(TlsConfiguration.builder()
                     .withTlsEnabled(true)
                     .withTlsVersions(List.of(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3))
@@ -57,9 +57,9 @@ class ShellConnectTlsST {
 
         final List<String> connectCommand = List.of("con",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -72,7 +72,7 @@ class ShellConnectTlsST {
 
         mqttCliShell.executeAsync(connectCommand).awaitLog("sending CONNECT").awaitLog("received CONNACK");
 
-        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -86,9 +86,9 @@ class ShellConnectTlsST {
 
         final List<String> connectCommand = List.of("con",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -101,7 +101,7 @@ class ShellConnectTlsST {
 
         mqttCliShell.executeAsync(connectCommand).awaitLog("sending CONNECT").awaitLog("received CONNACK");
 
-        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -112,9 +112,9 @@ class ShellConnectTlsST {
     void test_tls_no_cert(final char mqttVersion) throws Exception {
         final List<String> connectCommand = List.of("con",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
