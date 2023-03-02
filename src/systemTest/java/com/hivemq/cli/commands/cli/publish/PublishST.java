@@ -53,7 +53,7 @@ class PublishST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -64,11 +64,11 @@ class PublishST {
 
         assertPublishOutput(executionResult);
 
-        assertConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -84,7 +84,7 @@ class PublishST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setRetain(true);
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
@@ -107,7 +107,7 @@ class PublishST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message-from-file".getBytes(StandardCharsets.UTF_8)));
         });
@@ -125,7 +125,7 @@ class PublishST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.allocate(0));
         });
@@ -151,10 +151,10 @@ class PublishST {
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test3"));
 
         final Set<String> topicSet =
-                HIVEMQ.getPublishPackets().stream().map(PublishPacket::getTopic).collect(Collectors.toSet());
+                hivemq.getPublishPackets().stream().map(PublishPacket::getTopic).collect(Collectors.toSet());
         assertTrue(topicSet.containsAll(List.of("test1", "test2", "test3")));
 
-        for (final PublishPacket publishPacket : HIVEMQ.getPublishPackets()) {
+        for (final PublishPacket publishPacket : hivemq.getPublishPackets()) {
             assertPublishPacket(publishPacket, publishAssertion -> {
                 publishAssertion.setTopic(publishPacket.getTopic());
                 publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
@@ -193,7 +193,7 @@ class PublishST {
                 .contains(
                         "sending PUBLISH ('message') MqttPublish{topic=test3, payload=7byte, qos=EXACTLY_ONCE, retain=false}"));
 
-        final Map<String, PublishPacket> topicToPublishPacket = HIVEMQ.getPublishPackets()
+        final Map<String, PublishPacket> topicToPublishPacket = hivemq.getPublishPackets()
                 .stream()
                 .collect(Collectors.toMap(PublishPacket::getTopic, publishPacket -> publishPacket));
 
@@ -201,7 +201,7 @@ class PublishST {
         assertEquals(Qos.AT_LEAST_ONCE, topicToPublishPacket.get("test2").getQos());
         assertEquals(Qos.EXACTLY_ONCE, topicToPublishPacket.get("test3").getQos());
 
-        for (final PublishPacket publishPacket : HIVEMQ.getPublishPackets()) {
+        for (final PublishPacket publishPacket : hivemq.getPublishPackets()) {
             assertPublishPacket(publishPacket, publishAssertion -> {
                 publishAssertion.setTopic(publishPacket.getTopic());
                 publishAssertion.setQos(publishPacket.getQos());
@@ -226,7 +226,7 @@ class PublishST {
                     .contains("Publish message expiry was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -251,7 +251,7 @@ class PublishST {
                     .contains("Publish payload format indicator was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -276,7 +276,7 @@ class PublishST {
                     .contains("Publish content type was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -301,7 +301,7 @@ class PublishST {
                     .contains("Publish response topic was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -326,7 +326,7 @@ class PublishST {
                     .contains("Publish correlation data was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -353,7 +353,7 @@ class PublishST {
                     .contains("Publish user properties were set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(HIVEMQ.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -369,7 +369,7 @@ class PublishST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_publish_missing_topic() throws Exception {
         final List<String> publishCommand =
-                List.of("pub", "-h", HIVEMQ.getHost(), "-p", String.valueOf(HIVEMQ.getMqttPort()));
+                List.of("pub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()));
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
@@ -381,7 +381,7 @@ class PublishST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_publish_missing_message() throws Exception {
         final List<String> publishCommand =
-                List.of("pub", "-h", HIVEMQ.getHost(), "-p", String.valueOf(HIVEMQ.getMqttPort()), "-t", "test");
+                List.of("pub", "-h", hivemq.getHost(), "-p", String.valueOf(hivemq.getMqttPort()), "-t", "test");
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
@@ -402,9 +402,9 @@ class PublishST {
         final ArrayList<String> publishCommand = new ArrayList<>();
         publishCommand.add("pub");
         publishCommand.add("-h");
-        publishCommand.add(HIVEMQ.getHost());
+        publishCommand.add(hivemq.getHost());
         publishCommand.add("-p");
-        publishCommand.add(String.valueOf(HIVEMQ.getMqttPort()));
+        publishCommand.add(String.valueOf(hivemq.getMqttPort()));
         publishCommand.add("-V");
         publishCommand.add(String.valueOf(mqttVersion));
         publishCommand.add("-i");

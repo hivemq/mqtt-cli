@@ -40,7 +40,7 @@ public class SubscribeConnectWebsocketsST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().withWebsocketEnabled(true).build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().withWebsocketEnabled(true).build();
 
     @RegisterExtension
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
@@ -52,9 +52,9 @@ public class SubscribeConnectWebsocketsST {
         final List<String> subscribeCommand = List.of(
                 "sub",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getWebsocketsPort()),
+                String.valueOf(hivemq.getWebsocketsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-i",
@@ -63,7 +63,7 @@ public class SubscribeConnectWebsocketsST {
                 "topic",
                 "-ws",
                 "-ws:path",
-                HIVEMQ.getWebsocketsPath(),
+                hivemq.getWebsocketsPath(),
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
@@ -71,11 +71,11 @@ public class SubscribeConnectWebsocketsST {
         executionResult.awaitStdOut("received SUBACK");
 
         assertConnectPacket(
-                HIVEMQ.getConnectPackets().get(0),
+                hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);

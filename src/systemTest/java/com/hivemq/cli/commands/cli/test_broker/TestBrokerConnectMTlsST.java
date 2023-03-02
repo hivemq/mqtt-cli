@@ -38,7 +38,7 @@ class TestBrokerConnectMTlsST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder()
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder()
             .withTlsConfiguration(TlsConfiguration.builder()
                     .withTlsEnabled(true)
                     .withTlsVersions(List.of(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3))
@@ -63,9 +63,9 @@ class TestBrokerConnectMTlsST {
 
         final List<String> testCommand = List.of("test",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-s",
@@ -81,7 +81,7 @@ class TestBrokerConnectMTlsST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand);
         executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -105,9 +105,9 @@ class TestBrokerConnectMTlsST {
 
         final List<String> testCommand = List.of("test",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-s",
@@ -125,7 +125,7 @@ class TestBrokerConnectMTlsST {
         executionResult.write("clientKeyPassword");
         executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -145,9 +145,9 @@ class TestBrokerConnectMTlsST {
 
         final List<String> testCommand = List.of("test",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-s",
@@ -163,7 +163,7 @@ class TestBrokerConnectMTlsST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand);
         executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -189,9 +189,9 @@ class TestBrokerConnectMTlsST {
 
         final List<String> testCommand = List.of("test",
                 "-h",
-                HIVEMQ.getHost(),
+                hivemq.getHost(),
                 "-p",
-                String.valueOf(HIVEMQ.getMqttTlsPort()),
+                String.valueOf(hivemq.getMqttTlsPort()),
                 "-V",
                 String.valueOf(mqttVersion),
                 "-s",
@@ -209,7 +209,7 @@ class TestBrokerConnectMTlsST {
         executionResult.write("clientKeyPassword");
         executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }

@@ -38,7 +38,7 @@ class TestBrokerST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -49,7 +49,7 @@ class TestBrokerST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -64,7 +64,7 @@ class TestBrokerST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -80,7 +80,7 @@ class TestBrokerST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -96,7 +96,7 @@ class TestBrokerST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(HIVEMQ.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -110,9 +110,9 @@ class TestBrokerST {
         final ArrayList<String> testCommand = new ArrayList<>();
         testCommand.add("test");
         testCommand.add("-h");
-        testCommand.add(HIVEMQ.getHost());
+        testCommand.add(hivemq.getHost());
         testCommand.add("-p");
-        testCommand.add(String.valueOf(HIVEMQ.getMqttPort()));
+        testCommand.add(String.valueOf(hivemq.getMqttPort()));
         testCommand.add("-V");
         testCommand.add(String.valueOf(mqttVersion));
         return testCommand;

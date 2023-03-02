@@ -50,7 +50,7 @@ class ShellSubscribeST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
@@ -60,13 +60,13 @@ class ShellSubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_successfulSubscribe(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub", "-t", "test");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -80,9 +80,9 @@ class ShellSubscribeST {
     void test_multipleTopics(final char mqttVersion) throws Exception {
         //FIXME Subscribe command should subscribe to all topics in one packet and not send separate subscribes
         final List<String> subscribeCommand = List.of("sub", "-t", "test1", "-t", "test2", "-t", "test3");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("received SUBACK")
                 .awaitLog("sending SUBSCRIBE")
@@ -90,19 +90,19 @@ class ShellSubscribeST {
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("test1", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(1), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().get(1), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("test2", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(2), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().get(2), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("test3", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
@@ -116,9 +116,9 @@ class ShellSubscribeST {
         //FIXME Subscribe command should subscribe to all topics in one packet and not send separate subscribes
         final List<String> subscribeCommand =
                 List.of("sub", "-t", "test1", "-t", "test2", "-t", "test3", "-q", "0", "-q", "1", "-q", "2");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()))
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("received SUBACK")
                 .awaitLog("sending SUBSCRIBE")
@@ -126,19 +126,19 @@ class ShellSubscribeST {
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("test1", Qos.AT_MOST_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(1), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().get(1), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("test2", Qos.AT_LEAST_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(2), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().get(2), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("test3", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
@@ -150,7 +150,7 @@ class ShellSubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_userProperties(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-up", "key1=value1", "-up", "key2=value2");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(subscribeCommand);
 
         if (mqttVersion == '3') {
@@ -158,11 +158,11 @@ class ShellSubscribeST {
             awaitOutput.awaitLog("Subscribe user properties were set but are unused in MQTT version MQTT_3_1_1");
         }
 
-        awaitOutput.awaitStdOut(String.format("cliTest@%s>", HIVEMQ.getHost()));
+        awaitOutput.awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
         awaitOutput.awaitLog("sending SUBSCRIBE");
         awaitOutput.awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
             subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                     Qos.EXACTLY_ONCE,
                     RetainHandling.SEND,
@@ -183,11 +183,11 @@ class ShellSubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_stay(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-s");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -195,8 +195,8 @@ class ShellSubscribeST {
                         false))));
 
         final Mqtt5BlockingClient publisher = MqttClient.builder()
-                .serverHost(HIVEMQ.getHost())
-                .serverPort(HIVEMQ.getMqttPort())
+                .serverHost(hivemq.getHost())
+                .serverPort(hivemq.getMqttPort())
                 .useMqttVersion5()
                 .buildBlocking();
         publisher.connect();
@@ -211,11 +211,11 @@ class ShellSubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_outputToConsole(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-oc");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -223,8 +223,8 @@ class ShellSubscribeST {
                         false))));
 
         final Mqtt5BlockingClient publisher = MqttClient.builder()
-                .serverHost(HIVEMQ.getHost())
-                .serverPort(HIVEMQ.getMqttPort())
+                .serverHost(hivemq.getHost())
+                .serverPort(hivemq.getMqttPort())
                 .useMqttVersion5()
                 .buildBlocking();
         publisher.connect();
@@ -241,11 +241,11 @@ class ShellSubscribeST {
         final Path outputFile = Files.createTempFile("publishes", ".txt");
         outputFile.toFile().deleteOnExit();
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-of", outputFile.toString());
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -253,8 +253,8 @@ class ShellSubscribeST {
                         false))));
 
         final Mqtt5BlockingClient publisher = MqttClient.builder()
-                .serverHost(HIVEMQ.getHost())
-                .serverPort(HIVEMQ.getMqttPort())
+                .serverHost(hivemq.getHost())
+                .serverPort(hivemq.getMqttPort())
                 .useMqttVersion5()
                 .buildBlocking();
         publisher.connect();
@@ -272,11 +272,11 @@ class ShellSubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_base64(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-s", "-b64");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -284,8 +284,8 @@ class ShellSubscribeST {
                         false))));
 
         final Mqtt5BlockingClient publisher = MqttClient.builder()
-                .serverHost(HIVEMQ.getHost())
-                .serverPort(HIVEMQ.getMqttPort())
+                .serverHost(hivemq.getHost())
+                .serverPort(hivemq.getMqttPort())
                 .useMqttVersion5()
                 .buildBlocking();
         publisher.connect();
@@ -301,11 +301,11 @@ class ShellSubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_showTopics(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-s", "-T");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -313,8 +313,8 @@ class ShellSubscribeST {
                         false))));
 
         final Mqtt5BlockingClient publisher = MqttClient.builder()
-                .serverHost(HIVEMQ.getHost())
-                .serverPort(HIVEMQ.getMqttPort())
+                .serverHost(hivemq.getHost())
+                .serverPort(hivemq.getMqttPort())
                 .useMqttVersion5()
                 .buildBlocking();
         publisher.connect();
@@ -329,11 +329,11 @@ class ShellSubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_Json(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-s", "-J");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(HIVEMQ.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -341,8 +341,8 @@ class ShellSubscribeST {
                         false))));
 
         final Mqtt5BlockingClient publisher = MqttClient.builder()
-                .serverHost(HIVEMQ.getHost())
-                .serverPort(HIVEMQ.getMqttPort())
+                .serverHost(hivemq.getHost())
+                .serverPort(hivemq.getMqttPort())
                 .useMqttVersion5()
                 .buildBlocking();
         publisher.connect();
@@ -368,10 +368,10 @@ class ShellSubscribeST {
     @ValueSource(chars = {'3', '5'})
     void test_subscribeMissingTopic(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion);
+        mqttCliShell.connectClient(hivemq, mqttVersion);
         mqttCliShell.executeAsync(subscribeCommand)
                 .awaitStdErr("Missing required option: '--topic <topics>'")
-                .awaitStdOut("cliTest@" + HIVEMQ.getHost() + ">");
+                .awaitStdOut("cliTest@" + hivemq.getHost() + ">");
     }
 
     @Test

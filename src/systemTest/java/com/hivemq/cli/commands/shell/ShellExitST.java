@@ -34,7 +34,7 @@ class ShellExitST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension HIVEMQ = HiveMQExtension.builder().build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
@@ -45,9 +45,9 @@ class ShellExitST {
     void test_exitContext(final char mqttVersion) throws Exception {
         final List<String> exitCommand = List.of("exit");
         final List<String> lsCommand = List.of("ls");
-        mqttCliShell.connectClient(HIVEMQ, mqttVersion, "client");
+        mqttCliShell.connectClient(hivemq, mqttVersion, "client");
         mqttCliShell.executeAsync(exitCommand).awaitStdOut("mqtt>");
-        mqttCliShell.executeAsync(lsCommand).awaitStdOut(String.format("client@%s", HIVEMQ.getHost()));
+        mqttCliShell.executeAsync(lsCommand).awaitStdOut(String.format("client@%s", hivemq.getHost()));
     }
 
     @Test
