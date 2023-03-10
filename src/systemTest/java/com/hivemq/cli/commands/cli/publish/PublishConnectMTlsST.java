@@ -54,6 +54,104 @@ class PublishConnectMTlsST {
 
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_similar_private_key_keystore_mutualTls(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
+            @CartesianTest.Values(strings = {
+                    "jks", "p12"}) final @NotNull String clientKeyType)
+            throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/ca.pem").getPath();
+        final String clientKeystore = Resources.getResource("tls/client/client-keystore.similar_private_key_password." + clientKeyType).getPath();
+
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-t",
+                "test",
+                "-m",
+                "message",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--cafile",
+                certificateAuthorityPublicKey,
+                "--keystore",
+                clientKeystore,
+                "-d");
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
+        executionResult.awaitStdOut("Enter keystore password:");
+        executionResult.write("clientKeystorePassword");
+        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+            publishAssertion.setTopic("test");
+            publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
+        });
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_keystore_mutualTls(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
+            @CartesianTest.Values(strings = {
+                    "jks", "p12"}) final @NotNull String clientKeyType)
+            throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/ca.pem").getPath();
+        final String clientKeystore = Resources.getResource("tls/client/client-keystore." + clientKeyType).getPath();
+
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-t",
+                "test",
+                "-m",
+                "message",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--cafile",
+                certificateAuthorityPublicKey,
+                "--keystore",
+                clientKeystore,
+                "-d");
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
+        executionResult.awaitStdOut("Enter keystore password:");
+        executionResult.write("clientKeystorePassword");
+        if (clientKeyType.equals("jks")) {
+            executionResult.awaitStdOut("Enter private key password:");
+            executionResult.write("clientKeyPassword");
+        }
+        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+            publishAssertion.setTopic("test");
+            publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
+        });
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_unencrypted_pem_private_keys_mutualTls(
             @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
             @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,

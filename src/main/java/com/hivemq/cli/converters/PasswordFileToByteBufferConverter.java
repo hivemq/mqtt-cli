@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.converters;
 
+import com.hivemq.cli.utils.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
@@ -23,13 +24,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class PasswordFileToByteBufferConverter implements CommandLine.ITypeConverter<ByteBuffer> {
 
     @Override
     public @NotNull ByteBuffer convert(final @NotNull String value) throws Exception {
-        final FileConverter fileConverter = new FileConverter();
-        final File file = fileConverter.convert(value);
+        final File file = FileUtil.convert(Paths.get(value));
         try (final BufferedReader in = Files.newBufferedReader(file.toPath())) {
             return ByteBuffer.wrap(in.readLine().getBytes());
         }
