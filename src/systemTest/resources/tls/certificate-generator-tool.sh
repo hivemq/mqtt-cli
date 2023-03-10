@@ -82,8 +82,10 @@ keytool -gencert -alias ca -validity 365000 -keystore $caFolder/$caKeystoreName.
 keytool -importcert -alias ca -file $caFolder/$caCertName.cer -keystore $clientFolder/$clientKeystoreName.p12 -storetype pkcs12 -storepass $clientKeystorePass -noprompt
 keytool -importcert -alias $clientName -file $clientFolder/$clientCertName.cer -keystore $clientFolder/$clientKeystoreName.p12 -storepass $clientKeystorePass -noprompt
 keytool -delete -alias ca -keystore $clientFolder/$clientKeystoreName.p12 -storepass $clientKeystorePass
+keytool -importkeystore -srckeystore $clientFolder/$clientKeystoreName.p12 -destkeystore $clientFolder/$clientKeystoreName.similar_private_key_password.p12 -srcstoretype PKCS12 -deststoretype PKCS12 -srcstorepass $clientKeystorePass -deststorepass $clientKeystorePass -srcalias $clientName -destalias $clientName -srckeypass $clientKeyPass -destkeypass $clientKeystorePass -noprompt
 ##JKS
 keytool -importkeystore -srckeystore $clientFolder/$clientKeystoreName.p12 -destkeystore $clientFolder/$clientKeystoreName.jks -srcstoretype PKCS12 -deststoretype JKS -srcstorepass $clientKeystorePass -deststorepass $clientKeystorePass -srcalias $clientName -destalias $clientName -srckeypass $clientKeyPass -destkeypass $clientKeyPass -noprompt
+keytool -importkeystore -srckeystore $clientFolder/$clientKeystoreName.p12 -destkeystore $clientFolder/$clientKeystoreName.similar_private_key_password.jks -srcstoretype PKCS12 -deststoretype JKS -srcstorepass $clientKeystorePass -deststorepass $clientKeystorePass -srcalias $clientName -destalias $clientName -srckeypass $clientKeyPass -destkeypass $clientKeystorePass -noprompt
 
 ###standalone
 ##CERTIFICATE

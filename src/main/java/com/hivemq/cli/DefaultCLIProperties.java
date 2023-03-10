@@ -17,8 +17,6 @@
 package com.hivemq.cli;
 
 import com.hivemq.cli.converters.EnvVarToByteBufferConverter;
-import com.hivemq.cli.converters.FileToCertificatesConverter;
-import com.hivemq.cli.converters.FileToPrivateKeyConverter;
 import com.hivemq.cli.converters.PasswordFileToByteBufferConverter;
 import com.hivemq.client.mqtt.MqttVersion;
 import org.jetbrains.annotations.NotNull;
@@ -34,9 +32,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -65,7 +60,13 @@ public class DefaultCLIProperties {
     private static final @NotNull String PASSWORD_ENV = "auth.password.env";
     private static final @NotNull String CLIENT_CERTIFICATE = "auth.client.cert";
     private static final @NotNull String CLIENT_PRIVATE_KEY = "auth.client.key";
+    private static final @NotNull String CLIENT_PRIVATE_KEY_PASSWORD = "auth.client.key.password";
     private static final @NotNull String SERVER_CERTIFICATE = "auth.server.cafile";
+    private static final @NotNull String KEYSTORE = "auth.keystore";
+    private static final @NotNull String KEYSTORE_PASSWORD = "auth.keystore.password";
+    private static final @NotNull String KEYSTORE_PRIVATE_KEY_PASSWORD = "auth.keystore.privatekey.password";
+    private static final @NotNull String TRUSTSTORE = "auth.truststore";
+    private static final @NotNull String TRUSTSTORE_PASSWORD = "auth.truststore.password";
     private static final @NotNull String WEBSOCKET_PATH = "ws.path";
 
     private final @NotNull Map<String, String> propertyToValue = new HashMap<String, String>() {{
@@ -83,7 +84,13 @@ public class DefaultCLIProperties {
         put(PASSWORD_ENV, null);
         put(CLIENT_CERTIFICATE, null);
         put(CLIENT_PRIVATE_KEY, null);
+        put(CLIENT_PRIVATE_KEY_PASSWORD, null);
         put(SERVER_CERTIFICATE, null);
+        put(KEYSTORE, null);
+        put(KEYSTORE_PASSWORD, null);
+        put(KEYSTORE_PRIVATE_KEY_PASSWORD, null);
+        put(TRUSTSTORE, null);
+        put(TRUSTSTORE_PASSWORD, null);
         put(WEBSOCKET_PATH, "/mqtt");
     }};
 
@@ -100,9 +107,9 @@ public class DefaultCLIProperties {
     }
 
     /**
-     * Initializes the default properties from the file. If the file does not yet exist it will be created and populated
-     * with the pre defined values. Else the properties from the given file will be read which will override the pre
-     * defined values if given.
+     * Initializes the default properties from the file. If the file does not yet exist it will be created and
+     * populated with the pre-defined values. Else the properties from the given file will be read which will override
+     * the pre-defined values if given.
      *
      * @throws IOException              the creation or reading of the properties file failed
      * @throws IllegalArgumentException the path to the properties file is not valid
@@ -134,6 +141,7 @@ public class DefaultCLIProperties {
     }
 
     private void createFile() throws IOException {
+        //noinspection ResultOfMethodCallIgnored
         storePropertiesFile.getParentFile().mkdirs();
         assert storePropertiesFile.createNewFile();
         try (final OutputStream output = Files.newOutputStream(storePropertiesFile.toPath())) {
@@ -237,28 +245,60 @@ public class DefaultCLIProperties {
         return password;
     }
 
-    public @Nullable Collection<X509Certificate> getClientCertificateChain() throws Exception {
+    public @Nullable Path getClientCertificateChain() {
         final String clientCertificate = propertyToValue.get(CLIENT_CERTIFICATE);
         if (clientCertificate == null) {
             return null;
         }
-        return new FileToCertificatesConverter().convert(clientCertificate);
+        return Paths.get(clientCertificate);
     }
 
-    public @Nullable PrivateKey getClientPrivateKey() throws Exception {
+    public @Nullable Path getClientPrivateKey() {
         final String clientPrivateKey = propertyToValue.get(CLIENT_PRIVATE_KEY);
         if (clientPrivateKey == null) {
             return null;
         }
-        return new FileToPrivateKeyConverter().convert(clientPrivateKey);
+        return Paths.get(clientPrivateKey);
     }
 
-    public @Nullable Collection<X509Certificate> getServerCertificateChain() throws Exception {
+    public @Nullable String getClientPrivateKeyPassword() {
+        return propertyToValue.get(CLIENT_PRIVATE_KEY_PASSWORD);
+    }
+
+    public @Nullable Path getServerCertificateChain() {
         final String serverCertificate = propertyToValue.get(SERVER_CERTIFICATE);
         if (serverCertificate == null) {
             return null;
         }
-        return new FileToCertificatesConverter().convert(serverCertificate);
+        return Paths.get(serverCertificate);
+    }
+
+    public @Nullable Path getKeystore() {
+        final String keystore = propertyToValue.get(KEYSTORE);
+        if (keystore == null) {
+            return null;
+        }
+        return Paths.get(keystore);
+    }
+
+    public @Nullable String getKeystorePassword() {
+        return propertyToValue.get(KEYSTORE_PASSWORD);
+    }
+
+    public @Nullable String getKeystorePrivateKeyPassword() {
+        return propertyToValue.get(KEYSTORE_PRIVATE_KEY_PASSWORD);
+    }
+
+    public @Nullable Path getTruststore() {
+        final String truststore = propertyToValue.get(TRUSTSTORE);
+        if (truststore == null) {
+            return null;
+        }
+        return Paths.get(truststore);
+    }
+
+    public @Nullable String getTruststorePassword() {
+        return propertyToValue.get(TRUSTSTORE_PASSWORD);
     }
 
     public @NotNull String getWebsocketPath() {

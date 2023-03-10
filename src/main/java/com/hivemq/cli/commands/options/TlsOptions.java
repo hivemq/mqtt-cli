@@ -19,9 +19,8 @@ package com.hivemq.cli.commands.options;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.converters.DirectoryToCertificatesConverter;
-import com.hivemq.cli.converters.FileToCertificatesConverter;
-import com.hivemq.cli.converters.FileToPrivateKeyConverter;
+import com.hivemq.cli.utils.PasswordUtils;
+import com.hivemq.cli.utils.TlsUtil;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +30,10 @@ import picocli.CommandLine;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -40,6 +43,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Objects;
 
 public class TlsOptions {
@@ -52,19 +56,31 @@ public class TlsOptions {
                         description = "Use default tls configuration if no other tls options are specified (default: false)")
     private boolean useTls;
 
-    @CommandLine.Option(names = {"--cafile"},
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--cafile", "--ca-cert", "--server-cert"},
                         paramLabel = "FILE",
-                        converter = FileToCertificatesConverter.class,
                         description = "Path to a file containing trusted CA certificates to enable encrypted certificate based communication")
-    private @Nullable Collection<X509Certificate> serverCertificateChain;
+    private @Nullable Path serverCertificateChain;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--capath"},
-                        paramLabel = "DIR",
-                        converter = DirectoryToCertificatesConverter.class,
-                        description = {
-                                "Path to a directory containing certificate files to import to enable encrypted certificate based communication"})
-    private @Nullable Collection<X509Certificate> serverCertificateChainFromDir;
+    @CommandLine.Option(names = {"--capath", "--ca-cert-dir", "--server-cert-dir"}, paramLabel = "DIR", description = {
+            "Path to a directory containing certificate files to import to enable encrypted certificate based communication"})
+    private @Nullable Path serverCertificateChainFromDir;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--cert", "--client-cert"},
+                        description = "The client certificate to use for client side authentication")
+    private @Nullable Path clientCertificateChain;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--key", "--client-private-key"},
+                        description = "The path to the client private key for client side authentication")
+    private @Nullable Path clientPrivateKey;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--keypw", "--client-private-key-password"},
+                        description = "The password for the keystore")
+    private @Nullable String clientPrivateKeyPassword;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--ciphers"},
@@ -76,55 +92,38 @@ public class TlsOptions {
                         description = "The TLS protocol version to use (default: {'TLSv.1.2'})")
     private @Nullable Collection<String> supportedTLSVersions;
 
-    @CommandLine.Option(names = {"--cert"},
-                        converter = FileToCertificatesConverter.class,
-                        description = "The client certificate to use for client side authentication")
-    private @Nullable Collection<X509Certificate> clientCertificateChain;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--ks", "--keystore"},
+                        description = "The path to the client keystore for client side authentication")
+    private @Nullable Path clientKeystore;
 
-    @CommandLine.Option(names = {"--key"},
-                        converter = FileToPrivateKeyConverter.class,
-                        description = "The path to the client private key for client side authentication")
-    private @Nullable PrivateKey clientPrivateKey;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--kspw", "--keystore-password"}, description = "The password for the keystore")
+    private @Nullable String clientKeystorePassword;
 
-    private boolean useBuiltSslConfig() {
-        return serverCertificateChain != null ||
-                serverCertificateChainFromDir != null ||
-                cipherSuites != null ||
-                supportedTLSVersions != null ||
-                clientPrivateKey != null ||
-                clientCertificateChain != null ||
-                useTls;
-    }
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--kspkpw", "--keystore-private-key-password"},
+                        description = "The password for the private key inside the keystore")
+    private @Nullable String clientKeystorePrivateKeyPassword;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--ts", "--truststore"},
+                        description = "The path to the client truststore to enable encrypted certificate based communication")
+    private @Nullable Path clientTruststore;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--tspw", "--truststore-password"},
+                        description = "The path to the client truststore for client side authentication")
+    private @Nullable String clientTruststorePassword;
 
     public @Nullable MqttClientSslConfig buildSslConfig() throws Exception {
-        setDefaultOptions();
-
-        if (!useBuiltSslConfig()) {
+        if (!useTls()) {
             return null;
         }
 
-        if (serverCertificateChainFromDir != null) {
-            if (serverCertificateChain == null) {
-                serverCertificateChain = serverCertificateChainFromDir;
-            } else {
-                serverCertificateChain.addAll(serverCertificateChainFromDir);
-            }
-        }
+        final KeyManagerFactory keyManagerFactory = buildKeyManagerFactory();
+        final TrustManagerFactory trustManagerFactory = buildTrustManagerFactory();
 
-        // build trustManagerFactory for server side authentication and to enable tls
-        TrustManagerFactory trustManagerFactory = null;
-        if (serverCertificateChain != null && !serverCertificateChain.isEmpty()) {
-            trustManagerFactory = buildTrustManagerFactory(serverCertificateChain);
-        }
-
-        // build keyManagerFactory if clientSideAuthentication is used
-        KeyManagerFactory keyManagerFactory = null;
-        if (clientCertificateChain != null && clientPrivateKey != null) {
-            keyManagerFactory =
-                    buildKeyManagerFactory(clientCertificateChain.toArray(new X509Certificate[0]), clientPrivateKey);
-        }
-
-        // default to tlsv.2
         if (supportedTLSVersions == null) {
             supportedTLSVersions = new ArrayList<>();
             supportedTLSVersions.add(DEFAULT_TLS_VERSION);
@@ -138,85 +137,286 @@ public class TlsOptions {
                 .build();
     }
 
-    private void setDefaultOptions() {
+    private @Nullable KeyManagerFactory buildKeyManagerFactory() throws Exception {
+        final KeyManagerFactory keyManagerFactory;
+
         final DefaultCLIProperties defaultCLIProperties =
                 Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+        final Path defaultKeystore = defaultCLIProperties.getKeystore();
+        final Path defaultClientCertificateChain = defaultCLIProperties.getClientCertificateChain();
+        final Path defaultClientPrivateKey = defaultCLIProperties.getClientPrivateKey();
 
-        if (clientCertificateChain == null) {
+        if (clientKeystore != null) {
+            keyManagerFactory = createKeyManagerFactoryFromKeystore(clientKeystore,
+                    clientKeystorePassword,
+                    clientKeystorePrivateKeyPassword);
+        } else if (clientCertificateChain != null && clientPrivateKey != null) {
+            final TlsUtil tlsUtil = new TlsUtil();
+            final Collection<X509Certificate> x509Certificates =
+                    tlsUtil.getCertificateChainFromFile(clientCertificateChain);
+            final PrivateKey privateKey = tlsUtil.getPrivateKeyFromFile(clientPrivateKey, clientPrivateKeyPassword);
+            final String password = "filler";
+            final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+            ks.load(null, null);
+            ks.setKeyEntry("mykey",
+                    privateKey,
+                    password.toCharArray(),
+                    x509Certificates.toArray(new X509Certificate[0]));
+
+            keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(ks, password.toCharArray());
+        } else if (defaultKeystore != null) {
+            final String defaultKeystorePassword = defaultCLIProperties.getKeystorePassword();
+            final String defaultKeystorePrivateKeyPassword = defaultCLIProperties.getKeystorePrivateKeyPassword();
+            keyManagerFactory = createKeyManagerFactoryFromKeystore(defaultKeystore,
+                    defaultKeystorePassword,
+                    defaultKeystorePrivateKeyPassword);
+        } else if (defaultClientCertificateChain != null && defaultClientPrivateKey != null) {
+            final TlsUtil tlsUtil = new TlsUtil();
+            final Collection<X509Certificate> x509Certificates;
             try {
-                clientCertificateChain = defaultCLIProperties.getClientCertificateChain();
+                x509Certificates = tlsUtil.getCertificateChainFromFile(defaultClientCertificateChain);
             } catch (final Exception e) {
                 Logger.error(e,
                         "Default client certificate chain could not be loaded ({})",
                         Throwables.getRootCause(e).getMessage());
+                throw e;
             }
-        }
-
-        if (clientPrivateKey == null) {
+            final PrivateKey privateKey;
+            final String defaultClientPrivateKeyPassword = defaultCLIProperties.getClientPrivateKeyPassword();
             try {
-                clientPrivateKey = defaultCLIProperties.getClientPrivateKey();
+                privateKey = tlsUtil.getPrivateKeyFromFile(defaultClientPrivateKey, defaultClientPrivateKeyPassword);
             } catch (final Exception e) {
                 Logger.error(e,
                         "Default client private key could not be loaded ({})",
                         Throwables.getRootCause(e).getMessage());
+                throw e;
             }
-        }
+            final String password = "filler";
+            final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+            ks.load(null, null);
+            ks.setKeyEntry("mykey",
+                    privateKey,
+                    password.toCharArray(),
+                    x509Certificates.toArray(new X509Certificate[0]));
 
-        try {
-            final Collection<X509Certificate> defaultServerCertificate =
-                    defaultCLIProperties.getServerCertificateChain();
-            if (defaultServerCertificate != null) {
-                if (serverCertificateChain == null) {
-                    serverCertificateChain = new ArrayList<>();
-                }
-                serverCertificateChain.addAll(defaultServerCertificate);
-            }
-        } catch (final Exception e) {
-            Logger.error(e,
-                    "Default server certificate could not be loaded ({})",
-                    Throwables.getRootCause(e).getMessage());
+            keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(ks, password.toCharArray());
+        } else {
+            keyManagerFactory = null;
         }
+        return keyManagerFactory;
     }
 
-    private @NotNull TrustManagerFactory buildTrustManagerFactory(final @NotNull Collection<X509Certificate> certCollection)
-            throws Exception {
-        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-        ks.load(null, null);
+    private @NotNull KeyManagerFactory createKeyManagerFactoryFromKeystore(
+            final @NotNull Path clientKeystore,
+            final @Nullable String clientKeystorePassword,
+            final @Nullable String clientKeystorePrivateKeyPassword)
+            throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException,
+            UnrecoverableKeyException {
+        final KeyManagerFactory keyManagerFactory =
+                KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        if (TlsUtil.isPKCS12Keystore(clientKeystore)) {
+            final KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            final char[] keystorePassword;
+            if (clientKeystorePassword != null) {
+                keystorePassword = clientKeystorePassword.toCharArray();
+            } else {
+                keystorePassword = PasswordUtils.readPassword("Enter keystore password:");
+            }
+            try (final InputStream inputStream = Files.newInputStream(clientKeystore, StandardOpenOption.READ)) {
+                keyStore.load(inputStream, keystorePassword);
+            }
+            keyManagerFactory.init(keyStore, keystorePassword);
+        } else if (TlsUtil.isJKSKeystore(clientKeystore)) {
+            final KeyStore keyStore = KeyStore.getInstance("JKS");
+            final char[] keystorePassword;
+            if (clientKeystorePassword != null) {
+                keystorePassword = clientKeystorePassword.toCharArray();
+            } else {
+                keystorePassword = PasswordUtils.readPassword("Enter keystore password:");
+            }
+            try (final InputStream inputStream = Files.newInputStream(clientKeystore, StandardOpenOption.READ)) {
+                keyStore.load(inputStream, keystorePassword);
+            }
 
-        // add all certificates of the collection to the KeyStore
-        int i = 1;
-        for (final X509Certificate cert : certCollection) {
-            final String alias = Integer.toString(i);
-            ks.setCertificateEntry(alias, cert);
-            i++;
+            boolean isDifferentPrivateKeyPassword = false;
+            try {
+                keyManagerFactory.init(keyStore, keystorePassword);
+            } catch (final UnrecoverableKeyException differentPrivateKeyPassword) {
+                isDifferentPrivateKeyPassword = true;
+            }
+            if (isDifferentPrivateKeyPassword) {
+                final char[] keystorePrivateKeyPassword;
+                if (clientKeystorePrivateKeyPassword != null) {
+                    keystorePrivateKeyPassword = clientKeystorePrivateKeyPassword.toCharArray();
+                } else {
+                    keystorePrivateKeyPassword = PasswordUtils.readPassword("Enter keystore private key password:");
+                }
+                keyManagerFactory.init(keyStore, keystorePrivateKeyPassword);
+            }
+        } else {
+            throw new KeyStoreException("Unknown keystore type. Please use a PKCS#12 (.p12/.pfx) or JKS keystore.");
+        }
+        return keyManagerFactory;
+    }
+
+
+    private @Nullable TrustManagerFactory buildTrustManagerFactory() throws Exception {
+        final DefaultCLIProperties defaultCLIProperties =
+                Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+        TrustManagerFactory trustManagerFactory = null;
+        KeyStore keyStore = null;
+        if (clientTruststore != null) {
+            if (TlsUtil.isPKCS12Keystore(clientTruststore)) {
+                keyStore = KeyStore.getInstance("PKCS12");
+                final char[] keystorePassword;
+                if (clientTruststorePassword != null) {
+                    keystorePassword = clientTruststorePassword.toCharArray();
+                } else {
+                    keystorePassword = PasswordUtils.readPassword("Enter truststore password:");
+                }
+                try (final InputStream inputStream = Files.newInputStream(clientTruststore, StandardOpenOption.READ)) {
+                    keyStore.load(inputStream, keystorePassword);
+                }
+            } else if (TlsUtil.isJKSKeystore(clientTruststore)) {
+                keyStore = KeyStore.getInstance("JKS");
+                final char[] truststorePassword;
+                if (clientTruststorePassword != null) {
+                    truststorePassword = clientTruststorePassword.toCharArray();
+                } else {
+                    truststorePassword = PasswordUtils.readPassword("Enter truststore password:");
+                }
+                //TODO could also need a separate private key check
+                try (final InputStream inputStream = Files.newInputStream(clientTruststore, StandardOpenOption.READ)) {
+                    keyStore.load(inputStream, truststorePassword);
+                }
+            } else {
+                throw new KeyStoreException(
+                        "Unknown truststore type. Please use a PKCS#12 (.p12/.pfx) or JKS truststore.");
+            }
         }
 
-        final TrustManagerFactory trustManagerFactory =
-                TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        final Path defaultTruststore = defaultCLIProperties.getTruststore();
+        final String defaultTruststorePassword = defaultCLIProperties.getTruststorePassword();
+        if (defaultTruststore != null) {
+            if (TlsUtil.isPKCS12Keystore(defaultTruststore)) {
+                final KeyStore temporaryKeystore = KeyStore.getInstance("PKCS12");
+                final char[] keystorePassword;
+                if (defaultTruststorePassword != null) {
+                    keystorePassword = defaultTruststorePassword.toCharArray();
+                } else {
+                    keystorePassword = PasswordUtils.readPassword("Enter truststore password:");
+                }
+                try (final InputStream inputStream = Files.newInputStream(defaultTruststore, StandardOpenOption.READ)) {
+                    temporaryKeystore.load(inputStream, keystorePassword);
+                }
+                if (keyStore != null) {
+                    for (final Enumeration<String> aliases = temporaryKeystore.aliases(); aliases.hasMoreElements(); ) {
+                        final String alias = aliases.nextElement();
+                        keyStore.setCertificateEntry("Truststore_Default_Certificate_" + alias,
+                                temporaryKeystore.getCertificate(alias));
+                    }
+                } else {
+                    keyStore = temporaryKeystore;
+                }
+            } else if (TlsUtil.isJKSKeystore(defaultTruststore)) {
+                final KeyStore temporaryKeystore = KeyStore.getInstance("JKS");
+                final char[] truststorePassword;
+                if (defaultTruststorePassword != null) {
+                    truststorePassword = defaultTruststorePassword.toCharArray();
+                } else {
+                    truststorePassword = PasswordUtils.readPassword("Enter truststore password:");
+                }
+                //TODO could also need a separate private key check
+                try (final InputStream inputStream = Files.newInputStream(defaultTruststore, StandardOpenOption.READ)) {
+                    temporaryKeystore.load(inputStream, truststorePassword);
+                }
+                if (keyStore != null) {
+                    for (final Enumeration<String> aliases = temporaryKeystore.aliases(); aliases.hasMoreElements(); ) {
+                        final String alias = aliases.nextElement();
+                        keyStore.setCertificateEntry("Truststore_Default_Certificate_" + alias,
+                                temporaryKeystore.getCertificate(alias));
+                    }
+                } else {
+                    keyStore = temporaryKeystore;
+                }
+            } else {
+                throw new KeyStoreException(
+                        "Unknown default truststore type. Please use a PKCS#12 (.p12/.pfx) or JKS truststore.");
+            }
+        }
 
-        trustManagerFactory.init(ks);
+        final TlsUtil tlsUtil = new TlsUtil();
+        { //Load server certificates from file or directory
+            final Collection<X509Certificate> certificates = new ArrayList<>();
+            if (serverCertificateChain != null) {
+                certificates.addAll(tlsUtil.getCertificateChainFromFile(serverCertificateChain));
+            }
+            if (serverCertificateChainFromDir != null) {
+                certificates.addAll(tlsUtil.getCertificateChainFromDirectory(serverCertificateChainFromDir));
+            }
+            if (!certificates.isEmpty()) {
+                if (keyStore == null) {
+                    keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                    keyStore.load(null, null);
+                }
 
+                int i = 1;
+                for (final X509Certificate cert : certificates) {
+                    final String alias = "Additional_Certificate_" + i;
+                    keyStore.setCertificateEntry(alias, cert);
+                    i++;
+                }
+            }
+        }
+
+        { //Load default server certificate
+            final Path defaultServerCertificate = defaultCLIProperties.getServerCertificateChain();
+            if (defaultServerCertificate != null) {
+                final Collection<X509Certificate> defaultCertificates = new ArrayList<>();
+                try {
+                    final Collection<X509Certificate> defaultCertificateChain =
+                            tlsUtil.getCertificateChainFromFile(defaultServerCertificate);
+                    defaultCertificates.addAll(defaultCertificateChain);
+                } catch (final Exception e) {
+                    Logger.error(e,
+                            "Default server certificate could not be loaded. Ignoring. ({})",
+                            Throwables.getRootCause(e).getMessage());
+                }
+                if (!defaultCertificates.isEmpty()) {
+                    if (keyStore == null) {
+                        keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                        keyStore.load(null, null);
+                    }
+
+                    int i = 1;
+                    for (final X509Certificate cert : defaultCertificates) {
+                        final String alias = "File_Default_Certificate_" + i;
+                        keyStore.setCertificateEntry(alias, cert);
+                        i++;
+                    }
+                }
+            }
+        }
+
+        if (keyStore != null) {
+            trustManagerFactory = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(keyStore);
+        }
         return trustManagerFactory;
     }
 
-    private @NotNull KeyManagerFactory buildKeyManagerFactory(
-            final @NotNull X509Certificate @NotNull [] certs, final @NotNull PrivateKey key)
-            throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException,
-            UnrecoverableKeyException {
-
-        final String password = "PA$$WORD";
-        final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-
-        ks.load(null, null);
-
-        ks.setKeyEntry("mykey", key, password.toCharArray(), certs);
-
-        final KeyManagerFactory keyManagerFactory =
-                KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-
-        keyManagerFactory.init(ks, password.toCharArray());
-
-        return keyManagerFactory;
+    private boolean useTls() {
+        return clientKeystore != null ||
+                clientTruststore != null ||
+                serverCertificateChain != null ||
+                serverCertificateChainFromDir != null ||
+                cipherSuites != null ||
+                supportedTLSVersions != null ||
+                clientPrivateKey != null ||
+                clientCertificateChain != null ||
+                useTls;
     }
 
     @Override
