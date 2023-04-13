@@ -32,7 +32,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.broker.assertions.TestConnectAssertion.assertTestConnectPacket;
@@ -52,6 +54,115 @@ class TestBrokerConnectTlsST {
 
     @RegisterExtension
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
+
+
+    //TRUSTSTORE
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_truststore_tls(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
+            @CartesianTest.Values(strings = {
+                    "jks", "p12"}) final @NotNull String clientKeyType) throws Exception {
+        final String clientTruststore =
+                Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
+
+        final List<String> testCommand = List.of("test",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--truststore",
+                clientTruststore);
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand);
+        executionResult.awaitStdOut("Enter truststore password:");
+        executionResult.write("clientTruststorePassword");
+        executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
+
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_password_arguments_truststore_tls(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
+            @CartesianTest.Values(strings = {
+                    "jks", "p12"}) final @NotNull String clientKeyType) throws Exception {
+        final String clientTruststore =
+                Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
+
+        final List<String> testCommand = List.of("test",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--truststore",
+                clientTruststore,
+                "--truststore-password",
+                "clientTruststorePassword");
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand);
+        executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
+
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_properties_truststore_tls(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
+            @CartesianTest.Values(strings = {
+                    "jks", "p12"}) final @NotNull String clientKeyType) throws Exception {
+        final String clientTruststore =
+                Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
+
+        final Map<String, String> properties = new HashMap<>(Map.of("auth.truststore",
+                clientTruststore,
+                "auth.truststore.password",
+                "clientTruststorePassword"));
+        if (clientKeyType.equals("jks")) {
+            properties.put("auth.keystore.privatekey.password", "clientKeyPassword");
+        }
+
+        final List<String> testCommand = List.of("test",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-s",
+                "--tls-version",
+                tlsVersion.toString());
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand, Map.of(), properties);
+        executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
+
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+    }
+
+
+    //PEM
 
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -81,6 +192,9 @@ class TestBrokerConnectTlsST {
                         mqttVersion)));
     }
 
+
+    //DER
+
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_tls_der_format(
@@ -108,6 +222,9 @@ class TestBrokerConnectTlsST {
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
+
+
+    //NO CERT
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)

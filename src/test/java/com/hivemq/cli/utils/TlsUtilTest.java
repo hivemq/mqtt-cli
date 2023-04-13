@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019-present HiveMQ and the HiveMQ Community
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.hivemq.cli.utils;
 
 import org.jetbrains.annotations.NotNull;
@@ -42,20 +58,15 @@ class TlsUtilTest {
     void setUp() throws URISyntaxException {
         tlsUtil = new TlsUtil();
         final URL validCertificateResource = getClass().getResource("/TlsUtil/validCertificate.pem");
-        final URL invalidFileExtensionResource =
-                getClass().getResource("/TlsUtil/invalidFileExtensionCertificate.der");
-        final URL noFileExtensionCertificate =
-                getClass().getResource("/TlsUtil/noFileExtensionCertificate");
+        final URL invalidFileExtensionResource = getClass().getResource("/TlsUtil/invalidFileExtensionCertificate.der");
+        final URL noFileExtensionCertificate = getClass().getResource("/TlsUtil/noFileExtensionCertificate");
         final URL invalidCertificate = getClass().getResource("/TlsUtil/invalidCertificate.pem");
-        final URL validCertificateDirResource =
-                getClass().getResource("/TlsUtil/directory_with_certificates");
-        final URL noCertificatesDir =
-                getClass().getResource("/TlsUtil/directory_without_certificates");
+        final URL validCertificateDirResource = getClass().getResource("/TlsUtil/directory_with_certificates");
+        final URL noCertificatesDir = getClass().getResource("/TlsUtil/directory_without_certificates");
         final URL encryptedRSAKeyResource = getClass().getResource("/TlsUtil/encrypted_RSA_key.pem");
         final URL decryptedRSAKeyResource = getClass().getResource("/TlsUtil/decrypted_RSA_key.pem");
         final URL decryptedECKeyResource = getClass().getResource("/TlsUtil/decrypted_EC_key.pem");
-        final URL decryptedMalformedRSAKeyResource =
-                getClass().getResource("/TlsUtil/decrypted_malformed_RSA_key.pem");
+        final URL decryptedMalformedRSAKeyResource = getClass().getResource("/TlsUtil/decrypted_malformed_RSA_key.pem");
 
         assertNotNull(validCertificateResource);
         assertNotNull(invalidFileExtensionResource);
@@ -165,14 +176,14 @@ class TlsUtilTest {
     @ValueSource(strings = {
             "test.pem", "test.cer", "test.crt", "pem.pem", "cert.cer", "crt.crt", "pem.cert.crt", "cer.crt"})
     void endsWithValidExtension_Success(final @NotNull String fileName) {
-        assertTrue(TlsUtil.endsWithValidExtension(fileName));
+        assertTrue(TlsUtil.isCertificate(fileName));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
             "test.pe", "test.cr", "test.cert", "cer.ctr", "", " ", "pem", "crt", "cer", "pempem", "test.pem.ext"})
     void endsWithValidExtension_Failure(final @NotNull String fileName) {
-        assertFalse(TlsUtil.endsWithValidExtension(fileName));
+        assertFalse(TlsUtil.isCertificate(fileName));
     }
 
     @Test
@@ -199,8 +210,8 @@ class TlsUtilTest {
 
     @Test
     void convert_DECRYPTED_MALFORMED_RSA_KEY_FAILURE() {
-        final Exception e =
-                assertThrows(Exception.class, () -> tlsUtil.getPrivateKeyFromFile(pathToDecryptedMalformedRSAKey, null));
+        final Exception e = assertThrows(Exception.class,
+                () -> tlsUtil.getPrivateKeyFromFile(pathToDecryptedMalformedRSAKey, null));
         assertEquals(TlsUtil.MALFORMED_PRIVATE_KEY, e.getMessage());
     }
 }

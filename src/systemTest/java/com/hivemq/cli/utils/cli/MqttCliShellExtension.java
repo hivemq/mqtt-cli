@@ -143,7 +143,8 @@ public class MqttCliShellExtension implements BeforeEachCallback, AfterEachCallb
      * @param hivemq the HiveMQ instance to which the client should connect
      * @throws IOException when the cli command to connect could not be written to the shell
      */
-    public void connectClient(final @NotNull HiveMQExtension hivemq, final char mqttVersion, final @NotNull String clientId)
+    public void connectClient(
+            final @NotNull HiveMQExtension hivemq, final char mqttVersion, final @NotNull String clientId)
             throws IOException {
         final List<String> connectCommand = List.of("con",
                 "-h",

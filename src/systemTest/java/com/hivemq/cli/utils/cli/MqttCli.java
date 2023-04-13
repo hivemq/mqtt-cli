@@ -61,7 +61,7 @@ public class MqttCli {
         final Path homeDir = Files.createTempDirectory("mqtt-cli-home");
         final Path cliConfigFolder = Files.createDirectory(homeDir.resolve(".mqtt-cli"));
         final Path propertiesFilePath = cliConfigFolder.resolve("config.properties");
-        //assertTrue(propertiesFilePath.toFile().createNewFile());
+
         final Properties properties = new Properties();
         properties.putAll(configProperties);
         try (final OutputStream output = Files.newOutputStream(propertiesFilePath)) {
@@ -121,7 +121,7 @@ public class MqttCli {
         return execute(command, Map.of());
     }
 
-    private static @NotNull List<String> getCliCommand(final Path homeDir) {
+    static @NotNull List<String> getCliCommand(final Path homeDir) {
         // Set system property 'user.home' to the temp home directory, so that the cli tests does not use the default home folder
         final ArrayList<String> shellCommand = new ArrayList<>(CLI_EXEC);
         final String homeSystemProperty = String.format("-Duser.home=%s", homeDir.toAbsolutePath());

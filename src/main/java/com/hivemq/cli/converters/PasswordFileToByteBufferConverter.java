@@ -30,7 +30,7 @@ public class PasswordFileToByteBufferConverter implements CommandLine.ITypeConve
 
     @Override
     public @NotNull ByteBuffer convert(final @NotNull String value) throws Exception {
-        final File file = FileUtil.convert(Paths.get(value));
+        final File file = FileUtil.assertFileExists(Paths.get(value));
         try (final BufferedReader in = Files.newBufferedReader(file.toPath())) {
             return ByteBuffer.wrap(in.readLine().getBytes());
         }

@@ -56,6 +56,7 @@ class ShellConnectST {
     @RegisterExtension
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
+
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_help() throws Exception {
@@ -742,6 +743,7 @@ class ShellConnectST {
             connectAssertion.setKeepAlive(30);
         });
     }
+
 
     private @NotNull List<String> defaultConnectCommand() {
         final ArrayList<String> defaultConnectCommand = new ArrayList<>();

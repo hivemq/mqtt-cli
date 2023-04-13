@@ -22,6 +22,7 @@ import com.hivemq.cli.utils.broker.HiveMQExtension;
 import com.hivemq.cli.utils.broker.TlsConfiguration;
 import com.hivemq.cli.utils.broker.TlsVersion;
 import com.hivemq.cli.utils.cli.MqttCliShellExtension;
+import com.hivemq.cli.utils.cli.results.AwaitOutput;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -47,6 +48,86 @@ class ShellConnectTlsST {
 
     @RegisterExtension
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
+
+
+    //TRUSTSTORE
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_truststore_tls(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
+            @CartesianTest.Values(strings = {
+                    "jks", "p12"}) final @NotNull String clientKeyType) throws Exception {
+        final String clientTruststore =
+                Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
+
+        final List<String> connectCommand = List.of("con",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--truststore",
+                clientTruststore);
+
+        AwaitOutput awaitOutput = mqttCliShell.executeAsync(connectCommand);
+        awaitOutput.awaitStdOut("Enter truststore password:");
+        awaitOutput = mqttCliShell.executeAsync(List.of("clientTruststorePassword"));
+        awaitOutput.awaitStdOut(String.format("cliTest@%s", hivemq.getHost()));
+        awaitOutput.awaitLog("sending CONNECT");
+        awaitOutput.awaitLog("received CONNACK");
+
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_password_arguments_truststore_tls(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
+            @CartesianTest.Values(strings = {
+                    "jks", "p12"}) final @NotNull String clientKeyType) throws Exception {
+        final String clientTruststore =
+                Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
+
+        final List<String> connectCommand = List.of("con",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--truststore",
+                clientTruststore,
+                "--truststore-password",
+                "clientTruststorePassword");
+
+        final AwaitOutput awaitOutput = mqttCliShell.executeAsync(connectCommand);
+        awaitOutput.awaitStdOut(String.format("cliTest@%s", hivemq.getHost()));
+        awaitOutput.awaitLog("sending CONNECT");
+        awaitOutput.awaitLog("received CONNACK");
+
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+    }
+
+
+    //PEM
 
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -77,6 +158,9 @@ class ShellConnectTlsST {
                         mqttVersion)));
     }
 
+
+    //DER
+
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_tls_der_format(
@@ -105,6 +189,9 @@ class ShellConnectTlsST {
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
+
+
+    //NO CERT
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
