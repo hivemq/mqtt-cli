@@ -41,7 +41,7 @@ import java.util.Properties;
  * property which can be overwritten by using the properties file given in the constructor.
  * <p>
  * The CLI uses the default location of the properties file at `~/.mqtt-cli/config.properties` which will be written by
- * the 'init' method if not present or else the file defined properties will overwrite the pre defined properties.
+ * the 'init' method if not present or else the file defined properties will overwrite the pre-defined properties.
  */
 @Singleton
 public class DefaultCLIProperties {

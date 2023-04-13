@@ -1,3 +1,18 @@
+/*
+ * Copyright 2019-present HiveMQ and the HiveMQ Community
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.hivemq.cli.utils;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -34,6 +49,8 @@ import java.util.Locale;
 
 public class TlsUtil {
 
+    static final @NotNull String JKS_FILE_EXTENSION = "jks";
+    static final @NotNull String @NotNull [] PKCS12_FILE_EXTENSION = {".p12", "pfx"};
     static final @NotNull String @NotNull [] CERTIFICATE_FILE_EXTENSION = {".pem", ".cer", ".crt"};
     static final @NotNull String NO_VALID_CERTIFICATE = "The given file contains no valid or supported certificate.";
 
@@ -52,7 +69,7 @@ public class TlsUtil {
             final @NotNull Path privateKeyPath, final @Nullable String privateKeyPassword) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         // read the keyfile
-        final File keyFile = FileUtil.convert(privateKeyPath);
+        final File keyFile = FileUtil.assertFileExists(privateKeyPath);
         final PEMParser pemParser = new PEMParser(new FileReader(keyFile));
 
         final Object object;
@@ -113,20 +130,17 @@ public class TlsUtil {
         } else {
             throw new IllegalArgumentException(UNRECOGNIZED_PRIVATE_KEY);
         }
-
         return privateKey;
     }
 
     public @NotNull Collection<X509Certificate> getCertificateChainFromFile(final @NotNull Path certificatePath)
             throws Exception {
-        final File certificateFile = FileUtil.convert(certificatePath);
+        final File certificateFile = FileUtil.assertFileExists(certificatePath);
+        final boolean isCertificate = isCertificate(certificateFile.getName());
 
-        final boolean correctExtension = endsWithValidExtension(certificateFile.getName());
-
-        if (!correctExtension) {
+        if (!isCertificate) {
             throw new IllegalArgumentException(NO_VALID_FILE_EXTENSION);
         }
-
         return generateX509Certificates(certificateFile);
     }
 
@@ -141,43 +155,34 @@ public class TlsUtil {
             throw new IllegalArgumentException(NOT_A_DIRECTORY);
         }
 
-        final File[] validFiles = directory.listFiles((dir, name) -> endsWithValidExtension(name));
-
+        final File[] validFiles = directory.listFiles((dir, name) -> isCertificate(name));
         if (validFiles == null || validFiles.length == 0) {
             throw new IllegalArgumentException(NO_CERTIFICATES_FOUND_IN_DIRECTORY);
         }
 
         final Collection<X509Certificate> certificates = new ArrayList<>();
-
         for (final File validFile : validFiles) {
             certificates.addAll(generateX509Certificates(validFile));
         }
-
         return certificates;
     }
 
-    public static @NotNull Collection<X509Certificate> generateX509Certificates(final @NotNull File keyFile)
-            throws Exception {
-        // Instantiate X509 certificate factory
-        final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+    static @NotNull Collection<X509Certificate> generateX509Certificates(final @NotNull File keyFile) throws Exception {
+        final CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 
         try {
-            // Parse X509 certificate chain
             final Collection<? extends Certificate> certificateChainCollection =
-                    cf.generateCertificates(new FileInputStream(keyFile));
-
-            // Cast to X509Certificate collection and return it
+                    certificateFactory.generateCertificates(new FileInputStream(keyFile));
             //noinspection unchecked
             return (Collection<X509Certificate>) certificateChainCollection;
-
         } catch (final CertificateException | FileNotFoundException e) {
             throw new CertificateException(NO_VALID_CERTIFICATE);
         }
     }
 
-    public static boolean endsWithValidExtension(final @NotNull String fileName) {
-        for (final String extension : CERTIFICATE_FILE_EXTENSION) {
-            if (fileName.endsWith(extension)) {
+    static boolean isCertificate(final @NotNull String fileName) {
+        for (final String certificateEnding : CERTIFICATE_FILE_EXTENSION) {
+            if (fileName.endsWith(certificateEnding)) {
                 return true;
             }
         }
@@ -186,13 +191,13 @@ public class TlsUtil {
 
     public static boolean isPKCS12Keystore(final @NotNull Path keystorePath) {
         boolean isPkcs12 = false;
-        for (final String pkcs12Ending : new String[]{".p12", ".pfx"}) {
+        for (final String pkcs12Ending : PKCS12_FILE_EXTENSION) {
             isPkcs12 |= keystorePath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(pkcs12Ending);
         }
         return isPkcs12;
     }
 
     public static boolean isJKSKeystore(final @NotNull Path keystorePath) {
-        return keystorePath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith("jks");
+        return keystorePath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(JKS_FILE_EXTENSION);
     }
 }

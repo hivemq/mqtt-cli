@@ -19,26 +19,36 @@ package com.hivemq.cli.utils.cli;
 import com.hivemq.cli.utils.OrphanProcessCleanup;
 import com.hivemq.cli.utils.cli.io.ProcessIO;
 import com.hivemq.cli.utils.cli.results.ExecutionResultAsync;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
-import static com.hivemq.cli.utils.cli.MqttCli.CLI_EXEC;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MqttCliAsyncExtension implements AfterEachCallback {
 
     private final @NotNull List<Process> startedProcesses = new ArrayList<>();
 
+    private @Nullable Path temporaryHomeDir = null;
+
     @Override
-    public void afterEach(final @NotNull ExtensionContext context) {
+    public void afterEach(final @NotNull ExtensionContext context) throws IOException {
         for (final Process startedProcess : startedProcesses) {
             startedProcess.destroyForcibly();
+        }
+        if (temporaryHomeDir != null) {
+            FileUtils.deleteDirectory(temporaryHomeDir.toFile());
         }
     }
 
@@ -48,14 +58,26 @@ public class MqttCliAsyncExtension implements AfterEachCallback {
      *
      * @param command              the command to execute with the mqtt cli
      * @param environmentVariables the environment variables to start the process with
+     * @param configProperties     the configuration properties set as default in the config file
      * @return an {@link ExecutionResultAsync} which can be used to wait for std-out std-err messages and write
      *         messages
      * @throws IOException when an error occurred while starting the process
      */
     public @NotNull ExecutionResultAsync executeAsync(
-            final @NotNull List<String> command, final @NotNull Map<String, String> environmentVariables)
-            throws IOException {
-        final List<String> fullCommand = new ArrayList<>(CLI_EXEC);
+            final @NotNull List<String> command,
+            final @NotNull Map<String, String> environmentVariables,
+            final @NotNull Map<String, String> configProperties) throws IOException {
+        temporaryHomeDir = Files.createTempDirectory("mqtt-cli-home");
+        final Path cliConfigFolder = Files.createDirectory(temporaryHomeDir.resolve(".mqtt-cli"));
+        final Path propertiesFilePath = cliConfigFolder.resolve("config.properties");
+
+        final Properties properties = new Properties();
+        properties.putAll(configProperties);
+        try (final OutputStream output = Files.newOutputStream(propertiesFilePath)) {
+            properties.store(output, null);
+        }
+
+        final List<String> fullCommand = MqttCli.getCliCommand(temporaryHomeDir);
         assertTrue(fullCommand.addAll(command));
 
         final ProcessBuilder processBuilder = new ProcessBuilder(fullCommand);
@@ -75,12 +97,28 @@ public class MqttCliAsyncExtension implements AfterEachCallback {
      * Executes a mqtt-cli command asynchronously. This method should be used for all mqtt-cli commands which do not
      * exit the process like the subscribe command.
      *
+     * @param command              the command to execute with the mqtt cli
+     * @param environmentVariables the environment variables to start the process with
+     * @return an {@link ExecutionResultAsync} which can be used to wait for std-out std-err messages and write
+     *         messages
+     * @throws IOException when an error occurred while starting the process
+     */
+    public @NotNull ExecutionResultAsync executeAsync(
+            final @NotNull List<String> command, final @NotNull Map<String, String> environmentVariables)
+            throws IOException {
+        return executeAsync(command, environmentVariables, Map.of());
+    }
+
+    /**
+     * Executes a mqtt-cli command asynchronously. This method should be used for all mqtt-cli commands which do not
+     * exit the process like the subscribe command.
+     *
      * @param command the command to execute with the mqtt cli
      * @return an {@link ExecutionResultAsync} which can be used to wait for std-out std-err messages and write
      *         messages
      * @throws IOException when an error occurred while starting the process
      */
     public @NotNull ExecutionResultAsync executeAsync(final @NotNull List<String> command) throws IOException {
-        return executeAsync(command, Map.of());
+        return executeAsync(command, Map.of(), Map.of());
     }
 }

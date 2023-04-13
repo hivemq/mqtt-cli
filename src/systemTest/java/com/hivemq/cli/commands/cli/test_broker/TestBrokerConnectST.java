@@ -45,6 +45,7 @@ class TestBrokerConnectST {
     @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
+
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
@@ -305,6 +306,7 @@ class TestBrokerConnectST {
             connectAssertion.setPassword(ByteBuffer.wrap("testpasswordfile".getBytes(StandardCharsets.UTF_8)));
         });
     }
+
 
     private void assertTestOutput(final @NotNull ExecutionResult executionResult, final char mqttVersion) {
         assertEquals(0, executionResult.getExitCode());

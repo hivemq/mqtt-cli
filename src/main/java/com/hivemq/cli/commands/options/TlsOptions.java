@@ -146,16 +146,18 @@ public class TlsOptions {
         final Path defaultClientCertificateChain = defaultCLIProperties.getClientCertificateChain();
         final Path defaultClientPrivateKey = defaultCLIProperties.getClientPrivateKey();
 
+        //keystore
         if (clientKeystore != null) {
             keyManagerFactory = createKeyManagerFactoryFromKeystore(clientKeystore,
                     clientKeystorePassword,
                     clientKeystorePrivateKeyPassword);
+            //certificate and private key file
         } else if (clientCertificateChain != null && clientPrivateKey != null) {
             final TlsUtil tlsUtil = new TlsUtil();
             final Collection<X509Certificate> x509Certificates =
                     tlsUtil.getCertificateChainFromFile(clientCertificateChain);
             final PrivateKey privateKey = tlsUtil.getPrivateKeyFromFile(clientPrivateKey, clientPrivateKeyPassword);
-            final String password = "filler";
+            final String password = "fillerPassword";
             final KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
             ks.load(null, null);
             ks.setKeyEntry("mykey",
@@ -165,12 +167,21 @@ public class TlsOptions {
 
             keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(ks, password.toCharArray());
+            //default keystore
         } else if (defaultKeystore != null) {
             final String defaultKeystorePassword = defaultCLIProperties.getKeystorePassword();
             final String defaultKeystorePrivateKeyPassword = defaultCLIProperties.getKeystorePrivateKeyPassword();
-            keyManagerFactory = createKeyManagerFactoryFromKeystore(defaultKeystore,
-                    defaultKeystorePassword,
-                    defaultKeystorePrivateKeyPassword);
+            try {
+                keyManagerFactory = createKeyManagerFactoryFromKeystore(defaultKeystore,
+                        defaultKeystorePassword,
+                        defaultKeystorePrivateKeyPassword);
+            } catch (final Exception e) {
+                Logger.error(e,
+                        "Default keystore could not be loaded ({})",
+                        Throwables.getRootCause(e).getMessage());
+                throw e;
+            }
+            //default certificate and private key file
         } else if (defaultClientCertificateChain != null && defaultClientPrivateKey != null) {
             final TlsUtil tlsUtil = new TlsUtil();
             final Collection<X509Certificate> x509Certificates;
@@ -202,6 +213,7 @@ public class TlsOptions {
 
             keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(ks, password.toCharArray());
+            //nothing found
         } else {
             keyManagerFactory = null;
         }

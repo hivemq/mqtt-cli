@@ -59,10 +59,11 @@ class SubscribeConnectST {
     @RegisterExtension
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
 
+
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectWrongHost(final char mqttVersion) throws Exception {
+    void test_connect_WrongHost(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 "wrong-host",
@@ -76,14 +77,13 @@ class SubscribeConnectST {
 
         final ExecutionResult executionResult = MqttCli.execute(subscribeCommand);
         assertEquals(1, executionResult.getExitCode());
-        assertTrue(
-                executionResult.getErrorOutput().contains("Unable to connect"));
+        assertTrue(executionResult.getErrorOutput().contains("Unable to connect"));
     }
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectWrongPort(final char mqttVersion) throws Exception {
+    void test_connect_WrongPort(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
@@ -103,7 +103,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectNoCleanStart(final char mqttVersion) throws Exception {
+    void test_connect_NoCleanStart(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--no-cleanStart");
 
@@ -122,7 +122,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectCleanStart(final char mqttVersion) throws Exception {
+    void test_connect_CleanStart(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--cleanStart");
 
@@ -141,7 +141,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectKeepAlive(final char mqttVersion) throws Exception {
+    void test_connect_KeepAlive(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("-k");
         subscribeCommand.add("100");
@@ -158,7 +158,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectNoClientId(final char mqttVersion) throws Exception {
+    void test_connect_NoClientId(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.remove("-i");
         subscribeCommand.remove("cliTest");
@@ -193,7 +193,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectIdentifierPrefix(final char mqttVersion) throws Exception {
+    void test_connect_IdentifierPrefix(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.remove("-i");
         subscribeCommand.remove("cliTest");
@@ -217,7 +217,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectUserName(final char mqttVersion) throws Exception {
+    void test_connect_UserName(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("-u");
         subscribeCommand.add("username");
@@ -234,7 +234,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectPassword(final char mqttVersion) throws Exception {
+    void test_connect_Password(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("-pw");
         subscribeCommand.add("password");
@@ -255,7 +255,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectPasswordEnv(final char mqttVersion) throws Exception {
+    void test_connect_PasswordEnv(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("-pw:env");
         subscribeCommand.add("PASSWORD");
@@ -277,7 +277,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectPasswordFile(final char mqttVersion) throws Exception {
+    void test_connect_PasswordFile(final char mqttVersion) throws Exception {
         final Path passwordFile = Files.createTempFile("password-file", ".txt");
         passwordFile.toFile().deleteOnExit();
         Files.writeString(passwordFile, "password");
@@ -302,7 +302,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectUserNameAndPassword(final char mqttVersion) throws Exception {
+    void test_connect_UserNameAndPassword(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("-u");
         subscribeCommand.add("username");
@@ -322,7 +322,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectUserNameAndPasswordEnv(final char mqttVersion) throws Exception {
+    void test_connect_UserNameAndPasswordEnv(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("-u");
         subscribeCommand.add("username");
@@ -343,7 +343,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectUserNamePasswordFile(final char mqttVersion) throws Exception {
+    void test_connect_UserNamePasswordFile(final char mqttVersion) throws Exception {
         final Path passwordFile = Files.createTempFile("password-file", ".txt");
         passwordFile.toFile().deleteOnExit();
         Files.writeString(passwordFile, "password");
@@ -367,7 +367,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectWill(final char mqttVersion) throws Exception {
+    void test_connect_Will(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("-Wt");
         subscribeCommand.add("test-will-topic");
@@ -439,7 +439,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectReceiveMax(final char mqttVersion) throws Exception {
+    void test_connect_ReceiveMax(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--rcvMax");
         subscribeCommand.add("100");
@@ -462,7 +462,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectMaxPacketSize(final char mqttVersion) throws Exception {
+    void test_connect_MaxPacketSize(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--maxPacketSize");
         subscribeCommand.add("100");
@@ -486,7 +486,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectTopicAliasMaximum(final char mqttVersion) throws Exception {
+    void test_connect_TopicAliasMaximum(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--topicAliasMax");
         subscribeCommand.add("100");
@@ -510,7 +510,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectNoRequestProblemInformation(final char mqttVersion) throws Exception {
+    void test_connect_NoRequestProblemInformation(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--no-reqProblemInfo");
 
@@ -528,7 +528,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectRequestProblemInformation(final char mqttVersion) throws Exception {
+    void test_connect_RequestProblemInformation(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--reqProblemInfo");
 
@@ -551,7 +551,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectRequestResponseInformation(final char mqttVersion) throws Exception {
+    void test_connect_RequestResponseInformation(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("--reqResponseInfo");
 
@@ -574,7 +574,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectSessionExpiryInterval(final char mqttVersion) throws Exception {
+    void test_connect_SessionExpiryInterval(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("-se");
         subscribeCommand.add("100");
@@ -598,7 +598,7 @@ class SubscribeConnectST {
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
-    void test_connectUserProperties(final char mqttVersion) throws Exception {
+    void test_connect_UserProperties(final char mqttVersion) throws Exception {
         final List<String> subscribeCommand = defaultSubscribeCommand(mqttVersion);
         subscribeCommand.add("-Cup");
         subscribeCommand.add("key1=value1");
@@ -622,6 +622,7 @@ class SubscribeConnectST {
             }
         });
     }
+
 
     private void assertSubscribeOutput(final @NotNull ExecutionResultAsync executionResultAsync) {
         executionResultAsync.awaitStdOut("sending CONNECT");
