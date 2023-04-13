@@ -268,7 +268,7 @@ public class TlsOptions {
                 keyManagerFactory.init(keyStore, keystorePrivateKeyPassword);
             }
         } else {
-            throw new KeyStoreException("Unknown keystore type. Please use a PKCS#12 (.p12/.pfx) or JKS keystore.");
+            throw new KeyStoreException("Unknown keystore type. Please use a PKCS#12 (.p12/.pfx) or JKS (.jks) keystore.");
         }
         return keyManagerFactory;
     }
@@ -305,7 +305,7 @@ public class TlsOptions {
                 }
             } else {
                 throw new KeyStoreException(
-                        "Unknown truststore type. Please use a PKCS#12 (.p12/.pfx) or JKS truststore.");
+                        "Unknown truststore type. Please use a PKCS#12 (.p12/.pfx) or JKS (.jks) truststore.");
             }
         }
 
@@ -355,7 +355,7 @@ public class TlsOptions {
                 }
             } else {
                 throw new KeyStoreException(
-                        "Unknown default truststore type. Please use a PKCS#12 (.p12/.pfx) or JKS truststore.");
+                        "Unknown default truststore type. Please use a PKCS#12 (.p12/.pfx) or JKS (.jks) truststore.");
             }
         }
 
