@@ -42,7 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TlsUtilTest {
 
-    private @NotNull TlsUtil tlsUtil;
     private @NotNull Path pathToValidCertificate;
     private @NotNull Path pathToInvalidFileExtensionCertificate;
     private @NotNull Path pathToNoFileExtensionCertificate;
@@ -56,7 +55,6 @@ class TlsUtilTest {
 
     @BeforeEach
     void setUp() throws URISyntaxException {
-        tlsUtil = new TlsUtil();
         final URL validCertificateResource = getClass().getResource("/TlsUtil/validCertificate.pem");
         final URL invalidFileExtensionResource = getClass().getResource("/TlsUtil/invalidFileExtensionCertificate.der");
         final URL noFileExtensionCertificate = getClass().getResource("/TlsUtil/noFileExtensionCertificate");
@@ -95,7 +93,7 @@ class TlsUtilTest {
     @Test
     void convertSuccess() throws Exception {
         final Collection<X509Certificate> x509Certificates =
-                tlsUtil.getCertificateChainFromFile(pathToValidCertificate);
+                TlsUtil.getCertificateChainFromFile(pathToValidCertificate);
 
         assertEquals(1, x509Certificates.size());
     }
@@ -103,34 +101,34 @@ class TlsUtilTest {
     @Test
     void convert_FileNotFound() {
         final Exception e = assertThrows(FileNotFoundException.class,
-                () -> tlsUtil.getCertificateChainFromFile(Paths.get("wrongPathXYZ.pem")));
+                () -> TlsUtil.getCertificateChainFromFile(Paths.get("wrongPathXYZ.pem")));
         assertEquals(FileUtil.FILE_NOT_FOUND, e.getMessage());
     }
 
     @Test
     void convert_InvalidFileExtensionCertificate() {
         final Exception e = assertThrows(Exception.class,
-                () -> tlsUtil.getCertificateChainFromFile(pathToInvalidFileExtensionCertificate));
+                () -> TlsUtil.getCertificateChainFromFile(pathToInvalidFileExtensionCertificate));
         assertEquals(TlsUtil.NO_VALID_FILE_EXTENSION, e.getMessage());
     }
 
     @Test
     void convert_NoFileExtensionCertificate() {
         final Exception e = assertThrows(Exception.class,
-                () -> tlsUtil.getCertificateChainFromFile(pathToNoFileExtensionCertificate));
+                () -> TlsUtil.getCertificateChainFromFile(pathToNoFileExtensionCertificate));
         assertEquals(TlsUtil.NO_VALID_FILE_EXTENSION, e.getMessage());
     }
 
     @Test
     void convert_InvalidCertificate() {
         final Exception e =
-                assertThrows(Exception.class, () -> tlsUtil.getCertificateChainFromFile(pathToInvalidCertificate));
+                assertThrows(Exception.class, () -> TlsUtil.getCertificateChainFromFile(pathToInvalidCertificate));
         assertEquals(TlsUtil.NO_VALID_CERTIFICATE, e.getMessage());
     }
 
     @Test
     void convert_Success() throws Exception {
-        final Collection<X509Certificate> certificates = tlsUtil.getCertificateChainFromDirectory(pathToValidDirectory);
+        final Collection<X509Certificate> certificates = TlsUtil.getCertificateChainFromDirectory(pathToValidDirectory);
 
         assertNotNull(certificates);
         assertEquals(3, certificates.size());
@@ -139,21 +137,21 @@ class TlsUtilTest {
     @Test
     void convert_Failure_DirectoryNotFound() {
         final Exception e = assertThrows(FileNotFoundException.class,
-                () -> tlsUtil.getCertificateChainFromDirectory(Paths.get("invalidPath")));
+                () -> TlsUtil.getCertificateChainFromDirectory(Paths.get("invalidPath")));
         assertEquals(TlsUtil.DIRECTORY_NOT_FOUND, e.getMessage());
     }
 
     @Test
     void convert_Failure_DirectoryIsAFile() {
         final Exception e =
-                assertThrows(Exception.class, () -> tlsUtil.getCertificateChainFromDirectory(pathToValidCertificate));
+                assertThrows(Exception.class, () -> TlsUtil.getCertificateChainFromDirectory(pathToValidCertificate));
         assertEquals(TlsUtil.NOT_A_DIRECTORY, e.getMessage());
     }
 
     @Test
     void convert_Failure_DirectoryWithoutCertificates() {
         final Exception e = assertThrows(Exception.class,
-                () -> tlsUtil.getCertificateChainFromDirectory(pathToDirectoryWithoutCertificates));
+                () -> TlsUtil.getCertificateChainFromDirectory(pathToDirectoryWithoutCertificates));
         assertEquals(TlsUtil.NO_CERTIFICATES_FOUND_IN_DIRECTORY, e.getMessage());
     }
 
@@ -189,21 +187,21 @@ class TlsUtilTest {
     @Test
     void convert_ENCRYPTED_RSA_KEY_SUCCESS() throws Exception {
         System.setIn(new ByteArrayInputStream("password".getBytes()));
-        final PrivateKey privateKey = tlsUtil.getPrivateKeyFromFile(pathToEncryptedRSAKey, null);
+        final PrivateKey privateKey = TlsUtil.getPrivateKeyFromFile(pathToEncryptedRSAKey, null);
 
         assertNotNull(privateKey);
     }
 
     @Test
     void convert_DECRYPTED_RSA_KEY_SUCCESS() throws Exception {
-        final PrivateKey privateKey = tlsUtil.getPrivateKeyFromFile(pathToDecryptedRSAKey, null);
+        final PrivateKey privateKey = TlsUtil.getPrivateKeyFromFile(pathToDecryptedRSAKey, null);
 
         assertNotNull(privateKey);
     }
 
     @Test
     void convert_DECRYPTED_EC_KEY_SUCCESS() throws Exception {
-        final PrivateKey privateKey = tlsUtil.getPrivateKeyFromFile(pathToDecryptedECKey, null);
+        final PrivateKey privateKey = TlsUtil.getPrivateKeyFromFile(pathToDecryptedECKey, null);
 
         assertNotNull(privateKey);
     }
@@ -211,7 +209,7 @@ class TlsUtilTest {
     @Test
     void convert_DECRYPTED_MALFORMED_RSA_KEY_FAILURE() {
         final Exception e = assertThrows(Exception.class,
-                () -> tlsUtil.getPrivateKeyFromFile(pathToDecryptedMalformedRSAKey, null));
+                () -> TlsUtil.getPrivateKeyFromFile(pathToDecryptedMalformedRSAKey, null));
         assertEquals(TlsUtil.MALFORMED_PRIVATE_KEY, e.getMessage());
     }
 }
