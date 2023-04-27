@@ -29,15 +29,26 @@ import org.bouncycastle.operator.InputDecryptorProvider;
 import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Security;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -49,23 +60,115 @@ import java.util.Locale;
 
 public class TlsUtil {
 
+    private TlsUtil() {
+
+    }
+
     static final @NotNull String JKS_FILE_EXTENSION = "jks";
-    static final @NotNull String @NotNull [] PKCS12_FILE_EXTENSION = {".p12", "pfx"};
-    static final @NotNull String @NotNull [] CERTIFICATE_FILE_EXTENSION = {".pem", ".cer", ".crt"};
+    static final @NotNull String @NotNull [] PKCS12_FILE_EXTENSIONS = {".p12", "pfx"};
+    static final @NotNull String @NotNull [] CERTIFICATE_FILE_EXTENSIONS = {".pem", ".cer", ".crt"};
     static final @NotNull String NO_VALID_CERTIFICATE = "The given file contains no valid or supported certificate.";
 
     static final @NotNull String UNRECOGNIZED_PRIVATE_KEY = "The private key could not be recognized.";
     static final @NotNull String MALFORMED_PRIVATE_KEY = "The private key could not be read.";
     static final @NotNull String NO_VALID_FILE_EXTENSION =
             "The given file does not conform to a valid Certificate File Extension as " +
-                    Arrays.toString(CERTIFICATE_FILE_EXTENSION);
+                    Arrays.toString(CERTIFICATE_FILE_EXTENSIONS);
 
     static final @NotNull String DIRECTORY_NOT_FOUND = "The given directory was not found.";
     static final @NotNull String NOT_A_DIRECTORY = "The given path is not a valid directory";
     static final @NotNull String NO_CERTIFICATES_FOUND_IN_DIRECTORY =
             "The given directory does not contain any valid certificates";
 
-    public @NotNull PrivateKey getPrivateKeyFromFile(
+    public static @NotNull KeyManagerFactory createKeyManagerFactoryFromKeystore(
+            final @NotNull Path clientKeystore,
+            final @Nullable String clientKeystorePassword,
+            final @Nullable String clientKeystorePrivateKeyPassword) throws Exception {
+        final KeyManagerFactory keyManagerFactory =
+                KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        if (TlsUtil.isPKCS12Keystore(clientKeystore)) {
+            final KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            final char[] keystorePassword;
+            if (clientKeystorePassword != null) {
+                keystorePassword = clientKeystorePassword.toCharArray();
+            } else {
+                keystorePassword = PasswordUtils.readPassword("Enter keystore password:");
+            }
+            try (final InputStream inputStream = Files.newInputStream(clientKeystore, StandardOpenOption.READ)) {
+                keyStore.load(inputStream, keystorePassword);
+            }
+            keyManagerFactory.init(keyStore, keystorePassword);
+        } else if (TlsUtil.isJKSKeystore(clientKeystore)) {
+            final KeyStore keyStore = KeyStore.getInstance("JKS");
+            final char[] keystorePassword;
+            if (clientKeystorePassword != null) {
+                keystorePassword = clientKeystorePassword.toCharArray();
+            } else {
+                keystorePassword = PasswordUtils.readPassword("Enter keystore password:");
+            }
+            try (final InputStream inputStream = Files.newInputStream(clientKeystore, StandardOpenOption.READ)) {
+                keyStore.load(inputStream, keystorePassword);
+            }
+
+            boolean isDifferentPrivateKeyPassword = false;
+            try {
+                keyManagerFactory.init(keyStore, keystorePassword);
+            } catch (final UnrecoverableKeyException differentPrivateKeyPassword) {
+                isDifferentPrivateKeyPassword = true;
+            }
+            if (isDifferentPrivateKeyPassword) {
+                final char[] keystorePrivateKeyPassword;
+                if (clientKeystorePrivateKeyPassword != null) {
+                    keystorePrivateKeyPassword = clientKeystorePrivateKeyPassword.toCharArray();
+                } else {
+                    keystorePrivateKeyPassword = PasswordUtils.readPassword("Enter keystore private key password:");
+                }
+                keyManagerFactory.init(keyStore, keystorePrivateKeyPassword);
+            }
+        } else {
+            throw new KeyStoreException(
+                    "Unknown keystore type. Please use a PKCS#12 (.p12/.pfx) or JKS (.jks) keystore.");
+        }
+        return keyManagerFactory;
+    }
+
+    public static @NotNull TrustManagerFactory createTrustManagerFactoryFromTruststore(
+            final @NotNull Path clientTruststore, final @Nullable String clientTruststorePassword)
+            throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
+        final TrustManagerFactory trustManagerFactory;
+        final KeyStore keyStore;
+        if (TlsUtil.isPKCS12Keystore(clientTruststore)) {
+            keyStore = KeyStore.getInstance("PKCS12");
+            final char[] keystorePassword;
+            if (clientTruststorePassword != null) {
+                keystorePassword = clientTruststorePassword.toCharArray();
+            } else {
+                keystorePassword = PasswordUtils.readPassword("Enter truststore password:");
+            }
+            try (final InputStream inputStream = Files.newInputStream(clientTruststore, StandardOpenOption.READ)) {
+                keyStore.load(inputStream, keystorePassword);
+            }
+        } else if (TlsUtil.isJKSKeystore(clientTruststore)) {
+            keyStore = KeyStore.getInstance("JKS");
+            final char[] truststorePassword;
+            if (clientTruststorePassword != null) {
+                truststorePassword = clientTruststorePassword.toCharArray();
+            } else {
+                truststorePassword = PasswordUtils.readPassword("Enter truststore password:");
+            }
+            try (final InputStream inputStream = Files.newInputStream(clientTruststore, StandardOpenOption.READ)) {
+                keyStore.load(inputStream, truststorePassword);
+            }
+        } else {
+            throw new KeyStoreException(
+                    "Unknown truststore type. Please use a PKCS#12 (.p12/.pfx) or JKS (.jks) truststore.");
+        }
+        trustManagerFactory = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init(keyStore);
+        return trustManagerFactory;
+    }
+
+    public static @NotNull PrivateKey getPrivateKeyFromFile(
             final @NotNull Path privateKeyPath, final @Nullable String privateKeyPassword) throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         // read the keyfile
@@ -84,7 +187,7 @@ public class TlsUtil {
         final PrivateKey privateKey;
         if (object == null) {
             throw new IllegalArgumentException("KEY IS NULL");
-            //TODO: get DER file format working
+            //TODO: get DER file format working. Different ticket
             /*
             final PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(Files.readAllBytes(keyFile.toPath()));
             final KeyFactory keyFactory = KeyFactory.getInstance("RSA", "BC");
@@ -133,7 +236,7 @@ public class TlsUtil {
         return privateKey;
     }
 
-    public @NotNull Collection<X509Certificate> getCertificateChainFromFile(final @NotNull Path certificatePath)
+    public static @NotNull Collection<X509Certificate> getCertificateChainFromFile(final @NotNull Path certificatePath)
             throws Exception {
         final File certificateFile = FileUtil.assertFileExists(certificatePath);
         final boolean isCertificate = isCertificate(certificateFile.getName());
@@ -144,7 +247,7 @@ public class TlsUtil {
         return generateX509Certificates(certificateFile);
     }
 
-    public @NotNull Collection<X509Certificate> getCertificateChainFromDirectory(final @NotNull Path certificateDirectory)
+    public static @NotNull Collection<X509Certificate> getCertificateChainFromDirectory(final @NotNull Path certificateDirectory)
             throws Exception {
         final File directory = new File(certificateDirectory.toUri());
 
@@ -167,6 +270,7 @@ public class TlsUtil {
         return certificates;
     }
 
+    @VisibleForTesting
     static @NotNull Collection<X509Certificate> generateX509Certificates(final @NotNull File keyFile) throws Exception {
         final CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 
@@ -181,7 +285,7 @@ public class TlsUtil {
     }
 
     static boolean isCertificate(final @NotNull String fileName) {
-        for (final String certificateEnding : CERTIFICATE_FILE_EXTENSION) {
+        for (final String certificateEnding : CERTIFICATE_FILE_EXTENSIONS) {
             if (fileName.endsWith(certificateEnding)) {
                 return true;
             }
@@ -191,7 +295,7 @@ public class TlsUtil {
 
     public static boolean isPKCS12Keystore(final @NotNull Path keystorePath) {
         boolean isPkcs12 = false;
-        for (final String pkcs12Ending : PKCS12_FILE_EXTENSION) {
+        for (final String pkcs12Ending : PKCS12_FILE_EXTENSIONS) {
             isPkcs12 |= keystorePath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(pkcs12Ending);
         }
         return isPkcs12;
