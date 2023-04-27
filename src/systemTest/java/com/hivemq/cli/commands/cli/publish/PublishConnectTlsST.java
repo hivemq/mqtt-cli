@@ -241,6 +241,45 @@ class PublishConnectTlsST {
         });
     }
 
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_properties_tls_pem_format(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/ca.pem").getPath();
+
+        final Map<String, String> properties = Map.of("auth.server.cafile", certificateAuthorityPublicKey);
+
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-t",
+                "test",
+                "-m",
+                "message",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "-d");
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
+        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+            publishAssertion.setTopic("test");
+            publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
+        });
+    }
+
 
     //DER
 
@@ -272,6 +311,45 @@ class PublishConnectTlsST {
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
+        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+
+        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+            publishAssertion.setTopic("test");
+            publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
+        });
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_properties_tls_der_format(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/ca.cer").getPath();
+
+        final Map<String, String> properties = Map.of("auth.server.cafile", certificateAuthorityPublicKey);
+
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-t",
+                "test",
+                "-m",
+                "message",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "-d");
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
         executionResult.awaitStdOut("received PUBLISH acknowledgement");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(

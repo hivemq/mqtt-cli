@@ -57,7 +57,7 @@ class TestBrokerConnectMTlsST {
 
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_similar_private_key_keystore_truststore_mutualTls(
+    void test_similar_private_key_password_keystore_truststore_mutualTls(
             @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
             @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
             @CartesianTest.Values(strings = {
@@ -148,7 +148,7 @@ class TestBrokerConnectMTlsST {
         final String clientTruststore =
                 Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
 
-        final List<String> testCommand = new ArrayList<>( List.of("test",
+        final List<String> testCommand = new ArrayList<>(List.of("test",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -350,6 +350,52 @@ class TestBrokerConnectMTlsST {
 
     }
 
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_properties_encrypted_pem_private_keys_mutualTls(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
+            @CartesianTest.Values(strings = {
+                    "pkcs1.aes256.pem",
+                    //"pkcs1.camellia256.pem",
+                    //"pkcs1.des.pem",
+                    "pkcs1.des3.pem", "pkcs8.aes256.pem",
+                    //"pkcs8.camellia256.pem",
+                    //"pkcs8.des.pem",
+                    "pkcs8.des3.pem"}) final @NotNull String clientKeyType) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/ca.pem").getPath();
+        final String clientPublicKey = Resources.getResource("tls/client/client-cert.pem").getPath();
+        final String clientPrivateKey = Resources.getResource("tls/client/client-key." + clientKeyType).getPath();
+
+        final Map<String, String> properties = Map.of("auth.client.cert",
+                clientPublicKey,
+                "auth.client.key",
+                clientPrivateKey,
+                "auth.server.cafile",
+                certificateAuthorityPublicKey,
+                "auth.client.key.password",
+                "clientKeyPassword");
+
+        final List<String> testCommand = List.of("test",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-s",
+                "--tls-version",
+                tlsVersion.toString());
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand, Map.of(), properties);
+        executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
+
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+
+    }
+
 
     //DER
 
@@ -476,6 +522,53 @@ class TestBrokerConnectMTlsST {
                 "clientKeyPassword");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand);
+        executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
+
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+    }
+
+    @Disabled("Not yet supported")
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_properties_encrypted_der_private_keys_mutualTls(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
+            @CartesianTest.Values(strings = {
+                    "pkcs1.aes256.der",
+                    "pkcs1.camellia256.der",
+                    "pkcs1.des.der",
+                    "pkcs1.des3.der",
+                    "pkcs8.aes256.der",
+                    "pkcs8.camellia256.der",
+                    "pkcs8.des.der",
+                    "pkcs8.des3.der",}) final @NotNull String clientKeyType) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/ca.cer").getPath();
+        final String clientPublicKey = Resources.getResource("tls/client/client-cert.cer").getPath();
+        final String clientPrivateKey = Resources.getResource("tls/client/client-key." + clientKeyType).getPath();
+
+        final Map<String, String> properties = Map.of("auth.client.cert",
+                clientPublicKey,
+                "auth.client.key",
+                clientPrivateKey,
+                "auth.server.cafile",
+                certificateAuthorityPublicKey,
+                "auth.client.key.password",
+                "clientKeyPassword");
+
+        final List<String> testCommand = List.of("test",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-s",
+                "--tls-version",
+                tlsVersion.toString());
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand, Map.of(), properties);
         executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
 
         assertTestConnectPacket(hivemq.getConnectPackets().get(0),

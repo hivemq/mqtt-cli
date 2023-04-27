@@ -55,7 +55,7 @@ class ShellConnectMTlsST {
 
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_similar_private_key_keystore_truststore_mutualTls(
+    void test_similar_private_key_password_keystore_truststore_mutualTls(
             @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
             @CartesianTest.Enum final @NotNull TlsVersion tlsVersion,
             @CartesianTest.Values(strings = {
