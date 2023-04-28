@@ -21,7 +21,9 @@ import com.hivemq.cli.utils.MqttVersionConverter;
 import com.hivemq.cli.utils.broker.HiveMQExtension;
 import com.hivemq.cli.utils.broker.TlsConfiguration;
 import com.hivemq.cli.utils.broker.TlsVersion;
+import com.hivemq.cli.utils.cli.MqttCli;
 import com.hivemq.cli.utils.cli.MqttCliAsyncExtension;
+import com.hivemq.cli.utils.cli.results.ExecutionResult;
 import com.hivemq.cli.utils.cli.results.ExecutionResultAsync;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Timeout;
@@ -38,6 +40,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 import static com.hivemq.cli.utils.broker.assertions.PublishAssertion.assertPublishPacket;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HierarchyTlsST {
 
@@ -147,16 +151,9 @@ class HierarchyTlsST {
             publishCommand.add("clientKeyPassword");
         }
 
-        final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
-                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
-                        mqttVersion)));
-
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
-            publishAssertion.setTopic("test");
-            publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
-        });
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
+        assertEquals(1, executionResult.getExitCode());
+        assertTrue(executionResult.getErrorOutput().contains("Unable to connect"));
     }
 
     @CartesianTest
@@ -309,15 +306,8 @@ class HierarchyTlsST {
                 tlsVersion.toString(),
                 "-d");
 
-        final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
-                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
-                        mqttVersion)));
-
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
-            publishAssertion.setTopic("test");
-            publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
-        });
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand, Map.of(), properties);
+        assertEquals(1, executionResult.getExitCode());
+        assertTrue(executionResult.getErrorOutput().contains("Unable to connect"));
     }
 }

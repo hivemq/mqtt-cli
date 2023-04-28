@@ -100,7 +100,7 @@ public class DefaultCLIProperties {
      * A singleton instance of this class holds reference to a properties file which will be written or created with the
      * 'init' method
      *
-     * @param filePath the path to where the properties file shall be written oder read from
+     * @param filePath the path to where the properties file shall be written or read from
      */
     public DefaultCLIProperties(final @NotNull Path filePath) {
         storePropertiesFile = filePath.toFile();
