@@ -23,7 +23,6 @@ import com.hivemq.cli.utils.TlsUtil;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jline.utils.Log;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -149,31 +148,17 @@ public class TlsOptions {
         final Path defaultClientPrivateKey = defaultCLIProperties.getClientPrivateKey();
 
         final boolean keystoreExists = clientKeystorePath != null;
-        final boolean onlyCertificateExists = clientCertificatePath != null && clientPrivateKeyPath == null;
-        final boolean onlyPrivateKeyExists = clientCertificatePath == null && clientPrivateKeyPath != null;
         final boolean certificateAndPrivateKeyExists = clientCertificatePath != null && clientPrivateKeyPath != null;
         final boolean defaultKeystoreExists = defaultKeystore != null;
-        final boolean onlyDefaultCertificateExists =
-                defaultClientCertificateChain != null && defaultClientPrivateKey == null;
-        final boolean onlyDefaultPrivateKeyExists =
-                defaultClientCertificateChain == null && defaultClientPrivateKey != null;
         final boolean defaultCertificateAndPrivateKeyExists =
                 defaultClientCertificateChain != null && defaultClientPrivateKey != null;
 
+        validateKeyManagerProviders(defaultCLIProperties);
+
         if (keystoreExists) {
-            if (certificateAndPrivateKeyExists) {
-                Log.warn("The keystore parameter shadows the private key corresponding certificate parameters. " +
-                        "If you want to use them instead please remove the keystore parameter.");
-            }
             keyManagerFactory = TlsUtil.createKeyManagerFactoryFromKeystore(clientKeystorePath,
                     clientKeystorePassword,
                     clientKeystorePrivateKeyPassword);
-        } else if (onlyCertificateExists) {
-            throw new RuntimeException(
-                    "Only the client certificate parameter exists. Please add the private key parameter as well.");
-        } else if (onlyPrivateKeyExists) {
-            throw new RuntimeException(
-                    "Only the private key parameter exists. Please add the client certificate parameter as well.");
         } else if (certificateAndPrivateKeyExists) {
             final Collection<X509Certificate> x509Certificates =
                     TlsUtil.getCertificateChainFromFile(clientCertificatePath);
@@ -190,11 +175,6 @@ public class TlsOptions {
             keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             keyManagerFactory.init(ks, createdKeystorePassword.toCharArray());
         } else if (defaultKeystoreExists) {
-            if (defaultCertificateAndPrivateKeyExists) {
-                Log.warn("The keystore default option (properties file) shadows the private key " +
-                        "corresponding certificate default options (properties file). " +
-                        "If you want to use them instead please remove the keystore default option.");
-            }
             final String defaultKeystorePassword = defaultCLIProperties.getKeystorePassword();
             final String defaultKeystorePrivateKeyPassword = defaultCLIProperties.getKeystorePrivateKeyPassword();
             try {
@@ -203,23 +183,21 @@ public class TlsOptions {
                         defaultKeystorePrivateKeyPassword);
             } catch (final Exception e) {
                 Logger.error(e,
-                        "Default keystore (properties file) could not be loaded ({})",
+                        "Default keystore ('auth.keystore') could not be loaded from '" +
+                                defaultKeystore.toAbsolutePath() +
+                                "'. ({})",
                         Throwables.getRootCause(e).getMessage());
                 throw e;
             }
-        } else if (onlyDefaultCertificateExists) {
-            throw new RuntimeException("Only the client certificate default option (properties file) exists. " +
-                    "Please add the private key default option as well.");
-        } else if (onlyDefaultPrivateKeyExists) {
-            throw new RuntimeException("Only the private key default option (properties file) exists. " +
-                    "Please add the client certificate default option as well.");
         } else if (defaultCertificateAndPrivateKeyExists) {
             final Collection<X509Certificate> x509Certificates;
             try {
                 x509Certificates = TlsUtil.getCertificateChainFromFile(defaultClientCertificateChain);
             } catch (final Exception e) {
                 Logger.error(e,
-                        "Default client certificate chain (properties file) could not be loaded ({})",
+                        "Default client certificate chain ('auth.client.cert') could not be loaded '" +
+                                defaultClientCertificateChain.toAbsolutePath() +
+                                "'. ({})",
                         Throwables.getRootCause(e).getMessage());
                 throw e;
             }
@@ -229,7 +207,9 @@ public class TlsOptions {
                 privateKey = TlsUtil.getPrivateKeyFromFile(defaultClientPrivateKey, defaultClientPrivateKeyPassword);
             } catch (final Exception e) {
                 Logger.error(e,
-                        "Default client private key (properties file) could not be loaded ({})",
+                        "Default client private key ('auth.client.key') could not be loaded '" +
+                                defaultClientPrivateKey.toAbsolutePath() +
+                                "'. ({})",
                         Throwables.getRootCause(e).getMessage());
                 throw e;
             }
@@ -248,6 +228,66 @@ public class TlsOptions {
             keyManagerFactory = null;
         }
         return keyManagerFactory;
+    }
+
+    private void validateKeyManagerProviders(final @NotNull DefaultCLIProperties defaultCLIProperties) {
+        final Path defaultKeystore = defaultCLIProperties.getKeystore();
+        final Path defaultClientCertificateChain = defaultCLIProperties.getClientCertificateChain();
+        final Path defaultClientPrivateKey = defaultCLIProperties.getClientPrivateKey();
+
+        final boolean keystoreExists = clientKeystorePath != null;
+        final boolean certificateAndPrivateKeyExists = clientCertificatePath != null && clientPrivateKeyPath != null;
+        final boolean onlyCertificateExists = clientCertificatePath != null && clientPrivateKeyPath == null;
+        final boolean onlyPrivateKeyExists = clientCertificatePath == null && clientPrivateKeyPath != null;
+
+        final boolean defaultKeystoreExists = defaultKeystore != null;
+        final boolean onlyDefaultCertificateExists =
+                defaultClientCertificateChain != null && defaultClientPrivateKey == null;
+        final boolean onlyDefaultPrivateKeyExists =
+                defaultClientCertificateChain == null && defaultClientPrivateKey != null;
+        final boolean defaultCertificateAndPrivateKeyExists =
+                defaultClientCertificateChain != null && defaultClientPrivateKey != null;
+
+        if (keystoreExists) {
+            if (certificateAndPrivateKeyExists) {
+                throw new RuntimeException("The keystore parameter ('--ks', '--keystore') shadows the private key " +
+                        "('--key', '--client-private-key') and corresponding client certificate ('--cert', '--client-cert') " +
+                        "parameters. If you want to use them instead please remove the keystore parameter.");
+            }
+        } else if (onlyCertificateExists) {
+            throw new RuntimeException("Only the client certificate parameter exists. Please add the private key " +
+                    "('--key', '--client-private-key') parameter as well.");
+        } else if (onlyPrivateKeyExists) {
+            throw new RuntimeException("Only the private key parameter exists. Please add the client certificate " +
+                    "('--cert', '--client-cert') parameter as well.");
+        } else if (certificateAndPrivateKeyExists) {
+            //expected behavior
+            //noinspection UnnecessaryReturnStatement
+            return;
+        } else if (defaultKeystoreExists) {
+            if (defaultCertificateAndPrivateKeyExists) {
+                throw new RuntimeException("The keystore default option ('auth.keystore') shadows the private key " +
+                        "and corresponding certificate default options ('auth.client.key', 'auth.client.cert'). " +
+                        "If you want to use them instead please remove the keystore default option inside the " +
+                        "configuration file '" +
+                        Objects.requireNonNull(defaultCLIProperties.getFile()).getAbsolutePath() +
+                        "'.");
+            }
+        } else if (onlyDefaultCertificateExists) {
+            throw new RuntimeException("Only the client certificate default option ('auth.client.cert') exists. " +
+                    "Please add the private key default option ('auth.client.key') inside the configuration file '" +
+                    Objects.requireNonNull(defaultCLIProperties.getFile()).getAbsolutePath() +
+                    "'.");
+        } else if (onlyDefaultPrivateKeyExists) {
+            throw new RuntimeException("Only the private key default option ('auth.client.key') exists. " +
+                    "Please add the client certificate default option ('auth.client.cert') inside the configuration file '" +
+                    Objects.requireNonNull(defaultCLIProperties.getFile()).getAbsolutePath() +
+                    "'.");
+        } else if (defaultCertificateAndPrivateKeyExists) {
+            //expected behavior
+            //noinspection UnnecessaryReturnStatement
+            return;
+        }
     }
 
     /**
@@ -275,11 +315,9 @@ public class TlsOptions {
         final boolean defaultTruststoreExists = defaultTruststore != null;
         final boolean defaultCertificateExists = defaultServerCertificate != null;
 
+        validateTrustManagerProviders(defaultCLIProperties);
+
         if (truststoreExists) {
-            if (certificatesExists) {
-                Log.warn("The truststore parameter shadows the server/ca certificate parameter. " +
-                        "If you want to use them instead please remove the keystore parameter.");
-            }
             trustManagerFactory =
                     TlsUtil.createTrustManagerFactoryFromTruststore(clientTruststorePath, clientTruststorePassword);
         } else if (certificatesExists) {
@@ -305,18 +343,15 @@ public class TlsOptions {
             trustManagerFactory = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(keyStore);
         } else if (defaultTruststoreExists) {
-            if (defaultCertificateExists) {
-                Log.warn("The truststore default option (properties file) shadows the server/ca " +
-                        "certificate default option (properties file). " +
-                        "If you want to use them instead please remove the keystore default option.");
-            }
             final String defaultTruststorePassword = defaultCLIProperties.getTruststorePassword();
             try {
                 trustManagerFactory =
                         TlsUtil.createTrustManagerFactoryFromTruststore(defaultTruststore, defaultTruststorePassword);
             } catch (final Exception e) {
                 Logger.error(e,
-                        "Default truststore (properties file) could not be loaded ({})",
+                        "Default truststore ('auth.truststore') could not be loaded from '" +
+                                defaultTruststore.toAbsolutePath() +
+                                "'. ({})",
                         Throwables.getRootCause(e).getMessage());
                 throw e;
             }
@@ -330,8 +365,11 @@ public class TlsOptions {
                 defaultCertificates.addAll(defaultCertificateChain);
             } catch (final Exception e) {
                 Logger.error(e,
-                        "Default server/ca certificate (properties file) could not be loaded. Ignoring. ({})",
+                        "Default server/ca certificate (auth.server.cafile) could not be loaded from'" +
+                                defaultServerCertificate.toAbsolutePath() +
+                                "'. ({})",
                         Throwables.getRootCause(e).getMessage());
+                throw e;
             }
             if (!defaultCertificates.isEmpty()) {
                 keyStore.load(null, null);
@@ -351,6 +389,43 @@ public class TlsOptions {
         return trustManagerFactory;
     }
 
+    private void validateTrustManagerProviders(final @NotNull DefaultCLIProperties defaultCLIProperties) {
+        final Path defaultTruststore = defaultCLIProperties.getTruststore();
+        final Path defaultServerCertificate = defaultCLIProperties.getServerCertificateChain();
+
+        final boolean truststoreExists = clientTruststorePath != null;
+        final boolean certificatesExists = serverCertificatePath != null || serverCertificateDirPath != null;
+        final boolean defaultTruststoreExists = defaultTruststore != null;
+        final boolean defaultCertificateExists = defaultServerCertificate != null;
+
+        if (truststoreExists) {
+            if (certificatesExists) {
+                throw new RuntimeException("The truststore parameter ('--ts', '--truststore') shadows the server/ca " +
+                        "('--cafile', '--ca-cert', '--server-cert' or '--capath', '--ca-cert-dir', " +
+                        "'--server-cert-dir') certificate parameter. " +
+                        "If you want to use it instead please remove the truststore parameter.");
+            }
+        } else if (certificatesExists) {
+            //expected behavior
+            //noinspection UnnecessaryReturnStatement
+            return;
+        } else if (defaultTruststoreExists) {
+            if (defaultCertificateExists) {
+                throw new RuntimeException("The truststore default option ('auth.truststore') shadows the server/ca " +
+                        "certificate default option (auth.server.cafile). " +
+                        "If you want to use it instead please remove the truststore default option inside the " +
+                        "configuration file '" +
+                        Objects.requireNonNull(defaultCLIProperties.getFile()).getAbsolutePath() +
+                        "'.");
+            }
+        } else if (defaultCertificateExists) {
+            //expected behavior
+            //noinspection UnnecessaryReturnStatement
+            return;
+        }
+    }
+
+
     private boolean useTls() {
         return clientKeystorePath != null ||
                 clientTruststorePath != null ||
@@ -368,14 +443,18 @@ public class TlsOptions {
         return "TlsOptions{" +
                 "useSsl=" +
                 useTls +
-                ", serverCertificates=" + serverCertificatePath +
-                ", serverCertificatesFromDir=" + serverCertificateDirPath +
+                ", serverCertificates=" +
+                serverCertificatePath +
+                ", serverCertificatesFromDir=" +
+                serverCertificateDirPath +
                 ", cipherSuites=" +
                 cipherSuites +
                 ", supportedTLSVersions=" +
                 supportedTLSVersions +
-                ", clientCertificates=" + clientCertificatePath +
-                ", clientPrivateKey=" + clientPrivateKeyPath +
+                ", clientCertificates=" +
+                clientCertificatePath +
+                ", clientPrivateKey=" +
+                clientPrivateKeyPath +
                 '}';
     }
 }
