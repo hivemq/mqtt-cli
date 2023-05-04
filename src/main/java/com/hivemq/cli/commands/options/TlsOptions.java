@@ -130,9 +130,9 @@ public class TlsOptions {
      * The keystore loading uses a natural hierarchy to determine precedence over the security provider possibilities.
      * <ol>
      *     <li>A keystore provided as input parameter</li>
-     *     <li>A private key and corresponding certificate provided as input parameter</li>
+     *     <li>A private key and related certificate provided as input parameter</li>
      *     <li>A keystore provided as default option inside the cli configuration file</li>
-     *     <li>A private key and corresponding certificate provided as default option inside the cli configuration file</li>
+     *     <li>A private key and related certificate provided as default option inside the cli configuration file</li>
      * </ol>
      *
      * @return a key manager factory or null if no key provider was configured.
@@ -250,9 +250,9 @@ public class TlsOptions {
 
         if (keystoreExists) {
             if (certificateAndPrivateKeyExists) {
-                throw new RuntimeException("The keystore parameter ('--ks', '--keystore') shadows the private key " +
-                        "('--key', '--client-private-key') and corresponding client certificate ('--cert', '--client-cert') " +
-                        "parameters. If you want to use them instead please remove the keystore parameter.");
+                throw new RuntimeException("The keystore parameter ('--ks', '--keystore') is used together with " +
+                        "the private key ('--key', '--client-private-key') and related client certificate " +
+                        "('--cert', '--client-cert') parameters. Please only use one of the two methods.");
             }
         } else if (onlyCertificateExists) {
             throw new RuntimeException("Only the client certificate parameter exists. Please add the private key " +
@@ -266,10 +266,9 @@ public class TlsOptions {
             return;
         } else if (defaultKeystoreExists) {
             if (defaultCertificateAndPrivateKeyExists) {
-                throw new RuntimeException("The keystore default option ('auth.keystore') shadows the private key " +
-                        "and corresponding certificate default options ('auth.client.key', 'auth.client.cert'). " +
-                        "If you want to use them instead please remove the keystore default option inside the " +
-                        "configuration file '" +
+                throw new RuntimeException("The keystore default option ('auth.keystore') is used together with " +
+                        "the private key and related certificate default options ('auth.client.key', 'auth.client.cert'). " +
+                        "Please only use one of the two methods inside the configuration file '" +
                         Objects.requireNonNull(defaultCLIProperties.getFile()).getAbsolutePath() +
                         "'.");
             }
@@ -400,10 +399,10 @@ public class TlsOptions {
 
         if (truststoreExists) {
             if (certificatesExists) {
-                throw new RuntimeException("The truststore parameter ('--ts', '--truststore') shadows the server/ca " +
-                        "('--cafile', '--ca-cert', '--server-cert' or '--capath', '--ca-cert-dir', " +
+                throw new RuntimeException("The truststore parameter ('--ts', '--truststore') is used together with " +
+                        "the server/ca ('--cafile', '--ca-cert', '--server-cert' or '--capath', '--ca-cert-dir', " +
                         "'--server-cert-dir') certificate parameter. " +
-                        "If you want to use it instead please remove the truststore parameter.");
+                        "Please only use one of the two methods.");
             }
         } else if (certificatesExists) {
             //expected behavior
@@ -411,10 +410,9 @@ public class TlsOptions {
             return;
         } else if (defaultTruststoreExists) {
             if (defaultCertificateExists) {
-                throw new RuntimeException("The truststore default option ('auth.truststore') shadows the server/ca " +
-                        "certificate default option (auth.server.cafile). " +
-                        "If you want to use it instead please remove the truststore default option inside the " +
-                        "configuration file '" +
+                throw new RuntimeException("The truststore default option ('auth.truststore') is used together with " +
+                        "the server/ca certificate default option (auth.server.cafile). " +
+                        "Please only use one of the two methods inside the configuration file '" +
                         Objects.requireNonNull(defaultCLIProperties.getFile()).getAbsolutePath() +
                         "'.");
             }
