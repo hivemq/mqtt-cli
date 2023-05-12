@@ -1,31 +1,33 @@
 ---
 nav_order: 6
 redirect_from: /docs/shell/list.html
---- 
+---
 
 # List
+
 ***
 
 Lists all the connected clients of this mqtt-cli shell session.
 
-## Synopsis
-
 ```
-mqtt> ls    [-ahlrstU]
+mqtt> ls 
+
+Usage: shell ls [-hlrstUV]
+List all connected clients with their respective identifiers
 ```
 
 ***
 
 ## Options
 
-|Option |Long Version | Explanation | Default
-|---------------|-------------|------------------------------|
-| ``-a``    |  | Include disconnected clients. | ``false``
-| ``-l``   | ``--long``| Use a long listing format with detailed information about the clients. | ``false``
-| ``-r`` | ``--reverse`` | Reverse order while sorting | ``false`` 
-| ``-s`` | ``--subscriptions``  | List subscribed topics of the clients. | ``false``
-| ``-t`` | ``--time``  | Sort cliens by their creation time. | ``false``
-| ``-U`` |   |  Do not sort.  |  ``false``
+| Option | Long Version      | Explanation                                                            | Default |
+|--------|-------------------|------------------------------------------------------------------------|---------|
+| `-a`   |                   | Include disconnected clients.                                          | `false` |
+| `-l`   | `--long`          | Use a long listing format with detailed information about the clients. | `false` |
+| `-r`   | `--reverse`       | Reverse order while sorting                                            | `false` |
+| `-s`   | `--subscriptions` | List subscribed topics of the clients.                                 | `false` |
+| `-t`   | `--time`          | Sort cliens by their creation time.                                    | `false` |
+| `-U`   |                   | Do not sort.                                                           | `false` |
 
 ***
 
