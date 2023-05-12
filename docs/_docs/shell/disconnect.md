@@ -4,9 +4,10 @@ redirect_from: /docs/shell/disconnect.html
 ---
 
 # Disconnect
+
 ***
 
-Disconnects a previously connected client. 
+Disconnects a previously connected client.
 
 ## Synopsis (without client context)
 
@@ -34,15 +35,14 @@ client@host>  dis   [-a]
 
 ## Options
 
- 
-|Option   | Long Version   | Explanation               | Default  |
-| ------- | -------------- | ------------------------- | -------- |
-| ``-a``   | ``--all``| Disconnect all connected clients. |
-| ``-i``   | ``--identifier``| The unique identifier of a client. |
-| ``-h``| ``--host`` | The host the client is connected to. | ``localhost``
-| ``-e``  | ``--sessionExpiry`` | Session expiry value in seconds. | ``0`` (No Expiry)
-| ``-r``  | ``--reason``| Reason string for the disconnect |
-| ``-up`` | ``--userProperty``|  A user property of the disconnect message. |
+| Option | Long Version      | Explanation                                | Default         |
+|--------|-------------------|--------------------------------------------|-----------------|
+| `-a`   | `--all`           | Disconnect all connected clients.          |                 |
+| `-i`   | `--identifier`    | The unique identifier of a client.         |                 |
+| `-h`   | `--host`          | The host the client is connected to.       | `localhost`     |
+| `-e`   | `--sessionExpiry` | Session expiry value in seconds.           | `0` (No Expiry) |
+| `-r`   | `--reason`        | Reason string for the disconnect           |                 |
+| `-up`  | `--userProperty`  | A user property of the disconnect message. |                 |
 
 ***
 
@@ -67,4 +67,4 @@ mqtt> dis -i myClient -h broker.hivemq.com
 ```
 
 > **NOTE**: Besides the **identifier** also the **hostname** has to be given to uniquely identify the client.
-If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
+> If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.

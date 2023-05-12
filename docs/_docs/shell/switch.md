@@ -1,9 +1,10 @@
 ---
 nav_order: 7
 redirect_from: /docs/shell/switch.html
---- 
+---
 
 # Switch
+
 ***
 
 Switches the currently active context client.
@@ -21,19 +22,18 @@ mqtt> switch    [<contextName>]
 
 ## Parameters
 
-|Parameter Name | Explanation | Examples |
-|---------------|-------------|------------------------------|
-| ``contextName``   | The context name of a client consisting of the the client identifier concatenated by a @ with the hostname. The hostname may be omitted and will be filled with the default host. | `myClient@localhost`  `client2@broker.hivemq.com` or simply the `clientID` (default @localhost will be added)
-
+| Parameter Name  | Explanation                                                                                                                                                                       | Examples                                                                                                      |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| ``contextName`` | The context name of a client consisting of the the client identifier concatenated by a @ with the hostname. The hostname may be omitted and will be filled with the default host. | `myClient@localhost`  `client2@broker.hivemq.com` or simply the `clientID` (default @localhost will be added) |
 
 ***
 
 ## Options
 
-|Option |Long Version | Explanation | Default
-|---------------|-------------|------------------------------|
-| ``-i``   | ``--identifier``| The unique identifier of a client. |
-| ``-h``| ``--host`` | The host the client is connected to. | ``localhost``
+| Option | Long Version     | Explanation                          | Default       |
+|--------|------------------|--------------------------------------|---------------|
+| ``-i`` | ``--identifier`` | The unique identifier of a client.   |               |
+| ``-h`` | ``--host``       | The host the client is connected to. | ``localhost`` |
 
 ***
 
