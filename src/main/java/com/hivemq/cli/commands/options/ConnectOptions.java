@@ -163,7 +163,7 @@ public class ConnectOptions {
 
     public void setDefaultOptions() {
         final DefaultCLIProperties defaultCLIProperties =
-                Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+                Objects.requireNonNull(MqttCLIMain.MQTT_CLI).defaultCLIProperties();
 
         if (version == null) {
             version = defaultCLIProperties.getMqttVersion();

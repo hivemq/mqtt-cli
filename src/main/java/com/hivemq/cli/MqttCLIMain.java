@@ -36,15 +36,15 @@ import java.util.concurrent.CompletableFuture;
 
 public class MqttCLIMain {
 
-    public static @Nullable MqttCLI MQTTCLI = null;
+    public static @Nullable MqttCLI MQTT_CLI = null;
 
     public static void main(final @NotNull String... args) {
 
         Security.setProperty("crypto.policy", "unlimited");
 
-        MQTTCLI = DaggerMqttCLI.create();
-        final CommandLine commandLine = MQTTCLI.cli();
-        final DefaultCLIProperties defaultCLIProperties = MQTTCLI.defaultCLIProperties();
+        MQTT_CLI = DaggerMqttCLI.create();
+        final CommandLine commandLine = MQTT_CLI.cli();
+        final DefaultCLIProperties defaultCLIProperties = MQTT_CLI.defaultCLIProperties();
 
         try {
             defaultCLIProperties.init();

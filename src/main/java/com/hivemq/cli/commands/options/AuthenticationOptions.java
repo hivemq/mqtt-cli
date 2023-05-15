@@ -73,7 +73,7 @@ public class AuthenticationOptions {
     }
 
     public void setDefaultOptions() {
-        final DefaultCLIProperties properties = Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+        final DefaultCLIProperties properties = Objects.requireNonNull(MqttCLIMain.MQTT_CLI).defaultCLIProperties();
         if (user == null) {
             user = properties.getUsername();
         }

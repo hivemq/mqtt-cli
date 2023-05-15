@@ -20,7 +20,7 @@ import com.hivemq.cli.openapi.ApiCallback;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.ClientDetails;
 import com.hivemq.cli.openapi.hivemq.ClientItem;
-import com.hivemq.cli.rest.HiveMQRestService;
+import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
@@ -37,7 +37,7 @@ public class ClientDetailsRetrieverTask implements Runnable {
 
     private final static int MAX_CONCURRENT_REQUESTS = 100;
 
-    private final @NotNull HiveMQRestService hivemqRestService;
+    private final @NotNull MqttClientsApi mqttClientsApi;
     private final @NotNull CompletableFuture<Void> clientIdsFuture;
     private final @NotNull BlockingQueue<String> clientIdsQueue;
     private final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
@@ -45,11 +45,11 @@ public class ClientDetailsRetrieverTask implements Runnable {
     private final @NotNull AtomicBoolean failed = new AtomicBoolean(false);
 
     public ClientDetailsRetrieverTask(
-            final @NotNull HiveMQRestService hivemqRestService,
+            final @NotNull MqttClientsApi mqttClientsApi,
             final @NotNull CompletableFuture<Void> clientIdsFuture,
             final @NotNull BlockingQueue<String> clientIdsQueue,
             final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue) {
-        this.hivemqRestService = hivemqRestService;
+        this.mqttClientsApi = mqttClientsApi;
         this.clientIdsFuture = clientIdsFuture;
         this.clientIdsQueue = clientIdsQueue;
         this.clientDetailsQueue = clientDetailsQueue;
@@ -70,7 +70,7 @@ public class ClientDetailsRetrieverTask implements Runnable {
                     final ClientItemApiCallback clientItemApiCallback =
                             new ClientItemApiCallback(clientDetailsQueue, clientDetailsInProgress, failed);
                     clientDetailsInProgress.acquire();
-                    hivemqRestService.getClientDetails(clientId, clientItemApiCallback);
+                    mqttClientsApi.getMqttClientDetailsAsync(clientId, clientItemApiCallback);
                 }
             }
 

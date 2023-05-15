@@ -42,7 +42,7 @@ public class LoggerUtils {
 
     public static void useDefaultLogging(final @Nullable Map<String, String> extendedProperties) {
         final DefaultCLIProperties defaultCLIProperties =
-                Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+                Objects.requireNonNull(MqttCLIMain.MQTT_CLI).defaultCLIProperties();
         final Path dir = defaultCLIProperties.getLogfilePath();
         final Level logLevel = defaultCLIProperties.getLogfileDebugLevel();
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

@@ -16,8 +16,6 @@
 
 package com.hivemq.cli.ioc;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.hivemq.cli.commandline.CommandErrorMessageHandler;
 import com.hivemq.cli.commandline.CommandLineConfig;
 import com.hivemq.cli.commands.swarm.SwarmCLICommand;
@@ -38,11 +36,10 @@ import picocli.CommandLine;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 
 @Module
-public class SwarmCLIModule {
+class SwarmModule {
 
     @Provides
     @Singleton
@@ -65,12 +62,6 @@ public class SwarmCLIModule {
     }
 
     @Provides
-    @Singleton
-    public @NotNull PrintStream provideOutStream() {
-        return System.out;
-    }
-
-    @Provides
     @Named("swarm-cli")
     public @NotNull ApiClient provideApiClient() {
         final OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(60, TimeUnit.SECONDS).build();
@@ -78,11 +69,6 @@ public class SwarmCLIModule {
         apiClient.setHttpClient(okHttpClient);
 
         return apiClient;
-    }
-
-    @Provides
-    public @NotNull Gson provideGson() {
-        return new GsonBuilder().setPrettyPrinting().create();
     }
 
     @Provides

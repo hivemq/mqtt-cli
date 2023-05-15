@@ -18,8 +18,8 @@ package com.hivemq.cli.commands.hivemq.export.clients;
 
 import com.hivemq.cli.openapi.hivemq.Client;
 import com.hivemq.cli.openapi.hivemq.ClientList;
+import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.openapi.hivemq.PaginationCursor;
-import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
@@ -34,13 +34,13 @@ public class ClientIdsRetrieverTask implements Runnable {
     private static final @NotNull Pattern CURSOR_PATTERN = Pattern.compile("cursor=([^&]*)");
 
     private final @NotNull BlockingQueue<String> clientIdsQueue;
-    private final @NotNull HiveMQRestService hivemqRestService;
+    private final @NotNull MqttClientsApi mqttClientsApi;
 
     private long receivedClientIds = 0;
 
     public ClientIdsRetrieverTask(
-            final @NotNull HiveMQRestService hivemqRestService, final @NotNull BlockingQueue<String> clientIdsQueue) {
-        this.hivemqRestService = hivemqRestService;
+            final @NotNull MqttClientsApi mqttClientsApi, final @NotNull BlockingQueue<String> clientIdsQueue) {
+        this.mqttClientsApi = mqttClientsApi;
         this.clientIdsQueue = clientIdsQueue;
     }
 
@@ -51,7 +51,7 @@ public class ClientIdsRetrieverTask implements Runnable {
         try {
             while (hasNextCursor) {
                 final ClientList clientList;
-                clientList = hivemqRestService.getClientIds(nextCursor);
+                clientList = mqttClientsApi.getAllMqttClients(2500, nextCursor);
                 final List<Client> clients = clientList.getItems();
                 final PaginationCursor links = clientList.getLinks();
 
