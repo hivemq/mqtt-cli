@@ -159,7 +159,7 @@ public class SubscribeOptions {
 
     public void setDefaultOptions() {
         final DefaultCLIProperties defaultCLIProperties =
-                Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+                Objects.requireNonNull(MqttCLIMain.MQTT_CLI).defaultCLIProperties();
 
         if (outputFile == null && defaultCLIProperties.getClientSubscribeOutputFile() != null) {
             Logger.trace("Setting value of 'toFile' to {}", defaultCLIProperties.getClientSubscribeOutputFile());

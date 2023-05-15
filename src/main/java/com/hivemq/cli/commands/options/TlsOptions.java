@@ -142,7 +142,7 @@ public class TlsOptions {
         final KeyManagerFactory keyManagerFactory;
 
         final DefaultCLIProperties defaultCLIProperties =
-                Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+                Objects.requireNonNull(MqttCLIMain.MQTT_CLI).defaultCLIProperties();
         final Path defaultKeystore = defaultCLIProperties.getKeystore();
         final Path defaultClientCertificateChain = defaultCLIProperties.getClientCertificateChain();
         final Path defaultClientPrivateKey = defaultCLIProperties.getClientPrivateKey();
@@ -303,7 +303,7 @@ public class TlsOptions {
      */
     private @Nullable TrustManagerFactory buildTrustManagerFactory() throws Exception {
         final DefaultCLIProperties defaultCLIProperties =
-                Objects.requireNonNull(MqttCLIMain.MQTTCLI).defaultCLIProperties();
+                Objects.requireNonNull(MqttCLIMain.MQTT_CLI).defaultCLIProperties();
         final TrustManagerFactory trustManagerFactory;
 
         final Path defaultTruststore = defaultCLIProperties.getTruststore();

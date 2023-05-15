@@ -16,6 +16,8 @@
 
 package com.hivemq.cli.ioc;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commandline.CommandErrorMessageHandler;
 import com.hivemq.cli.commandline.CommandLineConfig;
@@ -24,6 +26,7 @@ import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
 import com.hivemq.cli.commands.cli.TestBrokerCommand;
 import com.hivemq.cli.commands.shell.ShellCommand;
+import com.hivemq.cli.utils.json.OffsetDateTimeSerializer;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
@@ -31,11 +34,13 @@ import picocli.CommandLine;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.OffsetDateTime;
 
-@Module(includes = HiveMQCLIModule.class)
-class CLIModule {
+@Module
+class CliModule {
 
     private static final @NotNull Path PROPERTIES_FILE_PATH =
             Paths.get(System.getProperty("user.home")).resolve(".mqtt-cli").resolve("config.properties");
@@ -69,5 +74,17 @@ class CLIModule {
     @Singleton
     static @NotNull DefaultCLIProperties provideDefaultProperties() {
         return new DefaultCLIProperties(PROPERTIES_FILE_PATH);
+    }
+
+    @Provides
+    @NotNull Gson provideGson() {
+        return new GsonBuilder().setPrettyPrinting()
+                .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
+                .create();
+    }
+
+    @Provides
+    public @NotNull PrintStream provideOutStream() {
+        return System.out;
     }
 }

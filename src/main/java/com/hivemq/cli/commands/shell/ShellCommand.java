@@ -97,8 +97,8 @@ public class ShellCommand implements Callable<Integer> {
     }
 
     private @NotNull Integer interact() {
-        shellCommandLine = Objects.requireNonNull(MqttCLIMain.MQTTCLI).shell();
-        contextCommandLine = MqttCLIMain.MQTTCLI.shellContext();
+        shellCommandLine = Objects.requireNonNull(MqttCLIMain.MQTT_CLI).shell();
+        contextCommandLine = MqttCLIMain.MQTT_CLI.shellContext();
 
         try {
             final Terminal terminal = TerminalBuilder.builder().name("MQTT Terminal").system(true).build();

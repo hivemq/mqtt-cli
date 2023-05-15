@@ -23,45 +23,61 @@ import com.hivemq.cli.openapi.Configuration;
 import com.hivemq.cli.openapi.hivemq.ClientItem;
 import com.hivemq.cli.openapi.hivemq.ClientList;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
+import com.hivemq.cli.openapi.hivemq.PoliciesApi;
+import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.concurrent.TimeUnit;
 
+//@Singleton
 public class HiveMQRestService {
 
-    private final @NotNull ApiClient apiClient;
-    private final @NotNull MqttClientsApi clientsApi;
+//    private final @NotNull MqttClientsApi mqttClientsApi;
+//    private final @NotNull PoliciesApi policiesApi;
+//    private final @NotNull SchemasApi schemasApi;
 
     private static final long CONNECT_TIMEOUT = 60;
 
-    public HiveMQRestService(final @NotNull String host, final double requestPerSecondLimit) {
-        final OkHttpClient okHttpClient = buildOkHttpClient(requestPerSecondLimit);
+//    public HiveMQRestService() {}
 
-        apiClient = Configuration.getDefaultApiClient();
-        apiClient.setHttpClient(okHttpClient);
-        apiClient.setBasePath(host);
+//    public @NotNull ClientList getClientIds(final @Nullable String cursor) throws ApiException {
+//        return mqttClientsApi.getAllMqttClients(2500, cursor);
+//    }
 
-        clientsApi = new MqttClientsApi(apiClient);
+//    public void getClientDetails(
+//            final @NotNull String clientId, final @NotNull ApiCallback<ClientItem> callback) throws ApiException {
+//        mqttClientsApi.getMqttClientDetailsAsync(clientId, callback);
+//    }
+
+    public static @NotNull MqttClientsApi getMqttClientsApi(
+            final @NotNull String host, final double requestPerSecondLimit) {
+        final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
+        return new MqttClientsApi(apiClient);
     }
 
-    public @NotNull ClientList getClientIds(final @Nullable String cursor) throws ApiException {
-        return clientsApi.getAllMqttClients(2500, cursor);
+    public static @NotNull PoliciesApi getPoliciesApi(final @NotNull String host, final double requestPerSecondLimit) {
+
+        final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
+        return new PoliciesApi(apiClient);
     }
 
-    public void getClientDetails(
-            final @NotNull String clientId, final @NotNull ApiCallback<ClientItem> callback) throws ApiException {
-        clientsApi.getMqttClientDetailsAsync(clientId, callback);
+    public static @NotNull SchemasApi getSchemasApi(final @NotNull String host, final double requestPerSecondLimit) {
+
+        final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
+        return new SchemasApi(apiClient);
     }
 
-    public @NotNull ApiClient getApiClient() {
-        return apiClient;
-    }
-
-    private @NotNull OkHttpClient buildOkHttpClient(final double requestsPerSecondLimit) {
-        return new OkHttpClient.Builder().connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+    static private @NotNull ApiClient buildApiClient(final @NotNull String host, final double requestsPerSecondLimit) {
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 .addInterceptor(new RateLimitInterceptor(requestsPerSecondLimit))
                 .build();
+        final ApiClient apiClient = Configuration.getDefaultApiClient();
+        apiClient.setHttpClient(okHttpClient);
+        apiClient.setBasePath(host);
+        return apiClient;
     }
 }

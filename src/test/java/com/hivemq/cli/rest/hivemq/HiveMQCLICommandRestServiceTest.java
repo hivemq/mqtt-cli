@@ -19,6 +19,7 @@ package com.hivemq.cli.rest.hivemq;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.Client;
 import com.hivemq.cli.openapi.hivemq.ClientList;
+import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -36,14 +37,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HiveMQCLICommandRestServiceTest {
 
+    // TODO
+
     private @NotNull MockWebServer server;
-    private @NotNull HiveMQRestService hivemqRestService;
+    private @NotNull MqttClientsApi mqttClientsApi;
 
     @BeforeEach
     void setUp() throws IOException {
         server = new MockWebServer();
         server.start();
-        hivemqRestService = new HiveMQRestService(server.url("/").toString(), 500);
+        mqttClientsApi = HiveMQRestService.getMqttClientsApi(server.url("/").toString(), 500);
     }
 
     @AfterEach
@@ -57,7 +60,7 @@ class HiveMQCLICommandRestServiceTest {
 
         server.enqueue(response);
 
-        final ClientList clientList = hivemqRestService.getClientIds(null);
+        final ClientList clientList = mqttClientsApi.getAllMqttClients(2500, null);
         final List<Client> clients = clientList.getItems();
 
         assertNotNull(clients);
@@ -75,7 +78,7 @@ class HiveMQCLICommandRestServiceTest {
 
         server.enqueue(response);
 
-        final ClientList clientList = hivemqRestService.getClientIds(null);
+        final ClientList clientList = mqttClientsApi.getAllMqttClients(2500, null);
         final List<Client> clients = clientList.getItems();
 
         assertNotNull(clients);
@@ -88,7 +91,7 @@ class HiveMQCLICommandRestServiceTest {
 
         server.enqueue(response);
 
-        final ClientList clientList = hivemqRestService.getClientIds(null);
+        final ClientList clientList = mqttClientsApi.getAllMqttClients(2500, null);
         final List<Client> clients = clientList.getItems();
 
         assertNotNull(clients);
@@ -102,7 +105,7 @@ class HiveMQCLICommandRestServiceTest {
 
         server.enqueue(response);
 
-        assertThrows(ApiException.class, () -> hivemqRestService.getClientIds(null));
+        assertThrows(ApiException.class, () -> mqttClientsApi.getAllMqttClients(2500, null));
     }
 
     @Test
@@ -112,7 +115,7 @@ class HiveMQCLICommandRestServiceTest {
 
         server.enqueue(response);
 
-        assertThrows(ApiException.class, () -> hivemqRestService.getClientIds(null));
+        assertThrows(ApiException.class, () -> mqttClientsApi.getAllMqttClients(2500, null));
     }
 
     @Test
@@ -122,12 +125,12 @@ class HiveMQCLICommandRestServiceTest {
 
         server.enqueue(response);
 
-        assertThrows(ApiException.class, () -> hivemqRestService.getClientIds(null));
+        assertThrows(ApiException.class, () -> mqttClientsApi.getAllMqttClients(2500, null));
     }
 
     @Test
     void get_client_ids_rate_limit_5_success() throws ApiException {
-        hivemqRestService = new HiveMQRestService(server.url("/").toString(), 1);
+        mqttClientsApi = HiveMQRestService.getMqttClientsApi(server.url("/").toString(), 1);
         final MockResponse response = new MockResponse().setResponseCode(HTTP_OK).setBody(CLIENT_IDS_WITH_CURSOR);
 
         for (int i = 0; i < 5; i++) {
@@ -137,7 +140,7 @@ class HiveMQCLICommandRestServiceTest {
         final long startTime = System.nanoTime();
 
         for (int i = 0; i < 5; i++) {
-            hivemqRestService.getClientIds(null);
+            mqttClientsApi.getAllMqttClients(2500, null);
         }
 
         final long stopTime = System.nanoTime();

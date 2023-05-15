@@ -25,6 +25,7 @@ import com.google.gson.JsonParser;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.ClientDetails;
+import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.opencsv.CSVWriter;
@@ -159,7 +160,7 @@ public class ExportClientsCommand implements Callable<Integer> {
         }
 
         // Setup rest service and queues
-        final HiveMQRestService hivemqRestService = new HiveMQRestService(url, rateLimit);
+        final MqttClientsApi mqttClientsApi = HiveMQRestService.getMqttClientsApi(url, rateLimit);
         final BlockingQueue<String> clientIdsQueue = new LinkedBlockingQueue<>(CLIENT_IDS_QUEUE_LIMIT);
         final BlockingQueue<ClientDetails> clientDetailsQueue = new LinkedBlockingQueue<>(CLIENT_DETAILS_QUEUE_LIMIT);
 
@@ -167,11 +168,11 @@ public class ExportClientsCommand implements Callable<Integer> {
 
         // Start retrieving client ids
         final ClientIdsRetrieverTask clientIdsRetrieverTask =
-                new ClientIdsRetrieverTask(hivemqRestService, clientIdsQueue);
+                new ClientIdsRetrieverTask(mqttClientsApi, clientIdsQueue);
         final CompletableFuture<Void> clientIdsRetrieverFuture = CompletableFuture.runAsync(clientIdsRetrieverTask);
 
         // Start retrieving client details
-        final ClientDetailsRetrieverTask clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(hivemqRestService,
+        final ClientDetailsRetrieverTask clientDetailsRetrieverTask = new ClientDetailsRetrieverTask(mqttClientsApi,
                 clientIdsRetrieverFuture,
                 clientIdsQueue,
                 clientDetailsQueue);
