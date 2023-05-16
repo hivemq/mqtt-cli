@@ -41,7 +41,7 @@ public class DeleteSchemaCommand implements Callable<Integer> {
         if (deleteSchemaTask.execute()) {
             return 0;
         } else {
-            return -1;
+            return 1;
         }
     }
 

@@ -16,42 +16,19 @@
 
 package com.hivemq.cli.rest;
 
-import com.hivemq.cli.openapi.ApiCallback;
 import com.hivemq.cli.openapi.ApiClient;
-import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.Configuration;
-import com.hivemq.cli.openapi.hivemq.ClientItem;
-import com.hivemq.cli.openapi.hivemq.ClientList;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.concurrent.TimeUnit;
 
-//@Singleton
 public class HiveMQRestService {
 
-//    private final @NotNull MqttClientsApi mqttClientsApi;
-//    private final @NotNull PoliciesApi policiesApi;
-//    private final @NotNull SchemasApi schemasApi;
-
     private static final long CONNECT_TIMEOUT = 60;
-
-//    public HiveMQRestService() {}
-
-//    public @NotNull ClientList getClientIds(final @Nullable String cursor) throws ApiException {
-//        return mqttClientsApi.getAllMqttClients(2500, cursor);
-//    }
-
-//    public void getClientDetails(
-//            final @NotNull String clientId, final @NotNull ApiCallback<ClientItem> callback) throws ApiException {
-//        mqttClientsApi.getMqttClientDetailsAsync(clientId, callback);
-//    }
 
     public static @NotNull MqttClientsApi getMqttClientsApi(
             final @NotNull String host, final double requestPerSecondLimit) {
@@ -71,7 +48,7 @@ public class HiveMQRestService {
         return new SchemasApi(apiClient);
     }
 
-    static private @NotNull ApiClient buildApiClient(final @NotNull String host, final double requestsPerSecondLimit) {
+    private static @NotNull ApiClient buildApiClient(final @NotNull String host, final double requestsPerSecondLimit) {
         final OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 .addInterceptor(new RateLimitInterceptor(requestsPerSecondLimit))
                 .build();

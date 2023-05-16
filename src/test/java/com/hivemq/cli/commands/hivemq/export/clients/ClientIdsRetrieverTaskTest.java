@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.hivemq.export.clients;
 
+import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -36,7 +37,7 @@ class ClientIdsRetrieverTaskTest {
 
     private @NotNull MockWebServer server;
     private @NotNull BlockingQueue<String> clientIdsQueue;
-    private @NotNull HiveMQRestService hiveMQRestService;
+    private @NotNull MqttClientsApi mqttClientsApi;
     private @NotNull ClientIdsRetrieverTask clientIdsRetrieverTask;
 
     @BeforeEach
@@ -45,9 +46,9 @@ class ClientIdsRetrieverTaskTest {
         server.start();
 
         clientIdsQueue = new LinkedBlockingQueue<>();
-        hiveMQRestService = new HiveMQRestService(server.url("/").toString(), 500);
+        mqttClientsApi = HiveMQRestService.getMqttClientsApi(server.url("/").toString(), 500);
 
-        clientIdsRetrieverTask = new ClientIdsRetrieverTask(hiveMQRestService, clientIdsQueue);
+        clientIdsRetrieverTask = new ClientIdsRetrieverTask(mqttClientsApi, clientIdsQueue);
     }
 
     @Test
@@ -93,7 +94,7 @@ class ClientIdsRetrieverTaskTest {
     @Test
     void blocking_success() {
         clientIdsQueue = new LinkedBlockingQueue<>(1);
-        clientIdsRetrieverTask = new ClientIdsRetrieverTask(hiveMQRestService, clientIdsQueue);
+        clientIdsRetrieverTask = new ClientIdsRetrieverTask(mqttClientsApi, clientIdsQueue);
 
         server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_WITH_CURSOR));
 

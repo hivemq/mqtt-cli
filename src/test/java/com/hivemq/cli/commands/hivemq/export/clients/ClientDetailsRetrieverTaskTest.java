@@ -17,6 +17,7 @@
 package com.hivemq.cli.commands.hivemq.export.clients;
 
 import com.hivemq.cli.openapi.hivemq.ClientDetails;
+import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -25,10 +26,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.*;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_DETAILS_ALL;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_DETAILS_CONNECTED;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_DETAILS_PERSISTENT_OFFLINE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,7 +47,7 @@ class ClientDetailsRetrieverTaskTest {
     private @NotNull CompletableFuture<Void> clientIdsFuture;
     private @NotNull BlockingQueue<String> clientIdsQueue;
     private @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
-    private @NotNull HiveMQRestService hiveMQRestService;
+    private @NotNull MqttClientsApi mqttClientsApi;
     private @NotNull ClientDetailsRetrieverTask clientDetailsRetrieverTask;
 
     @BeforeEach
@@ -53,9 +61,9 @@ class ClientDetailsRetrieverTaskTest {
 
         clientIdsQueue = new LinkedBlockingQueue<>();
         clientDetailsQueue = new LinkedBlockingQueue<>();
-        hiveMQRestService = new HiveMQRestService(server.url("/").toString(), 500);
+        mqttClientsApi = HiveMQRestService.getMqttClientsApi(server.url("/").toString(), 500);
         clientDetailsRetrieverTask =
-                new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
+                new ClientDetailsRetrieverTask(mqttClientsApi, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
     }
 
     @Test
@@ -122,7 +130,7 @@ class ClientDetailsRetrieverTaskTest {
     void blocking_client_ids_queue_success() {
         clientIdsQueue = new LinkedBlockingQueue<>(1);
         clientDetailsRetrieverTask =
-                new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
+                new ClientDetailsRetrieverTask(mqttClientsApi, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
 
         final CompletableFuture<Void> clientIdsProducerFuture = CompletableFuture.runAsync(() -> {
             try {
@@ -148,7 +156,7 @@ class ClientDetailsRetrieverTaskTest {
     void blocking_client_details_queue_success() throws InterruptedException {
         clientDetailsQueue = new LinkedBlockingQueue<>(1);
         clientDetailsRetrieverTask =
-                new ClientDetailsRetrieverTask(hiveMQRestService, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
+                new ClientDetailsRetrieverTask(mqttClientsApi, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
 
         for (int i = 0; i < 25; i++) {
             Thread.sleep(50);
