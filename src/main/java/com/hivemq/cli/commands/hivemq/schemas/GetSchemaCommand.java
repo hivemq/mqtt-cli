@@ -41,7 +41,7 @@ public class GetSchemaCommand implements Callable<Integer> {
         if (getSchemaTask.execute()) {
             return 0;
         } else {
-            return -1;
+            return 1;
         }
     }
 

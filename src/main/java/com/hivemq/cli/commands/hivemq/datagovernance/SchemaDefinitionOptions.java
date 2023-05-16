@@ -17,8 +17,8 @@
 package com.hivemq.cli.commands.hivemq.datagovernance;
 
 import com.hivemq.cli.converters.ByteBufferConverter;
-import com.hivemq.cli.converters.FileToByteBufferConverter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import picocli.CommandLine;
 
 import java.nio.ByteBuffer;
@@ -26,31 +26,25 @@ import java.nio.ByteBuffer;
 public class SchemaDefinitionOptions {
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--file"},
-                        converter = FileToByteBufferConverter.class,
-                        description = "the file containing the schema definition.")
-    private void setDefinitionFromFile(final @NotNull ByteBuffer definitionFromFile) {
-        definition = definitionFromFile;
-    }
+    @CommandLine.Option(names = {"--file"}, description = "the file containing the schema definition.")
+    private @Nullable String file;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--definition"},
                         converter = ByteBufferConverter.class,
-                        description = "the schema definition provided directly. ")
-    private void setDefinitionFromCommandline(final @NotNull ByteBuffer definitionFromArgument) {
-        definition = definitionFromArgument;
+                        description = "the schema definition provided directly.")
+    private @Nullable ByteBuffer argument;
+
+    public @Nullable String getFile() {
+        return file;
     }
 
-    @SuppressWarnings("NotNullFieldNotInitialized")
-    @NotNull
-    private ByteBuffer definition;
-
-    public @NotNull ByteBuffer getDefinition() {
-        return definition;
+    public @Nullable ByteBuffer getArgument() {
+        return argument;
     }
 
     @Override
     public @NotNull String toString() {
-        return "SchemaDefinitionOptions{" + "definition=" + definition + '}';
+        return "SchemaDefinitionOptions{" + "file=" + file + ", definition=" + argument + '}';
     }
 }

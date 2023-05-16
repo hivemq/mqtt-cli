@@ -52,7 +52,7 @@ public class ListPoliciesCommand implements Callable<Integer> {
         if (listPoliciesTask.execute()) {
             return 0;
         } else {
-            return -1;
+            return 1;
         }
     }
 

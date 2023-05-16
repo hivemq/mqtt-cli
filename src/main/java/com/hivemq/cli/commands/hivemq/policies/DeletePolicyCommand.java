@@ -41,7 +41,7 @@ public class DeletePolicyCommand implements Callable<Integer> {
         if (deletePolicyTask.execute()) {
             return 0;
         } else {
-            return -1;
+            return 1;
         }
     }
 

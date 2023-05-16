@@ -31,7 +31,7 @@ public class SwarmOptions {
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-l"},
                         defaultValue = "false",
-                        description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
+                        description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private void initLogging(final boolean logToLogfile) {
         LoggerUtils.turnOffConsoleLogging(logToLogfile);
     }

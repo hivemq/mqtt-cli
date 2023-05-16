@@ -24,7 +24,7 @@ public class DataGovernanceOptions {
     @SuppressWarnings({"unused"})
     @CommandLine.Option(names = {"-l", "--log"},
                         defaultValue = "false",
-                        description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
+                        description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
                         order = 2)
     private void initLogging(final boolean logToLogfile) {
         LoggerUtils.turnOffConsoleLogging(logToLogfile);

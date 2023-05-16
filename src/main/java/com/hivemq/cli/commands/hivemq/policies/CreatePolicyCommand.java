@@ -40,14 +40,14 @@ public class CreatePolicyCommand implements Callable<Integer> {
         final String definition = definitionOptions.getDefinition();
         if (definition.isEmpty()) {
             outputFormatter.printError("The option '--definition' must not be empty.");
-            return -1;
+            return 1;
         }
 
         final CreatePolicyTask createPolicyTask = new CreatePolicyTask(outputFormatter, policiesApi, definition);
         if (createPolicyTask.execute()) {
             return 0;
         } else {
-            return -1;
+            return 1;
         }
     }
 
