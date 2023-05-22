@@ -80,7 +80,8 @@ public class ShellDisconnectCommand implements Callable<Integer> {
         return "ShellDisconnectCommand{" +
                 "disconnectOptions=" +
                 disconnectOptions +
-                ", helpOptions=" + helpOptions +
+                ", helpOptions=" +
+                helpOptions +
                 ", mqttClientExecutor=" +
                 mqttClientExecutor +
                 ", defaultCLIProperties=" +

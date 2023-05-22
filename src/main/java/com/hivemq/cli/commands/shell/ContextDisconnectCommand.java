@@ -73,7 +73,8 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
         return "ContextDisconnectCommand{" +
                 "disconnectOptions=" +
                 disconnectOptions +
-                ", helpOptions=" + helpOptions +
+                ", helpOptions=" +
+                helpOptions +
                 '}';
     }
 }
