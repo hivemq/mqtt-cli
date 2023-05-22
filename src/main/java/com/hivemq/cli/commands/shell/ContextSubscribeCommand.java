@@ -49,7 +49,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-oc", "--outputToConsole"},
                         defaultValue = "false",
-                        description = "The received messages will be written to the console (default: true)")
+                        description = "The received messages will be written to the console (default: false)")
     private void printToSTDOUT(final boolean printToSTDOUT) {
         subscribeOptions.setPrintToSTDOUT(printToSTDOUT);
     }
