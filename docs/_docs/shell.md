@@ -16,17 +16,11 @@ The Shell-Mode is based around a client context driven use case.
 Therefore, methods like Connect and Disconnect switch the current context of the shell and commands like Publish and
 Subscribe always relate to the currently active client context.
 
-Start the interactive shell with:
-
 ```
-$ mqtt shell
+mqtt shell
 ```
 
-To start the interactive shell with default logging to `~/.mqtt-cli/logs` use:
-
-```
-$ mqtt shell -l
-```
+Alias: `mqtt sh`
 
 ## Example
 
@@ -38,6 +32,18 @@ myClient@host> pub -t test -m msg    # publish the message 'msg' with the new co
 myClient@host> dis                   # disconnect and remove context
 mqtt> ...
 ```
+
+***
+
+## Options
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
 
 ***
 
@@ -63,4 +69,4 @@ mqtt> ...
 * [Clear](shell/clear.md)
 * [Exit](shell/exit.md)
 
-> **NOTE**: A client is uniquely identified in the CLI by the **hostname** and the unique **identifier**.
+**NOTE**: A client is uniquely identified in the CLI by the **hostname** and the unique **identifier**.

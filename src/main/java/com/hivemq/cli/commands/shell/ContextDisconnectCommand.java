@@ -16,8 +16,8 @@
 
 package com.hivemq.cli.commands.shell;
 
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.DisconnectOptions;
+import com.hivemq.cli.commands.options.HelpOptions;
 import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -35,7 +35,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
     private final @NotNull DisconnectOptions disconnectOptions = new DisconnectOptions();
 
     @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+    private final @NotNull HelpOptions helpOptions = new HelpOptions();
 
     @Inject
     public ContextDisconnectCommand(final @NotNull MqttClientExecutor executor) {
@@ -73,8 +73,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
         return "ContextDisconnectCommand{" +
                 "disconnectOptions=" +
                 disconnectOptions +
-                ", defaultOptions=" +
-                defaultOptions +
+                ", helpOptions=" + helpOptions +
                 '}';
     }
 }

@@ -7,26 +7,30 @@ redirect_from: /docs/shell/connect.html
 
 ***
 
-The Connect command creates a client and connects it to the specified broker.
-The client will stay connected until it is disconnected by the broker or the [Disconnect](disconnect.md) method is
+The connect command creates a client and connects it to the specified broker.
+The client will stay connected until it is disconnected by the broker or the [disconnect](disconnect.md) method is
 called.
-To list all the connected clients of this mqtt-cli shell session use the [List](list.md) method.
+To list all the connected clients of this mqtt-cli shell session use the [list](list.md) method.
+
+```
+mqtt> connect
+```
+
+Alias: `mqtt> con`
 
 ## Simple Examples
 
-| Command                            | Explanation                                                                                           |
-|------------------------------------|:------------------------------------------------------------------------------------------------------|
-| `mqtt> con `                       | Creates and connect a new MQTT client with the default settings                                       |
-| `mqtt> con -V 3 -h myHost`         | Creates and connects an MQTT 3.1.1 client at myHost with the default port                             |
-| `mqtt> con -i mqtt-client -p 1884` | Creates and connects an MQTT client at localhost with port 1884 which is identified by `mqtt-client`. |
+| Command                            | Explanation                                                                                          |
+|------------------------------------|:-----------------------------------------------------------------------------------------------------|
+| `mqtt> con`                        | Creates and connect a new MQTT client with the default settings                                      |
+| `mqtt> con -V 3 -h myHost`         | Creates and connects an MQTT 3.1.1 client at myHost with the default port                            |
+| `mqtt> con -i mqtt-client -p 1884` | Creates and connects an MQTT client at localhost with port 1884 which is identified by `mqtt-client` |
 
 ***
 
 ## Options
 
 ### Connect Options
-
-#### Basic Options
 
 {% include options/connect-options.md %}
 
@@ -48,15 +52,15 @@ To list all the connected clients of this mqtt-cli shell session use the [List](
 
 {% include options/tls-options.md %}
 
-### Default Options
+### Help Options
 
-{% include options/default-options.md default-help=false %}
+{% include options/help-options.md defaultHelp=false %}
 
 ***
 
 ## Examples
 
-> Connect a client to myHost on port 1884
+Connect a client to myHost on port 1884
 
 ```
 mqtt> con -h myHost -p 1884
@@ -64,7 +68,7 @@ mqtt> con -h myHost -p 1884
 
 ***
 
-> Connect a client to the default host on default port using authentication
+Connect a client to the default host on default port using authentication
 
 ```
 mqtt> con -u username -pw password
@@ -75,7 +79,7 @@ Enter value for --password (The password for the client UTF-8 String.):
 
 ***
 
-> Connect a client with default settings and use it to publish
+Connect a client with default settings and use it to publish
 
 ```
 mqtt> con -i myClient
@@ -84,7 +88,7 @@ myClient@localhost> pub -t test -m "Hello World"
 
 ***
 
-> Connect a client with a will message
+Connect a client with a will message
 
 ```
 mqtt> con -wt willtopic -wq 2 -wm "Client disconnected ungracefully"
@@ -92,7 +96,7 @@ mqtt> con -wt willtopic -wq 2 -wm "Client disconnected ungracefully"
 
 ***
 
-> Connect a client with SSL using client side and server side authentication with a password encrypted private key
+Connect a client with SSL using client side and server side authentication with a password encrypted private key
 
 ```
 mqtt> con --cafile pathToServerCertificate.pem --tls-version TLSv.1.3
@@ -102,7 +106,7 @@ Enter private key password:
 
 ***
 
-> Connect a client which is identified by myClient and disconnect it afterward using default settings
+Connect a client which is identified by myClient and disconnect it afterward using default settings
 
 ```
 mqtt> con -i myClient
@@ -112,7 +116,7 @@ mqtt>
 
 ***
 
-> Connect a client which is identified by myClient on specific settings and disconnect it afterward
+Connect a client which is identified by myClient on specific settings and disconnect it afterward
 
 ```
 mqtt> con -i myClient -h broker.hivemq.com -V 3
@@ -120,6 +124,5 @@ myClient@localhost> exit  # client is still connected
 mqtt> dis -i myClient -h broker.hivemq.com
 ```
 
-> **NOTE**: Besides the **identifier** also **hostname** has to be given to uniquely identify the client.
-> If you don't specify these the default settings for these attributes will be used which may lead to unexpected
-> behavior.
+**NOTE**: Besides the **identifier** also **hostname** has to be given to uniquely identify the client.
+If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.

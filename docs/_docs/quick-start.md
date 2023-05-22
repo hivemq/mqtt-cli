@@ -13,8 +13,8 @@ redirect_from: /docs/quick_start.html
 To install MQTT CLI on your system please follow the [Installation instructions](installation.md).
 
 The easiest way to start the CLI is by typing:
-` $ mqtt `
-See also `$ mqtt --help`.
+`mqtt`
+See also `mqtt --help`.
 
 With this you get an output on how to use MQTT CLI:
 
@@ -52,7 +52,7 @@ Commands:
 ## Basic Publish
 
 ```
-$ mqtt pub -t topic -m "Hello World"
+mqtt pub -t topic -m "Hello World"
 ```
 
 This command:
@@ -61,15 +61,14 @@ This command:
 * publishes a message to a defined topic,
 * disconnects the mqtt client from the broker
 
-> See [Publish](publish.md) for a detailed overview of the publish command
+See [Publish](publish.md) for a detailed overview of the publish command
 
 ***
 
 ## Basic Subscribe
 
 ```
-$ mqtt sub -t topic
->
+mqtt sub -t topic
 ```
 
 This command:
@@ -78,7 +77,7 @@ This command:
 * stays connected to retrieve messages published to the given topic
 * exits and disconnects the client on **Ctrl + C**
 
-> See [Subscribe](subscribe.md) for a detailed overview of the subscribe command
+See [Subscribe](subscribe.md) for a detailed overview of the subscribe command
 
 ***
 

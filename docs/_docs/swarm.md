@@ -123,5 +123,5 @@ Run status: STARTING
 ### Stop run
 
 ```
-$ mqtt swarm run stop -r 1
+mqtt swarm run stop -r 1
 ```

@@ -10,19 +10,22 @@ redirect_from: /docs/shell/exit.html
 Exits the currently active client context or the shell if used without a context.
 
 ```
-$ mqtt> exit
-
-Usage: shell exit [-hV]
-Exit the shell
-  -h, --help      Show this help message and exit.
-  -V, --version   Print version information and exit.
+mqtt> exit
 ```
+
+***
+
+## Options
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
 
 ***
 
 ## Example
 
-> Connect a client with identifier `client` and exit its context afterward
+Connect a client with identifier `client` and exit its context afterward
 
 ```
 mqtt> con -i client
@@ -30,14 +33,14 @@ client@localhost> exit
 mqtt>
 ```
 
-> **NOTE**: The client is still connected in the shell
+**NOTE**: The client is still connected in the shell
 
 ***
 
-> Exit the Shell
+Exit the Shell
 
 ```
 mqtt> exit
-$> 
+$
 ```
 

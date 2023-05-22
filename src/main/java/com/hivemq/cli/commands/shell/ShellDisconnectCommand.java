@@ -17,8 +17,8 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.DefaultCLIProperties;
-import com.hivemq.cli.commands.options.DefaultOptions;
 import com.hivemq.cli.commands.options.DisconnectOptions;
+import com.hivemq.cli.commands.options.HelpOptions;
 import com.hivemq.cli.mqtt.ClientKey;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -36,7 +36,7 @@ public class ShellDisconnectCommand implements Callable<Integer> {
     private final @NotNull DisconnectOptions disconnectOptions = new DisconnectOptions();
 
     @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+    private final @NotNull HelpOptions helpOptions = new HelpOptions();
 
     private final @NotNull MqttClientExecutor mqttClientExecutor;
     private final @NotNull DefaultCLIProperties defaultCLIProperties;
@@ -80,8 +80,7 @@ public class ShellDisconnectCommand implements Callable<Integer> {
         return "ShellDisconnectCommand{" +
                 "disconnectOptions=" +
                 disconnectOptions +
-                ", defaultOptions=" +
-                defaultOptions +
+                ", helpOptions=" + helpOptions +
                 ", mqttClientExecutor=" +
                 mqttClientExecutor +
                 ", defaultCLIProperties=" +

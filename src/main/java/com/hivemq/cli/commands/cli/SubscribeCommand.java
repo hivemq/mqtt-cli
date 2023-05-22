@@ -19,7 +19,7 @@ package com.hivemq.cli.commands.cli;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.options.ConnectOptions;
 import com.hivemq.cli.commands.options.DebugOptions;
-import com.hivemq.cli.commands.options.DefaultOptions;
+import com.hivemq.cli.commands.options.HelpOptions;
 import com.hivemq.cli.commands.options.SubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -70,7 +70,7 @@ public class SubscribeCommand implements Callable<Integer> {
     private final @NotNull DebugOptions debugOptions = new DebugOptions();
 
     @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+    private final @NotNull HelpOptions helpOptions = new HelpOptions();
 
     @Inject
     public SubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -145,8 +145,7 @@ public class SubscribeCommand implements Callable<Integer> {
                 subscribeOptions +
                 ", debugOptions=" +
                 debugOptions +
-                ", defaultOptions=" +
-                defaultOptions +
+                ", helpOptions=" + helpOptions +
                 '}';
     }
 }

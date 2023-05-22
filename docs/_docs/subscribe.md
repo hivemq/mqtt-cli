@@ -12,8 +12,10 @@ If the Subscribe command is not called in Shell-Mode, it will block the console 
 console.
 
 ```
-$ mqtt sub
+$ mqtt subscribe
 ```
+
+Alias: `$ mqtt sub`
 
 ***
 
@@ -76,7 +78,7 @@ Subscribe to one topic with default QoS `Exactly Once`.
 **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
 
 ```
-$ mqtt sub -t topic1 -t topic2 -q 2  
+mqtt sub -t topic1 -t topic2 -q 2  
 ```
 
 ***
@@ -85,7 +87,7 @@ Subscribe to the given topics with a specific QoS for each topic.
 (`topic1` will have QoS 0, `topic2` QoS 1 and `topic3` QoS 2)
 
 ```
-$ mqtt sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
+mqtt sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 ```
 
 ***
@@ -96,7 +98,7 @@ Subscribe to a topic and output the received publish messages to the file `publi
 messages will be appended to the file.
 
 ```
-$ mqtt sub -t topic -of publishes.log
+mqtt sub -t topic -of publishes.log
 ```
 
 ***
@@ -108,7 +110,7 @@ specified `/usr/local/var` directory.
 will be appended to the file.
 
 ```
-$ mqtt sub -t topic -of /usr/local/var/publishes.log
+mqtt sub -t topic -of /usr/local/var/publishes.log
 ```
 
 ***
@@ -116,5 +118,5 @@ $ mqtt sub -t topic -of /usr/local/var/publishes.log
 Subscribe to a topic and output all the received messages in base64 encoding.
 
 ```
-$ mqtt sub -t topic -b64
+mqtt sub -t topic -b64
 ```

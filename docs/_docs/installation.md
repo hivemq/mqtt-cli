@@ -41,17 +41,16 @@ For **Mac OS X** and **Linux** systems use **[Homebrew](https://brew.sh/)** to i
 **[MQTT CLI Tap](https://github.com/hivemq/homebrew-mqtt-cli)**.
 
 ```
-$ brew install hivemq/mqtt-cli/mqtt-cli
+brew install hivemq/mqtt-cli/mqtt-cli
 ```
 
-> **NOTE**: If you encounter an error like `Java 1.8+ is required to install this formula` please install a java version
-> higher than 1.8.
-> You can use `brew install --cask zulu` to install the latest release of Azul Zulu OpenJDK.
+**NOTE**: If you encounter an error like `Java 1.8+ is required to install this formula` please install a java version
+higher than 1.8. You can use `brew install --cask zulu` to install the latest release of Azul Zulu OpenJDK.
 
-> **NOTE**: As latency-issues may slow down the CLI under **Mac OS X** please verify that you have the
-> entry `127.0.0.1 localhost your-pc-name` specified under `/etc/hosts`.
-> You can use `sudo sh -c "echo 127.0.0.1 localhost $(hostname) >> /etc/hosts"` to append this configuration to your
-> hosts file.
+**NOTE**: As latency-issues may slow down the CLI under **Mac OS X** please verify that you have the
+entry `127.0.0.1 localhost your-pc-name` specified under `/etc/hosts`.
+You can use `sudo sh -c "echo 127.0.0.1 localhost $(hostname) >> /etc/hosts"` to append this configuration to your
+hosts file.
 
 ***
 
@@ -96,10 +95,10 @@ sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v4.15.0
 - mqtt-cli uses [Gradle](https://gradle.org/) to build.
 - To be able to execute integration tests a running **Docker environment** is required
 - To be able to build and test the native image a **GraalVM installation** is required. You can set it up
-  with ``$ ./gradlew installNativeImageTooling``.
+  with `./gradlew installNativeImageTooling`.
 
 To do a clean build, issue the following command:
-`$ ./gradlew clean build`
+`./gradlew clean build`
 
 This runs the unit tests and compiles a new mqtt-cli-<version>.jar into build/libs.
 You can then update an existing MQTT CLI installation by replacing its mqtt-cli-<version>.jar with this one.
@@ -108,16 +107,16 @@ The `build.gradle.kts` file contains further instructions for building the platf
 In a nutshell:
 
 For MacOS/Linux brew:
-`$ ./gradlew buildBrewFormula`
+`./gradlew buildBrewFormula`
 
 For the Debian package:
-`$ ./gradlew buildDebianPackage`
+`./gradlew buildDebianPackage`
 
 For the RPM package:
-`$ ./gradlew buildRpmPackage`
+`./gradlew buildRpmPackage`
 
 For the Windows installer:
-`$ ./gradlew buildWindowsZip`
+`./gradlew buildWindowsZip`
 
 For building a local docker image:
-`$ ./gradlew jibDockerBuild`
+`./gradlew jibDockerBuild`

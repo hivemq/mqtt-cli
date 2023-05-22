@@ -10,7 +10,7 @@ redirect_from: /docs/test.html
 Runs tests against the specified broker to find out its features and limitations.
 
 ```
-$ mqtt test
+mqtt test
 ```
 
 By default, the test command will use MQTT 3 clients to test the broker first and will afterward check the connect
