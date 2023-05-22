@@ -23,7 +23,7 @@ import picocli.CommandLine;
  * Helper Option in order to allow the --version and --help option at commands which already define -h and -V
  * themselves.
  */
-public class DefaultOptions {
+public class HelpOptions {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--version"}, versionHelp = true, description = "display version info")
@@ -35,7 +35,7 @@ public class DefaultOptions {
 
     @Override
     public @NotNull String toString() {
-        return "DefaultOptions{" +
+        return "HelpOptions{" +
                 "versionInfoRequested=" +
                 versionInfoRequested +
                 ", usageHelpRequested=" +

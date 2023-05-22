@@ -20,7 +20,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commands.options.AuthenticationOptions;
-import com.hivemq.cli.commands.options.DefaultOptions;
+import com.hivemq.cli.commands.options.HelpOptions;
 import com.hivemq.cli.commands.options.TlsOptions;
 import com.hivemq.cli.converters.MqttVersionConverter;
 import com.hivemq.cli.mqtt.test.Mqtt3FeatureTester;
@@ -92,7 +92,7 @@ public class TestBrokerCommand implements Callable<Integer> {
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-l"},
                         defaultValue = "false",
-                        description = "Log to $HOME/.mqtt.cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
+                        description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
 
     @CommandLine.Mixin
@@ -102,7 +102,7 @@ public class TestBrokerCommand implements Callable<Integer> {
     private final @NotNull TlsOptions tlsOptions = new TlsOptions();
 
     @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+    private final @NotNull HelpOptions helpOptions = new HelpOptions();
 
     private final @NotNull DefaultCLIProperties defaultCLIProperties;
 
@@ -439,8 +439,7 @@ public class TestBrokerCommand implements Callable<Integer> {
                 authenticationOptions +
                 ", tlsOptions=" +
                 tlsOptions +
-                ", defaultOptions=" +
-                defaultOptions +
+                ", helpOptions=" + helpOptions +
                 ", defaultCLIProperties=" +
                 defaultCLIProperties +
                 ", sslConfig=" +

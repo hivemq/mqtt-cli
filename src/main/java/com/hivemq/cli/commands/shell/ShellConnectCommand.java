@@ -17,7 +17,7 @@
 package com.hivemq.cli.commands.shell;
 
 import com.hivemq.cli.commands.options.ConnectOptions;
-import com.hivemq.cli.commands.options.DefaultOptions;
+import com.hivemq.cli.commands.options.HelpOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClient;
@@ -38,7 +38,7 @@ public class ShellConnectCommand implements Callable<Integer> {
     private final @NotNull ConnectOptions connectOptions = new ConnectOptions();
 
     @CommandLine.Mixin
-    private final @NotNull DefaultOptions defaultOptions = new DefaultOptions();
+    private final @NotNull HelpOptions helpOptions = new HelpOptions();
 
     private final @NotNull MqttClientExecutor mqttClientExecutor;
 
@@ -71,8 +71,7 @@ public class ShellConnectCommand implements Callable<Integer> {
         return "ShellConnectCommand{" +
                 "connectOptions=" +
                 connectOptions +
-                ", defaultOptions=" +
-                defaultOptions +
+                ", helpOptions=" + helpOptions +
                 ", mqttClientExecutor=" +
                 mqttClientExecutor +
                 '}';

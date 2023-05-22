@@ -41,7 +41,9 @@ import java.util.stream.Collectors;
 public class ListClientsCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-t"}, defaultValue = "false", description = "sort by creation time, newest first")
+    @CommandLine.Option(names = {"-t", "--time"},
+                        defaultValue = "false",
+                        description = "sort by creation time, newest first")
     private boolean sortByTime;
 
     @SuppressWarnings("unused")

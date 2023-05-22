@@ -11,15 +11,14 @@ Clears the terminal screen.
 
 ```
 mqtt> clear
-
-Usage: shell cls [-hV]
-Clear the screen
-  -h, --help      Show this help message and exit.
-  -V, --version   Print version information and exit.
 ```
 
-## Example
+Alias: `mqtt> cls`
 
-```
-mqtt> clear
-```
+***
+
+## Options
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}

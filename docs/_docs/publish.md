@@ -10,8 +10,10 @@ redirect_from: /docs/publish.html
 Publishes a message to one or more topics.
 
 ```
-$ mqtt pub
+mqtt publish
 ```
+
+Alias: `mqtt pub`
 
 ***
 
@@ -70,19 +72,18 @@ $ mqtt pub
 
 ## Further Examples
 
-> Publish a message with default QoS set to ``Exactly Once``
+Publish a message with default QoS set to `Exactly Once`
 
-> **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
+**NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
 
 ```
-$ mqtt pub -t topic1 -t topic2 -q 2
+mqtt pub -t topic1 -t topic2 -q 2
 ```
 
 ***
 
-> Publish a message with a specific QoS for each
-> topic. `('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic3' QoS 2)`
+Publish a message with a specific QoS for each topic. ('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic3' QoS 2)
 
 ```
-$ mqtt pub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
+mqtt pub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 ```
