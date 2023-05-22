@@ -22,6 +22,8 @@ mqtt shell
 
 Alias: `mqtt sh`
 
+***
+
 ## Example
 
 ```
@@ -41,15 +43,17 @@ mqtt> ...
 
 | Command     | Explanation                             | Requires active client context |
 |-------------|-----------------------------------------|--------------------------------|
-| connect     | See [Connect](shell/connect.md)         | no                             |
-| disconnect  | See [Disconnect](shell/disconnect.md)   | no                             |
-| publish     | See [Publish](shell/publish.md)         | yes                            |
-| subscribe   | See [Subscribe](shell/subscribe.md)     | yes                            |
-| unsubscribe | See [Unsubscribe](shell/unsubscribe.md) | yes                            |
-| switch      | See [Switch](shell/switch.md)           | no                             |
-| list        | See [List](shell/list.md)               | no                             |
-| clear       | See [Clear](shell/clear.md)             | no                             |
-| exit        | See [Exit](shell/exit.md)               | no                             |
+| connect     | See [Connect](shell/connect.md)         |                                |
+| disconnect  | See [Disconnect](shell/disconnect.md)   |                                |
+| publish     | See [Publish](shell/publish.md)         | X                              |
+| subscribe   | See [Subscribe](shell/subscribe.md)     | X                              |
+| unsubscribe | See [Unsubscribe](shell/unsubscribe.md) | X                              |
+| switch      | See [Switch](shell/switch.md)           |                                |
+| list        | See [List](shell/list.md)               |                                |
+| clear       | See [Clear](shell/clear.md)             |                                |
+| exit        | See [Exit](shell/exit.md)               |                                |
+
+***
 
 ## Options
 
