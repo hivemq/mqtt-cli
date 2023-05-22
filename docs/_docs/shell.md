@@ -33,7 +33,23 @@ myClient@host> dis                   # disconnect and remove context
 mqtt> ...
 ```
 
+**NOTE**: A client is uniquely identified in the CLI by the **hostname** and the unique **identifier**.
+
 ***
+
+## Commands
+
+| Command     | Explanation                             | Requires active client context |
+|-------------|-----------------------------------------|--------------------------------|
+| connect     | See [Connect](shell/connect.md)         | no                             |
+| disconnect  | See [Disconnect](shell/disconnect.md)   | no                             |
+| publish     | See [Publish](shell/publish.md)         | yes                            |
+| subscribe   | See [Subscribe](shell/subscribe.md)     | yes                            |
+| unsubscribe | See [Unsubscribe](shell/unsubscribe.md) | yes                            |
+| switch      | See [Switch](shell/switch.md)           | no                             |
+| list        | See [List](shell/list.md)               | no                             |
+| clear       | See [Clear](shell/clear.md)             | no                             |
+| exit        | See [Exit](shell/exit.md)               | no                             |
 
 ## Options
 
@@ -44,29 +60,3 @@ mqtt> ...
 ### Help Options
 
 {% include options/help-options.md defaultHelp=true %}
-
-***
-
-## Summary
-
-### Commands **without** an active context
-
-* [Connect](shell/connect.md)
-* [Disconnect](shell/disconnect.md)
-* [Switch](shell/switch.md)
-* [List](shell/list.md)
-* [Clear](shell/clear.md)
-* [Exit](shell/exit.md)
-
-### Commands **with** an active context
-
-* [Publish](shell/publish.md)
-* [Subscribe](shell/subscribe.md)
-* [Unsubscribe](shell/unsubscribe.md)
-* [Disconnect](shell/disconnect.md)
-* [Switch](shell/switch.md)
-* [List](shell/list.md)
-* [Clear](shell/clear.md)
-* [Exit](shell/exit.md)
-
-**NOTE**: A client is uniquely identified in the CLI by the **hostname** and the unique **identifier**.
