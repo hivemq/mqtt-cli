@@ -9,6 +9,10 @@ redirect_from: /docs/publish.html
 
 Publishes a message to one or more topics.
 
+```
+$ mqtt pub
+```
+
 ***
 
 ## Simple Examples
@@ -22,33 +26,45 @@ Publishes a message to one or more topics.
 
 ***
 
-## Publish options
+## Options
+
+### Publish options
 
 {% include options/publish-options.md %}
 
-***
-
-## Connect Options
+### Connect Options
 
 {% include options/connect-options.md %}
 
-***
-
-## Security Options
-
-{% include options/security-options.md %}
-
-*** 
-
-## Will Options
+#### Will Options
 
 {% include options/will-options.md %}
 
-*** 
-
-## Connect Restrictions
+#### Connect Restrictions
 
 {% include options/connect-restrictions-options.md %}
+
+### Security Options
+
+#### Credentials Authentication
+
+{% include options/authentication-options.md %}
+
+#### TLS Authentication
+
+{% include options/tls-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Debug Options
+
+{% include options/debug-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=false %}
 
 *** 
 

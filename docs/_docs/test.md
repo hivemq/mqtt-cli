@@ -3,10 +3,15 @@ nav_order: 6
 redirect_from: /docs/test.html
 ---
 
-# Test
+# Broker Test
 
 ***
+
 Runs tests against the specified broker to find out its features and limitations.
+
+```
+$ mqtt test
+```
 
 By default, the test command will use MQTT 3 clients to test the broker first and will afterward check the connect
 restrictions returned by a connect of a MQTT 5 client. You can alter this behavior by specifying different
@@ -43,7 +48,9 @@ MQTT 5: OK
 
 ***
 
-## Test options
+## Options
+
+### Test options
 
 | Option | Long Version    | Explanation                                                                    | Default                      |
 |--------|-----------------|--------------------------------------------------------------------------------|------------------------------|
@@ -51,28 +58,37 @@ MQTT 5: OK
 | `-a`   | `--all`         | Perform all tests for all MQTT versions                                        | `false` (Only test MQTT 3)   |
 | `-t`   | `--timeOut`     | The time to wait for the broker to respond (in seconds).                       | `10s`                        |
 | `-q`   | `--qosTries`    | The amount of messages to send and receive from the broker for each QoS level. | `10`                         |
-| `-l`   |                 | Log to ~./mqtt.cli/logs (Configurable through ~/.mqtt-cli/config.properties)   | `false`                      |
 
-***
-
-## Connect Options
+### Connect Options
 
 | Option | Long Version | Explanation    | Default     |
 |--------|--------------|----------------|-------------|
 | `-h`   | `--host`     | The MQTT host. | `localhost` |
 | `-p`   | `--port`     | The MQTT port. | `1883`      |
 
-***
+### Security Options
 
-## Security Options
+#### Credentials Authentication
 
-{% include options/security-options.md %}
+{% include options/authentication-options.md %}
+
+#### TLS Authentication
+
+{% include options/tls-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=false %}
 
 *** 
 
 ## Further Examples
 
-> Perform tests for MQTT 5 only
+Perform tests for MQTT 5 only
 
 ```
 $ mqtt test -h broker.hivemq.com -a -V 5
@@ -102,7 +118,7 @@ MQTT 5: OK
 
 ***
 
-> Test receiving of 100 publishes in 10s (for each qos level)
+Test receiving of 100 publishes in 10s (for each qos level)
 
 ```
 $ mqtt test -h broker.hivemq.com -q 100 

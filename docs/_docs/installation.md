@@ -37,8 +37,8 @@ docker run -it hivemq/mqtt-cli shell
 
 ## Homebrew
 
-For **Mac OS X** and **Linux** systems use **[Homebrew](https://brew.sh/)** to install MQTT CLI via the *
-*[MQTT CLI Tap](https://github.com/hivemq/homebrew-mqtt-cli)**.
+For **Mac OS X** and **Linux** systems use **[Homebrew](https://brew.sh/)** to install MQTT CLI via the
+**[MQTT CLI Tap](https://github.com/hivemq/homebrew-mqtt-cli)**.
 
 ```
 $ brew install hivemq/mqtt-cli/mqtt-cli

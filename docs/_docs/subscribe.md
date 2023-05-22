@@ -11,6 +11,12 @@ Subscribes a client to one or more topics.
 If the Subscribe command is not called in Shell-Mode, it will block the console and write the received publishes to the
 console.
 
+```
+$ mqtt sub
+```
+
+***
+
 ## Simple Examples
 
 | Command                                 | Explanation                                                                              |
@@ -21,41 +27,53 @@ console.
 
 ***
 
-## Subscribe Options
+## Options
+
+### Subscribe Options
 
 {% include options/subscribe-options.md %}
 
-***
-
-## Connect Options
+### Connect Options
 
 {% include options/connect-options.md %}
 
-***
-
-## Security Options
-
-{% include options/security-options.md %}
-
-*** 
-
-## Will Options
+#### Will Options
 
 {% include options/will-options.md %}
 
-*** 
-
-## Connect Restrictions
+#### Connect Restrictions
 
 {% include options/connect-restrictions-options.md %}
+
+### Security Options
+
+#### Credentials Authentication
+
+{% include options/authentication-options.md %}
+
+#### TLS Authentication
+
+{% include options/tls-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Debug Options
+
+{% include options/debug-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=false %}
 
 *** 
 
 ## Further Examples
 
-> Subscribe to one topic with default QoS `Exactly Once`
+Subscribe to one topic with default QoS `Exactly Once`.
 
-> **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
+**NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
 
 ```
 $ mqtt sub -t topic1 -t topic2 -q 2  
@@ -63,8 +81,8 @@ $ mqtt sub -t topic1 -t topic2 -q 2
 
 ***
 
-> Subscribe to the given topics with a specific QoS for each
-> topic. `('topic1' will have QoS 0, 'topic2' QoS 1 and 'topic3' QoS 2)`
+Subscribe to the given topics with a specific QoS for each topic.
+(`topic1` will have QoS 0, `topic2` QoS 1 and `topic3` QoS 2)
 
 ```
 $ mqtt sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
@@ -72,10 +90,10 @@ $ mqtt sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 
 ***
 
-> Subscribe to a topic and output the received publish messages to the file `publishes.log` in the current directory
+Subscribe to a topic and output the received publish messages to the file `publishes.log` in the current directory.
 
-> **NOTE**: If the file is not created, yet it will be created by the CLI. If it is present the received publish
-> messages will be appended to the file.
+**NOTE**: If the file is not created yet, it will be created by the CLI. If it is present the received publish
+messages will be appended to the file.
 
 ```
 $ mqtt sub -t topic -of publishes.log
@@ -83,11 +101,11 @@ $ mqtt sub -t topic -of publishes.log
 
 ***
 
-> Subscribe to a topic and output the received publish messages to the file `publishes.log` in a
-> specified `/usr/local/var` directory
+Subscribe to a topic and output the received publish messages to the file `publishes.log` in a
+specified `/usr/local/var` directory.
 
-> **NOTE**: If the file is not created yet it will be created by the CLI. If it is present the received publish messages
-> will be appended to the file.
+**NOTE**: If the file is not created yet, it will be created by the CLI. If it is present the received publish messages
+will be appended to the file.
 
 ```
 $ mqtt sub -t topic -of /usr/local/var/publishes.log
@@ -95,7 +113,7 @@ $ mqtt sub -t topic -of /usr/local/var/publishes.log
 
 ***
 
-> Subscribe to a topic and output all the received messages in base64 encoding
+Subscribe to a topic and output all the received messages in base64 encoding.
 
 ```
 $ mqtt sub -t topic -b64
