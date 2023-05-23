@@ -1,7 +1,6 @@
 ---
-title: Export
-permalink: /docs/hivemq/export.html
 nav_order: 1
+redirect_from: /docs/hivemq/export.html
 ---
 
 # Export
@@ -21,7 +20,7 @@ mqtt hivemq export
 
 | Command | Explanation                                         |
 |---------|-----------------------------------------------------|
-| clients | See [export client details](#export-client-details) |
+| clients | See [Export Client Details](#export-client-details) |
 
 ***
 
@@ -33,7 +32,7 @@ mqtt hivemq export
 
 ***
 
-# Export client details
+# Export Client Details
 
 *** 
 

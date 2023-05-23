@@ -14,7 +14,7 @@ redirect_from: /docs/logging.html
 
 ***
 
-## Direct logging for publish & subscribe
+## Direct Logging for Publish & Subscribe
 
 > If you require debug logging for direct access add the `-d` and `-v` options are available for the basic publish and
 > subscribe command

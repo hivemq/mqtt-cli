@@ -38,7 +38,7 @@ Commands:
   swarm           HiveMQ Swarm Command Line Interpreter.
 ```
 
-## Supported commands at start
+## Supported Commands at Start
 
 * [Publish](publish.md)
 * [Subscribe](subscribe.md)
@@ -81,7 +81,7 @@ See [Subscribe](subscribe.md) for a detailed overview of the subscribe command
 
 ***
 
-## Starting the interactive Shell
+## Starting the Interactive Shell
 
 ```
 $ mqtt shell
@@ -126,7 +126,7 @@ This command gives access to the HiveMQ command line which offers commands to in
 
 ***
 
-# HiveMQ Swarm
+## HiveMQ Swarm
 
 The HiveMQ Swarm command offers various ways to interact with HiveMQ Swarm.
 
