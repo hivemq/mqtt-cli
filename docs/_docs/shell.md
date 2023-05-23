@@ -42,12 +42,12 @@ mqtt> ...
 ## Commands
 
 | Command     | Explanation                             | Requires active client context |
-|-------------|-----------------------------------------|--------------------------------|
+|-------------|-----------------------------------------|:------------------------------:|
 | connect     | See [Connect](shell/connect.md)         |                                |
 | disconnect  | See [Disconnect](shell/disconnect.md)   |                                |
-| publish     | See [Publish](shell/publish.md)         | X                              |
-| subscribe   | See [Subscribe](shell/subscribe.md)     | X                              |
-| unsubscribe | See [Unsubscribe](shell/unsubscribe.md) | X                              |
+| publish     | See [Publish](shell/publish.md)         |               X                |
+| subscribe   | See [Subscribe](shell/subscribe.md)     |               X                |
+| unsubscribe | See [Unsubscribe](shell/unsubscribe.md) |               X                |
 | switch      | See [Switch](shell/switch.md)           |                                |
 | list        | See [List](shell/list.md)               |                                |
 | clear       | See [Clear](shell/clear.md)             |                                |
