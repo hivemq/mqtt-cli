@@ -21,7 +21,7 @@ Alias: `client@host> pub`
 
 ## Options
 
-### Publish options
+### Publish Options
 
 {% include options/publish-options.md %}
 

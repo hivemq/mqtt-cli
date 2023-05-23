@@ -90,7 +90,7 @@ sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v4.15.0
 
 ***
 
-## Building from source
+## Building From Source
 
 - mqtt-cli uses [Gradle](https://gradle.org/) to build.
 - To be able to execute integration tests a running **Docker environment** is required

@@ -4,6 +4,7 @@ redirect_from: /docs/shell/subscribe.html
 ---
 
 # Subscribe
+
 ***
 
 The subscribe with a context subscribes the currently active context client to the given topics.
@@ -18,7 +19,7 @@ Alias: `client@host> sub`
 
 ***
 
-##  Options
+## Options
 
 | Option | Long Version        | Explanation                                                                                                                                                                                             | Default |
 |--------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
