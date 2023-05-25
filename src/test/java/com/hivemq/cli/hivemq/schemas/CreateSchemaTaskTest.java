@@ -94,7 +94,7 @@ public class CreateSchemaTaskTest {
                 null,
                 false,
                 ByteBuffer.wrap(new byte[]{}));
-        when(schemasApi.getSchema("test-1", null)).thenThrow(ApiException.class);
+        when(schemasApi.createSchema(any())).thenThrow(ApiException.class);
 
         assertFalse(task.execute());
         verify(outputFormatter).printApiException(any(), any());
