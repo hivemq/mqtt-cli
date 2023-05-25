@@ -16,8 +16,6 @@
 
 package com.hivemq.cli.ioc;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.hivemq.cli.commandline.CommandErrorMessageHandler;
 import com.hivemq.cli.commandline.CommandLineConfig;
 import com.hivemq.cli.commands.hivemq.HiveMQCLICommand;
@@ -32,8 +30,6 @@ import com.hivemq.cli.commands.hivemq.schemas.CreateSchemaCommand;
 import com.hivemq.cli.commands.hivemq.schemas.DeleteSchemaCommand;
 import com.hivemq.cli.commands.hivemq.schemas.GetSchemaCommand;
 import com.hivemq.cli.commands.hivemq.schemas.SchemasCommand;
-import com.hivemq.cli.utils.json.OffsetDateTimeSerializer;
-import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
@@ -41,8 +37,6 @@ import picocli.CommandLine;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.io.PrintStream;
-import java.time.OffsetDateTime;
 
 @Module
 class HiveMqModule {

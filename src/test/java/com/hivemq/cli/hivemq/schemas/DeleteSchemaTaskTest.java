@@ -17,8 +17,8 @@ import static org.mockito.Mockito.when;
 
 public class DeleteSchemaTaskTest {
 
-    private @NotNull SchemasApi schemasApi = mock(SchemasApi.class);
-    private @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull SchemasApi schemasApi = mock(SchemasApi.class);
+    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
 
     @Test
     void execute_schemaFound_printSchema() throws ApiException {

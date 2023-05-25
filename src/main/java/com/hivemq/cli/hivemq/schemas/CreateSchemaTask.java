@@ -4,7 +4,6 @@ import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.Schema;
 import com.hivemq.cli.openapi.hivemq.SchemasApi;
-import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -2,7 +2,6 @@ package com.hivemq.cli.commands.hivemq.schemas;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
