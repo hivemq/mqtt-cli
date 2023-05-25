@@ -8,7 +8,6 @@ import com.hivemq.cli.hivemq.policies.CreatePolicyTask;
 import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.VisibleForTesting;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -23,7 +22,7 @@ public class CreatePolicyCommand implements Callable<Integer> {
     private @NotNull PolicyDefinitionOptions definitionOptions;
 
     @CommandLine.Mixin
-    private @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
+    private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
 
     private final @NotNull OutputFormatter outputFormatter;
     private final @NotNull HiveMQRestService hiveMQRestService;
@@ -34,21 +33,6 @@ public class CreatePolicyCommand implements Callable<Integer> {
             final @NotNull HiveMQRestService hiveMQRestService,
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull Gson gson) {
-        this.outputFormatter = outputFormatter;
-        this.hiveMQRestService = hiveMQRestService;
-        this.gson = gson;
-    }
-
-    @VisibleForTesting
-    public CreatePolicyCommand(
-            final @NotNull String url,
-            final int rateLimit,
-            final @NotNull PolicyDefinitionOptions definitionOptions,
-            final @NotNull HiveMQRestService hiveMQRestService,
-            final @NotNull OutputFormatter outputFormatter,
-            final @NotNull Gson gson) {
-        this.definitionOptions = definitionOptions;
-        this.dataGovernanceOptions = new DataGovernanceOptions(url, rateLimit);
         this.outputFormatter = outputFormatter;
         this.hiveMQRestService = hiveMQRestService;
         this.gson = gson;

@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.converters;
 
-import com.hivemq.client.mqtt.datatypes.MqttQos;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
