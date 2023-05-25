@@ -6,7 +6,6 @@ import com.hivemq.cli.hivemq.policies.DeletePolicyTask;
 import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -16,18 +15,22 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "delete", description = "Delete an existing policy", mixinStandardHelpOptions = true)
 public class DeletePolicyCommand implements Callable<Integer> {
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-i", "--id"}, description = "the id of the policy")
-    private @Nullable String policyId;
+    @SuppressWarnings({"unused", "NotNullFieldNotInitialized"})
+    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "the id of the policy")
+    private @NotNull String policyId;
 
     @CommandLine.Mixin
     private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
 
-    private final @NotNull OutputFormatter formatter;
+    private final @NotNull OutputFormatter outputFormatter;
+    private final @NotNull HiveMQRestService hiveMQRestService;
 
     @Inject
-    public DeletePolicyCommand(final @NotNull OutputFormatter outputFormatter) {
-        this.formatter = outputFormatter;
+    public DeletePolicyCommand(
+            final @NotNull HiveMQRestService hiveMQRestService,
+            final @NotNull OutputFormatter outputFormatter) {
+        this.outputFormatter = outputFormatter;
+        this.hiveMQRestService = hiveMQRestService;
     }
 
     @Override
@@ -35,9 +38,9 @@ public class DeletePolicyCommand implements Callable<Integer> {
         Logger.trace("Command {}", this);
 
         final PoliciesApi policiesApi =
-                HiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
+                hiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
-        final DeletePolicyTask deletePolicyTask = new DeletePolicyTask(formatter, policiesApi, policyId);
+        final DeletePolicyTask deletePolicyTask = new DeletePolicyTask(outputFormatter, policiesApi, policyId);
         if (deletePolicyTask.execute()) {
             return 0;
         } else {
@@ -54,7 +57,7 @@ public class DeletePolicyCommand implements Callable<Integer> {
                 ", dataGovernanceOptions=" +
                 dataGovernanceOptions +
                 ", formatter=" +
-                formatter +
+                outputFormatter +
                 '}';
     }
 }

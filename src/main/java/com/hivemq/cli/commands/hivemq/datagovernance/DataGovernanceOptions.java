@@ -34,8 +34,9 @@ public class DataGovernanceOptions {
     }
 
     @VisibleForTesting
-    public DataGovernanceOptions(final @NotNull String url) {
+    public DataGovernanceOptions(final @NotNull String url, final int rateLimit) {
         this.url = url;
+        this.rateLimit = rateLimit;
     }
 
     public @NotNull String getUrl() {

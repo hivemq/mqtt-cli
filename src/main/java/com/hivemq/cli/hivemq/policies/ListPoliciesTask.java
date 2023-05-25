@@ -55,9 +55,8 @@ public class ListPoliciesTask {
         final List<Policy> allPolicies = new ArrayList<>();
 
         try {
-            boolean hasNextCursor = true;
             String nextCursor = null;
-            while (hasNextCursor) {
+            while (true) {
                 final PolicyList policyList =
                         policiesApi.getAllPolicies(null, policyIdsParameter, schemaIdsParameter, topic, 50, nextCursor);
                 final List<Policy> policies = policyList.getItems();
@@ -67,16 +66,15 @@ public class ListPoliciesTask {
                     allPolicies.addAll(policies);
                 }
 
-                if (links != null && links.getNext() != null) {
-                    final Matcher m = CURSOR_PATTERN.matcher(links.getNext());
-                    if (m.find()) {
-                        nextCursor = m.group(1);
-                    } else {
-                        hasNextCursor = false;
-                    }
-                } else {
-                    hasNextCursor = false;
+                if (links == null || links.getNext() == null) {
+                    break;
                 }
+
+                final Matcher matcher = CURSOR_PATTERN.matcher(links.getNext());
+                if (!matcher.find()) {
+                    break;
+                }
+                nextCursor = matcher.group(1);
             }
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to list policies", apiException);

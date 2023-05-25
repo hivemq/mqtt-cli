@@ -54,10 +54,14 @@ public class CreateSchemaCommand implements Callable<Integer> {
     private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
 
     private final @NotNull OutputFormatter outputFormatter;
+    private final @NotNull HiveMQRestService hiveMQRestService;
 
     @Inject
-    public CreateSchemaCommand(final @NotNull OutputFormatter outputFormatter) {
+    public CreateSchemaCommand(
+            final @NotNull HiveMQRestService hiveMQRestService,
+            final @NotNull OutputFormatter outputFormatter) {
         this.outputFormatter = outputFormatter;
+        this.hiveMQRestService = hiveMQRestService;
     }
 
     @Override
@@ -65,10 +69,15 @@ public class CreateSchemaCommand implements Callable<Integer> {
         Logger.trace("Command {}", this);
 
         final SchemasApi schemasApi =
-                HiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
+                hiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
         if (schemaType.equals("protobuf") && messageType == null) {
             outputFormatter.printError("Protobuf message type is missing. Option '--message-type' is not set.");
+            return 1;
+        }
+
+        if (schemaType.equals("json") && messageType != null) {
+            outputFormatter.printError("Option '--message-type' is not applicable to schemas of type 'json'.");
             return 1;
         }
 

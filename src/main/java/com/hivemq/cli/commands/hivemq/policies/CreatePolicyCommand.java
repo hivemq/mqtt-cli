@@ -1,5 +1,6 @@
 package com.hivemq.cli.commands.hivemq.policies;
 
+import com.google.gson.Gson;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.commands.hivemq.datagovernance.PolicyDefinitionOptions;
@@ -7,6 +8,7 @@ import com.hivemq.cli.hivemq.policies.CreatePolicyTask;
 import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -21,13 +23,35 @@ public class CreatePolicyCommand implements Callable<Integer> {
     private @NotNull PolicyDefinitionOptions definitionOptions;
 
     @CommandLine.Mixin
-    private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
+    private @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
 
     private final @NotNull OutputFormatter outputFormatter;
+    private final @NotNull HiveMQRestService hiveMQRestService;
+    private final @NotNull Gson gson;
 
     @Inject
-    public CreatePolicyCommand(final @NotNull OutputFormatter outputFormatter) {
+    public CreatePolicyCommand(
+            final @NotNull HiveMQRestService hiveMQRestService,
+            final @NotNull OutputFormatter outputFormatter,
+            final @NotNull Gson gson) {
         this.outputFormatter = outputFormatter;
+        this.hiveMQRestService = hiveMQRestService;
+        this.gson = gson;
+    }
+
+    @VisibleForTesting
+    public CreatePolicyCommand(
+            final @NotNull String url,
+            final int rateLimit,
+            final @NotNull PolicyDefinitionOptions definitionOptions,
+            final @NotNull HiveMQRestService hiveMQRestService,
+            final @NotNull OutputFormatter outputFormatter,
+            final @NotNull Gson gson) {
+        this.definitionOptions = definitionOptions;
+        this.dataGovernanceOptions = new DataGovernanceOptions(url, rateLimit);
+        this.outputFormatter = outputFormatter;
+        this.hiveMQRestService = hiveMQRestService;
+        this.gson = gson;
     }
 
     @Override
@@ -35,15 +59,15 @@ public class CreatePolicyCommand implements Callable<Integer> {
         Logger.trace("Command {}", this);
 
         final PoliciesApi policiesApi =
-                HiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
+                hiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
         final String definition = definitionOptions.getDefinition();
         if (definition.isEmpty()) {
-            outputFormatter.printError("The option '--definition' must not be empty.");
+            outputFormatter.printError("The policy definition must not be empty.");
             return 1;
         }
 
-        final CreatePolicyTask createPolicyTask = new CreatePolicyTask(outputFormatter, policiesApi, definition);
+        final CreatePolicyTask createPolicyTask = new CreatePolicyTask(outputFormatter, policiesApi, gson, definition);
         if (createPolicyTask.execute()) {
             return 0;
         } else {

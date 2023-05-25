@@ -61,7 +61,7 @@ class ClientDetailsRetrieverTaskTest {
 
         clientIdsQueue = new LinkedBlockingQueue<>();
         clientDetailsQueue = new LinkedBlockingQueue<>();
-        mqttClientsApi = HiveMQRestService.getMqttClientsApi(server.url("/").toString(), 500);
+        mqttClientsApi = new HiveMQRestService().getMqttClientsApi(server.url("/").toString(), 500);
         clientDetailsRetrieverTask =
                 new ClientDetailsRetrieverTask(mqttClientsApi, clientIdsFuture, clientIdsQueue, clientDetailsQueue);
     }

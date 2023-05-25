@@ -160,7 +160,7 @@ public class ExportClientsCommand implements Callable<Integer> {
         }
 
         // Setup rest service and queues
-        final MqttClientsApi mqttClientsApi = HiveMQRestService.getMqttClientsApi(url, rateLimit);
+        final MqttClientsApi mqttClientsApi = new HiveMQRestService().getMqttClientsApi(url, rateLimit);
         final BlockingQueue<String> clientIdsQueue = new LinkedBlockingQueue<>(CLIENT_IDS_QUEUE_LIMIT);
         final BlockingQueue<ClientDetails> clientDetailsQueue = new LinkedBlockingQueue<>(CLIENT_DETAILS_QUEUE_LIMIT);
 

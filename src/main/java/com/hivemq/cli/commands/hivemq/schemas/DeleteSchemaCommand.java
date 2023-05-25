@@ -24,10 +24,14 @@ public class DeleteSchemaCommand implements Callable<Integer> {
     private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
 
     private final @NotNull OutputFormatter outputFormatter;
+    private final @NotNull HiveMQRestService hiveMQRestService;
 
     @Inject
-    public DeleteSchemaCommand(final @NotNull OutputFormatter outputFormatter) {
+    public DeleteSchemaCommand(
+            final @NotNull HiveMQRestService hiveMQRestService,
+            final @NotNull OutputFormatter outputFormatter) {
         this.outputFormatter = outputFormatter;
+        this.hiveMQRestService = hiveMQRestService;
     }
 
     @Override
@@ -35,7 +39,7 @@ public class DeleteSchemaCommand implements Callable<Integer> {
         Logger.trace("Command {}", this);
 
         final SchemasApi schemasApi =
-                HiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
+                hiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
         final DeleteSchemaTask deleteSchemaTask = new DeleteSchemaTask(outputFormatter, schemasApi, schemaId);
         if (deleteSchemaTask.execute()) {

@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
-@CommandLine.Command(name = "ls",
+@CommandLine.Command(name = "list",
                      aliases = "list",
                      description = "List all connected clients with their respective identifiers",
                      mixinStandardHelpOptions = true)

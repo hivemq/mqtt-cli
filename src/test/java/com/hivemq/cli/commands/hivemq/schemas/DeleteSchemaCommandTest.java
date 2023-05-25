@@ -1,0 +1,60 @@
+package com.hivemq.cli.commands.hivemq.schemas;
+
+import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
+import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.SchemasApi;
+import com.hivemq.cli.rest.HiveMQRestService;
+import com.hivemq.cli.utils.TestLoggerUtils;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+public class DeleteSchemaCommandTest {
+
+    private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
+    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull SchemasApi schemasApi = mock(SchemasApi.class);
+
+    private final @NotNull CommandLine commandLine =
+            new CommandLine(new DeleteSchemaCommand(hiveMQRestService, outputFormatter));
+
+    @BeforeEach
+    void setUp() {
+        TestLoggerUtils.resetLogger();
+        when(hiveMQRestService.getSchemasApi(any(), anyDouble())).thenReturn(schemasApi);
+    }
+
+    @Test
+    void call_idMissing_error() {
+        assertEquals(2, commandLine.execute());
+    }
+
+    @Test
+    void call_urlAndRateLimitPassed_usedInApi() {
+        assertEquals(0, commandLine.execute("--rate=123", "--url=test-url", "--id=schema-1"));
+        verify(hiveMQRestService).getSchemasApi(eq("test-url"), eq(123d));
+    }
+
+    @Test
+    void call_taskSuccessful_return0() throws ApiException {
+        assertEquals(0, commandLine.execute("--id=schema-1"));
+        verify(schemasApi).deleteSchema(eq("schema-1"));
+    }
+
+    @Test
+    void call_taskFailed_return1() throws ApiException {
+        doThrow(ApiException.class).when(schemasApi).deleteSchema(any());
+        assertEquals(1, commandLine.execute("--id=schema-1"));
+    }
+}
