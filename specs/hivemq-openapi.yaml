@@ -169,16 +169,16 @@ paths:
                           functionId: log
                           arguments:
                             level: DEBUG
-                            message: $clientId sent a publish on topic '$topic' with
-                              result '$validationResult'
+                            message: "{{clientId}} sent a publish on topic '{{topic}}'\
+                              \ with result '{{validationResult}}'"
                       onFailure:
                         pipeline:
                         - id: logFailureOperation
                           functionId: log
                           arguments:
                             level: WARN
-                            message: $clientId sent an invalid publish on topic '$topic'
-                              with result '$validationResult'
+                            message: "{{clientId}} sent an invalid publish on topic\
+                              \ '{{topic}}' with result '{{validationResult}}'"
                     - id: policy2
                       createdAt: 2023-04-26T13:32:47.049Z
                       matching:
@@ -196,16 +196,16 @@ paths:
                           functionId: log
                           arguments:
                             level: DEBUG
-                            message: $clientId sent a publish on topic '$topic' with
-                              result '$validationResult'
+                            message: "{{clientId}} sent a publish on topic '{{topic}}'\
+                              \ with result '{{validationResult}}'"
                       onFailure:
                         pipeline:
                         - id: logSuccessOperation
                           functionId: log
                           arguments:
                             level: WARN
-                            message: $clientId sent an invalid publish on topic '$topic'
-                              with result '$validationResult'
+                            message: "{{clientId}} sent an invalid publish on topic\
+                              \ '{{topic}}' with result '{{validationResult}}'"
                 list-response-b:
                   description: Example response with multiple policies. More pages
                     left
@@ -385,16 +385,16 @@ paths:
                   functionId: log
                   arguments:
                     level: DEBUG
-                    message: $clientId sent a publish on topic '$topic' with result
-                      '$validationResult'
+                    message: "{{clientId}} sent a publish on topic '{{topic}}' with\
+                      \ result '{{validationResult}}'"
               onFailure:
                 pipeline:
                 - id: logOperationFailure
                   functionId: log
                   arguments:
                     level: WARN
-                    message: $clientId sent an invalid publish on topic '$topic' with
-                      result '$validationResult'
+                    message: "{{clientId}} sent an invalid publish on topic '{{topic}}'\
+                      \ with result '{{validationResult}}'"
             schema:
               $ref: '#/components/schemas/Policy'
         description: The policy that should be created.
@@ -425,16 +425,16 @@ paths:
                         functionId: log
                         arguments:
                           level: DEBUG
-                          message: $clientId sent a publish on topic '$topic' with
-                            result '$validationResult'
+                          message: "{{clientId}} sent a publish on topic '{{topic}}'\
+                            \ with result '{{validationResult}}'"
                     onFailure:
                       pipeline:
                       - id: logOperationFailure
                         functionId: log
                         arguments:
                           level: WARN
-                          message: $clientId sent an invalid publish on topic '$topic'
-                            with result '$validationResult'
+                          message: "{{clientId}} sent an invalid publish on topic\
+                            \ '{{topic}}' with result '{{validationResult}}'"
               schema:
                 $ref: '#/components/schemas/Policy'
           description: Success
@@ -580,16 +580,16 @@ paths:
                         functionId: log
                         arguments:
                           level: DEBUG
-                          message: $clientId sent a publish on topic '$topic' with
-                            result '$validationResult'
+                          message: "{{clientId}} sent a publish on topic '{{topic}}'\
+                            \ with result '{{validationResult}}'"
                     onFailure:
                       pipeline:
                       - id: logOperationFailure
                         functionId: log
                         arguments:
                           level: WARN
-                          message: $clientId sent an invalid publish on topic '$topic'
-                            with result '$validationResult'
+                          message: "{{clientId}} sent an invalid publish on topic\
+                            \ '{{topic}}' with result '{{validationResult}}'"
               schema:
                 $ref: '#/components/schemas/Policy'
           description: Success
