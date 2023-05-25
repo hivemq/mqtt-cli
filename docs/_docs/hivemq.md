@@ -17,9 +17,11 @@ mqtt hivemq
 
 ## Commands
 
-| Command | Explanation                    |
-|---------|--------------------------------|
-| export  | See [Export](hivemq/export.md) |
+| Command  | Explanation                      |
+|----------|----------------------------------|
+| export   | See [Export](hivemq/export.md)   |
+| policies | See [Export](hivemq/policies.md) |
+| schemas  | See [Export](hivemq/schemas.md)  |
 
 ***
 

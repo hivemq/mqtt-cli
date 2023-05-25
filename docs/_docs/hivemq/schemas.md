@@ -1,0 +1,167 @@
+---
+nav_order: 1
+redirect_from: /docs/hivemq/schemas.html
+---
+
+# Schemas
+
+***
+
+The schemas command of the HiveMQ command line offers a set of commands to work with schemas using a HiveMQ Data
+Validation API endpoint.
+
+```
+mqtt hivemq schemas
+```
+
+***
+
+## Commands
+
+| Command | Explanation                         |
+|---------|-------------------------------------|
+| get     | See [Get Schema](#get-schema)       |
+| delete  | See [Delete Schema](#delete-schema) |
+| create  | See [Create Schema](#create-schema) |
+
+***
+
+## Options
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
+
+***
+
+# Get Schema
+
+*** 
+
+Retrieve a single existing schema.
+
+```
+mqtt hivemq schemas get
+```
+
+***
+
+## Simple Example
+
+```
+$ mqtt hivemq schemas get --id my-schema-id 
+
+{
+  "arguments": {},
+  "createdAt": "2023-05-25T21:10:42.779Z",
+  "id": "my-schema-id",
+  "schemaDefinition": "eyAidHlwZSI6ICJvYmplY3QiIH0K",
+  "type": "JSON"
+}
+```
+
+***
+
+## Options
+
+| Option | Long Version | Explanation                    | Default  |
+|--------|--------------|--------------------------------|----------|
+| `-i`   | `--id`       | The id of the schema to fetch. | required |
+
+### API Connection Options
+
+{% include options/api-connection-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
+
+***
+
+# Delete Schema
+
+*** 
+
+Delete a single existing schema.
+
+```
+mqtt hivemq schemas delete
+```
+
+***
+
+## Simple Example
+
+```
+$ mqtt hivemq schemas delete --id my-schema-id 
+```
+
+***
+
+## Options
+
+| Option | Long Version | Explanation                         | Default  |
+|--------|--------------|-------------------------------------|----------|
+| `-i`   | `--id`       | The id of the schema to be deleted. | required |
+
+### API Connection Options
+
+{% include options/api-connection-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
+
+***
+
+# Create Schema
+
+*** 
+
+Create a new schema and upload it to a HiveMQ node.
+The schema definition may be provided either directly from the command line or from a file.
+
+```
+mqtt hivemq schemas create
+```
+
+***
+
+## Simple Example
+
+```
+$ mqtt hivemq schemas create --id my-schema-id --type protobuf --file my-schema.desc --message-type Message 
+```
+
+***
+
+## Options
+
+| Option | Long Version      | Explanation                                                                                                                                 | Default                                    |
+|--------|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
+| `-i`   | `--id`            | The id of the schema to be created.                                                                                                         | required                                   |
+|        | `--type`          | The type of the schema. (Currently supported schema types [`json`, `protobuf`])                                                             | one of `--definition` or `--file` required |
+|        | `--definition`    | The definition of the schema. This should be a JSON Schema string for '--type json' or a compiled Protobuf descriptor for '--type protobuf' | one of `--definition` or `--file` required |
+|        | `--file`          | A path to a file containing the definition of the schema.                                                                                   | required                                   |
+|        | `--message-type`  | Only for '--type protobuf'. The Protobuf message type to use for the schema.                                                                | required for '--type protobuf'             |
+|        | `--allow-unknown` | Only for '--type protobuf'. If provided, Protobuf messages may contain fields not specified in the schema.                                  | `false`                                    |
+
+### API Connection Options
+
+{% include options/api-connection-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
