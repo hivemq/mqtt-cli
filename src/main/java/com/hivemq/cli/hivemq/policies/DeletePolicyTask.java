@@ -3,6 +3,7 @@ package com.hivemq.cli.hivemq.policies;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.PoliciesApi;
+import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 
 public class DeletePolicyTask {

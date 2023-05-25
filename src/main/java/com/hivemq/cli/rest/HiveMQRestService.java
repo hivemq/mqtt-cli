@@ -24,26 +24,29 @@ import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 
+import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
 public class HiveMQRestService {
 
     private static final long CONNECT_TIMEOUT = 60;
 
-    public static @NotNull MqttClientsApi getMqttClientsApi(
+    @Inject
+    public HiveMQRestService() {
+    }
+
+    public @NotNull MqttClientsApi getMqttClientsApi(
             final @NotNull String host, final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
         return new MqttClientsApi(apiClient);
     }
 
-    public static @NotNull PoliciesApi getPoliciesApi(final @NotNull String host, final double requestPerSecondLimit) {
-
+    public @NotNull PoliciesApi getPoliciesApi(final @NotNull String host, final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
         return new PoliciesApi(apiClient);
     }
 
-    public static @NotNull SchemasApi getSchemasApi(final @NotNull String host, final double requestPerSecondLimit) {
-
+    public @NotNull SchemasApi getSchemasApi(final @NotNull String host, final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
         return new SchemasApi(apiClient);
     }

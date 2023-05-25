@@ -8,6 +8,7 @@ import com.google.gson.JsonSyntaxException;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.utils.json.OffsetDateTimeSerializer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 import javax.inject.Inject;
@@ -16,14 +17,13 @@ import java.time.OffsetDateTime;
 
 public class OutputFormatter {
 
-    private final @NotNull Gson gson = new GsonBuilder().setPrettyPrinting()
-            .disableHtmlEscaping()
-            .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
-            .create();
-    private final @NotNull PrintStream out = System.out;
+    private final @NotNull Gson gson;
+    private final @NotNull PrintStream out;
 
     @Inject
-    public OutputFormatter() {
+    public OutputFormatter(final @NotNull PrintStream out, final @NotNull Gson gson) {
+        this.out = out;
+        this.gson = gson;
     }
 
     public void printJson(final @NotNull Object object) {
@@ -36,20 +36,20 @@ public class OutputFormatter {
     }
 
     public void printApiException(final @NotNull String operationName, final @NotNull ApiException apiException) {
-        final String response = apiException.getResponseBody();
+        final @Nullable String response = apiException.getResponseBody();
 
         String prettyResponse;
         try {
-            final JsonObject object = JsonParser.parseString(response).getAsJsonObject();
-            prettyResponse = gson.toJson(object);
+            if (response == null) {
+                prettyResponse = apiException.getMessage();
+            } else {
+                final JsonObject object = JsonParser.parseString(response).getAsJsonObject();
+                prettyResponse = gson.toJson(object);
+            }
         } catch (final JsonSyntaxException jsonSyntaxException) {
             prettyResponse = response;
         }
         System.err.println(prettyResponse);
         Logger.error("{}: {}", operationName, prettyResponse);
-    }
-
-    public @NotNull Gson getGson() {
-        return gson;
     }
 }

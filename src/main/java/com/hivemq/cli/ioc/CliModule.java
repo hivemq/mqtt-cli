@@ -79,6 +79,7 @@ class CliModule {
     @Provides
     @NotNull Gson provideGson() {
         return new GsonBuilder().setPrettyPrinting()
+                .disableHtmlEscaping()
                 .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
                 .create();
     }

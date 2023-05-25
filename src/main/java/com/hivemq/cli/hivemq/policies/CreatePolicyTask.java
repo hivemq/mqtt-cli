@@ -1,5 +1,6 @@
 package com.hivemq.cli.hivemq.policies;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
@@ -10,21 +11,24 @@ import org.jetbrains.annotations.NotNull;
 public class CreatePolicyTask {
     private final @NotNull OutputFormatter outputFormatter;
     private final @NotNull PoliciesApi policiesApi;
+    private final @NotNull Gson gson;
     private final @NotNull String definition;
 
     public CreatePolicyTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull PoliciesApi policiesApi,
+            final @NotNull Gson gson,
             final @NotNull String definition) {
         this.outputFormatter = outputFormatter;
         this.policiesApi = policiesApi;
+        this.gson = gson;
         this.definition = definition;
     }
 
     public boolean execute() {
         final Policy policy;
         try {
-            policy = outputFormatter.getGson().fromJson(definition, Policy.class);
+            policy = gson.fromJson(definition, Policy.class);
         } catch (final JsonSyntaxException jsonSyntaxException) {
             outputFormatter.printError("Could not parse policy JSON: " + jsonSyntaxException.getMessage());
             return false;
@@ -36,8 +40,6 @@ public class CreatePolicyTask {
             outputFormatter.printApiException("Failed to create policy", apiException);
             return false;
         }
-
-        outputFormatter.printJson(policy);
 
         return true;
     }

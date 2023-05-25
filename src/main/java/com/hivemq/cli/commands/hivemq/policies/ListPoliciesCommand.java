@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "ls", description = "List all existing policies", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "list", description = "List all existing policies", mixinStandardHelpOptions = true)
 public class ListPoliciesCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
@@ -32,11 +32,14 @@ public class ListPoliciesCommand implements Callable<Integer> {
     @CommandLine.Mixin
     private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
 
-    private final @NotNull OutputFormatter formatter;
+    private final @NotNull OutputFormatter outputFormatter;
+    private final @NotNull HiveMQRestService hiveMQRestService;
 
     @Inject
-    public ListPoliciesCommand(final @NotNull OutputFormatter outputFormatter) {
-        this.formatter = outputFormatter;
+    public ListPoliciesCommand(
+            final @NotNull HiveMQRestService hiveMQRestService, final @NotNull OutputFormatter outputFormatter) {
+        this.outputFormatter = outputFormatter;
+        this.hiveMQRestService = hiveMQRestService;
     }
 
     @Override
@@ -44,10 +47,10 @@ public class ListPoliciesCommand implements Callable<Integer> {
         Logger.trace("Command {}", this);
 
         final PoliciesApi policiesApi =
-                HiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
+                hiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
         final ListPoliciesTask listPoliciesTask =
-                new ListPoliciesTask(formatter, policiesApi, topic, policyIds, schemaIds);
+                new ListPoliciesTask(outputFormatter, policiesApi, topic, policyIds, schemaIds);
 
         if (listPoliciesTask.execute()) {
             return 0;
@@ -69,7 +72,7 @@ public class ListPoliciesCommand implements Callable<Integer> {
                 ", dataGovernanceOptions=" +
                 dataGovernanceOptions +
                 ", formatter=" +
-                formatter +
+                outputFormatter +
                 '}';
     }
 }

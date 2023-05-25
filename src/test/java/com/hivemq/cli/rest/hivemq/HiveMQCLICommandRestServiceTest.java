@@ -46,7 +46,7 @@ class HiveMQCLICommandRestServiceTest {
     void setUp() throws IOException {
         server = new MockWebServer();
         server.start();
-        mqttClientsApi = HiveMQRestService.getMqttClientsApi(server.url("/").toString(), 500);
+        mqttClientsApi = new HiveMQRestService().getMqttClientsApi(server.url("/").toString(), 500);
     }
 
     @AfterEach
@@ -130,7 +130,7 @@ class HiveMQCLICommandRestServiceTest {
 
     @Test
     void get_client_ids_rate_limit_5_success() throws ApiException {
-        mqttClientsApi = HiveMQRestService.getMqttClientsApi(server.url("/").toString(), 1);
+        mqttClientsApi = new HiveMQRestService().getMqttClientsApi(server.url("/").toString(), 1);
         final MockResponse response = new MockResponse().setResponseCode(HTTP_OK).setBody(CLIENT_IDS_WITH_CURSOR);
 
         for (int i = 0; i < 5; i++) {

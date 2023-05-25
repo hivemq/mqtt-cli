@@ -45,7 +45,6 @@ class TestBrokerConnectST {
     @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
-
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})

@@ -24,8 +24,7 @@ import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "schemas",
-                     description = "",
-                     // TODO
+                     description = "Operations for schemas in a HiveMQ broker",
                      synopsisHeading = "%n@|bold Usage:|@  ",
                      descriptionHeading = "%n",
                      optionListHeading = "%n@|bold Options:|@%n",
