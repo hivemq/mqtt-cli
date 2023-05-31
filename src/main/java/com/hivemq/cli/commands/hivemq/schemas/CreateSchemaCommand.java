@@ -48,7 +48,7 @@ public class CreateSchemaCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"--type"},
                         required = true,
                         converter = SchemaTypeConverter.class,
-                        description = "the schema type (default json) ")
+                        description = "the schema type (default json)]")
     private @NotNull String schemaType;
 
     @SuppressWarnings("unused")

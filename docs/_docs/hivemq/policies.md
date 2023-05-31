@@ -20,14 +20,56 @@ mqtt hivemq policies
 
 | Command | Explanation                         |
 |---------|-------------------------------------|
-| get     | See [Get Policy](#get-policy)       |
-| delete  | See [Delete Policy](#delete-policy) |
 | create  | See [Create Policy](#create-policy) |
+| get     | See [Get Policy](#get-policy)       |
 | list    | See [List Policies](#list-policies) |
+| delete  | See [Delete Policy](#delete-policy) |
 
 ***
 
 ## Options
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
+
+***
+
+# Create Policy
+
+*** 
+
+Create a new policy and upload it to a HiveMQ node.
+The policy definition may be provided either directly from the command line or from a file.
+
+```
+mqtt hivemq policies create
+```
+
+***
+
+## Simple Example
+
+```
+mqtt hivemq policies create --file my-policy.json 
+```
+
+***
+
+## Options
+
+| Option | Long Version   | Explanation                                                                                         | Default |
+|--------|----------------|-----------------------------------------------------------------------------------------------------|---------|
+|        | `--definition` | The definition of the policy. This should be a JSON string containing a complete policy definition. |         |
+|        | `--file`       | A path to a file containing the definition of the policy.                                           |         |
+
+### API Connection Options
+
+{% include options/api-connection-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
 
 ### Help Options
 
@@ -51,7 +93,6 @@ mqtt hivemq policies get
 
 ```
 $ mqtt hivemq policies get --id my-policy-id 
-
 {
   "createdAt": "2023-05-25T14:58:09.093Z",
   "id": "my-policy-id",
@@ -86,91 +127,9 @@ $ mqtt hivemq policies get --id my-policy-id
 
 ## Options
 
-| Option | Long Version | Explanation                    | Default  |
-|--------|--------------|--------------------------------|----------|
-| `-i`   | `--id`       | The id of the policy to fetch. | required |
-
-### API Connection Options
-
-{% include options/api-connection-options.md %}
-
-### Logging Options
-
-{% include options/logging-options.md %}
-
-### Help Options
-
-{% include options/help-options.md defaultHelp=true %}
-
-***
-
-# Delete Policy
-
-*** 
-
-Delete a single existing policy.
-
-```
-mqtt hivemq policies delete
-```
-
-***
-
-## Simple Example
-
-```
-$ mqtt hivemq policies delete --id my-policy-id 
-```
-
-***
-
-## Options
-
-| Option | Long Version | Explanation                         | Default  |
-|--------|--------------|-------------------------------------|----------|
-| `-i`   | `--id`       | The id of the policy to be deleted. | required |
-
-### API Connection Options
-
-{% include options/api-connection-options.md %}
-
-### Logging Options
-
-{% include options/logging-options.md %}
-
-### Help Options
-
-{% include options/help-options.md defaultHelp=true %}
-
-***
-
-# Create Policy
-
-*** 
-
-Create a new policy and upload it to a HiveMQ node.
-The policy definition may be provided either directly from the command line or from a file.
-
-```
-mqtt hivemq policies create
-```
-
-***
-
-## Simple Example
-
-```
-$ mqtt hivemq policies create --file my-policy.json 
-```
-
-***
-
-## Options
-
-| Option | Long Version   | Explanation                                                                                         | Default                                    |
-|--------|----------------|-----------------------------------------------------------------------------------------------------|--------------------------------------------|
-|        | `--definition` | The definition of the policy. This should be a JSON string containing a complete policy definition. | one of `--definition` or `--file` required |
-|        | `--file`       | A path to a file containing the definition of the policy.                                           | one of `--definition` or `--file` required |
+| Option | Long Version | Explanation                    | Default |
+|--------|--------------|--------------------------------|---------|
+| `-i`   | `--id`       | The id of the policy to fetch. |         |
 
 ### API Connection Options
 
@@ -193,7 +152,6 @@ $ mqtt hivemq policies create --file my-policy.json
 List every policy that exists on a HiveMQ node.
 This list may optionally be filtered by policy id, schema id, and MQTT topic.
 
-
 ```
 mqtt hivemq policies list
 ```
@@ -204,7 +162,6 @@ mqtt hivemq policies list
 
 ```
 $ mqtt hivemq policies list --topic topic/1
-
 {
   "items": [
     {
@@ -276,6 +233,46 @@ $ mqtt hivemq policies list --topic topic/1
 | `-i`   | `--id`        | Filter by policies with a matching policy id. Can be specified multiple times.                         |         |
 | `-s`   | `--schema-id` | Filter by policies that reference a schema with a matching schema id. Can be specified multiple times. |         |
 | `-t`   | `--topic`     | Filter by policies that apply to a certain MQTT topic.                                                 |         |
+
+### API Connection Options
+
+{% include options/api-connection-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
+
+***
+
+# Delete Policy
+
+*** 
+
+Delete a single existing policy.
+
+```
+mqtt hivemq policies delete
+```
+
+***
+
+## Simple Example
+
+```
+mqtt hivemq policies delete --id my-policy-id 
+```
+
+***
+
+## Options
+
+| Option | Long Version | Explanation                         | Default |
+|--------|--------------|-------------------------------------|---------|
+| `-i`   | `--id`       | The id of the policy to be deleted. |         |
 
 ### API Connection Options
 
