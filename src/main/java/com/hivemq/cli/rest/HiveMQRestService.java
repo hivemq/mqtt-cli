@@ -25,8 +25,10 @@ import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.concurrent.TimeUnit;
 
+@Singleton
 public class HiveMQRestService {
 
     private static final long CONNECT_TIMEOUT = 60;

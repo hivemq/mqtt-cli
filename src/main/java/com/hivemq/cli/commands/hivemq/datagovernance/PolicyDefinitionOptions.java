@@ -45,8 +45,7 @@ public class PolicyDefinitionOptions {
     }
 
     @SuppressWarnings("NotNullFieldNotInitialized")
-    @NotNull
-    public String definition;
+    public @NotNull String definition;
 
     public @NotNull String getDefinition() {
         return definition;

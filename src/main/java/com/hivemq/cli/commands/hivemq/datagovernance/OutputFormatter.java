@@ -52,7 +52,7 @@ public class OutputFormatter {
     }
 
     public void printApiException(final @NotNull String operationName, final @NotNull ApiException apiException) {
-        final @Nullable String response = apiException.getResponseBody();
+        final String response = apiException.getResponseBody();
 
         String prettyResponse;
         try {
