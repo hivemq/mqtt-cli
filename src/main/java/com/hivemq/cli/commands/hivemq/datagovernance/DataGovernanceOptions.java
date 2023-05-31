@@ -34,14 +34,14 @@ public class DataGovernanceOptions {
     @CommandLine.Option(names = {"-r", "--rate"},
                         defaultValue = "1500",
                         description = "The rate limit of the REST calls to the HiveMQ API endpoint in requests per second (default 1500/s)",
-                        order = 3)
+                        order = 2)
     private double rateLimit;
 
     @SuppressWarnings({"unused"})
     @CommandLine.Option(names = {"-l", "--log"},
                         defaultValue = "false",
                         description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)",
-                        order = 2)
+                        order = 3)
     private void initLogging(final boolean logToLogfile) {
         LoggerUtils.turnOffConsoleLogging(logToLogfile);
     }
