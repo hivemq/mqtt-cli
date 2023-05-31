@@ -86,11 +86,11 @@ Supported archive types:
 
 ### Certificates
 
-Certificates or public keys can be stored as standalone files. They usually follow the X.509 standard and can be
+Certificates can be stored as standalone files. They usually follow the X.509 standard and can be
 represented in multiple ways. The MQTT CLI supports the following formats:
 
 - ASN.1 structured, binary certificates encoded with DER (`.cer`, `.crt`)
-- Base64-encoded DER certificates (`.pem`)
+- ASN.1 structured, Base64-encoded DER certificates (`.pem`)
 
 **NOTE**: File endings are not standardised, one could also store a Base64-encoded certificate inside a `.cer` file. The
 MQTT CLI will accept those certificates though it is highly encouraged to not mix file endings to be able to
@@ -98,3 +98,17 @@ distinguish.
 
 ### Private Keys
 
+Private keys can be stored as standalone files. There are multiple standards available to represent private keys as well
+as multiple ways to encrypt the private key. The MQTT CLI supports the following standards:
+
+- ASN.1 structured, Base64-encoded DER (`.pem`)
+  - PKCS#1
+    - unencrypted
+    - aes256
+    - des3
+  - PKCS#8
+    - unencrypted
+    - aes256
+    - des3
+
+**NOTE**: The MQTT CLI does currently not support binary private keys encoded with DER (`.der`).
