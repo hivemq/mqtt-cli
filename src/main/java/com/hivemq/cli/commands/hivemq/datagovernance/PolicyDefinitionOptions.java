@@ -29,7 +29,7 @@ public class PolicyDefinitionOptions {
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--file"},
                         converter = FileToByteBufferConverter.class,
-                        description = "the JSON file containing the policy definition. " +
+                        description = "The JSON file containing the policy definition. " +
                                 "This option is mutually exclusive with --definition.")
     private void setDefinitionFromFile(final @NotNull ByteBuffer definitionFromFile) {
         definition = new String(definitionFromFile.array(), StandardCharsets.UTF_8);
@@ -38,7 +38,7 @@ public class PolicyDefinitionOptions {
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--definition"},
                         converter = ByteBufferConverter.class,
-                        description = "the policy definition provided directly. " +
+                        description = "The policy definition provided directly. " +
                                 "This option is mutually exclusive with --file.")
     private void setDefinitionFromCommandline(final @NotNull ByteBuffer definitionFromArgument) {
         definition = new String(definitionFromArgument.array(), StandardCharsets.UTF_8);
