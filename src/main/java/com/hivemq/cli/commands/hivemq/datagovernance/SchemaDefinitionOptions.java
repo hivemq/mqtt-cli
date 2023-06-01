@@ -27,14 +27,14 @@ public class SchemaDefinitionOptions {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--file"},
-                        description = "the file containing the schema definition. " +
+                        description = "The file containing the schema definition. " +
                                 "This option is mutually exclusive with --definition.")
     private @Nullable String file;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--definition"},
                         converter = ByteBufferConverter.class,
-                        description = "the schema definition provided directly. " +
+                        description = "The schema definition provided directly. " +
                                 "This option is mutually exclusive with --file.")
     private @Nullable ByteBuffer argument;
 
