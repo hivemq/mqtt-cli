@@ -37,8 +37,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HiveMQCLICommandRestServiceTest {
 
-    // TODO
-
     private @NotNull MockWebServer server;
     private @NotNull MqttClientsApi mqttClientsApi;
 
