@@ -10,7 +10,19 @@ redirect_from: /docs/tls.html
 
 ## Configuration
 
-There are multiple ways to configure TLS for the MQTT CLI.
+The MQTT CLI allows both normal TLS where only the server is authenticated and mutual TLS (mTLS) where also the client
+authenticates itself in order to be able to establish a connection.
+
+It can be configured either by using the command line options
+(e.g. [Publish TLS-Authentication](publish.md#tls-authentication)) or via the properties configuration file
+([Configuration](configuration.md)).
+
+In order to use TLS with your default values inside the properties configuration file, simply add `-s` or `--secure`.
+
+**NOTE**: TLS command line options will always override default properties configurations.
+
+**NOTE**: It is also possible to mix between styles of configurations e.g. using a default properties truststore and
+having a keystore or client certificate and private key provided via command line option.
 
 ***
 
@@ -102,13 +114,13 @@ Private keys can be stored as standalone files. There are multiple standards ava
 as multiple ways to encrypt the private key. The MQTT CLI supports the following standards:
 
 - ASN.1 structured, Base64-encoded DER (`.pem`)
-  - PKCS#1
-    - unencrypted
-    - aes256
-    - des3
-  - PKCS#8
-    - unencrypted
-    - aes256
-    - des3
+    - PKCS#1
+        - unencrypted
+        - aes256
+        - des3
+    - PKCS#8
+        - unencrypted
+        - aes256
+        - des3
 
 **NOTE**: The MQTT CLI does currently not support binary private keys encoded with DER (`.der`).
