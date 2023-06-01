@@ -41,25 +41,25 @@ import java.util.concurrent.Callable;
 public class CreateSchemaCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
-    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "the id of the schema")
+    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the schema")
     private @NotNull String schemaId;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Option(names = {"--type"},
                         required = true,
                         converter = SchemaTypeConverter.class,
-                        description = "the schema type (default json)]")
+                        description = "The schema type (default json)")
     private @NotNull String schemaType;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--message-type"},
-                        description = "the Protobuf message type. Only used with --type protobuf.")
+                        description = "The Protobuf message type. Only used with --type protobuf.")
     private @Nullable String messageType;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--allow-unknown"},
                         defaultValue = "false",
-                        description = "allow unknown Protobuf fields (default false). Only used with --type protobuf.")
+                        description = "Allow unknown Protobuf fields (default false). Only used with --type protobuf.")
     private boolean allowUnknown;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})

@@ -33,7 +33,7 @@ import java.util.concurrent.Callable;
 public class DeleteSchemaCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
-    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "the schema id")
+    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the schema")
     private @NotNull String schemaId;
 
     @CommandLine.Mixin

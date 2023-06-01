@@ -57,14 +57,14 @@ mqtt hivemq schemas create --id my-schema-id --type protobuf --file my-schema.de
 
 ## Options
 
-| Option | Long Version      | Explanation                                                                                                                                 | Default                        |
-|--------|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------|
-| `-i`   | `--id`            | The id of the schema to be created.                                                                                                         |                                |
-|        | `--type`          | The type of the schema. (Currently supported schema types [`json`, `protobuf`])                                                             |                                |
-|        | `--definition`    | The definition of the schema. This should be a JSON Schema string for '--type json' or a compiled Protobuf descriptor for '--type protobuf' |                                |
-|        | `--file`          | A path to a file containing the definition of the schema.                                                                                   |                                |
-|        | `--message-type`  | Only for '--type protobuf'. The Protobuf message type to use for the schema.                                                                | required for '--type protobuf' |
-|        | `--allow-unknown` | Only for '--type protobuf'. If provided, Protobuf messages may contain fields not specified in the schema.                                  | `false`                        |
+| Option | Long Version      | Explanation                                                                                                                                  | Default | Required                  |
+|--------|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|---------------------------|
+| `-i`   | `--id`            | The id of the schema to be created.                                                                                                          |         | Yes                       |
+|        | `--type`          | The type of the schema. (Currently supported schema types [`json`, `protobuf`])                                                              |         | Yes                       |
+|        | `--definition`    | The definition of the schema. This should be a JSON Schema string for '--type json' or a compiled Protobuf descriptor for '--type protobuf'. |         | Yes                       |
+|        | `--file`          | A path to a file containing the definition of the schema.                                                                                    |         | Yes                       |
+|        | `--message-type`  | Only used with '--type protobuf'. The Protobuf message type to use for the schema.                                                           |         | When `type` is `protobuf` |
+|        | `--allow-unknown` | Only used with '--type protobuf'. If provided, Protobuf messages may contain fields not specified in the schema.                             | `false` | No                        |
 
 ### API Connection Options
 
@@ -109,9 +109,9 @@ $ mqtt hivemq schemas get --id my-schema-id
 
 ## Options
 
-| Option | Long Version | Explanation                    | Default |
-|--------|--------------|--------------------------------|---------|
-| `-i`   | `--id`       | The id of the schema to fetch. |         |
+| Option | Long Version | Explanation                    | Default | Required |
+|--------|--------------|--------------------------------|---------|----------|
+| `-i`   | `--id`       | The id of the schema to fetch. |         | Yes      |
 
 ### API Connection Options
 
@@ -149,9 +149,9 @@ mqtt hivemq schemas delete --id my-schema-id
 
 ## Options
 
-| Option | Long Version | Explanation                         | Default |
-|--------|--------------|-------------------------------------|---------|
-| `-i`   | `--id`       | The id of the schema to be deleted. |         |
+| Option | Long Version | Explanation                         | Default | Required |
+|--------|--------------|-------------------------------------|---------|----------|
+| `-i`   | `--id`       | The id of the schema to be deleted. |         | Yes      |
 
 ### API Connection Options
 

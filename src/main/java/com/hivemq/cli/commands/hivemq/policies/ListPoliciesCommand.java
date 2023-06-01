@@ -34,15 +34,15 @@ import java.util.concurrent.Callable;
 public class ListPoliciesCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-t", "--topic"}, description = "list only policies that match a topic")
+    @CommandLine.Option(names = {"-t", "--topic"}, description = "List only policies that match a topic")
     private @Nullable String topic;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-i", "--id"}, description = "filter by policy id")
+    @CommandLine.Option(names = {"-i", "--id"}, description = "Filter by policy id")
     private @Nullable String @Nullable [] policyIds;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-s", "--schema-id"}, description = "filter by policies containing a schema id")
+    @CommandLine.Option(names = {"-s", "--schema-id"}, description = "Filter by policies containing a schema id")
     private @Nullable String @Nullable [] schemaIds;
 
     @CommandLine.Mixin

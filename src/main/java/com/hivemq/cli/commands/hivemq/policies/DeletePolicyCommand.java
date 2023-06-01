@@ -32,7 +32,7 @@ import java.util.concurrent.Callable;
 public class DeletePolicyCommand implements Callable<Integer> {
 
     @SuppressWarnings({"unused", "NotNullFieldNotInitialized"})
-    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "the id of the policy")
+    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the policy")
     private @NotNull String policyId;
 
     @CommandLine.Mixin

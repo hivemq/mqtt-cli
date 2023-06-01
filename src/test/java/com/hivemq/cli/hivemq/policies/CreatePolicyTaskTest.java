@@ -61,7 +61,7 @@ public class CreatePolicyTaskTest {
 
     @Test
     void execute_invalidDefinition_printError() throws ApiException {
-        final CreatePolicyTask task = new CreatePolicyTask(outputFormatter, policiesApi, gson,  "invalid");
+        final CreatePolicyTask task = new CreatePolicyTask(outputFormatter, policiesApi, gson, "invalid");
 
         assertFalse(task.execute());
         verify(outputFormatter, times(1)).printError(any());
@@ -70,7 +70,7 @@ public class CreatePolicyTaskTest {
 
     @Test
     void execute_apiException_printError() throws ApiException {
-        final CreatePolicyTask task = new CreatePolicyTask(outputFormatter, policiesApi, gson,  POLICY_JSON);
+        final CreatePolicyTask task = new CreatePolicyTask(outputFormatter, policiesApi, gson, POLICY_JSON);
 
         when(policiesApi.createPolicy(any())).thenThrow(ApiException.class);
 

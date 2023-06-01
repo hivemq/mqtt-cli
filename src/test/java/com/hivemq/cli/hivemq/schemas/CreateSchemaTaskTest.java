@@ -52,7 +52,7 @@ public class CreateSchemaTaskTest {
     // syntax = "proto3";
     // message Test {}
     // ```
-    // Created with `protoc -o /dev/stdout | base64`
+    // Created with `protoc test.proto -o /dev/stdout | base64`
     @SuppressWarnings("FieldCanBeLocal")
     private final @NotNull String PROTOBUF_SCHEMA_DEFINITION = "ChwKCnRlc3QucHJvdG8iBgoEVGVzdGIGcHJvdG8z";
 
@@ -97,8 +97,8 @@ public class CreateSchemaTaskTest {
         assertEquals("protobuf", createdSchema.getType());
         assertEquals(PROTOBUF_SCHEMA_DEFINITION, createdSchema.getSchemaDefinition());
         assertNotNull(createdSchema.getArguments());
-        assertEquals(createdSchema.getArguments().get("messageType"), "Test");
-        assertEquals(createdSchema.getArguments().get("allowUnknownFields"), "true");
+        assertEquals("Test", createdSchema.getArguments().get("messageType"));
+        assertEquals("true", createdSchema.getArguments().get("allowUnknownFields"));
     }
 
     @Test

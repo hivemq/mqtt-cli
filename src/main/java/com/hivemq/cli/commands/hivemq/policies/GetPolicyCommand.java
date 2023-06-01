@@ -32,7 +32,7 @@ import java.util.concurrent.Callable;
 public class GetPolicyCommand implements Callable<Integer> {
 
     @SuppressWarnings({"unused", "NotNullFieldNotInitialized"})
-    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "the policy id")
+    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the policy")
     private @NotNull String policyId;
 
     @CommandLine.Mixin

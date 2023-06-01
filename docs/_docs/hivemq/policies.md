@@ -58,10 +58,10 @@ mqtt hivemq policies create --file my-policy.json
 
 ## Options
 
-| Option | Long Version   | Explanation                                                                                         | Default |
-|--------|----------------|-----------------------------------------------------------------------------------------------------|---------|
-|        | `--definition` | The definition of the policy. This should be a JSON string containing a complete policy definition. |         |
-|        | `--file`       | A path to a file containing the definition of the policy.                                           |         |
+| Option | Long Version   | Explanation                                                                                         | Default | Required                                        |
+|--------|----------------|-----------------------------------------------------------------------------------------------------|---------|-------------------------------------------------|
+|        | `--definition` | The definition of the policy. This should be a JSON string containing a complete policy definition. |         | Either `--definition` or `--file`, but not both |
+|        | `--file`       | A path to a file containing the definition of the policy.                                           |         | Either `--definition` or `--file`, but not both |
 
 ### API Connection Options
 
@@ -127,9 +127,9 @@ $ mqtt hivemq policies get --id my-policy-id
 
 ## Options
 
-| Option | Long Version | Explanation                    | Default |
-|--------|--------------|--------------------------------|---------|
-| `-i`   | `--id`       | The id of the policy to fetch. |         |
+| Option | Long Version | Explanation                    | Default | Required |
+|--------|--------------|--------------------------------|---------|----------|
+| `-i`   | `--id`       | The id of the policy to fetch. |         | Yes      |
 
 ### API Connection Options
 
@@ -228,11 +228,11 @@ $ mqtt hivemq policies list --topic topic/1
 
 ## Options
 
-| Option | Long Version  | Explanation                                                                                            | Default |
-|--------|---------------|--------------------------------------------------------------------------------------------------------|---------|
-| `-i`   | `--id`        | Filter by policies with a matching policy id. Can be specified multiple times.                         |         |
-| `-s`   | `--schema-id` | Filter by policies that reference a schema with a matching schema id. Can be specified multiple times. |         |
-| `-t`   | `--topic`     | Filter by policies that apply to a certain MQTT topic.                                                 |         |
+| Option | Long Version  | Explanation                                                                                            | Default | Required |
+|--------|---------------|--------------------------------------------------------------------------------------------------------|---------|----------|
+| `-i`   | `--id`        | Filter by policies with a matching policy id. Can be specified multiple times.                         |         | No       |
+| `-s`   | `--schema-id` | Filter by policies that reference a schema with a matching schema id. Can be specified multiple times. |         | No       |
+| `-t`   | `--topic`     | Filter by policies that apply to a certain MQTT topic.                                                 |         | No       |
 
 ### API Connection Options
 
@@ -270,9 +270,9 @@ mqtt hivemq policies delete --id my-policy-id
 
 ## Options
 
-| Option | Long Version | Explanation                         | Default |
-|--------|--------------|-------------------------------------|---------|
-| `-i`   | `--id`       | The id of the policy to be deleted. |         |
+| Option | Long Version | Explanation                         | Default | Required |
+|--------|--------------|-------------------------------------|---------|----------|
+| `-i`   | `--id`       | The id of the policy to be deleted. |         | Yes      |
 
 ### API Connection Options
 
