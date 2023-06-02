@@ -10,8 +10,7 @@ redirect_from: /docs/tls.html
 
 ## Configuration
 
-The MQTT CLI allows both normal TLS where only the server is authenticated and mutual TLS (mTLS) where also the client
-authenticates itself in order to be able to establish a connection.
+The MQTT CLI allows both TLS and mutual TLS (mTLS) to establish a secure connection.
 
 It can be configured either by using the command line options
 (e.g. [Publish TLS-Authentication](publish.md#tls-authentication)) or via the properties configuration file
@@ -22,7 +21,7 @@ In order to use TLS with your default values inside the properties configuration
 **NOTE**: TLS command line options will always override default properties configurations.
 
 **NOTE**: It is also possible to mix between styles of configurations e.g. using a default properties truststore and
-having a keystore or client certificate and private key provided via command line option.
+having a keystore or client certificate and private key provided via the command line option.
 
 ***
 
@@ -75,9 +74,10 @@ the following cipher suites:
 
 ## Formats and Encryption Algorithms
 
-There exist a lot of different formats for keystore (and truststore) archives as well as certificate and private key
+There are several different formats for keystore (and truststore) archives as well as certificate and private key
 files. Additionally, private keys can also be encrypted with different encryption algorithms. The MQTT CLI tries to
-combine usability by accepting multiple formats and encryption algorithms with convention by only accepting files with
+combine usability, by accepting multiple formats and encryption algorithms, with convention, by only accepting files
+with
 generally agreed file endings. This enables users to quickly identify and understand TLS configurations.
 
 ### Keystores and Truststores
@@ -104,9 +104,8 @@ represented in multiple ways. The MQTT CLI supports the following formats:
 - ASN.1 structured, binary certificates encoded with DER (`.cer`, `.crt`)
 - ASN.1 structured, Base64-encoded DER certificates (`.pem`)
 
-**NOTE**: File endings are not standardised, one could also store a Base64-encoded certificate inside a `.cer` file. The
-MQTT CLI will accept those certificates though it is highly encouraged to not mix file endings to be able to
-distinguish.
+**NOTE**: File endings are not standardised, one could also store a Base64-encoded certificate inside a `.cer` file.
+While this is discouraged, to avoid content encoding inconsistencies, the MQTT CLI will still accept those certificates.
 
 ### Private Keys
 
