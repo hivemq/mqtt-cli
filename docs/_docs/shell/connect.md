@@ -20,11 +20,11 @@ Alias: `mqtt> con`
 
 ## Simple Examples
 
-| Command                            | Explanation                                                                                          |
-|------------------------------------|:-----------------------------------------------------------------------------------------------------|
-| `mqtt> con`                        | Creates and connect a new MQTT client with the default settings                                      |
-| `mqtt> con -V 3 -h myHost`         | Creates and connects an MQTT 3.1.1 client at myHost with the default port                            |
-| `mqtt> con -i mqtt-client -p 1884` | Creates and connects an MQTT client at localhost with port 1884 which is identified by `mqtt-client` |
+| Command                            | Explanation                                                                                           |
+|------------------------------------|:------------------------------------------------------------------------------------------------------|
+| `mqtt> con`                        | Creates and connects a new MQTT client with the default settings.                                     |
+| `mqtt> con -V 3 -h myHost`         | Creates and connects an MQTT 3.1.1 client at myHost with the default port.                            |
+| `mqtt> con -i mqtt-client -p 1884` | Creates and connects an MQTT client at localhost with port 1884 which is identified by `mqtt-client`. |
 
 ***
 
@@ -68,7 +68,7 @@ mqtt> con -h myHost -p 1884
 
 ***
 
-Connect a client to the default host on default port using authentication
+Connect a client to the default host and port using authentication
 
 ```
 mqtt> con -u username -pw password
@@ -124,5 +124,7 @@ myClient@localhost> exit  # client is still connected
 mqtt> dis -i myClient -h broker.hivemq.com
 ```
 
-**NOTE**: Besides the **identifier** also **hostname** has to be given to uniquely identify the client.
-If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
+**NOTE**: When specifying the **identifier** in order to uniquely identify the desired client, the **hostname** must
+also be provided.
+If you don't specify these, the default settings for these attributes will be used which may lead to unexpected
+behavior.

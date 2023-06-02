@@ -29,7 +29,6 @@ mqtt swarm run
 | Option | Long Version | Explanation                                | Default                 |
 |--------|--------------|--------------------------------------------|-------------------------|
 | `-url` |              | The URL of the HiveMQ Swarm Rest endpoint. | `http://localhost:8888` |
-| `-r`   | `--run-id`   | The id of the run to stop.                 | `The current run`       |
 
 ### Logging Options
 
@@ -59,7 +58,6 @@ mqtt swarm run
 |--------|--------------|-------------------------------------------------------|-------------------------|
 | `-url` |              | The URL of the HiveMQ Swarm Rest endpoint.            | `http://localhost:8888` |
 | `-f`   | `--file`     | The scenario to execute.                              | required                |
-| `-r`   | `--run-id`   | The id of the run to stop.                            | `The current run`       |
 | `-d`   | `--dettach`  | Execute the scenario in detached (non-blocking) mode. | `The current run`       |
 
 ### Logging Options

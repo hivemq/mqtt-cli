@@ -19,12 +19,12 @@ Alias: `mqtt pub`
 
 ## Simple Examples
 
-| Command                                            | Explanation                                                                     |
-|----------------------------------------------------|---------------------------------------------------------------------------------|
-| `mqtt pub -t test -m "Hello"`                      | Publish the message `Hello` with topic 'test' using the default settings        |
-| `mqtt pub -t test1 -t test2 -m "Hello Tests"`      | Publish the message `Hello Tests` with topics 'test1' and 'test2'               |
-| `mqtt pub -t test -m "Hello" -h localhost -p 1884` | Publish the message `Hello` with topic 'test' to a broker at localhost:1884     |
-| `mqtt pub -t test -m:file payload.txt`             | Publish the message in payload.txt with topic 'test' using the default settings |
+| Command                                            | Explanation                                                                      |
+|----------------------------------------------------|----------------------------------------------------------------------------------|
+| `mqtt pub -t test -m "Hello"`                      | Publish the message `Hello` with topic 'test' using the default settings.        |
+| `mqtt pub -t test1 -t test2 -m "Hello Tests"`      | Publish the message `Hello Tests` with topics 'test1' and 'test2'.               |
+| `mqtt pub -t test -m "Hello" -h localhost -p 1884` | Publish the message `Hello` with topic 'test' to a broker at localhost:1884.     |
+| `mqtt pub -t test -m:file payload.txt`             | Publish the message in payload.txt with topic 'test' using the default settings. |
 
 ***
 
@@ -72,7 +72,7 @@ Alias: `mqtt pub`
 
 ## Further Examples
 
-Publish a message with default QoS set to `Exactly Once`
+Publish a message with QoS level `Exactly Once`
 
 **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
 

@@ -1,5 +1,5 @@
 ---
 title: Help Options
-permalink: /docs/publish/#help-options
+permalink: /docs/test/#help-options
 nav_order: 6
 ---

@@ -1,5 +1,5 @@
 ---
 title: Debug Options
-permalink: /docs/publish/#debug-options
+permalink: /docs/subscribe/#debug-options
 nav_order: 6
 ---

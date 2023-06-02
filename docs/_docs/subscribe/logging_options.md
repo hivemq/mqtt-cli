@@ -1,5 +1,5 @@
 ---
 title: Logging Options
-permalink: /docs/publish/#logging-options
+permalink: /docs/subscribe/#logging-options
 nav_order: 5
 ---

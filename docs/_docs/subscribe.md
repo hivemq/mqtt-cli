@@ -73,7 +73,7 @@ Alias: `$ mqtt sub`
 
 ## Further Examples
 
-Subscribe to one topic with default QoS `Exactly Once`.
+Subscribe to one topic with QoS level `Exactly Once`.
 
 **NOTE**: If you specify one QoS and multiple topics, the QoS will be used for all topics.
 
@@ -94,8 +94,7 @@ mqtt sub -t topic1 -q 0 -t topic2 -q 1 -t topic3 -q 2
 
 Subscribe to a topic and output the received publish messages to the file `publishes.log` in the current directory.
 
-**NOTE**: If the file is not created yet, it will be created by the CLI. If it is present the received publish
-messages will be appended to the file.
+**NOTE**: The MQTT CLI creates the file if it does not exist. Received publish messages will be appended.
 
 ```
 mqtt sub -t topic -of publishes.log
@@ -106,8 +105,7 @@ mqtt sub -t topic -of publishes.log
 Subscribe to a topic and output the received publish messages to the file `publishes.log` in a
 specified `/usr/local/var` directory.
 
-**NOTE**: If the file is not created yet, it will be created by the CLI. If it is present the received publish messages
-will be appended to the file.
+**NOTE**: The MQTT CLI creates the file if it does not exist. Received publish messages will be appended.
 
 ```
 mqtt sub -t topic -of /usr/local/var/publishes.log

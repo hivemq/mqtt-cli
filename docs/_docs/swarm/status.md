@@ -20,7 +20,7 @@ mqtt swarm status
 | Option | Long Version | Explanation                                                        | Default                 |
 |--------|--------------|--------------------------------------------------------------------|-------------------------|
 | `-url` |              | The URL of the HiveMQ Swarm Rest endpoint.                         | `http://localhost:8888` |
-|        | `--format`   | The export output format. (Currently supported formats [`pretty`]) | `pretty`                |
+|        | `--format`   | The export output format (Currently supported formats [`pretty`]). | `pretty`                |
 
 ### Logging Options
 

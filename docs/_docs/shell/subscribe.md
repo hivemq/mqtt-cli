@@ -21,10 +21,10 @@ Alias: `client@host> sub`
 
 ## Options
 
-| Option | Long Version        | Explanation                                                                                                                                                                                             | Default |
-|--------|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `-oc`  | `--outputToConsole` | If this flag is set the output will be printed to the console.                                                                                                                                          | `false` |
-| `-s`   | `--stay`            | The subscribe emulates the same behavior as the subscribe command in non-shell mode. <br> **NOTE**: the subscriptions will be unsubscribed afterwards. <br> To cancel the command simply press *Enter*. | `false` |
+| Option | Long Version        | Explanation                                                                                                                                                                                      | Default |
+|--------|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| `-oc`  | `--outputToConsole` | If this flag is set the output will be printed to the console.                                                                                                                                   | `false` |
+| `-s`   | `--stay`            | The subscribe emulates the same behavior as the subscribe command in non-shell mode. <br> **NOTE**: the subscriptions will be unsubscribed afterwards. <br> To cancel the command press *Enter*. | `false` |
 
 ### Subscribe Options
 

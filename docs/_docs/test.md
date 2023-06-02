@@ -53,8 +53,8 @@ MQTT 5: OK
 | Option | Long Version    | Explanation                                                                    | Default                      |
 |--------|-----------------|--------------------------------------------------------------------------------|------------------------------|
 | `-V`   | `--mqttVersion` | The MQTT version to test the broker on.                                        | Both versions will be tested |
-| `-a`   | `--all`         | Perform all tests for all MQTT versions                                        | `false` (Only test MQTT 3)   |
-| `-t`   | `--timeOut`     | The time to wait for the broker to respond (in seconds).                       | `10s`                        |
+| `-a`   | `--all`         | Perform all tests for all MQTT versions.                                       | `false` (Only test MQTT 3)   |
+| `-t`   | `--timeOut`     | The time to wait for the broker to respond (in seconds).                       | `10`                         |
 | `-q`   | `--qosTries`    | The amount of messages to send and receive from the broker for each QoS level. | `10`                         |
 
 ### Connect Options
