@@ -16,8 +16,8 @@ redirect_from: /docs/logging.html
 
 ## Direct Logging for Publish and Subscribe
 
-> If you require debug logging for direct access add the `-d` and `-v` options are available for the basic publish and
-> subscribe command
+If you require debug logging for direct access, the `-d` (debug) and `-v` (verbose) options are available for the basic
+publish and subscribe command
 
 ```
 $ mqtt pub -i c1 -t test -m "Hello World" -d -h broker.hivemq.com

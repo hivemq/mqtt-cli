@@ -6,8 +6,8 @@
 | `-i`        | `--identifier`            | A unique client identifier can be defined.                                       | A randomly generated UTF-8 String. |
 | `-ip`       | `--identifierPrefix`      | The prefix for randomly generated client identifiers, if no identifier is given. | `mqttClient`                       |
 | `-c`        | `--[no-]cleanStart`       | Whether the client should start a clean session.                                 | `true`                             |
-| `k`         | `--keepAlive`             | The keep alive of the client (in seconds)                                        | `60`                               |
-| `-se`       | `--sessionExpiryInterval` | Session expiry value in seconds.                                                 | `0` (Instant Expiry)               |
+| `k`         | `--keepAlive`             | The keep alive of the client (in seconds).                                       | `60`                               |
+| `-se`       | `--sessionExpiryInterval` | The session expiry value in seconds.                                             | `0` (Instant Expiry)               |
 | `-Cup`      | `--connectUserProperty`   | A user property of the connect message.                                          |                                    |
 | `--ws`      |                           | Use WebSocket transport protocol.                                                | `false`                            |
-| `--ws:path` |                           | The path to the WebSocket located at given broker host.                          |                                    |
+| `--ws:path` |                           | The path to the WebSocket located at the given broker host.                      |                                    |

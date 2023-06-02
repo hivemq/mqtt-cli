@@ -20,10 +20,10 @@ Alias: `client@host> unsub`
 
 ## Options
 
-| Option | Long Version     | Explanation                                          | Default |
-|--------|------------------|------------------------------------------------------|---------|
-| `-t`   | `--topic`        | A topic from which the client will unsubscribe from. |         |
-| `-up`  | `--userProperty` | A user property of the unsubscribe message.          |         |
+| Option | Long Version     | Explanation                                          |
+|--------|------------------|------------------------------------------------------|
+| `-t`   | `--topic`        | A topic from which the client will unsubscribe from. |
+| `-up`  | `--userProperty` | A user property of the unsubscribe message.          |
 
 ### Help Options
 

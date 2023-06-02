@@ -19,13 +19,13 @@ Alias: `mqtt> ls`
 
 ## Options
 
-| Option | Long Version      | Explanation                                                           | Default |
-|--------|-------------------|-----------------------------------------------------------------------|---------|
-| `-l`   | `--long`          | Use a long listing format with detailed information about the clients | `false` |
-| `-r`   | `--reverse`       | Reverse order while sorting                                           | `false` |
-| `-s`   | `--subscriptions` | List subscribed topics of the clients                                 | `false` |
-| `-t`   | `--time`          | Sort clients by their creation time                                   | `false` |
-| `-U`   |                   | Do not sort                                                           | `false` |
+| Option | Long Version      | Explanation                                                            | Default |
+|--------|-------------------|------------------------------------------------------------------------|---------|
+| `-l`   | `--long`          | Use a long listing format with detailed information about the clients. | `false` |
+| `-r`   | `--reverse`       | Reverse order while sorting.                                           | `false` |
+| `-s`   | `--subscriptions` | List subscribed topics of the clients.                                 | `false` |
+| `-t`   | `--time`          | Sort clients by their creation time.                                   | `false` |
+| `-U`   |                   | Do not sort.                                                           | `false` |
 
 ### Help Options
 

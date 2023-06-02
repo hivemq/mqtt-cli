@@ -17,9 +17,9 @@ mqtt> switch
 
 ## Parameters
 
-| Parameter Name | Explanation                                                                                                                                                                       | Examples                                                                                                      |
-|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `contextName`  | The context name of a client consisting of the the client identifier concatenated by a @ with the hostname. The hostname may be omitted and will be filled with the default host. | `myClient@localhost`  `client2@broker.hivemq.com` or simply the `clientID` (default @localhost will be added) |
+| Parameter Name | Explanation                                                                                                                                                                   | Examples                                                                                                      |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `contextName`  | The context name of a client consisting of the client identifier concatenated by a @ with the hostname. The hostname may be omitted and will be filled with the default host. | `myClient@localhost`  `client2@broker.hivemq.com` or simply the `clientID` (default @localhost will be added) |
 
 ***
 

@@ -1,4 +1,4 @@
-| Option | Long Version | Explanation                                         | Default |
-|--------|--------------|-----------------------------------------------------|---------|
-| `-d`   | `--debug`    | Print info level debug messages to the console.     | `false` |
-| `-v`   | `--verbose`  | Print detailed debug level messages to the console. | `false` |
+| Option | Long Version | Explanation                          | Default |
+|--------|--------------|--------------------------------------|---------|
+| `-d`   | `--debug`    | Print debug messages to the console. | `false` |
+| `-v`   | `--verbose`  | Print trace messages to the console. | `false` |

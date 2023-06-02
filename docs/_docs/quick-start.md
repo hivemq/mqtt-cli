@@ -128,7 +128,7 @@ This command gives access to the HiveMQ command line which offers commands to in
 
 ## HiveMQ Swarm
 
-The HiveMQ Swarm command offers various ways to interact with HiveMQ Swarm.
+The HiveMQ Swarm command offers various ways to interact with [HiveMQ Swarm](https://www.hivemq.com/hivemq-swarm/).
 
 ```
 $ mqtt swarm

@@ -29,14 +29,14 @@ Alias: `client@host> dis`
 
 ## Options
 
-| Option | Long Version      | Explanation                               | Default         |
-|--------|-------------------|-------------------------------------------|-----------------|
-| `-a`   | `--all`           | Disconnect all connected clients          |                 |
-| `-i`   | `--identifier`    | The unique identifier of a client         |                 |
-| `-h`   | `--host`          | The host the client is connected to       | `localhost`     |
-| `-e`   | `--sessionExpiry` | Session expiry value in seconds           | `0` (No Expiry) |
-| `-r`   | `--reason`        | Reason string for the disconnect          |                 |
-| `-up`  | `--userProperty`  | A user property of the disconnect message |                 |
+| Option | Long Version      | Explanation                                | Default         |
+|--------|-------------------|--------------------------------------------|-----------------|
+| `-a`   | `--all`           | Disconnect all connected clients.          |                 |
+| `-i`   | `--identifier`    | The unique identifier of a client.         |                 |
+| `-h`   | `--host`          | The host the client is connected to.       | `localhost`     |
+| `-e`   | `--sessionExpiry` | Session expiry value in seconds.           | `0` (No Expiry) |
+| `-r`   | `--reason`        | Reason string for the disconnect.          |                 |
+| `-up`  | `--userProperty`  | A user property of the disconnect message. |                 |
 
 ### Help Options
 
@@ -64,5 +64,6 @@ myClient@localhost> exit  # client is still connected
 mqtt> dis -i myClient -h broker.hivemq.com
 ```
 
-**NOTE**: Besides the **identifier** also the **hostname** has to be given to uniquely identify the client.
+**NOTE**: When specifying the **identifier** in order to uniquely identify the desired client, the **hostname** must
+also be provided.
 If you don't specify these the default settings for these attributes will be used which may lead to unexpected behavior.
