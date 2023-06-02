@@ -57,6 +57,11 @@ public class DeleteSchemaCommand implements Callable<Integer> {
         final SchemasApi schemasApi =
                 hiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
+        if (schemaId.isEmpty()) {
+            outputFormatter.printError("The schema id must not be empty.");
+            return 1;
+        }
+
         final DeleteSchemaTask deleteSchemaTask = new DeleteSchemaTask(outputFormatter, schemasApi, schemaId);
         if (deleteSchemaTask.execute()) {
             return 0;

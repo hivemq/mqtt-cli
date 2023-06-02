@@ -56,6 +56,11 @@ public class DeletePolicyCommand implements Callable<Integer> {
         final PoliciesApi policiesApi =
                 hiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
+        if (policyId.isEmpty()) {
+            outputFormatter.printError("The policy id must not be empty.");
+            return 1;
+        }
+
         final DeletePolicyTask deletePolicyTask = new DeletePolicyTask(outputFormatter, policiesApi, policyId);
         if (deletePolicyTask.execute()) {
             return 0;

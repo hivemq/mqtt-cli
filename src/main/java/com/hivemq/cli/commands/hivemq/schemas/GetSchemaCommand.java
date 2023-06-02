@@ -56,6 +56,11 @@ public class GetSchemaCommand implements Callable<Integer> {
         final SchemasApi schemasApi =
                 hiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
+        if (schemaId.isEmpty()) {
+            outputFormatter.printError("The schema id must not be empty.");
+            return 1;
+        }
+
         final GetSchemaTask getSchemaTask = new GetSchemaTask(outputFormatter, schemasApi, schemaId);
         if (getSchemaTask.execute()) {
             return 0;

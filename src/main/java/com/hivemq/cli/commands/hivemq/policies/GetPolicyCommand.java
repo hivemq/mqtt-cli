@@ -54,6 +54,11 @@ public class GetPolicyCommand implements Callable<Integer> {
         final PoliciesApi policiesApi =
                 hiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
+        if (policyId.isEmpty()) {
+            outputFormatter.printError("The policy id must not be empty.");
+            return 1;
+        }
+
         final GetPolicyTask getPolicyTask = new GetPolicyTask(outputFormatter, policiesApi, policyId);
         if (getPolicyTask.execute()) {
             return 0;

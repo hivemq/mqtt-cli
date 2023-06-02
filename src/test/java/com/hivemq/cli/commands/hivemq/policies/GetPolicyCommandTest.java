@@ -56,6 +56,12 @@ public class GetPolicyCommandTest {
     }
 
     @Test
+    void call_idEmpty_error() {
+        assertEquals(1, commandLine.execute("--id="));
+        verify(outputFormatter).printError(eq("The policy id must not be empty."));
+    }
+
+    @Test
     void call_urlAndRateLimitPassed_usedInApi() {
         assertEquals(0, commandLine.execute("--rate=123", "--url=test-url", "--id=policy-1"));
         verify(hiveMQRestService).getPoliciesApi(eq("test-url"), eq(123d));
