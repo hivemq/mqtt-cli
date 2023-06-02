@@ -56,6 +56,12 @@ public class DeleteSchemaCommandTest {
     }
 
     @Test
+    void call_idEmpty_error() {
+        assertEquals(1, commandLine.execute("--id="));
+        verify(outputFormatter).printError(eq("The schema id must not be empty."));
+    }
+
+    @Test
     void call_urlAndRateLimitPassed_usedInApi() {
         assertEquals(0, commandLine.execute("--rate=123", "--url=test-url", "--id=schema-1"));
         verify(hiveMQRestService).getSchemasApi(eq("test-url"), eq(123d));
