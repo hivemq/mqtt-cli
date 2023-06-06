@@ -40,7 +40,7 @@ info:
     \ can imported into popular API tooling (e.g. Postman) or can be used to generate\
     \ client-code for multiple programming languages.\n"
   title: HiveMQ REST API
-  version: 4.16.0-SNAPSHOT
+  version: 4.16.0
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
@@ -163,22 +163,23 @@ paths:
                             strategy: ALL_OF
                             schemas:
                             - schemaId: schema
+                              version: "1"
                       onSuccess:
                         pipeline:
                         - id: logSuccessOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: DEBUG
-                            message: "{{clientId}} sent a publish on topic '{{topic}}'\
-                              \ with result '{{validationResult}}'"
+                            message: "${clientId} sent a publish on topic '${topic}'\
+                              \ with result '${validationResult}'"
                       onFailure:
                         pipeline:
                         - id: logFailureOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: WARN
-                            message: "{{clientId}} sent an invalid publish on topic\
-                              \ '{{topic}}' with result '{{validationResult}}'"
+                            message: "${clientId} sent an invalid publish on topic\
+                              \ '${topic}' with result '${validationResult}'"
                     - id: policy2
                       createdAt: 2023-04-26T13:32:47.049Z
                       matching:
@@ -190,22 +191,23 @@ paths:
                             strategy: ALL_OF
                             schemas:
                             - schemaId: schema
+                              version: "1"
                       onSuccess:
                         pipeline:
                         - id: logSuccessOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: DEBUG
-                            message: "{{clientId}} sent a publish on topic '{{topic}}'\
-                              \ with result '{{validationResult}}'"
+                            message: "${clientId} sent a publish on topic '${topic}'\
+                              \ with result '${validationResult}'"
                       onFailure:
                         pipeline:
                         - id: logSuccessOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: WARN
-                            message: "{{clientId}} sent an invalid publish on topic\
-                              \ '{{topic}}' with result '{{validationResult}}'"
+                            message: "${clientId} sent an invalid publish on topic\
+                              \ '${topic}' with result '${validationResult}'"
                 list-response-b:
                   description: Example response with multiple policies. More pages
                     left
@@ -223,10 +225,11 @@ paths:
                             strategy: ALL_OF
                             schemas:
                             - schemaId: schema
+                              version: "1"
                       onSuccess:
                         pipeline:
                         - id: logSuccessOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: DEBUG
                             message: $clientId sent a publish on topic '$topic' with
@@ -234,7 +237,7 @@ paths:
                       onFailure:
                         pipeline:
                         - id: logFailureOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: WARN
                             message: $clientId sent an invalid publish on topic '$topic'
@@ -250,10 +253,11 @@ paths:
                             strategy: ALL_OF
                             schemas:
                             - schemaId: schema
+                              version: "1"
                       onSuccess:
                         pipeline:
                         - id: logSuccessOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: DEBUG
                             message: $clientId sent a publish on topic '$topic' with
@@ -261,7 +265,7 @@ paths:
                       onFailure:
                         pipeline:
                         - id: logSuccessOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: WARN
                             message: $clientId sent an invalid publish on topic '$topic'
@@ -277,10 +281,11 @@ paths:
                             strategy: ALL_OF
                             schemas:
                             - schemaId: schema
+                              version: "1"
                       onSuccess:
                         pipeline:
                         - id: logSuccessOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: DEBUG
                             message: $clientId sent a publish on topic '$topic' with
@@ -288,7 +293,7 @@ paths:
                       onFailure:
                         pipeline:
                         - id: logSuccessOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: WARN
                             message: $clientId sent an invalid publish on topic '$topic'
@@ -322,10 +327,11 @@ paths:
                             strategy: ALL_OF
                             schemas:
                             - schemaId: schema
+                              version: "1"
                       onSuccess:
                         pipeline:
                         - id: logSuccessOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: DEBUG
                             message: $clientId sent a publish on topic '$topic' with
@@ -333,7 +339,7 @@ paths:
                       onFailure:
                         pipeline:
                         - id: logFailureOperation
-                          functionId: log
+                          functionId: System.log
                           arguments:
                             level: WARN
                             message: $clientId sent an invalid publish on topic '$topic'
@@ -378,23 +384,24 @@ paths:
                   arguments:
                     strategy: ALL_OF
                     schemas:
-                    - schemaId: schema1
+                    - schemaId: schema
+                      version: "1"
               onSuccess:
                 pipeline:
                 - id: logOperationSuccess
-                  functionId: log
+                  functionId: System.log
                   arguments:
                     level: DEBUG
-                    message: "{{clientId}} sent a publish on topic '{{topic}}' with\
-                      \ result '{{validationResult}}'"
+                    message: "${clientId} sent a publish on topic '${topic}' with\
+                      \ result '${validationResult}'"
               onFailure:
                 pipeline:
                 - id: logOperationFailure
-                  functionId: log
+                  functionId: System.log
                   arguments:
                     level: WARN
-                    message: "{{clientId}} sent an invalid publish on topic '{{topic}}'\
-                      \ with result '{{validationResult}}'"
+                    message: "${clientId} sent an invalid publish on topic '${topic}'\
+                      \ with result '${validationResult}'"
             schema:
               $ref: '#/components/schemas/Policy'
         description: The policy that should be created.
@@ -419,22 +426,23 @@ paths:
                           strategy: ALL_OF
                           schemas:
                           - schemaId: schema1
+                            version: "1"
                     onSuccess:
                       pipeline:
                       - id: logOperationSuccess
-                        functionId: log
+                        functionId: System.log
                         arguments:
                           level: DEBUG
-                          message: "{{clientId}} sent a publish on topic '{{topic}}'\
-                            \ with result '{{validationResult}}'"
+                          message: "${clientId} sent a publish on topic '${topic}'\
+                            \ with result '${validationResult}'"
                     onFailure:
                       pipeline:
                       - id: logOperationFailure
-                        functionId: log
+                        functionId: System.log
                         arguments:
                           level: WARN
-                          message: "{{clientId}} sent an invalid publish on topic\
-                            \ '{{topic}}' with result '{{validationResult}}'"
+                          message: "${clientId} sent an invalid publish on topic '${topic}'\
+                            \ with result '${validationResult}'"
               schema:
                 $ref: '#/components/schemas/Policy'
           description: Success
@@ -574,22 +582,23 @@ paths:
                           strategy: ALL_OF
                           schemas:
                           - schemaId: schema1
+                            version: "1"
                     onSuccess:
                       pipeline:
                       - id: logOperationSuccess
-                        functionId: log
+                        functionId: System.log
                         arguments:
                           level: DEBUG
-                          message: "{{clientId}} sent a publish on topic '{{topic}}'\
-                            \ with result '{{validationResult}}'"
+                          message: "${clientId} sent a publish on topic '${topic}'\
+                            \ with result '${validationResult}'"
                     onFailure:
                       pipeline:
                       - id: logOperationFailure
-                        functionId: log
+                        functionId: System.log
                         arguments:
                           level: WARN
-                          message: "{{clientId}} sent an invalid publish on topic\
-                            \ '{{topic}}' with result '{{validationResult}}'"
+                          message: "${clientId} sent an invalid publish on topic '${topic}'\
+                            \ with result '${validationResult}'"
               schema:
                 $ref: '#/components/schemas/Policy'
           description: Success
@@ -683,14 +692,17 @@ paths:
                   value:
                     items:
                     - id: schema1
+                      version: 1
                       type: JSON
                       schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                       createdAt: 2023-03-01T13:28:35.164Z
                     - id: schema2
+                      version: 1
                       type: JSON
                       schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                       createdAt: 2023-03-01T13:38:35.164Z
                     - id: schema3
+                      version: 1
                       type: JSON
                       schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                       createdAt: 2023-03-01T13:48:35.164Z
@@ -701,14 +713,17 @@ paths:
                   value:
                     items:
                     - id: schema1
+                      version: 1
                       type: JSON
                       schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                       createdAt: 2023-03-01T13:28:35.164Z
                     - id: schema2
+                      version: 1
                       type: JSON
                       schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                       createdAt: 2023-03-01T13:38:35.164Z
                     - id: schema3
+                      version: 1
                       type: JSON
                       schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                       createdAt: 2023-03-01T13:48:35.164Z
@@ -731,9 +746,31 @@ paths:
                   value:
                     items:
                     - id: schema1
+                      version: 1
                       type: JSON
                       schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                       createdAt: 2023-03-01T13:28:35.164Z
+                list-response-e:
+                  description: Example response with all versions of specific schema
+                    id.
+                  summary: "List versions of one schema, last page"
+                  value:
+                    items:
+                    - id: schema1
+                      version: 1
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:28:35.164Z
+                    - id: schema1
+                      version: 2
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:38:35.164Z
+                    - id: schema1
+                      version: 3
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:48:35.164Z
               schema:
                 $ref: '#/components/schemas/SchemaList'
           description: Success
@@ -765,7 +802,7 @@ paths:
         content:
           application/json:
             example:
-              id: schema1
+              id: schema
               type: JSON
               schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
             schema:
@@ -781,7 +818,8 @@ paths:
                   description: Example response.
                   summary: Schema was created successfully
                   value:
-                    id: schema1
+                    id: schema
+                    version: 1
                     type: JSON
                     schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                     createdAt: 2023-03-01T13:28:35.164Z
@@ -792,13 +830,14 @@ paths:
           content:
             application/json:
               examples:
-                schema-id-already-in-use:
+                Schema-already-present:
                   description: Bad request
-                  summary: The given schema id is already in use
+                  summary: The given schema is already present as latest version
                   value:
                     errors:
-                    - title: Schema id already used
-                      detail: The given schema id 'schema-id' is already in use.
+                    - title: Schema already present
+                      detail: The given schema is already present as the latest version
+                        for the schema id 'schemaId'.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -822,10 +861,10 @@ paths:
       - Schemas
   /api/v1/data-validation/schemas/{schemaId}:
     delete:
-      description: "Deletes an existing schema. \n\n "
+      description: "Deletes all versions of the schema. \n\n "
       operationId: deleteSchema
       parameters:
-      - description: The id of the schema to delete.
+      - description: The schema id of the schema versions to delete.
         example: schema1
         in: path
         name: schemaId
@@ -879,13 +918,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
-      summary: Delete a schema
+      summary: Delete all versions of the schema
       tags:
       - Schemas
     get:
       description: "Get a specific schema. \n\n This endpoint returns the content\
-        \ of the schema with the content-type `application/json`. \n\n This endpoint\
-        \ requires at least HiveMQ version 4.15.0 on all cluster nodes."
+        \ of the latest version of the schema with the content-type `application/json`.\
+        \ \n\n This endpoint requires at least HiveMQ version 4.15.0 on all cluster\
+        \ nodes."
       operationId: getSchema
       parameters:
       - description: The id of the schema.
@@ -913,7 +953,8 @@ paths:
                   description: Get schema
                   summary: Get schema
                   value:
-                    id: schema1
+                    id: schema
+                    version: 1
                     type: JSON
                     schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                     createdAt: 2023-03-01T13:28:35.164Z
@@ -2683,6 +2724,12 @@ components:
           type: string
           description: The type of the schema.
           example: null
+        version:
+          type: integer
+          format: int32
+          description: The version of the schema.
+          example: null
+          readOnly: true
       required:
       - id
       - schemaDefinition
