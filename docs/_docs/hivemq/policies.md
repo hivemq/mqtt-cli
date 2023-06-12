@@ -58,8 +58,8 @@ mqtt hivemq policies create --file my-policy.json
 
 ## Options
 
-| Option | Long Version   | Explanation                                                                                         |                    Required                     |
-|--------|----------------|-----------------------------------------------------------------------------------------------------|:-----------------------------------------------:|
+| Option | Long Version   | Explanation                                                                                         | Required                                        |
+|--------|----------------|-----------------------------------------------------------------------------------------------------|-------------------------------------------------|
 |        | `--definition` | The definition of the policy. This should be a JSON string containing a complete policy definition. | Either `--definition` or `--file`, but not both |
 |        | `--file`       | A path to a file containing the definition of the policy.                                           | Either `--definition` or `--file`, but not both |
 
