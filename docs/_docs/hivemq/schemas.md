@@ -127,6 +127,69 @@ $ mqtt hivemq schemas get --id my-schema-id
 
 ***
 
+# List Schemas
+
+*** 
+
+List every schema that exists on a HiveMQ node.
+This list may optionally be filtered by schema id and schema type.
+
+```
+mqtt hivemq schemas list
+```
+
+***
+
+## Simple Example
+
+```
+$ mqtt hivemq schemas list --id schema-1
+{
+  "items": [
+    {
+      "id": "schema-1",
+      "version": 1,
+      "createdAt": "2023-06-12T00:38:34.911Z",
+      "type": "JSON",
+      "schemaDefinition": "ewogICJkZXNjcmlwdGlvbiI6ICJUaGlzIGlzIGFub3RoZXIgZ2VuZXJpYyBKU09OIHNjaGVtYSwgc2luY2UgaXQgcmVxdWlyZXMganVzdCBhIEpTT04sIG5vdGhpbmcgZnVydGhlciBzcGVjaWZpZWQiLAogICJ0eXBlIjogIm9iamVjdCIKfQo",
+      "arguments": {}
+    },
+    {
+      "id": "schema-1",
+      "version": 2,
+      "createdAt": "2023-06-12T09:57:55.862Z",
+      "type": "JSON",
+      "schemaDefinition": "ewogICJkZXNjcmlwdGlvbiI6ICJUaGlzIGlzIGEgdGhlIG1vc3QgZ2VuZXJpYyBKU09OIHNjaGVtYSwgc2luY2UgaXQgcmVxdWlyZXMganVzdCBhIEpTT04sIG5vdGhpbmcgZnVydGhlciBzcGVjaWZpZWQiLAogICJ0eXBlIjogIm9iamVjdCIKfQ==",
+      "arguments": {}
+    }
+  ]
+}
+```
+
+***
+
+## Options
+
+| Option | Long Version | Explanation                                                                   | Required |
+|--------|--------------|-------------------------------------------------------------------------------|:--------:|
+| `-i`   | `--id`       | Filter by schemas with a matching schema id. Can be specified multiple times. |          |
+| `-t`   | `--type`     | Filter by schemas of a matching schema type. Can be specified multiple times  |          |
+
+### API Connection Options
+
+{% include options/api-connection-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
+
+
+***
+
 # Delete Schema
 
 *** 
