@@ -27,9 +27,9 @@ public class SchemaTypeConverter implements CommandLine.ITypeConverter<String> {
     public @NotNull String convert(final @NotNull String s) throws Exception {
         switch (s.toLowerCase()) {
             case "json":
-                return "json";
+                return "JSON";
             case "protobuf":
-                return "protobuf";
+                return "PROTOBUF";
             default:
                 throw new Exception(WRONG_INPUT_MESSAGE);
         }

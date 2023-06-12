@@ -29,6 +29,7 @@ import com.hivemq.cli.commands.hivemq.policies.PoliciesCommand;
 import com.hivemq.cli.commands.hivemq.schemas.CreateSchemaCommand;
 import com.hivemq.cli.commands.hivemq.schemas.DeleteSchemaCommand;
 import com.hivemq.cli.commands.hivemq.schemas.GetSchemaCommand;
+import com.hivemq.cli.commands.hivemq.schemas.ListSchemasCommand;
 import com.hivemq.cli.commands.hivemq.schemas.SchemasCommand;
 import dagger.Module;
 import dagger.Provides;
@@ -41,6 +42,7 @@ import javax.inject.Singleton;
 @Module
 class HiveMqModule {
 
+    @SuppressWarnings("unused")
     @Provides
     @Singleton
     @Named("hivemq-cli")
@@ -55,6 +57,7 @@ class HiveMqModule {
             final @NotNull DeletePolicyCommand deletePolicyCommand,
             final @NotNull SchemasCommand schemasCommand,
             final @NotNull GetSchemaCommand getSchemaCommand,
+            final @NotNull ListSchemasCommand listSchemasCommand,
             final @NotNull CreateSchemaCommand createSchemaCommand,
             final @NotNull DeleteSchemaCommand deleteSchemaCommand,
             final @NotNull CommandLineConfig config,
@@ -65,6 +68,7 @@ class HiveMqModule {
                 .addSubcommand(createPolicyCommand)
                 .addSubcommand(deletePolicyCommand);
         final CommandLine schemasCommandLine = new CommandLine(schemasCommand).addSubcommand(getSchemaCommand)
+                .addSubcommand(listSchemasCommand)
                 .addSubcommand(createSchemaCommand)
                 .addSubcommand(deleteSchemaCommand);
 
