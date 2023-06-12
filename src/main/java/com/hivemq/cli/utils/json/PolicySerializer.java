@@ -44,12 +44,12 @@ public class PolicySerializer implements JsonSerializer<Policy> {
             final @NotNull JsonSerializationContext context) {
 
         final JsonObject object = new JsonObject();
-        object.add("id", context.serialize(policy.getId()));
-        object.add("createdAt", context.serialize(policy.getCreatedAt()));
-        object.add("matching", context.serialize(policy.getMatching()));
-        object.add("validation", serializeValidation(policy.getValidation(), context));
-        object.add("onSuccess", serializePolicyAction(policy.getOnSuccess(), context));
-        object.add("onFailure", serializePolicyAction(policy.getOnFailure(), context));
+        object.add(Policy.SERIALIZED_NAME_ID, context.serialize(policy.getId()));
+        object.add(Policy.SERIALIZED_NAME_CREATED_AT, context.serialize(policy.getCreatedAt()));
+        object.add(Policy.SERIALIZED_NAME_MATCHING, context.serialize(policy.getMatching()));
+        object.add(Policy.SERIALIZED_NAME_VALIDATION, serializeValidation(policy.getValidation(), context));
+        object.add(Policy.SERIALIZED_NAME_ON_SUCCESS, serializePolicyAction(policy.getOnSuccess(), context));
+        object.add(Policy.SERIALIZED_NAME_ON_FAILURE, serializePolicyAction(policy.getOnFailure(), context));
 
         return object;
     }
@@ -70,12 +70,12 @@ public class PolicySerializer implements JsonSerializer<Policy> {
 
         for (final PolicyValidator validator : policyValidation.getValidators()) {
             final JsonObject validatorObject = new JsonObject();
-            validatorObject.add("type", context.serialize(validator.getType()));
-            validatorObject.add("arguments", context.serialize(validator.getArguments()));
+            validatorObject.add(PolicyValidator.SERIALIZED_NAME_TYPE, context.serialize(validator.getType()));
+            validatorObject.add(PolicyValidator.SERIALIZED_NAME_ARGUMENTS, context.serialize(validator.getArguments()));
             validatorsArray.add(validatorObject);
         }
 
-        object.add("validators", context.serialize(validatorsArray));
+        object.add(PolicyValidation.SERIALIZED_NAME_VALIDATORS, context.serialize(validatorsArray));
         return object;
     }
 
@@ -95,13 +95,14 @@ public class PolicySerializer implements JsonSerializer<Policy> {
 
         for (final PolicyOperation operation : policyAction.getPipeline()) {
             final JsonObject operationObject = new JsonObject();
-            operationObject.add("id", context.serialize(operation.getId()));
-            operationObject.add("functionId", context.serialize(operation.getFunctionId()));
-            operationObject.add("arguments", context.serialize(operation.getArguments()));
+            operationObject.add(PolicyOperation.SERIALIZED_NAME_ID, context.serialize(operation.getId()));
+            operationObject.add(PolicyOperation.SERIALIZED_NAME_FUNCTION_ID,
+                    context.serialize(operation.getFunctionId()));
+            operationObject.add(PolicyOperation.SERIALIZED_NAME_ARGUMENTS, context.serialize(operation.getArguments()));
             operationsArray.add(operationObject);
         }
 
-        object.add("pipeline", context.serialize(operationsArray));
+        object.add(PolicyAction.SERIALIZED_NAME_PIPELINE, context.serialize(operationsArray));
         return object;
     }
 
