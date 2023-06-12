@@ -37,7 +37,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "create", description = "Create a new schema", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "create",
+                     description = "Create a new schema",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class CreateSchemaCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})

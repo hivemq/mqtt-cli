@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.hivemq.policies;
 
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.hivemq.policies.GetPolicyTask;
@@ -28,7 +29,14 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "get", description = "Get a policy", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "get",
+                     description = "Get a policy",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class GetPolicyCommand implements Callable<Integer> {
 
     @SuppressWarnings({"unused", "NotNullFieldNotInitialized"})
@@ -42,7 +50,8 @@ public class GetPolicyCommand implements Callable<Integer> {
     private final @NotNull HiveMQRestService hiveMQRestService;
 
     @Inject
-    public GetPolicyCommand(final @NotNull HiveMQRestService hiveMQRestService, final @NotNull OutputFormatter outputFormatter) {
+    public GetPolicyCommand(
+            final @NotNull HiveMQRestService hiveMQRestService, final @NotNull OutputFormatter outputFormatter) {
         this.outputFormatter = outputFormatter;
         this.hiveMQRestService = hiveMQRestService;
     }
@@ -75,7 +84,8 @@ public class GetPolicyCommand implements Callable<Integer> {
                 '\'' +
                 ", dataGovernanceOptions=" +
                 dataGovernanceOptions +
-                ", formatter=" + outputFormatter +
+                ", formatter=" +
+                outputFormatter +
                 '}';
     }
 }

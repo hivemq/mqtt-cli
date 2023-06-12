@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.hivemq.schemas;
 
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.hivemq.schemas.GetSchemaTask;
@@ -29,7 +30,14 @@ import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
 
-@CommandLine.Command(name = "get", description = "Get an existing schema", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "get",
+                     description = "Get an existing schema",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class GetSchemaCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
