@@ -2,80 +2,131 @@ openapi: 3.0.1
 info:
   contact:
     url: https://www.hivemq.com
-  description: "\n# Introduction\n\nHiveMQ's REST API provides endpoints for the following\
-    \ use cases:\n- Listing all MQTT Clients\n- Getting detailed information about\
-    \ a specific MQTT client\n- Listing all subscriptions for a specific MQTT client\n\
-    - Getting the connection status for a specific MQTT client\n- Creating and restoring\
-    \ a backup\n- Starting and stopping a trace recording\n- Downloading backups and\
-    \ trace recordings\n\n## API style\nHiveMQ's API is organized in a [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer)\
-    \ fashion.\n\nThe API has predictable resource-oriented URLs that consume and\
-    \ return JSON with the content-type `application/json`.\nIt uses standard HTTP\
-    \ response codes and verbs. Some endpoints do return files, those are using the\
-    \ content type `application/octet-stream` or `application/zip`.\n\nThe base URL\
-    \ is the Host and configured port of your HiveMQ instances. In most cases it makes\
-    \ sense to configure a reverse-proxy or load balancer to access HiveMQ's REST\
-    \ API.\n\n## Pagination\nSome endpoints support returning the results in a paginated\
-    \ fashion. In those cases a cursor can be returned that contains the relative\
-    \ URL for the next page.\nThe desired page size can be specified by using the\
-    \ `limit` query parameter.\n\nExample URL: `http://my-broker-host:8888/api/v1/mqtt/clients?limit=100`\n\
-    \nExample Response:\n```\n{\n  \"items\": [\n    {\n      \"id\": \"client-id-1\"\
-    \n    },\n\n    ...\n\n    {\n      \"id\": \"client-id-99\"\n    }\n  ],\n  \"\
-    _links\": {\n    \"next\": \"/api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=100\"\
-    \n  }\n}\n```\nTo fetch the next page with more results, the URL `http://my-broker-host:8888/api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=100`\
-    \ is called.\nIf the value for `_links.next` is not present, then this is the\
-    \ last page and no further pages are available.\n\n**Note**: If a generated REST\
-    \ API client is used the cursor value must be extracted from the `next URL` and\
-    \ then\npassed as the cursor in the API call for fetching the next page.\n\nSteps\
-    \ to use pagination in a REST API client:\n1. Returned next URL:\n```\nhttp://my-broker-host:8888/api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=100\n\
-    ```\n\n2. Extract the cursor from the next URL:\n```\na-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=\n\
-    ```\n\n3. Use the cursor in the REST API client to fetch the next page:\n```\n\
-    restClient.mqttClientsGet(pageLimitForRequest, \"a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=\"\
-    );\n```\n\n## Errors\nConventional HTTP response codes are used to indicate the\
-    \ success or failure of an API request. Codes in the 2xx range generally indicate\
-    \ success. Codes in the 4xx range indicate an error that failed given the information\
-    \ provided (e.g., a required parameter was omitted). Codes in the 5xx range indicate\
-    \ an error on the server side.\n\nFor all errors a JSON response with additional\
-    \ details is returned in the format [Problem JSON](https://tools.ietf.org/html/rfc7807).\n\
-    \n## OpenAPI\nHiveMQ's REST API provides an OpenAPI 3.0 schema definition that\
-    \ can imported into popular API tooling (e.g. Postman) or can be used to generate\
-    \ client-code for multiple programming languages.\n"
+  description: |2
+
+    # Introduction
+
+    HiveMQ's REST API provides endpoints for the following use cases:
+    - Listing all MQTT Clients
+    - Getting detailed information about a specific MQTT client
+    - Listing all subscriptions for a specific MQTT client
+    - Getting the connection status for a specific MQTT client
+    - Creating and restoring a backup
+    - Starting and stopping a trace recording
+    - Downloading backups and trace recordings
+
+    ## API style
+    HiveMQ's API is organized in a [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) fashion.
+
+    The API has predictable resource-oriented URLs that consume and return JSON with the content-type `application/json`.
+    It uses standard HTTP response codes and verbs. Some endpoints do return files, those are using the content type `application/octet-stream` or `application/zip`.
+
+    The base URL is the Host and configured port of your HiveMQ instances. In most cases it makes sense to configure a reverse-proxy or load balancer to access HiveMQ's REST API.
+
+    ## Pagination
+    Some endpoints support returning the results in a paginated fashion. In those cases a cursor can be returned that contains the relative URL for the next page.
+    The desired page size can be specified by using the `limit` query parameter.
+
+    Example URL: `http://my-broker-host:8888/api/v1/mqtt/clients?limit=100`
+
+    Example Response:
+    ```
+    {
+      "items": [
+        {
+          "id": "client-id-1"
+        },
+
+        ...
+
+        {
+          "id": "client-id-99"
+        }
+      ],
+      "_links": {
+        "next": "/api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=100"
+      }
+    }
+    ```
+    To fetch the next page with more results, the URL `http://my-broker-host:8888/api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=100` is called.
+    If the value for `_links.next` is not present, then this is the last page and no further pages are available.
+
+    **Note**: If a generated REST API client is used the cursor value must be extracted from the `next URL` and then
+    passed as the cursor in the API call for fetching the next page.
+
+    Steps to use pagination in a REST API client:
+    1. Returned next URL:
+    ```
+    http://my-broker-host:8888/api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=100
+    ```
+
+    2. Extract the cursor from the next URL:
+    ```
+    a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=
+    ```
+
+    3. Use the cursor in the REST API client to fetch the next page:
+    ```
+    restClient.mqttClientsGet(pageLimitForRequest, "a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=");
+    ```
+
+    ## Errors
+    Conventional HTTP response codes are used to indicate the success or failure of an API request. Codes in the 2xx range generally indicate success. Codes in the 4xx range indicate an error that failed given the information provided (e.g., a required parameter was omitted). Codes in the 5xx range indicate an error on the server side.
+
+    For all errors a JSON response with additional details is returned in the format [Problem JSON](https://tools.ietf.org/html/rfc7807).
+
+    ## OpenAPI
+    HiveMQ's REST API provides an OpenAPI 3.0 schema definition that can imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   title: HiveMQ REST API
-  version: 4.16.0
+  version: 4.17.0-SNAPSHOT
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
-- description: "These endpoints can be used to create, download, inspect and restore\
-    \ backups created by HiveMQ.\n\nMore information about the backup and restore\
-    \ capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/user-guide/backup-restore.html).\n\
-    \n### Backup Requirements\nSome prerequisites are necessary to create a backup\
-    \ or restore from a backup:\n\n- All HiveMQ nodes have at least version 4.4.0\n\
-    - Only one backup/restore can be executed at the same time\n\n### Export Requirements\n\
-    The following requirements are necessary to successfully create a backup:\n\n\
-    - All HiveMQ nodes have at least 1GB of free disk space\n- No cluster topology\
-    \ changes occur during the export. The backup is aborted when the topology changes\
-    \ to avoid inconsistent data in the backup.\n\n\n### Restore Requirements\n\n\
-    The requirements to successfully restore data from a backup are:\n\n- A clean\
-    \ HiveMQ deployment. This means that no clients must be connected and no persistent\
-    \ data exists on every HiveMQ node. The import will not start if there is data\
-    \ available in your cluster.\n- Message data used by Extensions are only restored\
-    \ if the corresponding extension is already started before the restore is started."
+- description: |-
+    These endpoints can be used to create, download, inspect and restore backups created by HiveMQ.
+
+    More information about the backup and restore capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/user-guide/backup-restore.html).
+
+    ### Backup Requirements
+    Some prerequisites are necessary to create a backup or restore from a backup:
+
+    - All HiveMQ nodes have at least version 4.4.0
+    - Only one backup/restore can be executed at the same time
+
+    ### Export Requirements
+    The following requirements are necessary to successfully create a backup:
+
+    - All HiveMQ nodes have at least 1GB of free disk space
+    - No cluster topology changes occur during the export. The backup is aborted when the topology changes to avoid inconsistent data in the backup.
+
+
+    ### Restore Requirements
+
+    The requirements to successfully restore data from a backup are:
+
+    - A clean HiveMQ deployment. This means that no clients must be connected and no persistent data exists on every HiveMQ node. The import will not start if there is data available in your cluster.
+    - Message data used by Extensions are only restored if the corresponding extension is already started before the restore is started.
   name: Backup & Restore
-- description: "This endpoint can be used to create diagnostic archives.\n\nMore information\
-    \ about the diagnostic archive can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/diagnostic-archive.html).\n\
-    \n### Diagnostic Archive Requirements\nSome prerequisites are necessary to create\
-    \ a diagnostic archive:\n\n- Only HiveMQ nodes with at least version 4.11.0 will\
-    \ create an archive\n- Only one diagnostic archive can be created at the same\
-    \ time"
+- description: |-
+    This endpoint can be used to create diagnostic archives.
+
+    More information about the diagnostic archive can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/diagnostic-archive.html).
+
+    ### Diagnostic Archive Requirements
+    Some prerequisites are necessary to create a diagnostic archive:
+
+    - Only HiveMQ nodes with at least version 4.11.0 will create an archive
+    - Only one diagnostic archive can be created at the same time
   name: Diagnostic Archive
-- description: "A Trace Recording is a combination of filters which allows you to\
-    \ select messages of specific clients or topics, which are logged to a file in\
-    \ a human readable format.\nEach trace recording creates cluster-wide trace files\
-    \ that can be downloaded as a collective zip file.\n\nYou can log any MQTT message\
-    \ sent or received by the broker with a filter you apply. A Filter can either\
-    \ be a client identifier or a topic. Many filter combinations are possible. All\
-    \ filters are regular expressions.\n\nThese endpoints can be used to create, download,\
-    \ inspect, stop and delete trace recordings.\n\nMore information about the trace\
-    \ recording capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/analytic.html#trace-recording).\n"
+- description: |
+    A Trace Recording is a combination of filters which allows you to select messages of specific clients or topics, which are logged to a file in a human readable format.
+    Each trace recording creates cluster-wide trace files that can be downloaded as a collective zip file.
+
+    You can log any MQTT message sent or received by the broker with a filter you apply. A Filter can either be a client identifier or a topic. Many filter combinations are possible. All filters are regular expressions.
+
+    These endpoints can be used to create, download, inspect, stop and delete trace recordings.
+
+    More information about the trace recording capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/analytic.html#trace-recording).
   name: Trace Recordings
 - description: "These endpoints can be used to inspect the MQTT clients that are known\
     \ to HiveMQ.\n\nWith millions of connected clients, keeping track of specific\
@@ -1577,9 +1628,10 @@ paths:
       tags:
       - Trace Recordings
     patch:
-      description: "Stops an existing trace recording.\n\nOnly the state of the trace\
-        \ recording can be set to `STOPPED` with this endpoint, changes to other fields\
-        \ are ignored."
+      description: |-
+        Stops an existing trace recording.
+
+        Only the state of the trace recording can be set to `STOPPED` with this endpoint, changes to other fields are ignored.
       operationId: stopTraceRecording
       parameters:
       - description: The name of the trace recording to patch/stop.
@@ -1675,12 +1727,15 @@ paths:
       - Trace Recordings
   /api/v1/mqtt/clients:
     get:
-      description: "Lists all client sessions (online and offline) known to the whole\
-        \ HiveMQ cluster.\n\nThe result contains each client's client identifier.\
-        \ For more details about each client you can call the endpoints that have\
-        \ a clientId in their URL.\n\nThis endpoint uses pagination with a cursor.\n\
-        The results are not sorted in any way, no ordering of any kind is guaranteed.\n\
-        \nThis endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes."
+      description: |-
+        Lists all client sessions (online and offline) known to the whole HiveMQ cluster.
+
+        The result contains each client's client identifier. For more details about each client you can call the endpoints that have a clientId in their URL.
+
+        This endpoint uses pagination with a cursor.
+        The results are not sorted in any way, no ordering of any kind is guaranteed.
+
+        This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
       operationId: getAllMqttClients
       parameters:
       - description: Specifies the page size for the returned results. Has to be between
@@ -1790,11 +1845,10 @@ paths:
       - MQTT Clients
   /api/v1/mqtt/clients/{clientId}:
     delete:
-      description: "Invalidates the client session for a client with the given client\
-        \ identifier. If the client is currently connected, it will be disconnected\
-        \ as well.\n\n If your client identifiers contain special characters, please\
-        \ make sure that the clientId is URL encoded (a.k.a. percent-encoding, as\
-        \ in RFC 3986)."
+      description: |-
+        Invalidates the client session for a client with the given client identifier. If the client is currently connected, it will be disconnected as well.
+
+         If your client identifiers contain special characters, please make sure that the clientId is URL encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: invalidateClientSession
       parameters:
       - description: The MQTT client identifier.
@@ -1848,10 +1902,11 @@ paths:
       tags:
       - MQTT Clients
     get:
-      description: "Returns detailed information for a specific client with it is\
-        \ current state.\n\n Including all session and connection information.\nIf\
-        \ your client identifiers contain special characters, please make sure that\
-        \ the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986)."
+      description: |-
+        Returns detailed information for a specific client with it is current state.
+
+         Including all session and connection information.
+        If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: getMqttClientDetails
       parameters:
       - description: The MQTT client identifier.
@@ -1979,9 +2034,10 @@ paths:
       - MQTT Clients
   /api/v1/mqtt/clients/{clientId}/connection:
     delete:
-      description: "Disconnects a specific client if its is currently connected.\n\
-        \n If your client identifiers contain special characters, please make sure\
-        \ that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986)."
+      description: |-
+        Disconnects a specific client if its is currently connected.
+
+         If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: disconnectClient
       parameters:
       - description: The MQTT client identifier.
@@ -2035,11 +2091,11 @@ paths:
       tags:
       - MQTT Clients
     get:
-      description: "Returns the information if a specific client is currently connected.\n\
-        \n If you are only interested in the connection status of a client prefer\
-        \ this endpoint over the the full client detail.\nIf your client identifiers\
-        \ contain special characters, please make sure that the clientId is URL Encoded\
-        \ (a.k.a. percent-encoding, as in RFC 3986)."
+      description: |-
+        Returns the information if a specific client is currently connected.
+
+         If you are only interested in the connection status of a client prefer this endpoint over the the full client detail.
+        If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: getMqttClientConnectionState
       parameters:
       - description: The MQTT client identifier.
@@ -2096,10 +2152,10 @@ paths:
       - MQTT Clients
   /api/v1/mqtt/clients/{clientId}/subscriptions:
     get:
-      description: "List all subscriptions for a specific client.\n\nThis endpoint\
-        \ does not support pagination with cursor at the moment, but it might be added\
-        \ in future versions. Please make sure to check if a cursor is returned and\
-        \ another page is available to have a future-proof implementation."
+      description: |-
+        List all subscriptions for a specific client.
+
+        This endpoint does not support pagination with cursor at the moment, but it might be added in future versions. Please make sure to check if a cursor is returned and another page is available to have a future-proof implementation.
       operationId: getSubscriptionsForMqttClient
       parameters:
       - description: The MQTT client identifier.
