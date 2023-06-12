@@ -54,7 +54,7 @@ public class CreatePolicyTaskTest {
         when(policiesApi.createPolicy(policyCaptor.capture())).thenReturn(policy);
 
         assertTrue(task.execute());
-        verify(policiesApi, times(1)).createPolicy(any());
+        verify(policiesApi, times(1)).createPolicy(policy);
         verify(outputFormatter, times(0)).printJson(any());
         assertEquals(policy, policyCaptor.getValue());
     }

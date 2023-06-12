@@ -96,13 +96,14 @@ public class ListPoliciesTaskTest {
         final Policy policy1 = new Policy().id("policy-1");
         final Policy policy2 = new Policy().id("policy-2");
         final Policy policy3 = new Policy().id("policy-3");
+        final Policy policy4 = new Policy().id("policy-4");
 
         final String cursorPrefix = "/api/v1/data-validation/policies?cursor=";
         final PolicyList page1 = new PolicyList().items(Collections.singletonList(policy1))
                 .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
-        final PolicyList page2 = new PolicyList().items(Collections.singletonList(policy2))
+        final PolicyList page2 = new PolicyList().items(Arrays.asList(policy2, policy3))
                 .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
-        final PolicyList page3 = new PolicyList().items(Collections.singletonList(policy3));
+        final PolicyList page3 = new PolicyList().items(Collections.singletonList(policy4));
         when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), isNull())).thenReturn(page1);
         when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
         when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), eq("cursor-2"))).thenReturn(page3);
@@ -115,7 +116,7 @@ public class ListPoliciesTaskTest {
 
         final ArgumentCaptor<PolicyList> outputCaptor = ArgumentCaptor.forClass(PolicyList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
-        assertEquals(Arrays.asList(policy1, policy2, policy3), outputCaptor.getValue().getItems());
+        assertEquals(Arrays.asList(policy1, policy2, policy3, policy4), outputCaptor.getValue().getItems());
     }
 
     @Test
