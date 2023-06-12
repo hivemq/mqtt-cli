@@ -48,7 +48,6 @@ public class CreateSchemaCommandTest {
     private final @NotNull CommandLine commandLine =
             new CommandLine(new CreateSchemaCommand(hiveMQRestService, outputFormatter));
 
-
     @SuppressWarnings("FieldCanBeLocal")
     private final @NotNull String JSON_SCHEMA_DEFINITION = "{ \"type\": \"object\" }";
 

@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.hivemq.schemas;
 
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.commands.hivemq.datagovernance.SchemaDefinitionOptions;
@@ -60,13 +61,13 @@ public class CreateSchemaCommand implements Callable<Integer> {
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--message-type"},
-                        description = "The Protobuf message type. Only used with --type protobuf.")
+                        description = "The Protobuf message type. Only used with --type PROTOBUF.")
     private @Nullable String messageType;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--allow-unknown"},
                         defaultValue = "false",
-                        description = "Allow unknown Protobuf fields (default false). Only used with --type protobuf.")
+                        description = "Allow unknown Protobuf fields (default false). Only used with --type PROTOBUF.")
     private boolean allowUnknown;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
@@ -81,8 +82,7 @@ public class CreateSchemaCommand implements Callable<Integer> {
 
     @Inject
     public CreateSchemaCommand(
-            final @NotNull HiveMQRestService hiveMQRestService,
-            final @NotNull OutputFormatter outputFormatter) {
+            final @NotNull HiveMQRestService hiveMQRestService, final @NotNull OutputFormatter outputFormatter) {
         this.outputFormatter = outputFormatter;
         this.hiveMQRestService = hiveMQRestService;
     }
@@ -94,13 +94,13 @@ public class CreateSchemaCommand implements Callable<Integer> {
         final SchemasApi schemasApi =
                 hiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
-        if (schemaType.equals("protobuf") && messageType == null) {
+        if (schemaType.equals("PROTOBUF") && messageType == null) {
             outputFormatter.printError("Protobuf message type is missing. Option '--message-type' is not set.");
             return 1;
         }
 
-        if (schemaType.equals("json") && messageType != null) {
-            outputFormatter.printError("Option '--message-type' is not applicable to schemas of type 'json'.");
+        if (schemaType.equals("JSON") && messageType != null) {
+            outputFormatter.printError("Option '--message-type' is not applicable to schemas of type 'JSON'.");
             return 1;
         }
 
@@ -131,7 +131,7 @@ public class CreateSchemaCommand implements Callable<Integer> {
         if (createSchemaTask.execute()) {
             return 0;
         } else {
-            if (schemaType.equals("protobuf") && fileDefinition != null) {
+            if (schemaType.equals("PROTOBUF") && fileDefinition != null) {
                 final String fileExtension = FilenameUtils.getExtension(fileDefinition);
                 if (fileExtension.equalsIgnoreCase("proto")) {
                     outputFormatter.printError(

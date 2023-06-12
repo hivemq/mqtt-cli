@@ -26,7 +26,11 @@ import com.hivemq.cli.commands.cli.PublishCommand;
 import com.hivemq.cli.commands.cli.SubscribeCommand;
 import com.hivemq.cli.commands.cli.TestBrokerCommand;
 import com.hivemq.cli.commands.shell.ShellCommand;
+import com.hivemq.cli.openapi.hivemq.Policy;
+import com.hivemq.cli.openapi.hivemq.Schema;
 import com.hivemq.cli.utils.json.OffsetDateTimeSerializer;
+import com.hivemq.cli.utils.json.PolicySerializer;
+import com.hivemq.cli.utils.json.SchemaSerializer;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
@@ -81,6 +85,8 @@ class CliModule {
         return new GsonBuilder().setPrettyPrinting()
                 .disableHtmlEscaping()
                 .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
+                .registerTypeAdapter(Policy.class, new PolicySerializer())
+                .registerTypeAdapter(Schema.class, new SchemaSerializer())
                 .create();
     }
 

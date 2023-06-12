@@ -61,7 +61,7 @@ public class CreateSchemaTaskTest {
         final CreateSchemaTask task = new CreateSchemaTask(outputFormatter,
                 schemasApi,
                 "test-1",
-                "json",
+                "JSON",
                 null,
                 false,
                 ByteBuffer.wrap(JSON_SCHEMA_DEFINITION.getBytes(StandardCharsets.UTF_8)));
@@ -72,7 +72,7 @@ public class CreateSchemaTaskTest {
         verify(schemasApi, times(1)).createSchema(schemaCaptor.capture());
         final Schema createdSchema = schemaCaptor.getValue();
         assertEquals("test-1", createdSchema.getId());
-        assertEquals("json", createdSchema.getType());
+        assertEquals("JSON", createdSchema.getType());
         final String createdSchemaDefinition = new String(Base64.decode(createdSchema.getSchemaDefinition()));
         assertEquals(JSON_SCHEMA_DEFINITION, createdSchemaDefinition);
         assertNull(createdSchema.getArguments());
@@ -83,7 +83,7 @@ public class CreateSchemaTaskTest {
         final CreateSchemaTask task = new CreateSchemaTask(outputFormatter,
                 schemasApi,
                 "test-1",
-                "protobuf",
+                "PROTOBUF",
                 "Test",
                 true,
                 ByteBuffer.wrap(Base64.decode(PROTOBUF_SCHEMA_DEFINITION)));
@@ -94,7 +94,7 @@ public class CreateSchemaTaskTest {
         verify(schemasApi, times(1)).createSchema(schemaCaptor.capture());
         final Schema createdSchema = schemaCaptor.getValue();
         assertEquals("test-1", createdSchema.getId());
-        assertEquals("protobuf", createdSchema.getType());
+        assertEquals("PROTOBUF", createdSchema.getType());
         assertEquals(PROTOBUF_SCHEMA_DEFINITION, createdSchema.getSchemaDefinition());
         assertNotNull(createdSchema.getArguments());
         assertEquals("Test", createdSchema.getArguments().get("messageType"));
@@ -106,7 +106,7 @@ public class CreateSchemaTaskTest {
         final CreateSchemaTask task = new CreateSchemaTask(outputFormatter,
                 schemasApi,
                 "test-1",
-                "json",
+                "JSON",
                 null,
                 false,
                 ByteBuffer.wrap(new byte[]{}));

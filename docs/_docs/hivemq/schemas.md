@@ -50,7 +50,7 @@ mqtt hivemq schemas create
 ## Simple Example
 
 ```
-mqtt hivemq schemas create --id my-schema-id --type protobuf --file my-schema.desc --message-type Message 
+mqtt hivemq schemas create --id my-schema-id --type PROTOBUF --file my-schema.desc --message-type Message 
 ```
 
 ***
@@ -60,11 +60,11 @@ mqtt hivemq schemas create --id my-schema-id --type protobuf --file my-schema.de
 | Option | Long Version      | Explanation                                                                                                                                  | Default |                    Required                     |
 |--------|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|:-----------------------------------------------:|
 | `-i`   | `--id`            | The id of the schema to be created.                                                                                                          |         |                        X                        |
-|        | `--type`          | The type of the schema. (Currently supported schema types [`json`, `protobuf`])                                                              |         |                        X                        |
-|        | `--definition`    | The definition of the schema. This should be a JSON Schema string for '--type json' or a compiled Protobuf descriptor for '--type protobuf'. |         | Either `--definition` or `--file`, but not both |
+|        | `--type`          | The type of the schema. (Currently supported schema types [`JSON`, `PROTOBUF`])                                                              |         |                        X                        |
+|        | `--definition`    | The definition of the schema. This should be a JSON Schema string for '--type JSON' or a compiled Protobuf descriptor for '--type PROTOBUF'. |         | Either `--definition` or `--file`, but not both |
 |        | `--file`          | A path to a file containing the definition of the schema.                                                                                    |         | Either `--definition` or `--file`, but not both |
-|        | `--message-type`  | Only used with '--type protobuf'. The Protobuf message type to use for the schema.                                                           |         |            When `type` is `protobuf`            |
-|        | `--allow-unknown` | Only used with '--type protobuf'. If provided, Protobuf messages may contain fields not specified in the schema.                             | `false` |                                                 |
+|        | `--message-type`  | Only used with '--type PROTOBUF'. The Protobuf message type to use for the schema.                                                           |         |            When `type` is `PROTOBUF`            |
+|        | `--allow-unknown` | Only used with '--type PROTOBUF'. If provided, Protobuf messages may contain fields not specified in the schema.                             | `false` |                                                 |
 
 ### API Connection Options
 

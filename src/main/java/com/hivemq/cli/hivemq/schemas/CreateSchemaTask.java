@@ -58,7 +58,7 @@ public class CreateSchemaTask {
 
     public boolean execute() {
         Map<String, String> arguments = null;
-        if (schemaType.equals("protobuf")) {
+        if (schemaType.equals("PROTOBUF")) {
             arguments = new HashMap<>();
 
             arguments.put("messageType", Objects.requireNonNull(messageType));
