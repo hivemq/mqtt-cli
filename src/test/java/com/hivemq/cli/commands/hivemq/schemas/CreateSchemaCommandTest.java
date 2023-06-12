@@ -131,7 +131,7 @@ public class CreateSchemaCommandTest {
                         "--type=json",
                         "--definition=" + JSON_SCHEMA_DEFINITION,
                         "--message-type=Test"));
-        verify(outputFormatter).printError(eq("Option '--message-type' is not applicable to schemas of type 'json'."));
+        verify(outputFormatter).printError(eq("Option '--message-type' is not applicable to schemas of type 'JSON'."));
     }
 
     @Test
