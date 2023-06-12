@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.commands.hivemq.schemas;
 
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.hivemq.schemas.DeleteSchemaTask;
@@ -28,8 +29,14 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-
-@CommandLine.Command(name = "delete", description = "Delete an existing schema", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "delete",
+                     description = "Delete an existing schema",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class DeleteSchemaCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
@@ -44,8 +51,7 @@ public class DeleteSchemaCommand implements Callable<Integer> {
 
     @Inject
     public DeleteSchemaCommand(
-            final @NotNull HiveMQRestService hiveMQRestService,
-            final @NotNull OutputFormatter outputFormatter) {
+            final @NotNull HiveMQRestService hiveMQRestService, final @NotNull OutputFormatter outputFormatter) {
         this.outputFormatter = outputFormatter;
         this.hiveMQRestService = hiveMQRestService;
     }

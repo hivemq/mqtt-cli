@@ -17,6 +17,7 @@
 package com.hivemq.cli.commands.hivemq.policies;
 
 import com.google.gson.Gson;
+import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.commands.hivemq.datagovernance.PolicyDefinitionOptions;
@@ -30,7 +31,14 @@ import picocli.CommandLine;
 import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "create", description = "Create a new policy", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "create",
+                     description = "Create a new policy",
+                     synopsisHeading = "%n@|bold Usage:|@  ",
+                     descriptionHeading = "%n",
+                     optionListHeading = "%n@|bold Options:|@%n",
+                     commandListHeading = "%n@|bold Commands:|@%n",
+                     versionProvider = MqttCLIMain.CLIVersionProvider.class,
+                     mixinStandardHelpOptions = true)
 public class CreatePolicyCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
