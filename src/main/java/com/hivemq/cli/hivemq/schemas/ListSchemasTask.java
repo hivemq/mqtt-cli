@@ -51,27 +51,27 @@ public class ListSchemasTask {
     }
 
     public boolean execute() {
-        final String schemaIdsParameter;
+        final String schemaIdsQueryParam;
         if (schemaIds == null) {
-            schemaIdsParameter = null;
+            schemaIdsQueryParam = null;
         } else {
-            schemaIdsParameter = String.join(",", schemaIds);
+            schemaIdsQueryParam = String.join(",", schemaIds);
         }
 
-        final String schemaTypesParameter;
+        final String schemaTypesQueryParam;
         if (schemaTypes == null) {
-            schemaTypesParameter = null;
+            schemaTypesQueryParam = null;
         } else {
-            schemaTypesParameter = String.join(",", schemaTypes);
+            schemaTypesQueryParam = String.join(",", schemaTypes);
         }
 
         final List<Schema> allSchemas = new ArrayList<>();
 
         try {
             String nextCursor = null;
-            while (true) {
+            do {
                 final SchemaList schemaList =
-                        schemasApi.getAllSchemas(null, schemaTypesParameter, schemaIdsParameter, 50, nextCursor);
+                        schemasApi.getAllSchemas(null, schemaTypesQueryParam, schemaIdsQueryParam, 50, nextCursor);
                 final List<Schema> schemas = schemaList.getItems();
                 final PaginationCursor links = schemaList.getLinks();
 
@@ -80,15 +80,16 @@ public class ListSchemasTask {
                 }
 
                 if (links == null || links.getNext() == null) {
-                    break;
+                    nextCursor = null;
+                } else {
+                    final Matcher matcher = CURSOR_PATTERN.matcher(links.getNext());
+                    if (!matcher.find()) {
+                        nextCursor = null;
+                    } else {
+                        nextCursor = matcher.group(1);
+                    }
                 }
-
-                final Matcher matcher = CURSOR_PATTERN.matcher(links.getNext());
-                if (!matcher.find()) {
-                    break;
-                }
-                nextCursor = matcher.group(1);
-            }
+            } while(nextCursor != null);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to list schemas", apiException);
             return false;

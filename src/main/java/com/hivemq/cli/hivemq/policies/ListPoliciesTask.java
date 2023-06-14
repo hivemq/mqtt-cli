@@ -54,27 +54,27 @@ public class ListPoliciesTask {
     }
 
     public boolean execute() {
-        final String policyIdsParameter;
+        final String policyIdsQueryParam;
         if (policyIds == null) {
-            policyIdsParameter = null;
+            policyIdsQueryParam = null;
         } else {
-            policyIdsParameter = String.join(",", policyIds);
+            policyIdsQueryParam = String.join(",", policyIds);
         }
 
-        final String schemaIdsParameter;
+        final String schemaIdsQueryParam;
         if (schemaIds == null) {
-            schemaIdsParameter = null;
+            schemaIdsQueryParam = null;
         } else {
-            schemaIdsParameter = String.join(",", schemaIds);
+            schemaIdsQueryParam = String.join(",", schemaIds);
         }
 
         final List<Policy> allPolicies = new ArrayList<>();
 
         try {
             String nextCursor = null;
-            while (true) {
+            do {
                 final PolicyList policyList =
-                        policiesApi.getAllPolicies(null, policyIdsParameter, schemaIdsParameter, topic, 50, nextCursor);
+                        policiesApi.getAllPolicies(null, policyIdsQueryParam, schemaIdsQueryParam, topic, 50, nextCursor);
                 final List<Policy> policies = policyList.getItems();
                 final PaginationCursor links = policyList.getLinks();
 
@@ -83,15 +83,16 @@ public class ListPoliciesTask {
                 }
 
                 if (links == null || links.getNext() == null) {
-                    break;
+                    nextCursor = null;
+                } else {
+                    final Matcher matcher = CURSOR_PATTERN.matcher(links.getNext());
+                    if (!matcher.find()) {
+                        nextCursor = null;
+                    } else {
+                        nextCursor = matcher.group(1);
+                    }
                 }
-
-                final Matcher matcher = CURSOR_PATTERN.matcher(links.getNext());
-                if (!matcher.find()) {
-                    break;
-                }
-                nextCursor = matcher.group(1);
-            }
+            } while(nextCursor != null);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to list policies", apiException);
             return false;
