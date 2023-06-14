@@ -16,6 +16,8 @@
 
 package com.hivemq.cli.hivemq.schemas;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.Schema;
@@ -38,6 +40,7 @@ public class CreateSchemaTask {
     private final @Nullable String messageType;
     private final boolean allowUnknown;
     private final @NotNull ByteBuffer definition;
+    private final boolean printEntireSchema;
 
     public CreateSchemaTask(
             final @NotNull OutputFormatter outputFormatter,
@@ -46,6 +49,7 @@ public class CreateSchemaTask {
             final @NotNull String schemaType,
             final @Nullable String messageType,
             final boolean allowUnknown,
+            final boolean printEntireSchema,
             final @NotNull ByteBuffer definition) {
         this.outputFormatter = outputFormatter;
         this.schemasApi = schemasApi;
@@ -54,6 +58,7 @@ public class CreateSchemaTask {
         this.messageType = messageType;
         this.allowUnknown = allowUnknown;
         this.definition = definition;
+        this.printEntireSchema = printEntireSchema;
     }
 
     public boolean execute() {
@@ -70,11 +75,22 @@ public class CreateSchemaTask {
         final Schema schema =
                 new Schema().id(schemaId).type(schemaType).schemaDefinition(definitionBase64).arguments(arguments);
 
+        final Schema createdSchema;
         try {
-            schemasApi.createSchema(schema);
+            createdSchema = schemasApi.createSchema(schema);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to create schema", apiException);
             return false;
+        }
+
+        if (printEntireSchema) {
+            outputFormatter.printJson(createdSchema);
+        } else {
+            final JsonObject versionObject = new JsonObject();
+            if (createdSchema.getVersion() != null) {
+                versionObject.add(Schema.SERIALIZED_NAME_VERSION, new JsonPrimitive(createdSchema.getVersion()));
+            }
+            outputFormatter.printJson(versionObject);
         }
 
         return true;
