@@ -67,8 +67,15 @@ public class CreateSchemaCommand implements Callable<Integer> {
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--allow-unknown"},
                         defaultValue = "false",
-                        description = "Allow unknown Protobuf fields (default false). Only used with --type PROTOBUF.")
+                        description = "Allow unknown Protobuf fields. Only used with --type PROTOBUF.")
     private boolean allowUnknown;
+
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-p", "--print-result"},
+                        defaultValue = "false",
+                        description = "Print the entire schema definition on success. If unset, only the version will be printed.")
+    private boolean printEntireSchema;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.ArgGroup(multiplicity = "1")
@@ -127,6 +134,7 @@ public class CreateSchemaCommand implements Callable<Integer> {
                 schemaType,
                 messageType,
                 allowUnknown,
+                printEntireSchema,
                 definitionBytes);
         if (createSchemaTask.execute()) {
             return 0;
