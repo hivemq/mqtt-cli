@@ -72,7 +72,7 @@ public class CreateSchemaCommand implements Callable<Integer> {
 
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-p", "--print-result"},
+    @CommandLine.Option(names = {"--print-result"},
                         defaultValue = "false",
                         description = "Print the entire schema definition on success. If unset, only the version will be printed.")
     private boolean printEntireSchema;
