@@ -48,30 +48,42 @@ public class ListSchemasTaskTest {
     @Test
     void execute_schemaIdsProvided_usedAsUrlParameter() throws ApiException {
         final String[] schemaIds = {"schema-1", "schema-2", "schema-3"};
-        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, null, schemaIds);
+        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, null, schemaIds, null, null);
 
         when(schemasApi.getAllSchemas(any(), any(), any(), any(), any())).thenReturn(new SchemaList());
 
         assertTrue(task.execute());
-        final String schemaIdsParameter = "schema-1,schema-2,schema-3";
-        verify(schemasApi, times(1)).getAllSchemas(isNull(), isNull(), eq(schemaIdsParameter), any(), isNull());
+        final String schemaIdsQueryParam = "schema-1,schema-2,schema-3";
+        verify(schemasApi, times(1)).getAllSchemas(isNull(), isNull(), eq(schemaIdsQueryParam), any(), isNull());
     }
 
     @Test
     void execute_schemaTypesProvided_usedAsUrlParameter() throws ApiException {
         final String[] schemaTypes = {"type-a", "type-b", "type-c"};
-        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, schemaTypes, null);
+        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, schemaTypes, null, null, null);
 
         when(schemasApi.getAllSchemas(any(), any(), any(), any(), any())).thenReturn(new SchemaList());
 
         assertTrue(task.execute());
-        final String schemaTypesParameter = "type-a,type-b,type-c";
-        verify(schemasApi, times(1)).getAllSchemas(isNull(), eq(schemaTypesParameter), isNull(), any(), isNull());
+        final String schemaTypesQueryParam = "type-a,type-b,type-c";
+        verify(schemasApi, times(1)).getAllSchemas(isNull(), eq(schemaTypesQueryParam), isNull(), any(), isNull());
+    }
+
+    @Test
+    void execute_fieldsProvided_usedAsUrlParameter() throws ApiException {
+        final String[] fields = {"id", "version", "createdAt"};
+        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, null, null, fields, null);
+
+        when(schemasApi.getAllSchemas(any(), any(), any(), any(), any())).thenReturn(new SchemaList());
+
+        assertTrue(task.execute());
+        final String fieldsQueryParam = "id,version,createdAt";
+        verify(schemasApi, times(1)).getAllSchemas(eq(fieldsQueryParam), isNull(), isNull(), any(), isNull());
     }
 
     @Test
     void execute_cursorReturned_allPagesFetched() throws ApiException {
-        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, null, null);
+        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, null, null, null, null);
 
         final Schema schema1 = new Schema().id("schema-1");
         final Schema schema2 = new Schema().id("schema-2");
@@ -93,6 +105,7 @@ public class ListSchemasTaskTest {
         verify(schemasApi).getAllSchemas(isNull(), isNull(), isNull(), any(), isNull());
         verify(schemasApi).getAllSchemas(isNull(), isNull(), isNull(), any(), eq("cursor-1"));
         verify(schemasApi).getAllSchemas(isNull(), isNull(), isNull(), any(), eq("cursor-2"));
+        verify(schemasApi, times(3)).getAllSchemas(any(), any(), any(), any(), any());
 
         final ArgumentCaptor<SchemaList> outputCaptor = ArgumentCaptor.forClass(SchemaList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
@@ -100,8 +113,36 @@ public class ListSchemasTaskTest {
     }
 
     @Test
+    void execute_cursorReturnedLimitSpecified_limitNotExceeded() throws ApiException {
+        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, null, null, null, 3);
+
+        final Schema schema1 = new Schema().id("schema-1");
+        final Schema schema2 = new Schema().id("schema-2");
+        final Schema schema3 = new Schema().id("schema-3");
+        final Schema schema4 = new Schema().id("schema-4");
+
+        final String cursorPrefix = "/api/v1/data-validation/schemas?cursor=";
+        final SchemaList page1 = new SchemaList().items(Arrays.asList(schema1, schema2))
+                .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
+        final SchemaList page2 = new SchemaList().items(Arrays.asList(schema3, schema4))
+                .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
+        when(schemasApi.getAllSchemas(any(), any(), any(), any(), isNull())).thenReturn(page1);
+        when(schemasApi.getAllSchemas(any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
+
+        assertTrue(task.execute());
+
+        verify(schemasApi).getAllSchemas(isNull(), isNull(), isNull(), any(), isNull());
+        verify(schemasApi).getAllSchemas(isNull(), isNull(), isNull(), any(), eq("cursor-1"));
+        verify(schemasApi, times(2)).getAllSchemas(any(), any(), any(), any(), any());
+
+        final ArgumentCaptor<SchemaList> outputCaptor = ArgumentCaptor.forClass(SchemaList.class);
+        verify(outputFormatter).printJson(outputCaptor.capture());
+        assertEquals(Arrays.asList(schema1, schema2, schema3), outputCaptor.getValue().getItems());
+    }
+
+    @Test
     void execute_apiException_printError() throws ApiException {
-        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, null, null);
+        final ListSchemasTask task = new ListSchemasTask(outputFormatter, schemasApi, null, null, null, null);
 
         when(schemasApi.getAllSchemas(any(), any(), any(), any(), any())).thenThrow(ApiException.class);
 

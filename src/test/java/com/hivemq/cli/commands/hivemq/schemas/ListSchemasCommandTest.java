@@ -50,8 +50,12 @@ public class ListSchemasCommandTest {
     void setUp() throws ApiException {
         TestLoggerUtils.resetLogger();
         when(hiveMQRestService.getSchemasApi(any(), anyDouble())).thenReturn(schemasApi);
-        final SchemaList schemaList = new SchemaList();
-        when(schemasApi.getAllSchemas(any(), any(), any(), any(), any())).thenReturn(schemaList);
+        when(schemasApi.getAllSchemas(any(), any(), any(), any(), any())).thenReturn(new SchemaList());
+    }
+
+    @Test
+    void call_noArguments_success() {
+        assertEquals(0, commandLine.execute());
     }
 
     @Test
@@ -68,12 +72,24 @@ public class ListSchemasCommandTest {
     @Test
     void call_multipleTypesAndSchemaIds_success() throws ApiException {
         assertEquals(0, commandLine.execute("--type=json", "--type=protobuf", "--id=s1", "--id=s2"));
-        verify(schemasApi).getAllSchemas(isNull(), eq("JSON,PROTOBUF"), eq("s1,s2"), any(), any());
+        verify(schemasApi).getAllSchemas(isNull(), eq("JSON,PROTOBUF"), eq("s1,s2"), any(), isNull());
     }
 
     @Test
-    void call_noArguments_success() {
-        assertEquals(0, commandLine.execute());
+    void call_limitPositive_success() {
+        assertEquals(0, commandLine.execute("--limit=5"));
+    }
+
+    @Test
+    void call_limitNegative_error() {
+        assertEquals(1, commandLine.execute("--limit=-1"));
+        verify(outputFormatter).printError(eq("The limit must not be negative."));
+    }
+
+    @Test
+    void call_multipleFields_success() throws ApiException {
+        assertEquals(0, commandLine.execute("--field=id", "--field=createdAt"));
+        verify(schemasApi).getAllSchemas(eq("id,createdAt"), isNull(), isNull(), any(), isNull());
     }
 
     @Test

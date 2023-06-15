@@ -45,6 +45,14 @@ public class ListPoliciesCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-s", "--schema-id"}, description = "Filter by policies containing a schema id")
     private @Nullable String @Nullable [] schemaIds;
 
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-f", "--field"}, description = "Filter which JSON fields are included in the response")
+    private @Nullable String @Nullable [] fields;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--limit"}, description = "Limit the number of returned policies")
+    private @Nullable Integer limit;
+
     @CommandLine.Mixin
     private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
 
@@ -65,8 +73,13 @@ public class ListPoliciesCommand implements Callable<Integer> {
         final PoliciesApi policiesApi =
                 hiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
+        if (limit != null && limit < 0) {
+            outputFormatter.printError("The limit must not be negative.");
+            return 1;
+        }
+
         final ListPoliciesTask listPoliciesTask =
-                new ListPoliciesTask(outputFormatter, policiesApi, topic, policyIds, schemaIds);
+                new ListPoliciesTask(outputFormatter, policiesApi, topic, policyIds, schemaIds, fields, limit);
 
         if (listPoliciesTask.execute()) {
             return 0;

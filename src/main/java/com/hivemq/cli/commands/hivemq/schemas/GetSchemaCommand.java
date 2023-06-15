@@ -19,10 +19,12 @@ package com.hivemq.cli.commands.hivemq.schemas;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
+import com.hivemq.cli.converters.SchemaTypeConverter;
 import com.hivemq.cli.hivemq.schemas.GetSchemaTask;
 import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -43,6 +45,10 @@ public class GetSchemaCommand implements Callable<Integer> {
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the schema")
     private @NotNull String schemaId;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-f", "--field"}, description = "Filter which JSON fields are included in the response")
+    private @Nullable String @Nullable [] fields;
 
     @CommandLine.Mixin
     private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
@@ -69,7 +75,7 @@ public class GetSchemaCommand implements Callable<Integer> {
             return 1;
         }
 
-        final GetSchemaTask getSchemaTask = new GetSchemaTask(outputFormatter, schemasApi, schemaId);
+        final GetSchemaTask getSchemaTask = new GetSchemaTask(outputFormatter, schemasApi, schemaId, fields);
         if (getSchemaTask.execute()) {
             return 0;
         } else {

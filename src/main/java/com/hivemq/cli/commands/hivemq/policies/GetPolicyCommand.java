@@ -19,10 +19,12 @@ package com.hivemq.cli.commands.hivemq.policies;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
+import com.hivemq.cli.converters.SchemaTypeConverter;
 import com.hivemq.cli.hivemq.policies.GetPolicyTask;
 import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -42,6 +44,10 @@ public class GetPolicyCommand implements Callable<Integer> {
     @SuppressWarnings({"unused", "NotNullFieldNotInitialized"})
     @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the policy")
     private @NotNull String policyId;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-f", "--field"}, description = "Filter which JSON fields are included in the response")
+    private @Nullable String @Nullable [] fields;
 
     @CommandLine.Mixin
     private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
@@ -68,7 +74,7 @@ public class GetPolicyCommand implements Callable<Integer> {
             return 1;
         }
 
-        final GetPolicyTask getPolicyTask = new GetPolicyTask(outputFormatter, policiesApi, policyId);
+        final GetPolicyTask getPolicyTask = new GetPolicyTask(outputFormatter, policiesApi, policyId, fields);
         if (getPolicyTask.execute()) {
             return 0;
         } else {

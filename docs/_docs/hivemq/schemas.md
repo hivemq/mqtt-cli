@@ -109,9 +109,10 @@ $ mqtt hivemq schemas get --id my-schema-id
 
 ## Options
 
-| Option | Long Version | Explanation                    | Required |
-|--------|--------------|--------------------------------|:--------:|
-| `-i`   | `--id`       | The id of the schema to fetch. |    X     |
+| Option | Long Version | Explanation                                                                       | Required |
+|--------|--------------|-----------------------------------------------------------------------------------|:--------:|
+| `-i`   | `--id`       | The id of the schema to fetch.                                                    |    X     |
+| `-f`   | `--field`    | Select which JSON fields appear in the response. Can be specified multiple times. |          |
 
 ### API Connection Options
 
@@ -170,10 +171,12 @@ $ mqtt hivemq schemas list --id schema-1
 
 ## Options
 
-| Option | Long Version | Explanation                                                                   | Required |
-|--------|--------------|-------------------------------------------------------------------------------|:--------:|
-| `-i`   | `--id`       | Filter by schemas with a matching schema id. Can be specified multiple times. |          |
-| `-t`   | `--type`     | Filter by schemas of a matching schema type. Can be specified multiple times  |          |
+| Option | Long Version | Explanation                                                                       | Required |
+|--------|--------------|-----------------------------------------------------------------------------------|:--------:|
+| `-i`   | `--id`       | Filter by schemas with a matching schema id. Can be specified multiple times.     |          |
+| `-t`   | `--type`     | Filter by schemas of a matching schema type. Can be specified multiple times      |          |
+| `-f`   | `--field`    | Select which JSON fields appear in the response. Can be specified multiple times. |          |
+|        | `--limit`    | Limit the maximum number of schemas returned.                                     |          |
 
 ### API Connection Options
 

@@ -55,6 +55,11 @@ public class ListPoliciesCommandTest {
     }
 
     @Test
+    void call_noArguments_success() {
+        assertEquals(0, commandLine.execute());
+    }
+
+    @Test
     void call_urlAndRateLimitPassed_usedInApi() {
         assertEquals(0, commandLine.execute("--rate=123", "--url=test-url", "--id=policy-1"));
         verify(hiveMQRestService).getPoliciesApi(eq("test-url"), eq(123d));
@@ -72,8 +77,20 @@ public class ListPoliciesCommandTest {
     }
 
     @Test
-    void call_noArguments_success() {
-        assertEquals(0, commandLine.execute());
+    void call_limitPositive_success() throws ApiException {
+        assertEquals(0, commandLine.execute("--limit=5"));
+    }
+
+    @Test
+    void call_limitNegative_error() {
+        assertEquals(1, commandLine.execute("--limit=-1"));
+        verify(outputFormatter).printError(eq("The limit must not be negative."));
+    }
+
+    @Test
+    void call_multipleFields_success() throws ApiException {
+        assertEquals(0, commandLine.execute("--field=id", "--field=version"));
+        verify(policiesApi).getAllPolicies(eq("id,version"), isNull(), isNull(), isNull(), any(), any());
     }
 
     @Test

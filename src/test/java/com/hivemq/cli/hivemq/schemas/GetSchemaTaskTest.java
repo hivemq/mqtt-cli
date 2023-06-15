@@ -38,7 +38,7 @@ public class GetSchemaTaskTest {
 
     @Test
     void execute_schemaFound_printSchema() throws ApiException {
-        final GetSchemaTask task = new GetSchemaTask(outputFormatter, schemasApi, "test-1");
+        final GetSchemaTask task = new GetSchemaTask(outputFormatter, schemasApi, "test-1", null);
 
         final Schema schema = new Schema();
         when(schemasApi.getSchema("test-1", null)).thenReturn(schema);
@@ -50,7 +50,7 @@ public class GetSchemaTaskTest {
 
     @Test
     void execute_exceptionThrown_printError() throws ApiException {
-        final GetSchemaTask task = new GetSchemaTask(outputFormatter, schemasApi, "test-1");
+        final GetSchemaTask task = new GetSchemaTask(outputFormatter, schemasApi, "test-1", null);
         when(schemasApi.getSchema("test-1", null)).thenThrow(ApiException.class);
 
         assertFalse(task.execute());

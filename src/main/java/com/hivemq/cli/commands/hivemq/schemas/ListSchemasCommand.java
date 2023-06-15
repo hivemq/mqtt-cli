@@ -53,6 +53,14 @@ public class ListSchemasCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-i", "--id"}, description = "Filter by schema id")
     private @Nullable String @Nullable [] schemaIds;
 
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-f", "--field"}, description = "Filter which JSON fields are included in the response")
+    private @Nullable String @Nullable [] fields;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--limit"}, description = "Limit the number of returned schemas")
+    private @Nullable Integer limit;
+
     @CommandLine.Mixin
     private final @NotNull DataGovernanceOptions dataGovernanceOptions = new DataGovernanceOptions();
 
@@ -73,8 +81,13 @@ public class ListSchemasCommand implements Callable<Integer> {
         final SchemasApi schemasApi =
                 hiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
+        if (limit != null && limit < 0) {
+            outputFormatter.printError("The limit must not be negative.");
+            return 1;
+        }
+
         final ListSchemasTask listSchemasTask =
-                new ListSchemasTask(outputFormatter, schemasApi, schemaTypes, schemaIds);
+                new ListSchemasTask(outputFormatter, schemasApi, schemaTypes, schemaIds, fields, limit);
 
         if (listSchemasTask.execute()) {
             return 0;

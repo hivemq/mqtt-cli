@@ -21,25 +21,36 @@ import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.openapi.hivemq.Policy;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class GetPolicyTask {
     private final @NotNull OutputFormatter outputFormatter;
     private final @NotNull PoliciesApi policiesApi;
     private final @NotNull String policyId;
+    private final @Nullable String @Nullable [] fields;
 
     public GetPolicyTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull PoliciesApi policiesApi,
-            final @NotNull String policyId) {
+            final @NotNull String policyId,
+            final @Nullable String @Nullable [] fields) {
         this.outputFormatter = outputFormatter;
         this.policiesApi = policiesApi;
         this.policyId = policyId;
+        this.fields = fields;
     }
 
     public boolean execute() {
+        final String fieldsQueryParam;
+        if (fields == null) {
+            fieldsQueryParam = null;
+        } else {
+            fieldsQueryParam = String.join(",", fields);
+        }
+
         final Policy policy;
         try {
-            policy = policiesApi.getPolicy(policyId, null);
+            policy = policiesApi.getPolicy(policyId, fieldsQueryParam);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to get policy", apiException);
             return false;
