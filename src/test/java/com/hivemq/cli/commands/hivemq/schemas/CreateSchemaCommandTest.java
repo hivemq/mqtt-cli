@@ -16,19 +16,28 @@
 
 package com.hivemq.cli.commands.hivemq.schemas;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.JSON;
+import com.hivemq.cli.openapi.hivemq.Schema;
 import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
+import com.hivemq.cli.utils.json.OffsetDateTimeSerializer;
+import com.hivemq.cli.utils.json.SchemaSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
+import java.time.OffsetDateTime;
 import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,17 +45,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class CreateSchemaCommandTest {
 
     private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private @NotNull OutputFormatter outputFormatter;
+    private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private final @NotNull JSON openapiSerialization = new JSON();
     private final @NotNull SchemasApi schemasApi = mock(SchemasApi.class);
 
-    private final @NotNull CommandLine commandLine =
-            new CommandLine(new CreateSchemaCommand(hiveMQRestService, outputFormatter));
+    private @NotNull CommandLine commandLine;
 
     @SuppressWarnings("FieldCanBeLocal")
     private final @NotNull String JSON_SCHEMA_DEFINITION = "{ \"type\": \"object\" }";
@@ -60,10 +71,30 @@ public class CreateSchemaCommandTest {
     @SuppressWarnings("FieldCanBeLocal")
     private final @NotNull String PROTOBUF_SCHEMA_DEFINITION = "ChwKCnRlc3QucHJvdG8iBgoEVGVzdGIGcHJvdG8z";
 
+    private final @NotNull String JSON_SCHEMA_API_RESPONSE = "{" +
+            "\"id\":\"s1\"," +
+            "\"version\":5," +
+            "\"createdAt\":\"2020-01-02T03:04:05.006Z\"," +
+            "\"type\":\"JSON\"," +
+            "\"schemaDefinition\":\"J3t9Jw==\"," +
+            "\"arguments\":{}" +
+            "}";
+
+
     @BeforeEach
-    void setUp() {
+    void setUp() throws ApiException {
         TestLoggerUtils.resetLogger();
+
+        final Gson gson = new GsonBuilder().disableHtmlEscaping()
+                .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
+                .registerTypeAdapter(Schema.class, new SchemaSerializer())
+                .create();
+
+        outputFormatter = spy(new OutputFormatter(new PrintStream(outputStream), gson));
+        commandLine = new CommandLine(new CreateSchemaCommand(hiveMQRestService, outputFormatter));
+
         when(hiveMQRestService.getSchemasApi(any(), anyDouble())).thenReturn(schemasApi);
+        when(schemasApi.createSchema(any())).thenReturn(new Schema());
     }
 
     @Test
@@ -143,6 +174,26 @@ public class CreateSchemaCommandTest {
                         "--type=json",
                         "--definition=" + JSON_SCHEMA_DEFINITION));
         verify(hiveMQRestService).getSchemasApi(eq("test-url"), eq(123d));
+    }
+
+    @Test
+    void execute_printEntireSchemaNotSet_printVersionOnly() throws ApiException {
+        final Schema createdSchema = openapiSerialization.deserialize(JSON_SCHEMA_API_RESPONSE, Schema.class);
+        when(schemasApi.createSchema(any())).thenReturn(createdSchema);
+        assertEquals(0, commandLine.execute("--id=s1", "--type=json", "--definition='{}'"));
+
+        final String consoleOutput = outputStream.toString();
+        assertEquals("{\"version\":5}", consoleOutput.trim());
+    }
+
+    @Test
+    void execute_printEntireSchemaSet_printWholeSchema() throws ApiException {
+        final Schema createdSchema = openapiSerialization.deserialize(JSON_SCHEMA_API_RESPONSE, Schema.class);
+        when(schemasApi.createSchema(any())).thenReturn(createdSchema);
+        assertEquals(0, commandLine.execute("--id=s1", "--type=json", "--definition='{}'", "--print-result"));
+
+        final String consoleOutput = outputStream.toString();
+        assertEquals(JSON_SCHEMA_API_RESPONSE, consoleOutput.trim());
     }
 
     @Test
