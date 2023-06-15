@@ -44,7 +44,7 @@ public class GetPolicyTaskTest {
     void execute_validId_success() throws ApiException {
         final Policy policy = new Policy();
 
-        final GetPolicyTask task = new GetPolicyTask(outputFormatter, policiesApi, POLICY_ID);
+        final GetPolicyTask task = new GetPolicyTask(outputFormatter, policiesApi, POLICY_ID, null);
 
         when(policiesApi.getPolicy(eq(POLICY_ID), isNull())).thenReturn(policy);
 
@@ -55,7 +55,7 @@ public class GetPolicyTaskTest {
 
     @Test
     void execute_apiException_printError() throws ApiException {
-        final GetPolicyTask task = new GetPolicyTask(outputFormatter, policiesApi, POLICY_ID);
+        final GetPolicyTask task = new GetPolicyTask(outputFormatter, policiesApi, POLICY_ID, null);
 
         when(policiesApi.getPolicy(any(), isNull())).thenThrow(ApiException.class);
 

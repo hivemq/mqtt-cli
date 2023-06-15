@@ -48,14 +48,15 @@ public class ListPoliciesTaskTest {
     @Test
     void execute_policyIdsProvided_usedAsUrlParameter() throws ApiException {
         final String[] policyIds = {"policy-1", "policy-2", "policy-3"};
-        final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, policyIds, null);
+        final ListPoliciesTask task =
+                new ListPoliciesTask(outputFormatter, policiesApi, null, policyIds, null, null, null);
 
         when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new PolicyList());
 
         assertTrue(task.execute());
-        final String policyIdsParameter = "policy-1,policy-2,policy-3";
+        final String policyIdsQueryParam = "policy-1,policy-2,policy-3";
         verify(policiesApi, times(1)).getAllPolicies(isNull(),
-                eq(policyIdsParameter),
+                eq(policyIdsQueryParam),
                 isNull(),
                 isNull(),
                 any(),
@@ -65,15 +66,16 @@ public class ListPoliciesTaskTest {
     @Test
     void execute_schemaIdsProvided_usedAsUrlParameter() throws ApiException {
         final String[] schemaIds = {"schema-1", "schema-2", "schema-3"};
-        final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, null, schemaIds);
+        final ListPoliciesTask task =
+                new ListPoliciesTask(outputFormatter, policiesApi, null, null, schemaIds, null, null);
 
         when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new PolicyList());
 
         assertTrue(task.execute());
-        final String schemaIdsParameter = "schema-1,schema-2,schema-3";
+        final String schemaIdsQueryParam = "schema-1,schema-2,schema-3";
         verify(policiesApi, times(1)).getAllPolicies(isNull(),
                 isNull(),
-                eq(schemaIdsParameter),
+                eq(schemaIdsQueryParam),
                 isNull(),
                 any(),
                 any());
@@ -81,7 +83,8 @@ public class ListPoliciesTaskTest {
 
     @Test
     void execute_topicProvided_usedAsUrlParameter() throws ApiException {
-        final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, "topic-1", null, null);
+        final ListPoliciesTask task =
+                new ListPoliciesTask(outputFormatter, policiesApi, "topic-1", null, null, null, null);
 
         when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new PolicyList());
 
@@ -90,8 +93,21 @@ public class ListPoliciesTaskTest {
     }
 
     @Test
+    void execute_fieldsProvided_usedAsUrlParameter() throws ApiException {
+        final String[] fields = {"id", "version", "createdAt"};
+        final ListPoliciesTask task =
+                new ListPoliciesTask(outputFormatter, policiesApi, null, null, null, fields, null);
+
+        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new PolicyList());
+
+        assertTrue(task.execute());
+        final String fieldsQueryParam = "id,version,createdAt";
+        verify(policiesApi, times(1)).getAllPolicies(eq(fieldsQueryParam), isNull(), isNull(), isNull(), any(), any());
+    }
+
+    @Test
     void execute_cursorReturned_allPagesFetched() throws ApiException {
-        final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, null, null);
+        final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, null, null, null, null);
 
         final Policy policy1 = new Policy().id("policy-1");
         final Policy policy2 = new Policy().id("policy-2");
@@ -113,6 +129,7 @@ public class ListPoliciesTaskTest {
         verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), isNull());
         verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-1"));
         verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-2"));
+        verify(policiesApi, times(3)).getAllPolicies(any(), any(), any(), any(), any(), any());
 
         final ArgumentCaptor<PolicyList> outputCaptor = ArgumentCaptor.forClass(PolicyList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
@@ -120,8 +137,36 @@ public class ListPoliciesTaskTest {
     }
 
     @Test
+    void execute_cursorReturnedLimitSpecified_limitNotExceeded() throws ApiException {
+        final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, null, null, null, 3);
+
+        final Policy policy1 = new Policy().id("policy-1");
+        final Policy policy2 = new Policy().id("policy-2");
+        final Policy policy3 = new Policy().id("policy-3");
+        final Policy policy4 = new Policy().id("policy-4");
+
+        final String cursorPrefix = "/api/v1/data-validation/schemas?cursor=";
+        final PolicyList page1 = new PolicyList().items(Arrays.asList(policy1, policy2))
+                .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
+        final PolicyList page2 = new PolicyList().items(Arrays.asList(policy3, policy4))
+                .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
+        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), isNull())).thenReturn(page1);
+        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
+
+        assertTrue(task.execute());
+
+        verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), isNull());
+        verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-1"));
+        verify(policiesApi, times(2)).getAllPolicies(any(), any(), any(), any(), any(), any());
+
+        final ArgumentCaptor<PolicyList> outputCaptor = ArgumentCaptor.forClass(PolicyList.class);
+        verify(outputFormatter).printJson(outputCaptor.capture());
+        assertEquals(Arrays.asList(policy1, policy2, policy3), outputCaptor.getValue().getItems());
+    }
+
+    @Test
     void execute_apiException_printError() throws ApiException {
-        final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, null, null);
+        final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, null, null, null, null);
 
         when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenThrow(ApiException.class);
 

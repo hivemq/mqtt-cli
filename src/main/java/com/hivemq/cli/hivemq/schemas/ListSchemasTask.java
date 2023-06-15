@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ListSchemasTask {
 
@@ -38,19 +39,32 @@ public class ListSchemasTask {
     private final @NotNull SchemasApi schemasApi;
     private final @Nullable String @Nullable [] schemaTypes;
     private final @Nullable String @Nullable [] schemaIds;
+    private final @Nullable String @Nullable [] fields;
+    private final @Nullable Integer limit;
 
     public ListSchemasTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull SchemasApi schemasApi,
             final @Nullable String @Nullable [] schemaTypes,
-            final @Nullable String @Nullable [] schemaIds) {
+            final @Nullable String @Nullable [] schemaIds,
+            final @Nullable String @Nullable [] fields,
+            final @Nullable Integer limit) {
         this.outputFormatter = outputFormatter;
         this.schemasApi = schemasApi;
         this.schemaTypes = schemaTypes;
         this.schemaIds = schemaIds;
+        this.limit = limit;
+        this.fields = fields;
     }
 
     public boolean execute() {
+        final String fieldsQueryParam;
+        if (fields == null) {
+            fieldsQueryParam = null;
+        } else {
+            fieldsQueryParam = String.join(",", fields);
+        }
+
         final String schemaIdsQueryParam;
         if (schemaIds == null) {
             schemaIdsQueryParam = null;
@@ -65,13 +79,16 @@ public class ListSchemasTask {
             schemaTypesQueryParam = String.join(",", schemaTypes);
         }
 
-        final List<Schema> allSchemas = new ArrayList<>();
+        List<Schema> allSchemas = new ArrayList<>();
 
         try {
             String nextCursor = null;
             do {
-                final SchemaList schemaList =
-                        schemasApi.getAllSchemas(null, schemaTypesQueryParam, schemaIdsQueryParam, 50, nextCursor);
+                final SchemaList schemaList = schemasApi.getAllSchemas(fieldsQueryParam,
+                        schemaTypesQueryParam,
+                        schemaIdsQueryParam,
+                        50,
+                        nextCursor);
                 final List<Schema> schemas = schemaList.getItems();
                 final PaginationCursor links = schemaList.getLinks();
 
@@ -79,17 +96,23 @@ public class ListSchemasTask {
                     allSchemas.addAll(schemas);
                 }
 
-                if (links == null || links.getNext() == null) {
+                if (limit != null && allSchemas.size() >= limit) {
+                    allSchemas = allSchemas.stream().limit(limit).collect(Collectors.toList());
                     nextCursor = null;
                 } else {
-                    final Matcher matcher = CURSOR_PATTERN.matcher(links.getNext());
-                    if (!matcher.find()) {
+                    if (links == null || links.getNext() == null) {
                         nextCursor = null;
                     } else {
-                        nextCursor = matcher.group(1);
+                        final Matcher matcher = CURSOR_PATTERN.matcher(links.getNext());
+                        if (!matcher.find()) {
+                            nextCursor = null;
+                        } else {
+                            nextCursor = matcher.group(1);
+                        }
                     }
                 }
-            } while(nextCursor != null);
+
+            } while (nextCursor != null);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to list schemas", apiException);
             return false;

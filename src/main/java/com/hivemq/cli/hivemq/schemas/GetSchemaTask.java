@@ -21,26 +21,37 @@ import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.Schema;
 import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class GetSchemaTask {
 
     private final @NotNull OutputFormatter outputFormatter;
     private final @NotNull SchemasApi schemasApi;
     private final @NotNull String schemaId;
+    private final @Nullable String @Nullable [] fields;
 
     public GetSchemaTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull SchemasApi schemasApi,
-            final @NotNull String schemaId) {
+            final @NotNull String schemaId,
+            final @Nullable String @Nullable [] fields) {
         this.outputFormatter = outputFormatter;
         this.schemasApi = schemasApi;
         this.schemaId = schemaId;
+        this.fields = fields;
     }
 
     public boolean execute() {
+        final String fieldsQueryParam;
+        if (fields == null) {
+            fieldsQueryParam = null;
+        } else {
+            fieldsQueryParam = String.join(",", fields);
+        }
+
         final Schema schema;
         try {
-            schema = schemasApi.getSchema(schemaId, null);
+            schema = schemasApi.getSchema(schemaId, fieldsQueryParam);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to get schema", apiException);
             return false;

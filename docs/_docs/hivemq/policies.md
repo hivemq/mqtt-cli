@@ -127,9 +127,10 @@ $ mqtt hivemq policies get --id my-policy-id
 
 ## Options
 
-| Option | Long Version | Explanation                    | Required |
-|--------|--------------|--------------------------------|:--------:|
-| `-i`   | `--id`       | The id of the policy to fetch. |    X     |
+| Option | Long Version | Explanation                                                                       | Required |
+|--------|--------------|-----------------------------------------------------------------------------------|:--------:|
+| `-i`   | `--id`       | The id of the policy to fetch.                                                    |    X     |
+| `-f`   | `--field`    | Select which JSON fields appear in the response. Can be specified multiple times. |          |
 
 ### API Connection Options
 
@@ -233,6 +234,8 @@ $ mqtt hivemq policies list --topic topic/1
 | `-i`   | `--id`        | Filter by policies with a matching policy id. Can be specified multiple times.                         |          |
 | `-s`   | `--schema-id` | Filter by policies that reference a schema with a matching schema id. Can be specified multiple times. |          |
 | `-t`   | `--topic`     | Filter by policies that apply to a certain MQTT topic.                                                 |          |
+| `-f`   | `--field`     | Select which JSON fields appear in the response. Can be specified multiple times.                      |          |
+|        | `--limit`     | Limit the maximum number of policies returned.                                                         |          |
 
 ### API Connection Options
 

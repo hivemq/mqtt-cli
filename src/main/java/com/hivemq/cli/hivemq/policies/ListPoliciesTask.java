@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ListPoliciesTask {
 
@@ -39,21 +40,34 @@ public class ListPoliciesTask {
     private final @Nullable String topic;
     private final @Nullable String @Nullable [] policyIds;
     private final @Nullable String @Nullable [] schemaIds;
+    private final @Nullable String @Nullable [] fields;
+    private final @Nullable Integer limit;
 
     public ListPoliciesTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull PoliciesApi policiesApi,
             final @Nullable String topic,
             final @Nullable String @Nullable [] policyIds,
-            final @Nullable String @Nullable [] schemaIds) {
+            final @Nullable String @Nullable [] schemaIds,
+            final @Nullable String @Nullable [] fields,
+            final @Nullable Integer limit) {
         this.outputFormatter = outputFormatter;
         this.policiesApi = policiesApi;
         this.topic = topic;
         this.policyIds = policyIds;
         this.schemaIds = schemaIds;
+        this.fields = fields;
+        this.limit = limit;
     }
 
     public boolean execute() {
+        final String fieldsQueryParam;
+        if (fields == null) {
+            fieldsQueryParam = null;
+        } else {
+            fieldsQueryParam = String.join(",", fields);
+        }
+
         final String policyIdsQueryParam;
         if (policyIds == null) {
             policyIdsQueryParam = null;
@@ -68,13 +82,17 @@ public class ListPoliciesTask {
             schemaIdsQueryParam = String.join(",", schemaIds);
         }
 
-        final List<Policy> allPolicies = new ArrayList<>();
+        List<Policy> allPolicies = new ArrayList<>();
 
         try {
             String nextCursor = null;
             do {
-                final PolicyList policyList =
-                        policiesApi.getAllPolicies(null, policyIdsQueryParam, schemaIdsQueryParam, topic, 50, nextCursor);
+                final PolicyList policyList = policiesApi.getAllPolicies(fieldsQueryParam,
+                        policyIdsQueryParam,
+                        schemaIdsQueryParam,
+                        topic,
+                        50,
+                        nextCursor);
                 final List<Policy> policies = policyList.getItems();
                 final PaginationCursor links = policyList.getLinks();
 
@@ -82,17 +100,22 @@ public class ListPoliciesTask {
                     allPolicies.addAll(policies);
                 }
 
-                if (links == null || links.getNext() == null) {
+                if (limit != null && allPolicies.size() >= limit) {
+                    allPolicies = allPolicies.stream().limit(limit).collect(Collectors.toList());
                     nextCursor = null;
                 } else {
-                    final Matcher matcher = CURSOR_PATTERN.matcher(links.getNext());
-                    if (!matcher.find()) {
+                    if (links == null || links.getNext() == null) {
                         nextCursor = null;
                     } else {
-                        nextCursor = matcher.group(1);
+                        final Matcher matcher = CURSOR_PATTERN.matcher(links.getNext());
+                        if (!matcher.find()) {
+                            nextCursor = null;
+                        } else {
+                            nextCursor = matcher.group(1);
+                        }
                     }
                 }
-            } while(nextCursor != null);
+            } while (nextCursor != null);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to list policies", apiException);
             return false;

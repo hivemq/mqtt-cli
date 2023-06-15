@@ -68,6 +68,12 @@ public class GetSchemaCommandTest {
     }
 
     @Test
+    void call_multipleFields_success() throws ApiException {
+        assertEquals(0, commandLine.execute("--field=id", "--field=createdAt", "--id=schema-1"));
+        verify(schemasApi).getSchema(eq("schema-1"), eq("id,createdAt"));
+    }
+
+    @Test
     void call_taskSuccessful_return0() throws ApiException {
         assertEquals(0, commandLine.execute("--id=schema-1"));
         verify(schemasApi).getSchema(eq("schema-1"), isNull());
