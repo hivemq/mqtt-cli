@@ -40,6 +40,7 @@ mqtt hivemq schemas
 
 Create a new schema and upload it to a HiveMQ node.
 The schema definition may be provided either directly from the command line or from a file.
+Upon successful creation, the version that has been assigned to the created schema will be printed.
 
 ```
 mqtt hivemq schemas create
@@ -65,6 +66,7 @@ mqtt hivemq schemas create --id my-schema-id --type PROTOBUF --file my-schema.de
 |        | `--file`          | A path to a file containing the definition of the schema.                                                                                    |         | Either `--definition` or `--file`, but not both |
 |        | `--message-type`  | Only used with '--type PROTOBUF'. The Protobuf message type to use for the schema.                                                           |         |            When `type` is `PROTOBUF`            |
 |        | `--allow-unknown` | Only used with '--type PROTOBUF'. If provided, Protobuf messages may contain fields not specified in the schema.                             | `false` |                                                 |
+|        | `--print-result`  | Print the entire schema definition after creation. If not set, only the version will be printed.                                             | `false` |                                                 |
 
 ### API Connection Options
 
