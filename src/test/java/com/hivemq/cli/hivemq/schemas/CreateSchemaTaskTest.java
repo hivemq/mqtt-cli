@@ -16,19 +16,26 @@
 
 package com.hivemq.cli.hivemq.schemas;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.JSON;
 import com.hivemq.cli.openapi.hivemq.Schema;
 import com.hivemq.cli.openapi.hivemq.SchemasApi;
+import com.hivemq.cli.utils.json.OffsetDateTimeSerializer;
+import com.hivemq.cli.utils.json.SchemaSerializer;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -36,7 +43,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,7 +51,7 @@ import static org.mockito.Mockito.when;
 public class CreateSchemaTaskTest {
 
     private final @NotNull SchemasApi schemasApi = mock(SchemasApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private @NotNull OutputFormatter outputFormatter;
     private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final @NotNull JSON openapiSerialization = new JSON();
 
@@ -61,7 +67,26 @@ public class CreateSchemaTaskTest {
     @SuppressWarnings("FieldCanBeLocal")
     private final @NotNull String PROTOBUF_SCHEMA_DEFINITION = "ChwKCnRlc3QucHJvdG8iBgoEVGVzdGIGcHJvdG8z";
 
-    private final @NotNull String API_RESPONSE_SCHEMA_JSON = "{ \"version\": 1, \"id\": \"test\" }";
+    private final int API_RESPONSE_SCHEMA_VERSION = 5;
+    private final @NotNull String API_RESPONSE_SCHEMA_JSON = "{" +
+            "\"id\":\"schema-id\"," +
+            "\"version\":" +
+            API_RESPONSE_SCHEMA_VERSION +
+            "," +
+            "\"createdAt\":\"2020-01-02T03:04:05.006Z\"," +
+            "\"type\":\"JSON\"," +
+            "\"schemaDefinition\":\"abcdefg\"," +
+            "\"arguments\":{}" +
+            "}";
+
+    @BeforeEach
+    void setUp() {
+        final Gson gson = new GsonBuilder().disableHtmlEscaping()
+                .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
+                .registerTypeAdapter(Schema.class, new SchemaSerializer())
+                .create();
+        outputFormatter = new OutputFormatter(new PrintStream(outputStream), gson);
+    }
 
     @Test
     void execute_validJsonSchema_created() throws ApiException {
@@ -126,7 +151,29 @@ public class CreateSchemaTaskTest {
                 ByteBuffer.wrap(new byte[]{}));
 
         assertTrue(task.execute());
-        verify(outputFormatter).printJson(eq("{ \"version\": 1 }"));
+
+        final String consoleOutput = outputStream.toString();
+        assertEquals("{\"version\":" + API_RESPONSE_SCHEMA_VERSION + "}", consoleOutput.trim());
+    }
+
+    @Test
+    void execute_printEntireSchemaSet_printWholeSchema() throws ApiException {
+        final Schema schema = openapiSerialization.deserialize(API_RESPONSE_SCHEMA_JSON, Schema.class);
+        when(schemasApi.createSchema(any())).thenReturn(schema);
+
+        final CreateSchemaTask task = new CreateSchemaTask(outputFormatter,
+                schemasApi,
+                "test-1",
+                "JSON",
+                null,
+                false,
+                true,
+                ByteBuffer.wrap(new byte[]{}));
+
+        assertTrue(task.execute());
+
+        final String consoleOutput = outputStream.toString();
+        assertEquals(API_RESPONSE_SCHEMA_JSON, consoleOutput.trim());
     }
 
     @Test
