@@ -19,7 +19,6 @@ package com.hivemq.cli.commands.hivemq.schemas;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
-import com.hivemq.cli.converters.SchemaTypeConverter;
 import com.hivemq.cli.hivemq.schemas.GetSchemaTask;
 import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import com.hivemq.cli.rest.HiveMQRestService;
@@ -29,6 +28,7 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 
@@ -47,7 +47,8 @@ public class GetSchemaCommand implements Callable<Integer> {
     private @NotNull String schemaId;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-f", "--field"}, description = "Filter which JSON fields are included in the response")
+    @CommandLine.Option(names = {"-f", "--field"},
+                        description = "Filter which JSON fields are included in the response")
     private @Nullable String @Nullable [] fields;
 
     @CommandLine.Mixin
@@ -89,10 +90,14 @@ public class GetSchemaCommand implements Callable<Integer> {
                 "schemaId='" +
                 schemaId +
                 '\'' +
+                ", fields=" +
+                Arrays.toString(fields) +
                 ", dataGovernanceOptions=" +
                 dataGovernanceOptions +
                 ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
                 '}';
     }
 }

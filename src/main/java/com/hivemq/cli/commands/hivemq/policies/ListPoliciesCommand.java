@@ -46,7 +46,8 @@ public class ListPoliciesCommand implements Callable<Integer> {
     private @Nullable String @Nullable [] schemaIds;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-f", "--field"}, description = "Filter which JSON fields are included in the response")
+    @CommandLine.Option(names = {"-f", "--field"},
+                        description = "Filter which JSON fields are included in the response")
     private @Nullable String @Nullable [] fields;
 
     @SuppressWarnings("unused")
@@ -98,10 +99,16 @@ public class ListPoliciesCommand implements Callable<Integer> {
                 Arrays.toString(policyIds) +
                 ", schemaIds=" +
                 Arrays.toString(schemaIds) +
+                ", fields=" +
+                Arrays.toString(fields) +
+                ", limit=" +
+                limit +
                 ", dataGovernanceOptions=" +
                 dataGovernanceOptions +
-                ", formatter=" +
+                ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
                 '}';
     }
 }

@@ -19,7 +19,6 @@ package com.hivemq.cli.commands.hivemq.policies;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
-import com.hivemq.cli.converters.SchemaTypeConverter;
 import com.hivemq.cli.hivemq.policies.GetPolicyTask;
 import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
@@ -29,6 +28,7 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "get",
@@ -46,7 +46,8 @@ public class GetPolicyCommand implements Callable<Integer> {
     private @NotNull String policyId;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-f", "--field"}, description = "Filter which JSON fields are included in the response")
+    @CommandLine.Option(names = {"-f", "--field"},
+                        description = "Filter which JSON fields are included in the response")
     private @Nullable String @Nullable [] fields;
 
     @CommandLine.Mixin
@@ -88,10 +89,14 @@ public class GetPolicyCommand implements Callable<Integer> {
                 "policyId='" +
                 policyId +
                 '\'' +
+                ", fields=" +
+                Arrays.toString(fields) +
                 ", dataGovernanceOptions=" +
                 dataGovernanceOptions +
-                ", formatter=" +
+                ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
                 '}';
     }
 }
