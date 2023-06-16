@@ -40,7 +40,7 @@ public class CreateSchemaTask {
     private final @Nullable String messageType;
     private final boolean allowUnknown;
     private final @NotNull ByteBuffer definition;
-    private final boolean printEntireSchema;
+    private final boolean printVersion;
 
     public CreateSchemaTask(
             final @NotNull OutputFormatter outputFormatter,
@@ -49,7 +49,7 @@ public class CreateSchemaTask {
             final @NotNull String schemaType,
             final @Nullable String messageType,
             final boolean allowUnknown,
-            final boolean printEntireSchema,
+            final boolean printVersion,
             final @NotNull ByteBuffer definition) {
         this.outputFormatter = outputFormatter;
         this.schemasApi = schemasApi;
@@ -58,7 +58,7 @@ public class CreateSchemaTask {
         this.messageType = messageType;
         this.allowUnknown = allowUnknown;
         this.definition = definition;
-        this.printEntireSchema = printEntireSchema;
+        this.printVersion = printVersion;
     }
 
     public boolean execute() {
@@ -83,9 +83,7 @@ public class CreateSchemaTask {
             return false;
         }
 
-        if (printEntireSchema) {
-            outputFormatter.printJson(createdSchema);
-        } else {
+        if (printVersion) {
             final JsonObject versionObject = new JsonObject();
             if (createdSchema.getVersion() != null) {
                 versionObject.add(Schema.SERIALIZED_NAME_VERSION, new JsonPrimitive(createdSchema.getVersion()));

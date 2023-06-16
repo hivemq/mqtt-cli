@@ -41,6 +41,7 @@ import java.time.OffsetDateTime;
 import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
@@ -70,15 +71,6 @@ public class CreateSchemaCommandTest {
     // Created with `protoc -o /dev/stdout | base64`
     @SuppressWarnings("FieldCanBeLocal")
     private final @NotNull String PROTOBUF_SCHEMA_DEFINITION = "ChwKCnRlc3QucHJvdG8iBgoEVGVzdGIGcHJvdG8z";
-
-    private final @NotNull String JSON_SCHEMA_API_RESPONSE = "{" +
-            "\"id\":\"s1\"," +
-            "\"version\":5," +
-            "\"createdAt\":\"2020-01-02T03:04:05.006Z\"," +
-            "\"type\":\"JSON\"," +
-            "\"schemaDefinition\":\"J3t9Jw==\"," +
-            "\"arguments\":{}" +
-            "}";
 
 
     @BeforeEach
@@ -127,6 +119,7 @@ public class CreateSchemaCommandTest {
                         "--type=protobuf",
                         "--file=" + definitionFile.getAbsolutePath(),
                         "--message-type=Test"));
+        assertTrue(outputStream.toString().isEmpty());
     }
 
     @Test
@@ -147,6 +140,7 @@ public class CreateSchemaCommandTest {
         final File definitionFile = File.createTempFile("schema", ".json");
         Files.write(definitionFile.toPath(), JSON_SCHEMA_DEFINITION.getBytes());
         assertEquals(0, commandLine.execute("--id=s1", "--type=json", "--file=" + definitionFile.getAbsolutePath()));
+        assertTrue(outputStream.toString().isEmpty());
     }
 
     @Test
@@ -177,23 +171,22 @@ public class CreateSchemaCommandTest {
     }
 
     @Test
-    void execute_printEntireSchemaNotSet_printVersionOnly() throws ApiException {
-        final Schema createdSchema = openapiSerialization.deserialize(JSON_SCHEMA_API_RESPONSE, Schema.class);
+    void execute_printVersionSet_versionPrinted() throws ApiException {
+        final @NotNull String apiSchemaResponseJson = "{" +
+                "\"id\":\"s1\"," +
+                "\"version\":5," +
+                "\"createdAt\":\"2020-01-02T03:04:05.006Z\"," +
+                "\"type\":\"JSON\"," +
+                "\"schemaDefinition\":\"J3t9Jw==\"," +
+                "\"arguments\":{}" +
+                "}";
+        final Schema createdSchema = openapiSerialization.deserialize(apiSchemaResponseJson, Schema.class);
         when(schemasApi.createSchema(any())).thenReturn(createdSchema);
-        assertEquals(0, commandLine.execute("--id=s1", "--type=json", "--definition='{}'"));
+
+        assertEquals(0, commandLine.execute("--id=s1", "--type=json", "--definition='{}'", "--print-version"));
 
         final String consoleOutput = outputStream.toString();
         assertEquals("{\"version\":5}", consoleOutput.trim());
-    }
-
-    @Test
-    void execute_printEntireSchemaSet_printWholeSchema() throws ApiException {
-        final Schema createdSchema = openapiSerialization.deserialize(JSON_SCHEMA_API_RESPONSE, Schema.class);
-        when(schemasApi.createSchema(any())).thenReturn(createdSchema);
-        assertEquals(0, commandLine.execute("--id=s1", "--type=json", "--definition='{}'", "--print-result"));
-
-        final String consoleOutput = outputStream.toString();
-        assertEquals(JSON_SCHEMA_API_RESPONSE, consoleOutput.trim());
     }
 
     @Test

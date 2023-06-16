@@ -72,10 +72,10 @@ public class CreateSchemaCommand implements Callable<Integer> {
 
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--print-result"},
+    @CommandLine.Option(names = {"--print-version"},
                         defaultValue = "false",
-                        description = "Print the entire schema definition on success. If unset, only the version will be printed.")
-    private boolean printEntireSchema;
+                        description = "Print the assigned schema version after successful creation.")
+    private boolean printVersion;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.ArgGroup(multiplicity = "1")
@@ -134,7 +134,7 @@ public class CreateSchemaCommand implements Callable<Integer> {
                 schemaType,
                 messageType,
                 allowUnknown,
-                printEntireSchema,
+                printVersion,
                 definitionBytes);
         if (createSchemaTask.execute()) {
             return 0;
