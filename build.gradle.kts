@@ -1,5 +1,4 @@
 import com.netflix.gradle.plugins.packaging.CopySpecEnhancement
-import nl.javadude.gradle.plugins.license.DownloadLicensesExtension.license
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 import org.redline_rpm.header.Flags
 import org.redline_rpm.header.Os
