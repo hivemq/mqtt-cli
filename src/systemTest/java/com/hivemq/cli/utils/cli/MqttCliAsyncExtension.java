@@ -43,9 +43,10 @@ public class MqttCliAsyncExtension implements AfterEachCallback {
     private @Nullable Path temporaryHomeDir = null;
 
     @Override
-    public void afterEach(final @NotNull ExtensionContext context) throws IOException {
+    public void afterEach(final @NotNull ExtensionContext context) throws IOException, InterruptedException {
         for (final Process startedProcess : startedProcesses) {
             startedProcess.destroyForcibly();
+            startedProcess.waitFor();
         }
         if (temporaryHomeDir != null) {
             FileUtils.deleteDirectory(temporaryHomeDir.toFile());
