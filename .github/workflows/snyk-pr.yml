@@ -1,0 +1,23 @@
+name: Run Snyk scan on PRs
+
+on:
+  pull_request:
+    branches:
+      - master**
+
+jobs:
+  scan-for-new-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: hivemq/hivemq-checkout-composite-action@v1
+        with:
+          path: mqtt-cli
+
+      - name: Check for new issues
+        uses: hivemq/hivemq-snyk-composite-action@v1
+        with:
+          snyk-args: --configuration-matching=^runtimeClasspath$ -d mqtt-cli
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          github-username: ${{ secrets.PUBLISH_GITHUB_USERNAME }}
+          github-token: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
