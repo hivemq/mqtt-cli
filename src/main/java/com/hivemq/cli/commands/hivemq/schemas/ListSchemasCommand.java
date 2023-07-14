@@ -21,7 +21,7 @@ import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.converters.SchemaTypeConverter;
 import com.hivemq.cli.hivemq.schemas.ListSchemasTask;
-import com.hivemq.cli.openapi.hivemq.SchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -79,7 +79,7 @@ public class ListSchemasCommand implements Callable<Integer> {
     public @NotNull Integer call() {
         Logger.trace("Command {}", this);
 
-        final SchemasApi schemasApi =
+        final DataGovernanceHubSchemasApi schemasApi =
                 hiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
         if (limit != null && limit < 0) {

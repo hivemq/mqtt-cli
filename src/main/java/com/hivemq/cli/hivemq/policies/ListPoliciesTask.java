@@ -18,8 +18,8 @@ package com.hivemq.cli.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.PaginationCursor;
-import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.openapi.hivemq.Policy;
 import com.hivemq.cli.openapi.hivemq.PolicyList;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +36,7 @@ public class ListPoliciesTask {
     private static final @NotNull Pattern CURSOR_PATTERN = Pattern.compile("cursor=([^&]*)");
 
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull PoliciesApi policiesApi;
+    private final @NotNull DataGovernanceHubPoliciesApi policiesApi;
     private final @Nullable String topic;
     private final @Nullable String @Nullable [] policyIds;
     private final @Nullable String @Nullable [] schemaIds;
@@ -45,7 +45,7 @@ public class ListPoliciesTask {
 
     public ListPoliciesTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull PoliciesApi policiesApi,
+            final @NotNull DataGovernanceHubPoliciesApi policiesApi,
             final @Nullable String topic,
             final @Nullable String @Nullable [] policyIds,
             final @Nullable String @Nullable [] schemaIds,

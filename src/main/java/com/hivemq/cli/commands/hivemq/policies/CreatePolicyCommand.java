@@ -22,7 +22,7 @@ import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.commands.hivemq.datagovernance.PolicyDefinitionOptions;
 import com.hivemq.cli.hivemq.policies.CreatePolicyTask;
-import com.hivemq.cli.openapi.hivemq.PoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -66,7 +66,7 @@ public class CreatePolicyCommand implements Callable<Integer> {
     public @NotNull Integer call() {
         Logger.trace("Command {}", this);
 
-        final PoliciesApi policiesApi =
+        final DataGovernanceHubPoliciesApi policiesApi =
                 hiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
         final String definition = definitionOptions.getDefinition();

@@ -18,8 +18,8 @@ package com.hivemq.cli.hivemq.schemas;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
 import com.hivemq.cli.openapi.hivemq.Schema;
-import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public class CreateSchemaTaskTest {
 
-    private final @NotNull SchemasApi schemasApi = mock(SchemasApi.class);
+    private final @NotNull DataGovernanceHubSchemasApi schemasApi = mock(DataGovernanceHubSchemasApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
 
     @SuppressWarnings("FieldCanBeLocal")
