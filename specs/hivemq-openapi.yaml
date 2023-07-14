@@ -82,69 +82,69 @@ info:
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
-  - description: |-
-      These endpoints can be used to manage the Data Governance Hub.
-      
-      Currently, this includes the option to start a 5-hour long trial mode that temporarily removes all limitations.For more information on all capabilities the HiveMQ Data Governance Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-governance-hub/index.html).
-    name: Data Governance Hub - Management
-  - description: |-
-      Policies describe how you want the HiveMQ broker to apply schemas to incoming MQTT message payload data and act on the validation results.
-      Each policy has four sections:
-      
-      - Matching: Specifies which packets the policy engine validates.
-      - Validation: Specifies how the packets are validated. For example, based on a JSON Schema.
-      - OnSuccess: Defines which actions are executed when the outcome of a validation is successful.
-      - OnFailure: Defines which actions are executed when the validation fails.
-      
-      These endpoints can be used to create, update, delete, and list policies.
-      
-      For more information on all capabilities the HiveMQ Data Governance Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/4.16/data-governance-hub/index.html).
-    name: Data Governance Hub - Policies
-  - description: |-
-      A schema defines the expected structure and format of incoming MQTT message payload data.
-      
-      This endpoint can be used to create, get, and delete schemas.
-      
-      Schemas can be enforced with the use of a policy.
-      
-      Currently, the following schema definitions are supported:
-      
-      - [JSON Schema](https://json-schema.org/)
-      - [Protocol Buffers (Protobuf)](https://protobuf.dev/)
-      
-      For more information on how to define and use a schema in HiveMQ, see [Schemas](https://docs.hivemq.com/hivemq/latest/data-governance-hub/schemas.html).
-    name: Data Governance Hub - Schemas
-  - description: |-
-      These endpoints can be used to create, download, inspect and restore backups created by HiveMQ.
-      
-      More information about the backup and restore capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/user-guide/backup-restore.html).
-      
-      ### Backup Requirements
-      Some prerequisites are necessary to create a backup or restore from a backup:
-      
-      - All HiveMQ nodes have at least version 4.4.0
-      - Only one backup/restore can be executed at the same time
-      
-      ### Export Requirements
-      The following requirements are necessary to successfully create a backup:
-      
-      - All HiveMQ nodes have at least 1GB of free disk space
-      - No cluster topology changes occur during the export. The backup is aborted when the topology changes to avoid inconsistent data in the backup.
-      
-      
-      ### Restore Requirements
-      
-      The requirements to successfully restore data from a backup are:
-      
-      - A clean HiveMQ deployment. This means that no clients must be connected and no persistent data exists on every HiveMQ node. The import will not start if there is data available in your cluster.
-      - Message data used by Extensions are only restored if the corresponding extension is already started before the restore is started.
-    name: Backup & Restore
-  - description: |-
-      This endpoint can be used to create diagnostic archives.
-      
-      More information about the diagnostic archive can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/diagnostic-archive.html).
-      
-      ### Diagnostic Archive Requirements
+- description: |-
+    These endpoints can be used to manage the Data Governance Hub.
+
+    Currently, this includes the option to start a 5-hour long trial mode that temporarily removes all limitations.For more information on all capabilities the HiveMQ Data Governance Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-governance-hub/index.html).
+  name: Data Governance Hub - Management
+- description: |-
+    Policies describe how you want the HiveMQ broker to apply schemas to incoming MQTT message payload data and act on the validation results.
+    Each policy has four sections:
+
+    - Matching: Specifies which packets the policy engine validates.
+    - Validation: Specifies how the packets are validated. For example, based on a JSON Schema.
+    - OnSuccess: Defines which actions are executed when the outcome of a validation is successful.
+    - OnFailure: Defines which actions are executed when the validation fails.
+
+    These endpoints can be used to create, update, delete, and list policies.
+
+    For more information on all capabilities the HiveMQ Data Governance Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/4.16/data-governance-hub/index.html).
+  name: Data Governance Hub - Policies
+- description: |-
+    A schema defines the expected structure and format of incoming MQTT message payload data.
+
+    This endpoint can be used to create, get, and delete schemas.
+
+    Schemas can be enforced with the use of a policy.
+
+    Currently, the following schema definitions are supported:
+
+    - [JSON Schema](https://json-schema.org/)
+    - [Protocol Buffers (Protobuf)](https://protobuf.dev/)
+
+    For more information on how to define and use a schema in HiveMQ, see [Schemas](https://docs.hivemq.com/hivemq/latest/data-governance-hub/schemas.html).
+  name: Data Governance Hub - Schemas
+- description: |-
+    These endpoints can be used to create, download, inspect and restore backups created by HiveMQ.
+
+    More information about the backup and restore capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/user-guide/backup-restore.html).
+
+    ### Backup Requirements
+    Some prerequisites are necessary to create a backup or restore from a backup:
+
+    - All HiveMQ nodes have at least version 4.4.0
+    - Only one backup/restore can be executed at the same time
+
+    ### Export Requirements
+    The following requirements are necessary to successfully create a backup:
+
+    - All HiveMQ nodes have at least 1GB of free disk space
+    - No cluster topology changes occur during the export. The backup is aborted when the topology changes to avoid inconsistent data in the backup.
+
+
+    ### Restore Requirements
+
+    The requirements to successfully restore data from a backup are:
+
+    - A clean HiveMQ deployment. This means that no clients must be connected and no persistent data exists on every HiveMQ node. The import will not start if there is data available in your cluster.
+    - Message data used by Extensions are only restored if the corresponding extension is already started before the restore is started.
+  name: Backup & Restore
+- description: |-
+    This endpoint can be used to create diagnostic archives.
+
+    More information about the diagnostic archive can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/diagnostic-archive.html).
+
+    ### Diagnostic Archive Requirements
     Some prerequisites are necessary to create a diagnostic archive:
 
     - Only HiveMQ nodes with at least version 4.11.0 will create an archive
@@ -174,56 +174,56 @@ paths:
         \ at least HiveMQ version 4.15.0 on all cluster nodes."
       operationId: getAllPolicies
       parameters:
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, createdAt, matching, validation, onSuccess, onFailure"
-          example: "id,createdAt"
-          in: query
-          name: fields
-          schema:
-            type: string
-            example: null
-        - description: Comma-separated list of policy IDs used for filtering. Multiple
-            filters can be applied together.
-          example: "policy1,policy2"
-          in: query
-          name: policyIds
-          schema:
-            type: string
-            example: null
-        - description: Comma-separated list of schema IDs used for filtering. Multiple
-            filters can be applied together.
-          example: "schema1,schema2"
-          in: query
-          name: schemaIds
-          schema:
-            type: string
-            example: null
-        - description: MQTT topic string that the retrieved policies must match. Returned
-            policies are sorted in the same way as they are applied to matching publishes.
-            'topic' filtering does not support pagination
-          example: topic/my-topic
-          in: query
-          name: topic
-          schema:
-            type: string
-            example: null
-        - description: Specifies the page size for the returned results. The value must
-            be between 10 and 500. The default page size is 50. The limit is ignored
-            if the 'topic' query parameter is set.
-          example: 100
-          in: query
-          name: limit
-          schema:
-            type: integer
-            format: int32
-            example: null
-        - description: The cursor that has been returned by the previous result page.
-            Do not pass this parameter if you want to fetch the first page.
-          in: query
-          name: cursor
-          schema:
-            type: string
-            example: null
+        example: "id,createdAt"
+        in: query
+        name: fields
+        schema:
+          type: string
+          example: null
+      - description: Comma-separated list of policy IDs used for filtering. Multiple
+          filters can be applied together.
+        example: "policy1,policy2"
+        in: query
+        name: policyIds
+        schema:
+          type: string
+          example: null
+      - description: Comma-separated list of schema IDs used for filtering. Multiple
+          filters can be applied together.
+        example: "schema1,schema2"
+        in: query
+        name: schemaIds
+        schema:
+          type: string
+          example: null
+      - description: MQTT topic string that the retrieved policies must match. Returned
+          policies are sorted in the same way as they are applied to matching publishes.
+          'topic' filtering does not support pagination
+        example: topic/my-topic
+        in: query
+        name: topic
+        schema:
+          type: string
+          example: null
+      - description: Specifies the page size for the returned results. The value must
+          be between 10 and 500. The default page size is 50. The limit is ignored
+          if the 'topic' query parameter is set.
+        example: 100
+        in: query
+        name: limit
+        schema:
+          type: integer
+          format: int32
+          example: null
+      - description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        in: query
+        name: cursor
+        schema:
+          type: string
+          example: null
       responses:
         "200":
           content:
@@ -447,7 +447,7 @@ paths:
           description: Not all cluster nodes at minimum version
       summary: Get all policies
       tags:
-        - Data Governance Hub - Policies
+      - Data Governance Hub - Policies
     post:
       description: |-
         Create a policy
@@ -560,20 +560,20 @@ paths:
           description: Temporarily not available
       summary: Create a new policy
       tags:
-        - Data Governance Hub - Policies
+      - Data Governance Hub - Policies
   /api/v1/data-validation/policies/{policyId}:
     delete:
       description: "Deletes an existing policy. \n\n "
       operationId: deletePolicy
       parameters:
-        - description: The identifier of the policy to delete.
-          example: policy1
-          in: path
-          name: policyId
-          required: true
-          schema:
-            type: string
-            example: null
+      - description: The identifier of the policy to delete.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
+          example: null
       responses:
         "204":
           description: "Success, no response body"
@@ -622,29 +622,29 @@ paths:
           description: Not all cluster nodes at minimum version
       summary: Delete a policy
       tags:
-        - Data Governance Hub - Policies
+      - Data Governance Hub - Policies
     get:
       description: "Get a specific policy. \n\n This endpoint returns the content\
         \ of the policy with the content-type `application/json`. \n\n This endpoint\
         \ requires at least HiveMQ version 4.15.0 on all cluster nodes."
       operationId: getPolicy
       parameters:
-        - description: The identifier of the policy.
-          example: policy1
-          in: path
-          name: policyId
-          required: true
-          schema:
-            type: string
-            example: null
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: The identifier of the policy.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
+          example: null
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, createdAt, matching, validation, onSuccess, onFailure"
-          example: "id,createdAt"
-          in: query
-          name: fields
-          schema:
-            type: string
-            example: null
+        example: "id,createdAt"
+        in: query
+        name: fields
+        schema:
+          type: string
+          example: null
       responses:
         "200":
           content:
@@ -708,14 +708,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Get a policy
       tags:
-        - Data Governance Hub - Policies
+      - Data Governance Hub - Policies
     put:
       description: |-
         Update a policy
@@ -725,14 +725,14 @@ paths:
          This endpoint requires at least HiveMQ version 4.17.0 on all cluster nodes.
       operationId: updatePolicy
       parameters:
-        - description: The identifier of the policy.
-          example: policy1
-          in: path
-          name: policyId
-          required: true
-          schema:
-            type: string
-            example: null
+      - description: The identifier of the policy.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
+          example: null
       requestBody:
         content:
           application/json:
@@ -742,27 +742,27 @@ paths:
                 topicFilter: topic/+
               validation:
                 validators:
-                  - type: schema
-                    arguments:
-                      strategy: ALL_OF
-                      schemas:
-                        - schemaId: schema
-                          version: "1"
+                - type: schema
+                  arguments:
+                    strategy: ALL_OF
+                    schemas:
+                    - schemaId: schema
+                      version: "1"
               onSuccess:
                 pipeline:
-                  - id: logOperationSuccess
-                    functionId: System.log
-                    arguments:
-                      level: DEBUG
-                      message: "${clientId} sent a publish on topic '${topic}' with\
+                - id: logOperationSuccess
+                  functionId: System.log
+                  arguments:
+                    level: DEBUG
+                    message: "${clientId} sent a publish on topic '${topic}' with\
                       \ result '${validationResult}'"
               onFailure:
                 pipeline:
-                  - id: logOperationFailure
-                    functionId: System.log
-                    arguments:
-                      level: WARN
-                      message: "${clientId} sent an invalid publish on topic '${topic}'\
+                - id: logOperationFailure
+                  functionId: System.log
+                  arguments:
+                    level: WARN
+                    message: "${clientId} sent an invalid publish on topic '${topic}'\
                       \ with result '${validationResult}'"
             schema:
               $ref: '#/components/schemas/Policy'
@@ -783,27 +783,27 @@ paths:
                       topicFilter: topic/+
                     validation:
                       validators:
-                        - type: schema
-                          arguments:
-                            strategy: ALL_OF
-                            schemas:
-                              - schemaId: schema1
-                                version: "1"
+                      - type: schema
+                        arguments:
+                          strategy: ALL_OF
+                          schemas:
+                          - schemaId: schema1
+                            version: "1"
                     onSuccess:
                       pipeline:
-                        - id: logOperationSuccess
-                          functionId: System.log
-                          arguments:
-                            level: DEBUG
-                            message: "${clientId} sent a publish on topic '${topic}'\
+                      - id: logOperationSuccess
+                        functionId: System.log
+                        arguments:
+                          level: DEBUG
+                          message: "${clientId} sent a publish on topic '${topic}'\
                             \ with result '${validationResult}'"
                     onFailure:
                       pipeline:
-                        - id: logOperationFailure
-                          functionId: System.log
-                          arguments:
-                            level: WARN
-                            message: "${clientId} sent an invalid publish on topic '${topic}'\
+                      - id: logOperationFailure
+                        functionId: System.log
+                        arguments:
+                          level: WARN
+                          message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
                 $ref: '#/components/schemas/Policy'
@@ -817,37 +817,37 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
                 policy-not-parsable:
                   description: Bad request
                   summary: The submitted policy can not be parsed
                   value:
                     errors:
-                      - title: Policy not parsable
-                        detail: The submitted policy 'policy' can not be parsed.
+                    - title: Policy not parsable
+                      detail: The submitted policy 'policy' can not be parsed.
                 policy-not-valid:
                   description: Bad request
                   summary: The submitted policy is not valid
                   value:
                     errors:
-                      - title: Policy is not valid
-                        detail: Required body entity parameter is missing
+                    - title: Policy is not valid
+                      detail: Required body entity parameter is missing
                 policy-topic-filter-not-matching:
                   description: Bad request
                   summary: The policy topic filter does not match
                   value:
                     errors:
-                      - title: Topic filter does not match
-                        detail: The policy with id 'policyId' has a topic filter 'my/topic/filter'
-                          that does not match the topic filter of the current policy.
+                    - title: Topic filter does not match
+                      detail: The policy with id 'policyId' has a topic filter 'my/topic/filter'
+                        that does not match the topic filter of the current policy.
                 referenced-schema-does-not-exist:
                   description: Bad request
                   summary: A schema that is referenced in the policy does not exist
                   value:
                     errors:
-                      - title: Referenced schema does not exist
-                        detail: The referenced schema with id 'schema-id' does not exist.
+                    - title: Referenced schema does not exist
+                      detail: The referenced schema with id 'schema-id' does not exist.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -860,8 +860,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Referenced policy not found
-                        detail: The referenced policy with id 'policyId' was not found.
+                    - title: Referenced policy not found
+                      detail: The referenced policy with id 'policyId' was not found.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Policy not found
@@ -874,8 +874,8 @@ paths:
                   summary: Etag not matching
                   value:
                     errors:
-                      - title: Precondition Failed
-                        detail: Policy does not match the given etag '123456789'.
+                    - title: Precondition Failed
+                      detail: Policy does not match the given etag '123456789'.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Precondition failed
@@ -888,15 +888,15 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Update an existing policy
       tags:
-        - Data Governance Hub - Policies
+      - Data Governance Hub - Policies
   /api/v1/data-validation/schemas:
     get:
       description: "Get all schemas. \n\n This endpoint returns the content of the\
@@ -1055,7 +1055,7 @@ paths:
           description: Not all cluster nodes at minimum version
       summary: Get all schemas
       tags:
-        - Data Governance Hub - Schemas
+      - Data Governance Hub - Schemas
     post:
       description: |-
         Creates a schema
@@ -1122,7 +1122,7 @@ paths:
           description: Temporarily not available
       summary: Create a new schema
       tags:
-        - Data Governance Hub - Schemas
+      - Data Governance Hub - Schemas
   /api/v1/data-validation/schemas/{schemaId}:
     delete:
       description: "Deletes the selected schema and all associated versions of the\
@@ -1130,14 +1130,14 @@ paths:
         \ cluster nodes."
       operationId: deleteSchema
       parameters:
-        - description: The schema identifier of the schema versions to delete.
-          example: schema1
-          in: path
-          name: schemaId
-          required: true
-          schema:
-            type: string
-            example: null
+      - description: The schema identifier of the schema versions to delete.
+        example: schema1
+        in: path
+        name: schemaId
+        required: true
+        schema:
+          type: string
+          example: null
       responses:
         "204":
           description: "Success, no response body"
@@ -1186,7 +1186,7 @@ paths:
           description: Not all cluster nodes at minimum version
       summary: Delete all versions of the schema
       tags:
-        - Data Governance Hub - Schemas
+      - Data Governance Hub - Schemas
     get:
       description: "Get a specific schema. \n\n This endpoint returns the content\
         \ of the latest version of the schema with the content-type `application/json`.\
@@ -1194,22 +1194,22 @@ paths:
         \ nodes."
       operationId: getSchema
       parameters:
-        - description: The identifier of the schema.
-          example: schema1
-          in: path
-          name: schemaId
-          required: true
-          schema:
-            type: string
-            example: null
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: The identifier of the schema.
+        example: schema1
+        in: path
+        name: schemaId
+        required: true
+        schema:
+          type: string
+          example: null
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, type, schemaDefinition, createdAt"
-          example: "id,type"
-          in: query
-          name: fields
-          schema:
-            type: string
-            example: null
+        example: "id,type"
+        in: query
+        name: fields
+        schema:
+          type: string
+          example: null
       responses:
         "200":
           content:
@@ -1257,7 +1257,7 @@ paths:
           description: Resource not found
       summary: Get a schema
       tags:
-        - Data Governance Hub - Schemas
+      - Data Governance Hub - Schemas
   /api/v1/management/backups:
     get:
       description: |-
@@ -1506,15 +1506,15 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: Restore a new backup
       tags:
-        - Backup & Restore
+      - Backup & Restore
   /api/v1/management/data-governance-hub/start-trial:
     post:
       description: |-
@@ -1534,16 +1534,16 @@ paths:
                   summary: Data Governance Hub trial mode is already expired
                   value:
                     errors:
-                      - title: Trial mode already expired
-                        detail: The trial mode period for data governance hub has already
-                          expired. Restart HiveMQ to get another 5 hours trial mode.
+                    - title: Trial mode already expired
+                      detail: The trial mode period for data governance hub has already
+                        expired. Restart HiveMQ to get another 5 hours trial mode.
                 trial-already-running:
                   description: Bad request
                   summary: Data Governance Hub trial mode is already running
                   value:
                     errors:
-                      - title: Trial mode already running
-                        detail: "The trial mode for data governance hub cannot be started,\
+                    - title: Trial mode already running
+                      detail: "The trial mode for data governance hub cannot be started,\
                         \ as it is already running."
               schema:
                 $ref: '#/components/schemas/Errors'
@@ -1557,15 +1557,15 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: Start trial mode
       tags:
-        - Data Governance Hub - Management
+      - Data Governance Hub - Management
   /api/v1/management/diagnostic-archives:
     post:
       description: Triggers the creation of a new diagnostic archive.
