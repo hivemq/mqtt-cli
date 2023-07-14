@@ -22,4 +22,4 @@ jobs:
           ORG_GRADLE_PROJECT_hivemqCommonsPassword: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
         with:
           command: monitor
-          args: --all-sub-projects --configuration-matching=^runtimeClasspath$ --target-reference=${{ github.ref_name }} mqtt-cli
+          args: --configuration-matching=^runtimeClasspath$ --target-reference=${{ github.ref_name }} mqtt-cli
