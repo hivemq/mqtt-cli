@@ -18,10 +18,10 @@ package com.hivemq.cli.hivemq.schemas;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
 import com.hivemq.cli.openapi.hivemq.PaginationCursor;
 import com.hivemq.cli.openapi.hivemq.Schema;
 import com.hivemq.cli.openapi.hivemq.SchemaList;
-import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,7 @@ public class ListSchemasTask {
     private static final @NotNull Pattern CURSOR_PATTERN = Pattern.compile("cursor=([^&]*)");
 
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull SchemasApi schemasApi;
+    private final @NotNull DataGovernanceHubSchemasApi schemasApi;
     private final @Nullable String @Nullable [] schemaTypes;
     private final @Nullable String @Nullable [] schemaIds;
     private final @Nullable String @Nullable [] fields;
@@ -44,7 +44,7 @@ public class ListSchemasTask {
 
     public ListSchemasTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull SchemasApi schemasApi,
+            final @NotNull DataGovernanceHubSchemasApi schemasApi,
             final @Nullable String @Nullable [] schemaTypes,
             final @Nullable String @Nullable [] schemaIds,
             final @Nullable String @Nullable [] fields,

@@ -18,7 +18,7 @@ package com.hivemq.cli.commands.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.PoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.PolicyList;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
@@ -41,7 +41,7 @@ public class ListPoliciesCommandTest {
 
     private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
-    private final @NotNull PoliciesApi policiesApi = mock(PoliciesApi.class);
+    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
 
     private final @NotNull CommandLine commandLine =
             new CommandLine(new ListPoliciesCommand(hiveMQRestService, outputFormatter));

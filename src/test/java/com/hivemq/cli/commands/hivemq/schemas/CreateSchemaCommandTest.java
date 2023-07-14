@@ -21,8 +21,8 @@ import com.google.gson.GsonBuilder;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.JSON;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
 import com.hivemq.cli.openapi.hivemq.Schema;
-import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.cli.utils.json.OffsetDateTimeSerializer;
@@ -56,7 +56,7 @@ public class CreateSchemaCommandTest {
     private @NotNull OutputFormatter outputFormatter;
     private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final @NotNull JSON openapiSerialization = new JSON();
-    private final @NotNull SchemasApi schemasApi = mock(SchemasApi.class);
+    private final @NotNull DataGovernanceHubSchemasApi schemasApi = mock(DataGovernanceHubSchemasApi.class);
 
     private @NotNull CommandLine commandLine;
 

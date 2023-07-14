@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.policies;
 import com.google.gson.Gson;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.PoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.Policy;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 public class CreatePolicyTaskTest {
 
-    private final @NotNull PoliciesApi policiesApi = mock(PoliciesApi.class);
+    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
     private final @NotNull ArgumentCaptor<Policy> policyCaptor = ArgumentCaptor.forClass(Policy.class);
     private final @NotNull Gson gson = new Gson();

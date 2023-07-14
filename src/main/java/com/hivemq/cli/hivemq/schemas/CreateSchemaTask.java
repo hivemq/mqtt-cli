@@ -20,8 +20,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
 import com.hivemq.cli.openapi.hivemq.Schema;
-import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ import java.util.Objects;
 public class CreateSchemaTask {
 
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull SchemasApi schemasApi;
+    private final @NotNull DataGovernanceHubSchemasApi schemasApi;
     private final @NotNull String schemaId;
     private final @NotNull String schemaType;
     private final @Nullable String messageType;
@@ -44,7 +44,7 @@ public class CreateSchemaTask {
 
     public CreateSchemaTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull SchemasApi schemasApi,
+            final @NotNull DataGovernanceHubSchemasApi schemasApi,
             final @NotNull String schemaId,
             final @NotNull String schemaType,
             final @Nullable String messageType,

@@ -18,17 +18,17 @@ package com.hivemq.cli.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.PoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
 import org.jetbrains.annotations.NotNull;
 
 public class DeletePolicyTask {
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull PoliciesApi policiesApi;
+    private final @NotNull DataGovernanceHubPoliciesApi policiesApi;
     private final @NotNull String policyId;
 
     public DeletePolicyTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull PoliciesApi policiesApi,
+            final @NotNull DataGovernanceHubPoliciesApi policiesApi,
             final @NotNull String policyId) {
         this.outputFormatter = outputFormatter;
         this.policiesApi = policiesApi;

@@ -18,9 +18,9 @@ package com.hivemq.cli.rest;
 
 import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.Configuration;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
-import com.hivemq.cli.openapi.hivemq.PoliciesApi;
-import com.hivemq.cli.openapi.hivemq.SchemasApi;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,14 +43,18 @@ public class HiveMQRestService {
         return new MqttClientsApi(apiClient);
     }
 
-    public @NotNull PoliciesApi getPoliciesApi(final @NotNull String host, final double requestPerSecondLimit) {
+    public @NotNull DataGovernanceHubPoliciesApi getPoliciesApi(
+            final @NotNull String host,
+            final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
-        return new PoliciesApi(apiClient);
+        return new DataGovernanceHubPoliciesApi(apiClient);
     }
 
-    public @NotNull SchemasApi getSchemasApi(final @NotNull String host, final double requestPerSecondLimit) {
+    public @NotNull DataGovernanceHubSchemasApi getSchemasApi(
+            final @NotNull String host,
+            final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
-        return new SchemasApi(apiClient);
+        return new DataGovernanceHubSchemasApi(apiClient);
     }
 
     private static @NotNull ApiClient buildApiClient(final @NotNull String host, final double requestsPerSecondLimit) {

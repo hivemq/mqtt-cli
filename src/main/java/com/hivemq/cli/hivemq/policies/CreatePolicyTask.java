@@ -20,19 +20,19 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.PoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.Policy;
 import org.jetbrains.annotations.NotNull;
 
 public class CreatePolicyTask {
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull PoliciesApi policiesApi;
+    private final @NotNull DataGovernanceHubPoliciesApi policiesApi;
     private final @NotNull Gson gson;
     private final @NotNull String definition;
 
     public CreatePolicyTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull PoliciesApi policiesApi,
+            final @NotNull DataGovernanceHubPoliciesApi policiesApi,
             final @NotNull Gson gson,
             final @NotNull String definition) {
         this.outputFormatter = outputFormatter;

@@ -18,8 +18,8 @@ package com.hivemq.cli.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.PaginationCursor;
-import com.hivemq.cli.openapi.hivemq.PoliciesApi;
 import com.hivemq.cli.openapi.hivemq.Policy;
 import com.hivemq.cli.openapi.hivemq.PolicyList;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public class ListPoliciesTaskTest {
 
-    private final @NotNull PoliciesApi policiesApi = mock(PoliciesApi.class);
+    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
 
     @Test

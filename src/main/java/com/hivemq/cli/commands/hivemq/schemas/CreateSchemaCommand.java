@@ -22,7 +22,7 @@ import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.commands.hivemq.datagovernance.SchemaDefinitionOptions;
 import com.hivemq.cli.converters.SchemaTypeConverter;
 import com.hivemq.cli.hivemq.schemas.CreateSchemaTask;
-import com.hivemq.cli.openapi.hivemq.SchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
@@ -98,7 +98,7 @@ public class CreateSchemaCommand implements Callable<Integer> {
     public @NotNull Integer call() throws IOException {
         Logger.trace("Command {}", this);
 
-        final SchemasApi schemasApi =
+        final DataGovernanceHubSchemasApi schemasApi =
                 hiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
         if (schemaType.equals("PROTOBUF") && messageType == null) {
