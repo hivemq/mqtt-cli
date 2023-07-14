@@ -17,7 +17,7 @@ jobs:
       - name: Check for new issues
         uses: hivemq/hivemq-snyk-composite-action@v1
         with:
-          snyk-args: --configuration-matching=^runtimeClasspath$ -d mqtt-cli
+          snyk-args: --configuration-matching=^runtimeClasspath$ mqtt-cli
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           github-username: ${{ secrets.PUBLISH_GITHUB_USERNAME }}
           github-token: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
