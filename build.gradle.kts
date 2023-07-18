@@ -236,6 +236,12 @@ dependencies {
     testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
     testImplementation("com.squareup.okhttp3:mockwebserver:${property("ok-http.version")}")
     testImplementation("com.ginsberg:junit5-system-exit:${property("system-exit.version")}")
+
+    modules {
+        module("org.bouncycastle:bcpkix-jdk15on") { replacedBy("org.bouncycastle:bcpkix-jdk18on") }
+        module("org.bouncycastle:bcprov-jdk15on") { replacedBy("org.bouncycastle:bcprov-jdk18on") }
+        module("org.bouncycastle:bcutil-jdk15on") { replacedBy("org.bouncycastle:bcutil-jdk18on") }
+    }
 }
 
 /* ******************** integration Tests ******************** */
