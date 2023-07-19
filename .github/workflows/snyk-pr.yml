@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: hivemq/hivemq-checkout-composite-action@v1
+      - uses: actions/checkout@v3
         with:
           path: mqtt-cli
 
       - name: Check for new issues
-        uses: hivemq/hivemq-snyk-composite-action@v1
+        uses: hivemq/hivemq-snyk-composite-action@test
         with:
           snyk-args: --configuration-matching=^runtimeClasspath$ mqtt-cli
           snyk-token: ${{ secrets.SNYK_TOKEN }}
-          github-username: ${{ secrets.PUBLISH_GITHUB_USERNAME }}
-          github-token: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+#          github-username: ${{ secrets.PUBLISH_GITHUB_USERNAME }}
+#          github-token: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
           snyk-baseline-project-id: ${{ secrets.SNYK_PROJECT_ID_MASTER }}
