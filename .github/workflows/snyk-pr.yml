@@ -21,3 +21,4 @@ jobs:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           github-username: ${{ secrets.PUBLISH_GITHUB_USERNAME }}
           github-token: ${{ secrets.PUBLISH_GITHUB_TOKEN }}
+          snyk-baseline-project-id: ${{ secrets.SNYK_PROJECT_ID_MASTER }}
