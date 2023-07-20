@@ -1,0 +1,23 @@
+name: Run Snyk monitor on push
+
+on:
+  push:
+    branches:
+      - master**
+
+jobs:
+  run-snyk-monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: mqtt-cli
+
+      - name: Run Snyk monitor
+        uses: snyk/actions/gradle-jdk11@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: monitor
+          args: --configuration-matching=^runtimeClasspath$ --target-reference=${{ github.ref_name }} mqtt-cli
