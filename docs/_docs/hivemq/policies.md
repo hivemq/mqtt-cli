@@ -22,6 +22,7 @@ mqtt hivemq policies
 |---------|-------------------------------------|
 | create  | See [Create Policy](#create-policy) |
 | get     | See [Get Policy](#get-policy)       |
+| update  | See [Update Policy](#update-policy) |
 | list    | See [List Policies](#list-policies) |
 | delete  | See [Delete Policy](#delete-policy) |
 
@@ -58,8 +59,8 @@ mqtt hivemq policies create --file my-policy.json
 
 ## Options
 
-| Option | Long Version   | Explanation                                                                                         | Required                                        |
-|--------|----------------|-----------------------------------------------------------------------------------------------------|-------------------------------------------------|
+| Option | Long Version   | Explanation                                                                                         |                    Required                     |
+|--------|----------------|-----------------------------------------------------------------------------------------------------|:-----------------------------------------------:|
 |        | `--definition` | The definition of the policy. This should be a JSON string containing a complete policy definition. | Either `--definition` or `--file`, but not both |
 |        | `--file`       | A path to a file containing the definition of the policy.                                           | Either `--definition` or `--file`, but not both |
 
@@ -143,6 +144,51 @@ $ mqtt hivemq policies get --id my-policy-id
 ### Help Options
 
 {% include options/help-options.md defaultHelp=true %}
+
+***
+
+# Update Policy
+
+*** 
+
+Update an existing policy.
+The policy definition may be provided either directly from the command line or from a file.
+The provided policy ID argument must match the ID in the policy definition.
+
+```
+mqtt hivemq policies update
+```
+
+***
+
+## Simple Example
+
+```
+mqtt hivemq policies update --id my-policy-id --file my-policy.json 
+```
+
+***
+
+## Options
+
+| Option | Long Version   | Explanation                                                                                         |                    Required                     |
+|--------|----------------|-----------------------------------------------------------------------------------------------------|:-----------------------------------------------:|
+| `-i`   | `--id`         | The id of the policy to be updated.                                                                 |                        X                        |
+|        | `--definition` | The definition of the policy. This should be a JSON string containing a complete policy definition. | Either `--definition` or `--file`, but not both |
+|        | `--file`       | A path to a file containing the definition of the policy.                                           | Either `--definition` or `--file`, but not both |
+
+### API Connection Options
+
+{% include options/api-connection-options.md %}
+
+### Logging Options
+
+{% include options/logging-options.md %}
+
+### Help Options
+
+{% include options/help-options.md defaultHelp=true %}
+
 
 ***
 

@@ -26,6 +26,7 @@ import com.hivemq.cli.commands.hivemq.policies.DeletePolicyCommand;
 import com.hivemq.cli.commands.hivemq.policies.GetPolicyCommand;
 import com.hivemq.cli.commands.hivemq.policies.ListPoliciesCommand;
 import com.hivemq.cli.commands.hivemq.policies.PoliciesCommand;
+import com.hivemq.cli.commands.hivemq.policies.UpdatePolicyCommand;
 import com.hivemq.cli.commands.hivemq.schemas.CreateSchemaCommand;
 import com.hivemq.cli.commands.hivemq.schemas.DeleteSchemaCommand;
 import com.hivemq.cli.commands.hivemq.schemas.GetSchemaCommand;
@@ -52,6 +53,7 @@ class HiveMqModule {
             final @NotNull ExportClientsCommand exportClientsCommand,
             final @NotNull PoliciesCommand policiesCommand,
             final @NotNull GetPolicyCommand getPolicyCommand,
+            final @NotNull UpdatePolicyCommand updatePolicyCommand,
             final @NotNull ListPoliciesCommand listPoliciesCommand,
             final @NotNull CreatePolicyCommand createPolicyCommand,
             final @NotNull DeletePolicyCommand deletePolicyCommand,
@@ -64,6 +66,7 @@ class HiveMqModule {
             final @NotNull CommandErrorMessageHandler handler) {
 
         final CommandLine policiesCommandLine = new CommandLine(policiesCommand).addSubcommand(getPolicyCommand)
+                .addSubcommand(updatePolicyCommand)
                 .addSubcommand(listPoliciesCommand)
                 .addSubcommand(createPolicyCommand)
                 .addSubcommand(deletePolicyCommand);
