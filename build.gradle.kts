@@ -29,8 +29,6 @@ plugins {
     id("de.thetaphi.forbiddenapis")
     id("com.github.breadmoirai.github-release")
     id("org.ajoberstar.git-publish")
-    id("org.owasp.dependencycheck")
-    id("com.github.ben-manes.versions")
     id("org.graalvm.buildtools.native")
     id("com.hivemq.cli.native-image")
 }
@@ -686,8 +684,4 @@ val releaseBinary: Configuration by configurations.creating {
 
 artifacts {
     add(releaseBinary.name, tasks.shadowDistZip)
-}
-
-dependencyCheck {
-    scanConfigurations = listOf("runtimeClasspath")
 }
