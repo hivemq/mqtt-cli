@@ -4,7 +4,7 @@ pipeline {
     agent { label 'jenkins-worker' }
     options {
         skipDefaultCheckout() // no checkout needed
-        buildDiscarder(logRotator(numToKeepStr: '100'))
+        buildDiscarder(logRotator(numToKeepStr: '10'))
         timestamps()
     }
     stages {
