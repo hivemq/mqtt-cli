@@ -21,7 +21,7 @@ plugins {
     application
     id("com.github.johnrengelman.shadow")
     id("io.github.sgtsilvio.gradle.defaults")
-    id("nebula.ospackage")
+    id("com.netflix.nebula.ospackage")
     id("edu.sc.seis.launch4j")
     id("org.openapi.generator")
     id("com.google.cloud.tools.jib")
