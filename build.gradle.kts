@@ -562,18 +562,18 @@ val buildRpmPackage by tasks.registering(Copy::class) {
 /* ******************** windows zip ******************** */
 
 launch4j {
-    headerType = "console"
-    mainClassName = application.mainClass.get()
-    icon = "$projectDir/icons/05-mqtt-cli-icon.ico"
-    jarTask = tasks.shadowJar.get()
-    copyConfigurable = emptyList<Any>()
-    copyright = "Copyright 2019-present HiveMQ and the HiveMQ Community"
-    companyName = "HiveMQ GmbH"
-    downloadUrl = "https://openjdk.java.net/install/"
-    jreMinVersion = "1.8"
-    windowTitle = "MQTT CLI"
-    version = project.version.toString()
-    textVersion = project.version.toString()
+    headerType.set("console")
+    mainClassName.set(application.mainClass.get())
+    icon.set("$projectDir/icons/05-mqtt-cli-icon.ico")
+    setJarTask(tasks.shadowJar.get())
+    copyConfigurable.set(emptyList<Any>())
+    copyright.set("Copyright 2019-present HiveMQ and the HiveMQ Community")
+    companyName.set("HiveMQ GmbH")
+    downloadUrl.set("https://openjdk.java.net/install/")
+    jreMinVersion.set("1.8")
+    windowTitle.set("MQTT CLI")
+    version.set(project.version.toString())
+    textVersion.set(project.version.toString())
 }
 
 val buildWindowsZip by tasks.registering(Zip::class) {
@@ -582,7 +582,7 @@ val buildWindowsZip by tasks.registering(Zip::class) {
     destinationDirectory.set(layout.buildDirectory.dir("packages/windows"))
 
     from("packages/windows") {
-        filter { it.replace("@@exeName@@", launch4j.outfile) }
+        filter { it.replace("@@exeName@@", launch4j.outfile.get()) }
     }
     from(tasks.createExe.map { it.dest })
     from("LICENSE")
