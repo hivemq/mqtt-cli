@@ -4,7 +4,7 @@ pluginManagement {
     plugins {
         id("com.github.johnrengelman.shadow") version "${extra["plugin.shadow.version"]}"
         id("io.github.sgtsilvio.gradle.defaults") version "${extra["plugin.defaults.version"]}"
-        id("nebula.ospackage") version "${extra["plugin.ospackage.version"]}"
+        id("com.netflix.nebula.ospackage") version "${extra["plugin.ospackage.version"]}"
         id("edu.sc.seis.launch4j") version "${extra["plugin.launch4j.version"]}"
         id("org.openapi.generator") version "${extra["plugin.openapi.generator.version"]}"
         id("com.google.cloud.tools.jib") version "${extra["plugin.jib.version"]}"
