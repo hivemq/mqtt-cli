@@ -14,10 +14,6 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    api(gradleApi())
-}
-
 gradlePlugin {
     plugins {
         create("native-image") {
