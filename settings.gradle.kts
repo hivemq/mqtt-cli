@@ -14,10 +14,9 @@ pluginManagement {
         id("org.ajoberstar.git-publish") version "${extra["plugin.git-publish.version"]}"
         id("org.graalvm.buildtools.native") version "${extra["plugin.graal.version"]}"
     }
-}
 
-includeBuild("mqtt-cli-plugins")
-
-if (file("../hivemq/plugins").exists()) {
-    includeBuild("../hivemq/plugins")
+    includeBuild("mqtt-cli-plugins")
+    if (file("../hivemq/plugins").exists()) {
+        includeBuild("../hivemq/plugins")
+    }
 }
