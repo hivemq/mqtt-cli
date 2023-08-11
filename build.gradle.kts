@@ -64,7 +64,7 @@ tasks.jar {
         "Specification-Version" to project.version,
         "Specification-Vendor" to "HiveMQ GmbH",
         "Main-Class" to application.mainClass.get(),
-        "Built-Date" to SimpleDateFormat("yyyy-MM-dd").format(Date())
+        "Built-Date" to SimpleDateFormat("yyyy-MM-dd").format(Date()),
     )
 }
 
@@ -604,7 +604,7 @@ githubRelease {
         buildBrewZip,
         buildDebianPackage.map { fileTree(it.destinationDir) },
         buildRpmPackage.map { fileTree(it.destinationDir) },
-        buildWindowsZip
+        buildWindowsZip,
     )
     allowUploadToExisting.set(true)
 }
