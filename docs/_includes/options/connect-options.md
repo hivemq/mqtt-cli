@@ -9,5 +9,5 @@
 | `k`         | `--keepAlive`             | The keep alive of the client (in seconds).                                       | `60`                               |
 | `-se`       | `--sessionExpiryInterval` | The session expiry value in seconds.                                             | `0` (Instant Expiry)               |
 | `-Cup`      | `--connectUserProperty`   | A user property of the connect message.                                          |                                    |
-| `--ws`      |                           | Use WebSocket transport protocol.                                                | `false`                            |
-| `--ws:path` |                           | The path to the WebSocket located at the given broker host.                      |                                    |
+| `-ws`       |                           | Use WebSocket transport protocol.                                                | `false`                            |
+| `-ws:path`  |                           | The path to the WebSocket located at the given broker host.                      |                                    |
