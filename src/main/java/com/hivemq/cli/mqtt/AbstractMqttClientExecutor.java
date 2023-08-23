@@ -128,10 +128,10 @@ abstract class AbstractMqttClientExecutor {
                 return connectMqtt5Client(connectOptions, subscribeOptions);
             case MQTT_3_1_1:
                 return connectMqtt3Client(connectOptions, subscribeOptions);
+            default:
+                throw new IllegalStateException("The MQTT Version specified is not supported. Version was " +
+                        connectOptions.getVersion());
         }
-
-        throw new IllegalStateException("The MQTT Version specified is not supported. Version was " +
-                connectOptions.getVersion());
     }
 
     public void subscribe(final @NotNull MqttClient client, final @NotNull SubscribeOptions subscribeOptions) {
@@ -139,12 +139,13 @@ abstract class AbstractMqttClientExecutor {
             final String topic = subscribeOptions.getTopics()[i];
 
             // This check only works as subscribes are implemented blocking.
-            // Otherwise, we would need to check the topics before they are iterated as they are added to the client data after a successful subscribe.
+            // Otherwise, we would need to check the topics before they are iterated
+            // as they are added to the client data after a successful subscribe.
             final List<MqttTopicFilter> intersectingFilters =
                     checkForSharedTopicDuplicate(clientKeyToClientData.get(ClientKey.of(client)).getSubscribedTopics(),
                             topic);
-            // Client{clientIdentifier='hmq_RcrDi_18591249_30a12e2c4bbd17e322a300a4257d76bd', hostname='broker.hivemq.com'} -> {ClientData@3806}
-            // Client{clientIdentifier='hmq_RcrDi_18591249_30a12e2c4bbd17e322a300a4257d76bd', hostname='broker.hivemq.com'}
+            // Client{clientIdentifier='hmq_RcrDi_18591249', hostname='broker.hivemq.com'} -> {ClientData@3806}
+            // Client{clientIdentifier='hmq_RcrDi_18591249', hostname='broker.hivemq.com'}
             if (!intersectingFilters.isEmpty()) {
                 Logger.warn("WARN: New subscription to '{}' intersects with already existing subscription(s) {}",
                         topic,
@@ -307,6 +308,8 @@ abstract class AbstractMqttClientExecutor {
                 .publishes(MqttGlobalPublishFilter.REMAINING,
                         buildRemainingMqtt5PublishesCallback(subscribeOptions, client));
 
+
+        System.setProperty("javax.net.debug", "ssl:handshake");
 
         mqtt5Connect(client, connectBuilder.build());
 
