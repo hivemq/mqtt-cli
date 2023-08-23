@@ -118,15 +118,17 @@ public class LoggerUtils {
             final @NotNull String message,
             final @NotNull Exception exception,
             final @NotNull DebugOptions debugOptions) {
-        if (debugOptions.isDebug() || debugOptions.isVerbose()) {
-            Logger.error(exception, message);
+        final String exceptionMessage = Throwables.getRootCause(exception).getMessage();
+        if (exceptionMessage != null) {
+            Logger.error("{}. Reason: '{}'", message, exceptionMessage);
         } else {
-            final String exceptionMessage = Throwables.getRootCause(exception).getMessage();
-            if (exceptionMessage != null) {
-                Logger.error("{}. Reason: '{}'", message, exceptionMessage);
-            } else {
-                Logger.error("{}. Use '-d' option to get more detailed information.", message);
-            }
+            Logger.error("{}.", message);
+        }
+        if (!debugOptions.isDebug()) {
+            Logger.error("Use '-d' or 'v' option to get more detailed information.");
+        }
+        if (debugOptions.isVerbose()) {
+            Logger.error(exception);
         }
     }
 

@@ -118,14 +118,14 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .subscribe(subscribeMessage, new SubscribeMqtt5PublishCallback(subscribeOptions, client))
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
-                        Logger.error(throwable,
-                                "{} failed SUBSCRIBE to TOPIC '{}': {}",
+                        Logger.error("{} failed SUBSCRIBE to TOPIC '{}': {}",
                                 clientLogPrefix,
                                 topic,
                                 Throwables.getRootCause(throwable).getMessage());
                         if (throwable instanceof Mqtt5SubAckException) {
                             Logger.debug(((Mqtt5SubAckException) throwable).getMqttMessage());
                         }
+                        Logger.trace(throwable);
                     } else {
                         final ClientKey clientKey = ClientKey.of(client);
                         getClientDataMap().get(clientKey).addSubscription(MqttTopicFilter.of(topic));
@@ -150,14 +150,14 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .subscribe(subscribeMessage, new SubscribeMqtt3PublishCallback(subscribeOptions, client))
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
-                        Logger.error(throwable,
-                                "{} failed SUBSCRIBE to TOPIC '{}': {}",
+                        Logger.error("{} failed SUBSCRIBE to TOPIC '{}': {}",
                                 clientLogPrefix,
                                 topic,
                                 Throwables.getRootCause(throwable).getMessage());
                         if (throwable instanceof Mqtt3SubAckException) {
                             Logger.debug(((Mqtt3SubAckException) throwable).getMqttMessage());
                         }
+                        Logger.trace(throwable);
                     } else {
                         getClientDataMap().get(ClientKey.of(client)).addSubscription(MqttTopicFilter.of(topic));
 
@@ -205,8 +205,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
         client.toAsync().publish(publishMessage).whenComplete((publishResult, throwable) -> {
             if (throwable != null) {
-                Logger.error(throwable,
-                        "{} failed PUBLISH to TOPIC '{}': {}",
+                Logger.error("{} failed PUBLISH to TOPIC '{}': {}",
                         clientLogPrefix,
                         topic,
                         Throwables.getRootCause(throwable).getMessage());
@@ -215,6 +214,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 } else if (throwable instanceof Mqtt5PubRecException) {
                     Logger.debug(((Mqtt5PubRecException) throwable).getMqttMessage());
                 }
+                Logger.trace(throwable);
             } else {
                 Logger.debug("{} received PUBLISH acknowledgement {}", clientLogPrefix, publishResult);
             }
@@ -245,11 +245,11 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
         client.toAsync().publish(publishMessage).whenComplete((publishResult, throwable) -> {
             if (throwable != null) {
-                Logger.error(throwable,
-                        "{} failed PUBLISH to TOPIC '{}': {}",
+                Logger.error("{} failed PUBLISH to TOPIC '{}': {}",
                         clientLogPrefix,
                         topic,
                         Throwables.getRootCause(throwable).getMessage());
+                Logger.trace(throwable);
             } else {
                 Logger.debug("{} received PUBLISH acknowledgement {}", clientLogPrefix, publishResult);
             }
@@ -270,14 +270,14 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
             client.toAsync().unsubscribe(unsubscribeMessage).whenComplete((unsubAck, throwable) -> {
                 if (throwable != null) {
-                    Logger.error(throwable,
-                            "{} failed UNSUBSCRIBE from TOPIC '{}': {}",
+                    Logger.error("{} failed UNSUBSCRIBE from TOPIC '{}': {}",
                             clientLogPrefix,
                             topic,
                             Throwables.getRootCause(throwable).getMessage());
                     if (throwable instanceof Mqtt5UnsubAckException) {
                         Logger.debug(((Mqtt5UnsubAckException) throwable).getMqttMessage());
                     }
+                    Logger.trace(throwable);
                 } else {
                     getClientDataMap().get(ClientKey.of(client)).removeSubscription(MqttTopicFilter.of(topic));
 
@@ -298,11 +298,11 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
             client.toAsync().unsubscribe(unsubscribeMessage).whenComplete((unsubAck, throwable) -> {
                 if (throwable != null) {
-                    Logger.error(throwable,
-                            "{} failed UNSUBSCRIBE from TOPIC '{}': {}",
+                    Logger.error("{} failed UNSUBSCRIBE from TOPIC '{}': {}",
                             clientLogPrefix,
                             topic,
                             Throwables.getRootCause(throwable).getMessage());
+                    Logger.trace(throwable);
                 } else {
                     getClientDataMap().get(ClientKey.of(client)).removeSubscription(MqttTopicFilter.of(topic));
                     Logger.debug("{} received UNSUBACK", clientLogPrefix);
