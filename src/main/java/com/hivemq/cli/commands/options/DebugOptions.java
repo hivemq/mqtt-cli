@@ -25,7 +25,7 @@ public class DebugOptions {
     @CommandLine.Option(names = {"-d", "--debug"}, defaultValue = "false", description = "Enable debug mode")
     private void activateDebugMode(final boolean debug) {
         if (debug && !isVerbose) {
-            this.isDebug = true;
+            isDebug = true;
         }
     }
 
@@ -33,10 +33,10 @@ public class DebugOptions {
     @CommandLine.Option(names = {"-v", "--verbose"}, defaultValue = "false", description = "Enable verbose mode")
     private void activateVerboseMode(final boolean verbose) {
         if (verbose) {
-            this.isVerbose = true;
+            isVerbose = true;
             isDebug = true;
         } else {
-            this.isVerbose = false;
+            isVerbose = false;
         }
     }
 

@@ -76,7 +76,7 @@ class SubscribeConnectTlsST {
         final String clientTruststore =
                 Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
 
-        final List<String> publishCommand = List.of("pub",
+        final List<String> publishCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -87,8 +87,6 @@ class SubscribeConnectTlsST {
                 "cliTest",
                 "-t",
                 "test",
-                "-m",
-                "message",
                 "-s",
                 "--tls-version",
                 tlsVersion.toString(),
@@ -99,7 +97,8 @@ class SubscribeConnectTlsST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("Enter truststore password:");
         executionResult.write("clientTruststorePassword");
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("received SUBACK");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -120,7 +119,7 @@ class SubscribeConnectTlsST {
         final String clientTruststore =
                 Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
 
-        final List<String> publishCommand = List.of("pub",
+        final List<String> publishCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -131,8 +130,6 @@ class SubscribeConnectTlsST {
                 "cliTest",
                 "-t",
                 "test",
-                "-m",
-                "message",
                 "-s",
                 "--tls-version",
                 tlsVersion.toString(),
@@ -143,7 +140,8 @@ class SubscribeConnectTlsST {
                 "clientTruststorePassword");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("received SUBACK");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -172,7 +170,7 @@ class SubscribeConnectTlsST {
             properties.put("auth.keystore.privatekey.password", "clientKeyPassword");
         }
 
-        final List<String> publishCommand = List.of("pub",
+        final List<String> publishCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -183,15 +181,14 @@ class SubscribeConnectTlsST {
                 "cliTest",
                 "-t",
                 "test",
-                "-m",
-                "message",
                 "-s",
                 "--tls-version",
                 tlsVersion.toString(),
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("received SUBACK");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
