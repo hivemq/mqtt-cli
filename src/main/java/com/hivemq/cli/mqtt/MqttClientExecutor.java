@@ -68,7 +68,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             final @NotNull Mqtt5Client client, final @NotNull Mqtt5Connect connectMessage) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
 
-        Logger.debug("{} sending CONNECT {}", clientLogPrefix, connectMessage);
+        Logger.debug("{} sending CONNECT\n    {}", clientLogPrefix, connectMessage);
 
         final Mqtt5ConnAck connAck;
         try {
@@ -78,14 +78,14 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             throw mqtt5ConnAckException;
         }
 
-        Logger.debug("{} received CONNACK {} ", clientLogPrefix, connAck);
+        Logger.debug("{} received CONNACK\n    {} ", clientLogPrefix, connAck);
     }
 
     void mqtt3Connect(
             final @NotNull Mqtt3Client client, final @NotNull Mqtt3Connect connectMessage) {
         final String clientLogPrefix = LoggerUtils.getClientPrefix(client.getConfig());
 
-        Logger.debug("{} sending CONNECT {}", clientLogPrefix, connectMessage);
+        Logger.debug("{} sending CONNECT\n    {}", clientLogPrefix, connectMessage);
 
         final Mqtt3ConnAck connAck;
         try {
@@ -94,7 +94,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.debug(mqtt3ConnAckException.getMqttMessage());
             throw mqtt3ConnAckException;
         }
-        Logger.debug("{} received CONNACK {} ", clientLogPrefix, connAck);
+        Logger.debug("{} received CONNACK\n    {} ", clientLogPrefix, connAck);
     }
 
     void mqtt5Subscribe(
@@ -112,7 +112,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
         final Mqtt5Subscribe subscribeMessage = builder.build();
 
-        Logger.debug("{} sending SUBSCRIBE {}", clientLogPrefix, subscribeMessage);
+        Logger.debug("{} sending SUBSCRIBE\n    {}", clientLogPrefix, subscribeMessage);
 
         client.toAsync()
                 .subscribe(subscribeMessage, new SubscribeMqtt5PublishCallback(subscribeOptions, client))
@@ -129,7 +129,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     } else {
                         final ClientKey clientKey = ClientKey.of(client);
                         getClientDataMap().get(clientKey).addSubscription(MqttTopicFilter.of(topic));
-                        Logger.debug("{} received SUBACK {}", clientLogPrefix, subAck);
+                        Logger.debug("{} received SUBACK\n    {}", clientLogPrefix, subAck);
                     }
                 })
                 .join();
@@ -144,7 +144,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         final Mqtt3SubscribeBuilder.Start.Complete builder = Mqtt3Subscribe.builder().topicFilter(topic).qos(qos);
         final Mqtt3Subscribe subscribeMessage = builder.build();
 
-        Logger.debug("{} sending SUBSCRIBE {}", clientLogPrefix, subscribeMessage);
+        Logger.debug("{} sending SUBSCRIBE\n    {}", clientLogPrefix, subscribeMessage);
 
         client.toAsync()
                 .subscribe(subscribeMessage, new SubscribeMqtt3PublishCallback(subscribeOptions, client))
@@ -161,7 +161,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     } else {
                         getClientDataMap().get(ClientKey.of(client)).addSubscription(MqttTopicFilter.of(topic));
 
-                        Logger.debug("{} received SUBACK {}", clientLogPrefix, subAck);
+                        Logger.debug("{} received SUBACK\n    {}", clientLogPrefix, subAck);
                     }
                 })
                 .join();
@@ -198,7 +198,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
         final Mqtt5Publish publishMessage = publishBuilder.build();
 
-        Logger.debug("{} sending PUBLISH ('{}') {}",
+        Logger.debug("{} sending PUBLISH ('{}')\n    {}",
                 clientLogPrefix,
                 bufferToString(publishOptions.getMessage()),
                 publishMessage);
@@ -216,7 +216,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 }
                 Logger.trace(throwable);
             } else {
-                Logger.debug("{} received PUBLISH acknowledgement {}", clientLogPrefix, publishResult);
+                Logger.debug("{} finish PUBLISH\n    {}", clientLogPrefix, publishResult);
             }
         }).join();
     }
@@ -238,7 +238,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
         final Mqtt3Publish publishMessage = publishBuilder.build();
 
-        Logger.debug("{} sending PUBLISH ('{}') {}",
+        Logger.debug("{} sending PUBLISH ('{}')\n    {}",
                 clientLogPrefix,
                 bufferToString(publishOptions.getMessage()),
                 publishMessage);
@@ -251,7 +251,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         Throwables.getRootCause(throwable).getMessage());
                 Logger.trace(throwable);
             } else {
-                Logger.debug("{} received PUBLISH acknowledgement {}", clientLogPrefix, publishResult);
+                Logger.debug("{} finish PUBLISH\n    {}", clientLogPrefix, publishResult);
             }
         }).join();
     }
@@ -266,7 +266,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     .userProperties(unsubscribeOptions.getUserProperties())
                     .build();
 
-            Logger.debug("{} sending UNSUBSCRIBE {}", clientLogPrefix, unsubscribeMessage);
+            Logger.debug("{} sending UNSUBSCRIBE\n    {}", clientLogPrefix, unsubscribeMessage);
 
             client.toAsync().unsubscribe(unsubscribeMessage).whenComplete((unsubAck, throwable) -> {
                 if (throwable != null) {
@@ -281,7 +281,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 } else {
                     getClientDataMap().get(ClientKey.of(client)).removeSubscription(MqttTopicFilter.of(topic));
 
-                    Logger.debug("{} received UNSUBACK {}", clientLogPrefix, unsubAck);
+                    Logger.debug("{} received UNSUBACK\n    {}", clientLogPrefix, unsubAck);
                 }
             }).join();
         }
@@ -294,7 +294,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
         for (final String topic : unsubscribeOptions.getTopics()) {
             final Mqtt3Unsubscribe unsubscribeMessage = Mqtt3Unsubscribe.builder().topicFilter(topic).build();
 
-            Logger.debug("{} sending UNSUBSCRIBE {}", clientLogPrefix, unsubscribeMessage);
+            Logger.debug("{} sending UNSUBSCRIBE\n    {}", clientLogPrefix, unsubscribeMessage);
 
             client.toAsync().unsubscribe(unsubscribeMessage).whenComplete((unsubAck, throwable) -> {
                 if (throwable != null) {
@@ -305,7 +305,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                     Logger.trace(throwable);
                 } else {
                     getClientDataMap().get(ClientKey.of(client)).removeSubscription(MqttTopicFilter.of(topic));
-                    Logger.debug("{} received UNSUBACK", clientLogPrefix);
+                    Logger.debug("{} received UNSUBACK\n    {}", clientLogPrefix, unsubAck);
                 }
             }).join();
         }
@@ -331,7 +331,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
 
         final Mqtt5Disconnect disconnectMessage = disconnectBuilder.build();
 
-        Logger.debug("{} sending DISCONNECT {}", clientLogPrefix, disconnectMessage);
+        Logger.debug("{} sending DISCONNECT\n    {}", clientLogPrefix, disconnectMessage);
 
         client.toBlocking().disconnect(disconnectMessage);
     }
