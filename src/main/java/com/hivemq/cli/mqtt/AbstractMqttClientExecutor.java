@@ -267,10 +267,19 @@ abstract class AbstractMqttClientExecutor {
     }
 
     private @NotNull Mqtt5Client connectMqtt5Client(
-            final @NotNull ConnectOptions connectOptions, final @Nullable SubscribeOptions subscribeOptions)
-            throws Exception {
+            final @NotNull ConnectOptions connectOptions,
+            final @Nullable SubscribeOptions subscribeOptions) throws Exception {
         final MqttClientBuilder clientBuilder = createBuilder(connectOptions);
-        final Mqtt5Client client = clientBuilder.useMqttVersion5().build();
+        final Mqtt5Client client = clientBuilder.useMqttVersion5()
+                .advancedConfig()
+                .interceptors()
+                .incomingQos1Interceptor(new Mqtt5DebugIncomingQos1Interceptor())
+                .outgoingQos1Interceptor(new Mqtt5DebugOutgoingQos1Interceptor())
+                .incomingQos2Interceptor(new Mqtt5DebugIncomingQos2Interceptor())
+                .outgoingQos2Interceptor(new Mqtt5DebugOutgoingQos2Interceptor())
+                .applyInterceptors()
+                .applyAdvancedConfig()
+                .build();
         final Mqtt5Publish willPublish = createMqtt5WillPublish(connectOptions.getWillOptions());
         final Mqtt5ConnectRestrictions connectRestrictions =
                 createMqtt5ConnectRestrictions(connectOptions.getConnectRestrictionOptions());
