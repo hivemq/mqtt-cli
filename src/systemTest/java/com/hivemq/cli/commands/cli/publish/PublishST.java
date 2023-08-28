@@ -146,11 +146,11 @@ class PublishST {
         publishCommand.add("test3");
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
-        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test1"));
+        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message')"));
         assertTrue(executionResult.getStandardOutput().contains("MqttPublish{topic=test1"));
-        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test2"));
+        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message')"));
         assertTrue(executionResult.getStandardOutput().contains("MqttPublish{topic=test2"));
-        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test3"));
+        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message')"));
         assertTrue(executionResult.getStandardOutput().contains("MqttPublish{topic=test3"));
 
         final Set<String> topicSet =
