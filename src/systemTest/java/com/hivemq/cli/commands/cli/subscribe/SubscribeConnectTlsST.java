@@ -36,15 +36,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junitpioneer.jupiter.cartesian.CartesianTest;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
-import static com.hivemq.cli.utils.broker.assertions.PublishAssertion.assertPublishPacket;
 import static com.hivemq.cli.utils.broker.assertions.SubscribeAssertion.assertSubscribePacket;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -76,7 +73,7 @@ class SubscribeConnectTlsST {
         final String clientTruststore =
                 Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
 
-        final List<String> publishCommand = List.of("sub",
+        final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -94,7 +91,7 @@ class SubscribeConnectTlsST {
                 clientTruststore,
                 "-d");
 
-        final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         executionResult.awaitStdOut("Enter truststore password:");
         executionResult.write("clientTruststorePassword");
         executionResult.awaitStdOut("received CONNACK");
@@ -103,9 +100,10 @@ class SubscribeConnectTlsST {
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
-            publishAssertion.setTopic("test");
-            publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("test", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
+            subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
     }
 
@@ -119,7 +117,7 @@ class SubscribeConnectTlsST {
         final String clientTruststore =
                 Resources.getResource("tls/client/client-truststore." + clientKeyType).getPath();
 
-        final List<String> publishCommand = List.of("sub",
+        final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -139,16 +137,17 @@ class SubscribeConnectTlsST {
                 "--truststore-password",
                 "clientTruststorePassword");
 
-        final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         executionResult.awaitStdOut("received CONNACK");
         executionResult.awaitStdOut("received SUBACK");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
-            publishAssertion.setTopic("test");
-            publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("test", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
+            subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
     }
 
@@ -170,7 +169,7 @@ class SubscribeConnectTlsST {
             properties.put("auth.keystore.privatekey.password", "clientKeyPassword");
         }
 
-        final List<String> publishCommand = List.of("sub",
+        final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -186,16 +185,17 @@ class SubscribeConnectTlsST {
                 tlsVersion.toString(),
                 "-d");
 
-        final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand, Map.of(), properties);
         executionResult.awaitStdOut("received CONNACK");
         executionResult.awaitStdOut("received SUBACK");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
-            publishAssertion.setTopic("test");
-            publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("test", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
+            subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
     }
 

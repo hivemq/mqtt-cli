@@ -68,7 +68,7 @@ class PublishConnectWebsocketsST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertEquals(0, executionResult.getExitCode());
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
-        assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
+        assertTrue(executionResult.getStandardOutput().contains("finish PUBLISH"));
 
         assertConnectPacket(
                 hivemq.getConnectPackets().get(0),

@@ -82,7 +82,7 @@ public class CipherSuitesTlsST {
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -123,7 +123,7 @@ public class CipherSuitesTlsST {
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));

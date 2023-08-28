@@ -249,7 +249,7 @@ class PublishConnectST {
         assertTrue(executionResult.getStandardOutput()
                 .contains(String.format("Client '%s@%s' sending PUBLISH", expectedClientId, hivemq.getHost())));
         assertTrue(executionResult.getStandardOutput()
-                .contains(String.format("Client '%s@%s' received PUBLISH acknowledgement",
+                .contains(String.format("Client '%s@%s' finish PUBLISH",
                         expectedClientId,
                         hivemq.getHost())));
         assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
@@ -716,7 +716,7 @@ class PublishConnectST {
         assertTrue(executionResult.getStandardOutput().contains("sending CONNECT"));
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH"));
-        assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
+        assertTrue(executionResult.getStandardOutput().contains("finish PUBLISH"));
     }
 
     private @NotNull List<String> defaultPublishCommand(final char mqttVersion) {

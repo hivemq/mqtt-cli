@@ -99,7 +99,7 @@ class PublishConnectMTlsST {
         executionResult.write("clientKeystorePassword");
         executionResult.awaitStdOut("Enter truststore password:");
         executionResult.write("clientTruststorePassword");
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -152,7 +152,7 @@ class PublishConnectMTlsST {
         }
         executionResult.awaitStdOut("Enter truststore password:");
         executionResult.write("clientTruststorePassword");
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -205,7 +205,7 @@ class PublishConnectMTlsST {
         }
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -258,7 +258,7 @@ class PublishConnectMTlsST {
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -309,7 +309,7 @@ class PublishConnectMTlsST {
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -364,7 +364,7 @@ class PublishConnectMTlsST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("Enter private key password:");
         executionResult.write("clientKeyPassword");
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -419,7 +419,7 @@ class PublishConnectMTlsST {
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -475,7 +475,7 @@ class PublishConnectMTlsST {
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -527,7 +527,7 @@ class PublishConnectMTlsST {
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -584,7 +584,7 @@ class PublishConnectMTlsST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("Enter private key password:");
         executionResult.write("clientKeyPassword");
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -643,7 +643,7 @@ class PublishConnectMTlsST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("Enter private key password:");
         executionResult.write("clientKeyPassword");
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -701,7 +701,7 @@ class PublishConnectMTlsST {
                 "-d");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));

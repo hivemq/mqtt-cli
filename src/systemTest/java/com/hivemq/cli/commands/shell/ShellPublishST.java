@@ -62,7 +62,7 @@ class ShellPublishST {
         mqttCliShell.executeAsync(publishCommand)
                 .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending PUBLISH")
-                .awaitLog("received PUBLISH acknowledgement");
+                .awaitLog("finish PUBLISH");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
@@ -81,7 +81,7 @@ class ShellPublishST {
         mqttCliShell.executeAsync(publishCommand)
                 .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending PUBLISH")
-                .awaitLog("received PUBLISH acknowledgement");
+                .awaitLog("finish PUBLISH");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
@@ -98,7 +98,7 @@ class ShellPublishST {
         mqttCliShell.executeAsync(publishCommand)
                 .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending PUBLISH")
-                .awaitLog("received PUBLISH acknowledgement");
+                .awaitLog("finish PUBLISH");
 
         final PublishPacket publishPacket1 = hivemq.getPublishPackets().get(0);
         final PublishPacket publishPacket2 = hivemq.getPublishPackets().get(1);
@@ -132,7 +132,7 @@ class ShellPublishST {
         mqttCliShell.executeAsync(publishCommand)
                 .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending PUBLISH")
-                .awaitLog("received PUBLISH acknowledgement");
+                .awaitLog("finish PUBLISH");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
@@ -164,7 +164,7 @@ class ShellPublishST {
         mqttCliShell.executeAsync(publishCommand)
                 .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending PUBLISH")
-                .awaitLog("received PUBLISH acknowledgement");
+                .awaitLog("finish PUBLISH");
 
         final Optional<PublishPacket> optionalPublishPacket1 =
                 hivemq.getPublishPackets().stream().filter(publish -> publish.getTopic().equals("test1")).findFirst();
@@ -210,7 +210,7 @@ class ShellPublishST {
         mqttCliShell.executeAsync(publishCommand)
                 .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
                 .awaitLog("sending PUBLISH")
-                .awaitLog("received PUBLISH acknowledgement");
+                .awaitLog("finish PUBLISH");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
@@ -232,11 +232,11 @@ class ShellPublishST {
             awaitOutput.awaitLog("Publish message expiry was set but is unused in MQTT Version MQTT_3_1_1");
             awaitOutput.awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
             awaitOutput.awaitLog("sending PUBLISH");
-            awaitOutput.awaitLog("received PUBLISH acknowledgement");
+            awaitOutput.awaitLog("finish PUBLISH");
         } else {
             awaitOutput.awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
             awaitOutput.awaitLog("sending PUBLISH");
-            awaitOutput.awaitLog("received PUBLISH acknowledgement");
+            awaitOutput.awaitLog("finish PUBLISH");
             awaitOutput.awaitLog("messageExpiryInterval=120");
         }
 
@@ -264,7 +264,7 @@ class ShellPublishST {
 
         awaitOutput.awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
-        awaitOutput.awaitLog("received PUBLISH acknowledgement");
+        awaitOutput.awaitLog("finish PUBLISH");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
@@ -290,7 +290,7 @@ class ShellPublishST {
 
         awaitOutput.awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
-        awaitOutput.awaitLog("received PUBLISH acknowledgement");
+        awaitOutput.awaitLog("finish PUBLISH");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
@@ -316,7 +316,7 @@ class ShellPublishST {
 
         awaitOutput.awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
-        awaitOutput.awaitLog("received PUBLISH acknowledgement");
+        awaitOutput.awaitLog("finish PUBLISH");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
@@ -342,7 +342,7 @@ class ShellPublishST {
 
         awaitOutput.awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
-        awaitOutput.awaitLog("received PUBLISH acknowledgement");
+        awaitOutput.awaitLog("finish PUBLISH");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
@@ -369,7 +369,7 @@ class ShellPublishST {
 
         awaitOutput.awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()));
         awaitOutput.awaitLog("sending PUBLISH");
-        awaitOutput.awaitLog("received PUBLISH acknowledgement");
+        awaitOutput.awaitLog("finish PUBLISH");
 
         assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
