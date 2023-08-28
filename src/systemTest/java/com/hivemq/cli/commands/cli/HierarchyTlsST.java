@@ -233,7 +233,7 @@ class HierarchyTlsST {
                 "clientKeyPassword");
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
-        executionResult.awaitStdOut("received PUBLISH acknowledgement");
+        executionResult.awaitStdOut("finish PUBLISH");
         assertConnectPacket(hivemq.getConnectPackets().get(0),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));

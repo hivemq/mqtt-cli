@@ -147,8 +147,11 @@ class PublishST {
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test1"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttPublish{topic=test1"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test2"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttPublish{topic=test2"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message') MqttPublish{topic=test3"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttPublish{topic=test3"));
 
         final Set<String> topicSet =
                 hivemq.getPublishPackets().stream().map(PublishPacket::getTopic).collect(Collectors.toSet());
@@ -183,15 +186,15 @@ class PublishST {
         publishCommand.add("2");
 
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message')"));
         assertTrue(executionResult.getStandardOutput()
-                .contains(
-                        "sending PUBLISH ('message') MqttPublish{topic=test1, payload=7byte, qos=AT_MOST_ONCE, retain=false}"));
+                .contains("MqttPublish{topic=test1, payload=7byte, qos=AT_MOST_ONCE, retain=false}"));
+        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message')"));
         assertTrue(executionResult.getStandardOutput()
-                .contains(
-                        "sending PUBLISH ('message') MqttPublish{topic=test2, payload=7byte, qos=AT_LEAST_ONCE, retain=false}"));
+                .contains("MqttPublish{topic=test2, payload=7byte, qos=AT_LEAST_ONCE, retain=false}"));
+        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH ('message')"));
         assertTrue(executionResult.getStandardOutput()
-                .contains(
-                        "sending PUBLISH ('message') MqttPublish{topic=test3, payload=7byte, qos=EXACTLY_ONCE, retain=false}"));
+                .contains("MqttPublish{topic=test3, payload=7byte, qos=EXACTLY_ONCE, retain=false}"));
 
         final Map<String, PublishPacket> topicToPublishPacket = hivemq.getPublishPackets()
                 .stream()
@@ -386,8 +389,7 @@ class PublishST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
 
         assertEquals(2, executionResult.getExitCode());
-        assertTrue(executionResult.getErrorOutput()
-                .contains("Missing required argument (specify one of these):"));
+        assertTrue(executionResult.getErrorOutput().contains("Missing required argument (specify one of these):"));
     }
 
     private void assertPublishOutput(final @NotNull ExecutionResult executionResult) {
@@ -395,7 +397,7 @@ class PublishST {
         assertTrue(executionResult.getStandardOutput().contains("sending CONNECT"));
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
         assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH"));
-        assertTrue(executionResult.getStandardOutput().contains("received PUBLISH acknowledgement"));
+        assertTrue(executionResult.getStandardOutput().contains("finish PUBLISH"));
     }
 
     private @NotNull List<String> defaultPublishCommand(final char mqttVersion) {
