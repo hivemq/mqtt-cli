@@ -164,7 +164,7 @@ public class ExportClientsCommand implements Callable<Integer> {
         final BlockingQueue<String> clientIdsQueue = new LinkedBlockingQueue<>(CLIENT_IDS_QUEUE_LIMIT);
         final BlockingQueue<ClientDetails> clientDetailsQueue = new LinkedBlockingQueue<>(CLIENT_DETAILS_QUEUE_LIMIT);
 
-        Logger.info("Starting export of client details for HiveMQ at {} ", url);
+        Logger.info("Starting export of client details for HiveMQ at {}", url);
 
         // Start retrieving client ids
         final ClientIdsRetrieverTask clientIdsRetrieverTask =

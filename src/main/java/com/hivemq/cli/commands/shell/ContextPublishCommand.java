@@ -42,7 +42,7 @@ public class ContextPublishCommand extends ShellContextCommand implements Callab
 
     @Override
     public @NotNull Integer call() {
-        Logger.trace("Command {} ", this);
+        Logger.trace("Command {}", this);
 
         if (contextClient != null) {
             publishOptions.logUnusedOptions(contextClient.getConfig().getMqttVersion());

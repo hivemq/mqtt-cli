@@ -395,7 +395,7 @@ abstract class AbstractMqttClientExecutor {
             }
             return builder.build().asWill();
         } else if (willOptions.getWillMessage() != null) {
-            Logger.warn("option -wt is missing if a will message is configured - will options were: {} ",
+            Logger.warn("option -wt is missing if a will message is configured - will options were: {}",
                     willOptions.toString());
         }
         return null;
@@ -415,7 +415,7 @@ abstract class AbstractMqttClientExecutor {
             }
             return builder.build();
         } else if (willOptions.getWillMessage() != null) {
-            Logger.warn("option -wt is missing if a will message is configured - will options were: {} ",
+            Logger.warn("option -wt is missing if a will message is configured - will options were: {}",
                     willOptions.toString());
         }
         return null;

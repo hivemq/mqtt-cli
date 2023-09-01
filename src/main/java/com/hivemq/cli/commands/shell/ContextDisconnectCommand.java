@@ -44,7 +44,7 @@ public class ContextDisconnectCommand extends ShellContextCommand implements Cal
 
     @Override
     public @NotNull Integer call() {
-        Logger.trace("Command {} ", this);
+        Logger.trace("Command {}", this);
 
         if (contextClient != null) {
             disconnectOptions.logUnusedDisconnectOptions(contextClient.getConfig().getMqttVersion());

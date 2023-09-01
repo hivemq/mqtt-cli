@@ -64,7 +64,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
 
     @Override
     public @NotNull Integer call() {
-        Logger.trace("Command {} ", this);
+        Logger.trace("Command {}", this);
 
         if (contextClient == null) {
             Logger.error("The client to subscribe with does not exist");

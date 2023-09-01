@@ -42,7 +42,7 @@ public class ContextUnsubscribeCommand extends ShellContextCommand implements Ca
 
     @Override
     public @NotNull Integer call() {
-        Logger.trace("Command {} ", this);
+        Logger.trace("Command {}", this);
 
         if (contextClient == null) {
             Logger.error("The client to unsubscribe with does not exist");

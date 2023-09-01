@@ -54,7 +54,7 @@ public class ShellDisconnectCommand implements Callable<Integer> {
         if (disconnectOptions.getHost() == null) {
             disconnectOptions.setHost(defaultCLIProperties.getHost());
         }
-        Logger.trace("Command {} ", this);
+        Logger.trace("Command {}", this);
 
         try {
             if (disconnectOptions.isDisconnectAll()) {
