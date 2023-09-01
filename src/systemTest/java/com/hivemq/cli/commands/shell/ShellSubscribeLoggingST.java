@@ -39,11 +39,12 @@ public class ShellSubscribeLoggingST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
+    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_with_message_mqtt5_qos0_logging() throws IOException, InterruptedException {
+    void test_shell_subscribe_with_message_mqtt5_qos0_logging() throws IOException {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-q", "0");
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(subscribeCommand)
@@ -70,7 +71,7 @@ public class ShellSubscribeLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_with_message_mqtt5_qos1_logging() throws IOException, InterruptedException {
+    void test_shell_subscribe_with_message_mqtt5_qos1_logging() throws IOException {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-q", "1");
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(subscribeCommand)
@@ -100,7 +101,7 @@ public class ShellSubscribeLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_mqtt5_qos2_logging() throws IOException, InterruptedException {
+    void test_shell_subscribe_mqtt5_qos2_logging() throws IOException {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-q", "2");
         final AwaitOutput awaitOutput = mqttCliShell.executeAsync(subscribeCommand)

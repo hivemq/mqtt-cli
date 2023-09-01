@@ -38,6 +38,7 @@ class ShellConnectWebsocketsST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().withWebsocketEnabled(true).build();
 
     @RegisterExtension
+    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
     @ParameterizedTest

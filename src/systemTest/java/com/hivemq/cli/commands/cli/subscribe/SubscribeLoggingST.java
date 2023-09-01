@@ -39,11 +39,12 @@ public class SubscribeLoggingST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
+    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_with_message_mqtt5_qos0_logging() throws IOException, InterruptedException {
+    void test_subscribe_with_message_mqtt5_qos0_logging() throws IOException {
         final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
@@ -85,7 +86,7 @@ public class SubscribeLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_with_message_mqtt5_qos1_logging() throws IOException, InterruptedException {
+    void test_subscribe_with_message_mqtt5_qos1_logging() throws IOException {
         final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
@@ -129,7 +130,7 @@ public class SubscribeLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_mqtt5_qos2_logging() throws IOException, InterruptedException {
+    void test_subscribe_mqtt5_qos2_logging() throws IOException {
         final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
