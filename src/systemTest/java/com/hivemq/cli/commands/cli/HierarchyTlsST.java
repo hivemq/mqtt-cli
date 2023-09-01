@@ -56,6 +56,7 @@ class HierarchyTlsST {
             .build();
 
     @RegisterExtension
+    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
 
 

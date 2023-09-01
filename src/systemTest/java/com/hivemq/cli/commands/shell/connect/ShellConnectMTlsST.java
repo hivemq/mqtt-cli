@@ -48,6 +48,7 @@ class ShellConnectMTlsST {
             .build();
 
     @RegisterExtension
+    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
 

@@ -50,6 +50,7 @@ public class CipherSuitesTlsST {
             .build();
 
     @RegisterExtension
+    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
 
     @CartesianTest

@@ -34,6 +34,7 @@ public class ShellPublishLoggingST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
+    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
     @Test
@@ -51,7 +52,7 @@ public class ShellPublishLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_shell_publish_mqtt5_qos1_logging() throws IOException, InterruptedException {
+    void test_shell_publish_mqtt5_qos1_logging() throws IOException {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "1");
         mqttCliShell.executeAsync(publishCommand)
@@ -66,7 +67,7 @@ public class ShellPublishLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_shell_publish_mqtt5_qos2_logging() throws IOException, InterruptedException {
+    void test_shell_publish_mqtt5_qos2_logging() throws IOException {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "2");
         mqttCliShell.executeAsync(publishCommand)
