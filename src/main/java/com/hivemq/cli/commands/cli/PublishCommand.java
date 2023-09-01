@@ -73,7 +73,7 @@ public class PublishCommand implements Callable<Integer> {
         }
         LoggerUtils.setupConsoleLogging(logToLogfile, logLevel);
 
-        Logger.trace("Command {} ", this);
+        Logger.trace("Command {}", this);
 
         connectOptions.setDefaultOptions();
         connectOptions.logUnusedOptions();

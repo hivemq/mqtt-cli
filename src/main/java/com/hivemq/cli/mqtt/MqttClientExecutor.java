@@ -78,7 +78,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             throw mqtt5ConnAckException;
         }
 
-        Logger.debug("{} received CONNACK\n    {} ", clientLogPrefix, connAck);
+        Logger.debug("{} received CONNACK\n    {}", clientLogPrefix, connAck);
     }
 
     void mqtt3Connect(
@@ -94,7 +94,7 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
             Logger.debug(mqtt3ConnAckException.getMqttMessage());
             throw mqtt3ConnAckException;
         }
-        Logger.debug("{} received CONNACK\n    {} ", clientLogPrefix, connAck);
+        Logger.debug("{} received CONNACK\n    {}", clientLogPrefix, connAck);
     }
 
     void mqtt5Subscribe(

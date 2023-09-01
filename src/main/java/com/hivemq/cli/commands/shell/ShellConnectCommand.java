@@ -48,7 +48,7 @@ public class ShellConnectCommand implements Callable<Integer> {
     }
 
     public @NotNull Integer call() {
-        Logger.trace("Command {} ", this);
+        Logger.trace("Command {}", this);
 
         connectOptions.setDefaultOptions();
         connectOptions.logUnusedOptions();

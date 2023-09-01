@@ -156,9 +156,11 @@ public class MqttCliShellExtension implements BeforeEachCallback, AfterEachCallb
                 "-i",
                 clientId);
 
-        final AwaitOutput awaitOutput =
-                executeAsync(connectCommand).awaitStdOut(String.format("%s@%s>", clientId, hivemq.getHost()));
-        awaitOutput.awaitLog("received CONNACK");
+        executeAsync(connectCommand).awaitStdOut(String.format("%s@%s>", clientId, hivemq.getHost()))
+                .awaitLog("sending CONNECT")
+                .awaitLog("MqttConnect")
+                .awaitLog("received CONNACK")
+                .awaitLog("MqttConnAck");
 
         assertConnectPacket(hivemq.getConnectPackets().get(connectClientMarker), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));

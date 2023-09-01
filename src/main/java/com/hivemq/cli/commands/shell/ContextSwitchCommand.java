@@ -56,7 +56,7 @@ public class ContextSwitchCommand extends ShellContextCommand implements Callabl
 
     @Override
     public @NotNull Integer call() {
-        Logger.trace("Command {} ", this);
+        Logger.trace("Command {}", this);
 
         if (contextName == null && identifier == null) {
             ShellCommand.usage(this);
