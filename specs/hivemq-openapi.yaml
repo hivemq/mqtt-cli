@@ -78,17 +78,29 @@ info:
     ## OpenAPI
     HiveMQ's REST API provides an OpenAPI 3.0 schema definition that can imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   title: HiveMQ REST API
-  version: 4.18.0
+  version: 4.20.0-SNAPSHOT
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
 - description: |-
-    These endpoints can be used to manage the Data Governance Hub.
+    These endpoints can be used to manage the Data Hub.
 
-    Currently, this includes the option to start a 5-hour long trial mode that temporarily removes all limitations.For more information on all capabilities the HiveMQ Data Governance Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-governance-hub/index.html).
-  name: Data Governance Hub - Management
+    Currently, this includes the option to start a 5-hour long trial mode that temporarily removes all limitations.For more information on all capabilities the HiveMQ Data Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-hub/index.html).
+  name: Data Hub - Management
 - description: |-
-    Policies describe how you want the HiveMQ broker to apply schemas to incoming MQTT message payload data and act on the validation results.
+    Policies describe how you want the HiveMQ broker to validate the behavior of MQTT clients.
+    Each policy has four sections:
+
+    - Matching: Specifies which clients the policy engine validates.
+    - Deserialization: Specifies deserializers for different message payloads.
+    - Behavior: Specifies the behavior that is considered valid for matched clients.
+    - onTransitions: Specifies custom actions that are executed when a client transitions to a different state within the specified behavior model that is valid for that client.
+    These endpoints can be used to create, update, delete, and list behavior policies.
+
+    For more information on all capabilities the HiveMQ Data Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-hub/index.html).
+  name: Data Hub - Behavior Policies
+- description: |-
+    Data Policies describe how you want the HiveMQ broker to apply schemas to incoming MQTT message payload data and act on the validation results.
     Each policy has four sections:
 
     - Matching: Specifies which packets the policy engine validates.
@@ -96,10 +108,10 @@ tags:
     - OnSuccess: Defines which actions are executed when the outcome of a validation is successful.
     - OnFailure: Defines which actions are executed when the validation fails.
 
-    These endpoints can be used to create, update, delete, and list policies.
+    These endpoints can be used to create, update, delete, and list data policies.
 
-    For more information on all capabilities the HiveMQ Data Governance Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/4.16/data-governance-hub/index.html).
-  name: Data Governance Hub - Policies
+    For more information on all capabilities the HiveMQ Data Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-hub/index.html).
+  name: Data Hub - Data Policies
 - description: |-
     A schema defines the expected structure and format of incoming MQTT message payload data.
 
@@ -112,8 +124,8 @@ tags:
     - [JSON Schema](https://json-schema.org/)
     - [Protocol Buffers (Protobuf)](https://protobuf.dev/)
 
-    For more information on how to define and use a schema in HiveMQ, see [Schemas](https://docs.hivemq.com/hivemq/latest/data-governance-hub/schemas.html).
-  name: Data Governance Hub - Schemas
+    For more information on how to define and use a schema in HiveMQ, see [Schemas](https://docs.hivemq.com/hivemq/latest/data-hub/schemas.html).
+  name: Data Hub - Schemas
 - description: |-
     These endpoints can be used to create, download, inspect and restore backups created by HiveMQ.
 
@@ -167,15 +179,674 @@ tags:
     \ connection status, TLS, and more, offer detailed insights into every client."
   name: MQTT Clients
 paths:
-  /api/v1/data-validation/policies:
+  /api/v1/data-hub/behavior-validation/policies:
     get:
       description: "Get all policies. \n\n This endpoint returns the content of the\
         \ policies with the content-type `application/json`. \n\n This endpoint requires\
-        \ at least HiveMQ version 4.15.0 on all cluster nodes."
-      operationId: getAllPolicies
+        \ at least HiveMQ version 4.20.0 on all cluster nodes."
+      operationId: getAllBehaviorPolicies
       parameters:
       - description: "Comma-separated list of fields to include in the response. Allowed\
-          \ values are: id, createdAt, matching, validation, onSuccess, onFailure"
+          \ values are: id, createdAt, lastUpdatedAt, deserialization, matching, behavior,\
+          \ onTransitions"
+        example: "id,createdAt"
+        in: query
+        name: fields
+        schema:
+          type: string
+          example: null
+      - description: Comma-separated list of policy ids used for filtering. Multiple
+          filters can be applied together.
+        example: "policy1,policy2"
+        in: query
+        name: policyIds
+        schema:
+          type: string
+          example: null
+      - description: MQTT ClientID string that is matched by the retrieved policies.
+        example: topic/my-topic
+        in: query
+        name: clientIds
+        schema:
+          type: string
+          example: null
+      - description: Specifies the page size for the returned results. Has to be between
+          10 and 500. Default page size is 50. Limit is ignored if the 'topic' query
+          parameter is set.
+        example: 100
+        in: query
+        name: limit
+        schema:
+          type: integer
+          format: int32
+          example: null
+      - description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        in: query
+        name: cursor
+        schema:
+          type: string
+          example: null
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                list-response-a:
+                  description: Example response with multiple policies. No more pages
+                    left
+                  summary: "Multiple results, last page"
+                  value:
+                    items:
+                    - id: P18
+                      createdAt: 2023-07-28T07:27:24.531Z
+                      lastUpdatedAt: 2023-07-28T07:27:24.531Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
+                    - id: P19
+                      createdAt: 2023-07-28T07:27:24.532Z
+                      lastUpdatedAt: 2023-07-28T07:27:24.532Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
+                list-response-b:
+                  description: Example response with multiple policies. More pages
+                    left
+                  summary: "Multiple results, more pages left"
+                  value:
+                    items:
+                    - id: P0
+                      createdAt: 2023-07-28T07:44:35.382Z
+                      lastUpdatedAt: 2023-07-28T07:44:35.382Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
+                    - id: P1
+                      createdAt: 2023-07-28T07:44:35.405Z
+                      lastUpdatedAt: 2023-07-28T07:44:35.405Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
+                    _links:
+                      next: /api/v1/data-hub/behavior-validation/policies?cursor=a-Wva-QBoB5yAX_HJ0WRQ8ng==&limit=2
+                list-response-c:
+                  description: Example response with requested fields and multiple
+                    policies. More pages left
+                  summary: "Multiple results, requested 'id' field"
+                  value:
+                    items:
+                    - id: P0
+                    - id: P1
+                    _links:
+                      next: /api/v1/data-hub/behavior-validation/policies?cursor=a-Wva-QBoB5yAX_HZxWBM9mQ==&limit=2&fields=id
+                list-response-d:
+                  description: Example response with a single policy
+                  summary: Single Result
+                  value:
+                    items:
+                    - id: policy1
+                      createdAt: 2023-07-28T07:34:14.150Z
+                      lastUpdatedAt: 2023-07-28T07:34:14.150Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
+              schema:
+                $ref: '#/components/schemas/BehaviorPolicyList'
+          description: Success
+        "503":
+          content:
+            application/json:
+              examples:
+                version-check-failed:
+                  description: Version check failed
+                  summary: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
+                        \ try again later"
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not all cluster nodes at minimum version
+      summary: Get all policies
+      tags:
+      - Data Hub - Behavior Policies
+    post:
+      description: |-
+        Create a behavior policy
+
+        This endpoint requires at least HiveMQ version 4.20.0 on all cluster nodes.
+      operationId: createBehaviorPolicy
+      requestBody:
+        content:
+          application/json:
+            example:
+              id: wildcardLogBehaviorPolicy
+              createdAt: 2023-08-23T10:14:38.447Z
+              matching:
+                clientIdRegex: .*
+              deserialization:
+                publish:
+                  schema:
+                    schemaId: schema
+                    version: latest
+                will:
+                  schema:
+                    schemaId: schema
+                    version: latest
+              behavior:
+                id: Mqtt.events
+                arguments: {}
+              onTransitions:
+              - fromState: Any.*
+                toState: Any.*
+                Event.OnAny:
+                  pipeline:
+                  - id: log1
+                    functionId: System.log
+                    arguments:
+                      level: INFO
+                      message: transition happened
+            schema:
+              $ref: '#/components/schemas/BehaviorPolicy'
+        description: The policy that should be created.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              examples:
+                response-example:
+                  description: Example response.
+                  summary: Policy was created successfully
+                  value:
+                    id: wildcardLogBehaviorPolicy
+                    createdAt: 2023-08-23T10:14:38.447Z
+                    lastUpdatedAt: 2023-08-23T10:14:38.447Z
+                    matching:
+                      clientIdRegex: .*
+                    deserialization:
+                      publish:
+                        schema:
+                          schemaId: schema
+                          version: latest
+                      will:
+                        schema:
+                          schemaId: schema
+                          version: latest
+                        arguments: {}
+                    behavior:
+                      id: Mqtt.events
+                      arguments: {}
+                    onTransitions:
+                    - fromState: Any.*
+                      toState: Any.*
+                      Event.OnAny:
+                        pipeline:
+                        - id: log1
+                          functionId: System.log
+                          arguments:
+                            level: INFO
+                            message: transition happened
+              schema:
+                $ref: '#/components/schemas/BehaviorPolicy'
+          description: Success
+        "400":
+          content:
+            application/json:
+              examples:
+                param-missing:
+                  description: Example response when a required parameter is missing.
+                  summary: Required URL parameter missing
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+                policy-id-already-in-use:
+                  description: Example response when the policy uses an already existing
+                    id.
+                  summary: The given policy ID is already in use
+                  value:
+                    errors:
+                    - title: Policy id already used
+                      detail: The given policy id 'policy-id' is already in use.
+                policy-not-parsable:
+                  description: Example response when the submitted policy could not
+                    be parsed as JSON.
+                  summary: The submitted policy cannot be parsed.
+                  value:
+                    errors:
+                    - title: Policy not parsable
+                      detail: The submitted policy 'policy' can not be parsed.
+                policy-not-valid:
+                  description: "Example response when the policy is invalid, because\
+                    \ a field is missing."
+                  summary: The submitted policy is not valid
+                  value:
+                    errors:
+                    - title: Policy is not valid
+                      detail: Required body entity parameter is missing
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "503":
+          content:
+            application/json:
+              examples:
+                temporarily-not-available:
+                  description: The endpoint is temporarily not available
+                  summary: Temporarily not available
+                  value:
+                    errors:
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
+                        \ again later"
+                version-check-failed:
+                  description: Version check failed
+                  summary: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
+                        \ try again later"
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Temporarily not available
+      summary: Create a new policy
+      tags:
+      - Data Hub - Behavior Policies
+  /api/v1/data-hub/behavior-validation/policies/{policyId}:
+    delete:
+      description: "Deletes an existing policy. \n\n "
+      operationId: deleteBehaviorPolicy
+      parameters:
+      - description: The identifier of the policy to delete.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
+          example: null
+      responses:
+        "204":
+          description: "Success, no response body"
+        "400":
+          content:
+            application/json:
+              examples:
+                param-missing:
+                  description: Bad request
+                  summary: Required URL parameter missing
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Policy not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+        "503":
+          content:
+            application/json:
+              examples:
+                version-check-failed:
+                  description: Version check failed
+                  summary: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
+                        \ try again later"
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not all cluster nodes at minimum version
+      summary: Delete a behavior policy
+      tags:
+      - Data Hub - Behavior Policies
+    get:
+      description: "Get a specific policy. \n\n This endpoint returns the content\
+        \ of the policy with the content-type `application/json`. \n\n This endpoint\
+        \ requires at least HiveMQ version 4.20.0 on all cluster nodes."
+      operationId: getBehaviorPolicy
+      parameters:
+      - description: The identifier of the policy.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
+          example: null
+      - description: "Comma-separated list of fields to include in the response. Allowed\
+          \ values are: id, createdAt, lastUpdatedAt, deserialization, matching, behavior,\
+          \ onTransitions"
+        example: "id,createdAt"
+        in: query
+        name: fields
+        schema:
+          type: string
+          example: null
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                get-response:
+                  description: Get Policy
+                  summary: Get  Policy
+                  value:
+                    id: wildcardLogBehaviorPolicy
+                    createdAt: 2023-08-23T10:14:38.447Z
+                    lastUpdatedAt: 2023-08-23T10:14:38.447Z
+                    matching:
+                      clientIdRegex: .*
+                    deserialization:
+                      publish:
+                        schema:
+                          schemaId: schema
+                          version: latest
+                      will:
+                        schema:
+                          schemaId: schema
+                          version: latest
+                        arguments: {}
+                    behavior:
+                      id: Mqtt.events
+                      arguments: {}
+                    onTransitions:
+                    - fromState: Any.*
+                      toState: Any.*
+                      Event.OnAny:
+                        pipeline:
+                        - id: log1
+                          functionId: System.log
+                          arguments:
+                            level: INFO
+                            message: transition happened
+              schema:
+                $ref: '#/components/schemas/BehaviorPolicy'
+          description: Success
+        "400":
+          content:
+            application/json:
+              examples:
+                param-missing:
+                  description: Bad request
+                  summary: Required URL parameter missing
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Resource not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Resource not found
+      summary: Get a  policy
+      tags:
+      - Data Hub - Behavior Policies
+    put:
+      description: |-
+        Update a behavior policy
+
+        The path parameter 'policyId' must match the 'id' of the policy in the request body.
+         This endpoint requires at least HiveMQ version 4.20.0 on all cluster nodes.
+      operationId: updateBehaviorPolicy
+      parameters:
+      - description: The identifier of the policy.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
+          example: null
+      requestBody:
+        content:
+          application/json:
+            example:
+              id: wildcardLogBehaviorPolicy
+              createdAt: 2023-08-23T10:14:38.447Z
+              matching:
+                clientIdRegex: .*
+              deserialization:
+                publish:
+                  schema:
+                    schemaId: schema
+                    version: latest
+                will:
+                  schema:
+                    schemaId: schema
+                    version: latest
+              behavior:
+                id: Mqtt.events
+                arguments: {}
+              onTransitions:
+              - fromState: Any.*
+                toState: Any.*
+                Event.OnAny:
+                  pipeline:
+                  - id: log1
+                    functionId: System.log
+                    arguments:
+                      level: INFO
+                      message: transition happened
+            schema:
+              $ref: '#/components/schemas/BehaviorPolicy'
+        description: The policy that should be updated.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                response-example:
+                  description: Example response.
+                  summary: Policy was updated successfully
+                  value:
+                    id: wildcardLogBehaviorPolicy
+                    createdAt: 2023-08-23T10:14:38.447Z
+                    lastUpdatedAt: 2023-09-26T11:17:22.311Z
+                    matching:
+                      clientIdRegex: .*
+                    deserialization:
+                      publish:
+                        schema:
+                          schemaId: schema
+                          version: latest
+                      will:
+                        schema:
+                          schemaId: schema
+                          version: latest
+                        arguments: {}
+                    behavior:
+                      id: Mqtt.events
+                      arguments: {}
+                    onTransitions:
+                    - fromState: Any.*
+                      toState: Any.*
+                      Event.OnAny:
+                        pipeline:
+                        - id: log1
+                          functionId: System.log
+                          arguments:
+                            level: INFO
+                            message: transition happened
+              schema:
+                $ref: '#/components/schemas/BehaviorPolicy'
+          description: Success
+        "400":
+          content:
+            application/json:
+              examples:
+                param-missing:
+                  description: Example response when a required parameter is missing.
+                  summary: Required URL parameter missing
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+                policy-not-parsable:
+                  description: The submitted policy cannot be parsed.
+                  summary: The submitted policy can not be parsed
+                  value:
+                    errors:
+                    - title: Policy not parsable
+                      detail: The submitted policy 'policy' can not be parsed.
+                policy-not-valid:
+                  description: "Example response when the policy is invalid, because\
+                    \ a field is missing."
+                  summary: The submitted policy is not valid
+                  value:
+                    errors:
+                    - title: Policy is not valid
+                      detail: Required body entity parameter is missing
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              examples:
+                not-found:
+                  description: Policy not found
+                  summary: Not found
+                  value:
+                    errors:
+                    - title: Referenced policy not found
+                      detail: The referenced policy with id 'policyId' was not found.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Policy not found
+        "412":
+          content:
+            application/json:
+              examples:
+                etag-not-matching:
+                  description: Precondition failed
+                  summary: Etag not matching
+                  value:
+                    errors:
+                    - title: Precondition Failed
+                      detail: Policy does not match the given etag '123456789'.
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Precondition failed
+        "503":
+          content:
+            application/json:
+              examples:
+                version-check-failed:
+                  description: Version check failed
+                  summary: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
+                        \ try again later"
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Not all cluster nodes at minimum version
+      summary: Update an existing policy
+      tags:
+      - Data Hub - Behavior Policies
+  /api/v1/data-hub/data-validation/policies:
+    get:
+      description: "Get all data policies. \n\n This endpoint returns the content\
+        \ of the policies with the content-type `application/json`. \n\n This endpoint\
+        \ requires at least HiveMQ version 4.15.0 on all cluster nodes."
+      operationId: getAllDataPolicies
+      parameters:
+      - description: "Comma-separated list of fields to include in the response. Allowed\
+          \ values are: id, createdAt, lastUpdatedAt, matching, validation, onSuccess,\
+          \ onFailure"
         example: "id,createdAt"
         in: query
         name: fields
@@ -237,6 +908,7 @@ paths:
                     items:
                     - id: policy1
                       createdAt: 2023-04-26T13:32:47.032Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.032Z
                       matching:
                         topicFilter: topic1
                       validation:
@@ -265,6 +937,7 @@ paths:
                               \ '${topic}' with result '${validationResult}'"
                     - id: policy2
                       createdAt: 2023-04-26T13:32:47.049Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.049Z
                       matching:
                         topicFilter: topic2
                       validation:
@@ -299,6 +972,7 @@ paths:
                     items:
                     - id: policy1
                       createdAt: 2023-04-26T13:32:47.032Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.032Z
                       matching:
                         topicFilter: topic1
                       validation:
@@ -327,6 +1001,7 @@ paths:
                               with result '$validationResult'
                     - id: policy2
                       createdAt: 2023-04-26T13:32:47.049Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.049Z
                       matching:
                         topicFilter: topic2
                       validation:
@@ -355,6 +1030,7 @@ paths:
                               with result '$validationResult'
                     - id: policy3
                       createdAt: 2023-04-26T13:32:47.049Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.049Z
                       matching:
                         topicFilter: topic3
                       validation:
@@ -401,6 +1077,7 @@ paths:
                     items:
                     - id: policy1
                       createdAt: 2023-04-26T13:32:47.032Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.032Z
                       matching:
                         topicFilter: topic1
                       validation:
@@ -428,7 +1105,7 @@ paths:
                             message: $clientId sent an invalid publish on topic '$topic'
                               with result '$validationResult'
               schema:
-                $ref: '#/components/schemas/PolicyList'
+                $ref: '#/components/schemas/DataPolicyList'
           description: Success
         "503":
           content:
@@ -445,15 +1122,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
-      summary: Get all policies
+      summary: Get all data policies
       tags:
-      - Data Governance Hub - Policies
+      - Data Hub - Data Policies
     post:
       description: |-
-        Create a policy
+        Create a data policy
 
         This endpoint requires at least HiveMQ version 4.15.0 on all cluster nodes.
-      operationId: createPolicy
+      operationId: createDataPolicy
       requestBody:
         content:
           application/json:
@@ -486,8 +1163,8 @@ paths:
                     message: "${clientId} sent an invalid publish on topic '${topic}'\
                       \ with result '${validationResult}'"
             schema:
-              $ref: '#/components/schemas/Policy'
-        description: The policy to create.
+              $ref: '#/components/schemas/DataPolicy'
+        description: The data policy to create.
         required: true
       responses:
         "201":
@@ -500,6 +1177,7 @@ paths:
                   value:
                     id: policy1
                     createdAt: 2023-04-19T13:35:00.930Z
+                    lastUpdatedAt: 2023-04-19T13:35:00.930Z
                     matching:
                       topicFilter: topic/+
                     validation:
@@ -527,19 +1205,50 @@ paths:
                           message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
-                $ref: '#/components/schemas/Policy'
+                $ref: '#/components/schemas/DataPolicy'
           description: Success
         "400":
           content:
             application/json:
               examples:
+                param-missing:
+                  description: Example response when a required parameter is missing.
+                  summary: Required URL parameter missing
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
                 policy-id-already-in-use:
-                  description: Bad request
+                  description: Example response when the policy uses an already existing
+                    id.
                   summary: The given policy identifier is already in use
                   value:
                     errors:
                     - title: Policy id already used
                       detail: The given policy id 'policy-id' is already in use.
+                policy-not-parsable:
+                  description: Example response when the submitted policy could not
+                    be parsed as JSON.
+                  summary: The submitted policy can not be parsed
+                  value:
+                    errors:
+                    - title: Policy not parsable
+                      detail: The submitted policy 'policy' can not be parsed.
+                policy-not-valid:
+                  description: "Example response when the policy is invalid, because\
+                    \ a field is missing."
+                  summary: The submitted policy is not valid
+                  value:
+                    errors:
+                    - title: Policy is not valid
+                      detail: Required body entity parameter is missing
+                referenced-schema-does-not-exist:
+                  description: Example response when a referenced schema was not found.
+                  summary: A schema that is referenced in the policy does not exist
+                  value:
+                    errors:
+                    - title: Referenced schema does not exist
+                      detail: The referenced schema with id 'schema-id' does not exist.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -555,18 +1264,26 @@ paths:
                     - title: The endpoint is temporarily not available
                       detail: "The endpoint is temporarily not available, please try\
                         \ again later"
+                version-check-failed:
+                  description: Version check failed
+                  summary: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
+                        \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
-          description: Temporarily not available
-      summary: Create a new policy
+          description: Not all cluster nodes at minimum version
+      summary: Create a new data policy
       tags:
-      - Data Governance Hub - Policies
-  /api/v1/data-validation/policies/{policyId}:
+      - Data Hub - Data Policies
+  /api/v1/data-hub/data-validation/policies/{policyId}:
     delete:
-      description: "Deletes an existing policy. \n\n "
-      operationId: deletePolicy
+      description: "Deletes an existing data policy. \n\n "
+      operationId: deleteDataPolicy
       parameters:
-      - description: The identifier of the policy to delete.
+      - description: The identifier of the data policy to delete.
         example: policy1
         in: path
         name: policyId
@@ -620,14 +1337,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
-      summary: Delete a policy
+      summary: Delete a data policy
       tags:
-      - Data Governance Hub - Policies
+      - Data Hub - Data Policies
     get:
-      description: "Get a specific policy. \n\n This endpoint returns the content\
+      description: "Get a specific data policy. \n\n This endpoint returns the content\
         \ of the policy with the content-type `application/json`. \n\n This endpoint\
         \ requires at least HiveMQ version 4.15.0 on all cluster nodes."
-      operationId: getPolicy
+      operationId: getDataPolicy
       parameters:
       - description: The identifier of the policy.
         example: policy1
@@ -638,7 +1355,8 @@ paths:
           type: string
           example: null
       - description: "Comma-separated list of fields to include in the response. Allowed\
-          \ values are: id, createdAt, matching, validation, onSuccess, onFailure"
+          \ values are: id, createdAt, lastUpdatedAt, matching, validation, onSuccess,\
+          \ onFailure"
         example: "id,createdAt"
         in: query
         name: fields
@@ -656,6 +1374,7 @@ paths:
                   value:
                     id: policy1
                     createdAt: 2023-04-19T13:35:00.930Z
+                    lastUpdatedAt: 2023-04-19T13:35:00.930Z
                     matching:
                       topicFilter: topic/+
                     validation:
@@ -683,14 +1402,14 @@ paths:
                           message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
-                $ref: '#/components/schemas/Policy'
+                $ref: '#/components/schemas/DataPolicy'
           description: Success
         "400":
           content:
             application/json:
               examples:
                 param-missing:
-                  description: Bad request
+                  description: Example response when a required parameter is missing.
                   summary: Required URL parameter missing
                   value:
                     errors:
@@ -704,7 +1423,7 @@ paths:
             application/json:
               examples:
                 not-found:
-                  description: Resource not found
+                  description: Policy not found
                   summary: Not found
                   value:
                     errors:
@@ -713,17 +1432,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
-      summary: Get a policy
+      summary: Get a data policy
       tags:
-      - Data Governance Hub - Policies
+      - Data Hub - Data Policies
     put:
       description: |-
-        Update a policy
+        Update a data policy
 
         The path parameter 'policyId' must match the 'id' of the policy in the request body.
          The matching part of policies cannot be changed with an update.
          This endpoint requires at least HiveMQ version 4.17.0 on all cluster nodes.
-      operationId: updatePolicy
+      operationId: updateDataPolicy
       parameters:
       - description: The identifier of the policy.
         example: policy1
@@ -765,8 +1484,8 @@ paths:
                     message: "${clientId} sent an invalid publish on topic '${topic}'\
                       \ with result '${validationResult}'"
             schema:
-              $ref: '#/components/schemas/Policy'
-        description: The policy that should be updated.
+              $ref: '#/components/schemas/DataPolicy'
+        description: The data policy that should be updated.
         required: true
       responses:
         "200":
@@ -779,6 +1498,7 @@ paths:
                   value:
                     id: policy1
                     createdAt: 2023-04-19T13:35:00.930Z
+                    lastUpdatedAt: 2023-09-26T11:17:22.311Z
                     matching:
                       topicFilter: topic/+
                     validation:
@@ -806,35 +1526,38 @@ paths:
                           message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
-                $ref: '#/components/schemas/Policy'
+                $ref: '#/components/schemas/DataPolicy'
           description: Success
         "400":
           content:
             application/json:
               examples:
                 param-missing:
-                  description: Bad request
+                  description: Example response when a required parameter is missing.
                   summary: Required URL parameter missing
                   value:
                     errors:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
                 policy-not-parsable:
-                  description: Bad request
+                  description: Example response when the submitted policy could not
+                    be parsed as JSON.
                   summary: The submitted policy can not be parsed
                   value:
                     errors:
                     - title: Policy not parsable
                       detail: The submitted policy 'policy' can not be parsed.
                 policy-not-valid:
-                  description: Bad request
+                  description: "Example response when the policy is invalid, because\
+                    \ a field is missing."
                   summary: The submitted policy is not valid
                   value:
                     errors:
                     - title: Policy is not valid
                       detail: Required body entity parameter is missing
                 policy-topic-filter-not-matching:
-                  description: Bad request
+                  description: Example response when the given topic filter does not
+                    match the present one.
                   summary: The policy topic filter does not match
                   value:
                     errors:
@@ -842,7 +1565,7 @@ paths:
                       detail: The policy with id 'policyId' has a topic filter 'my/topic/filter'
                         that does not match the topic filter of the current policy.
                 referenced-schema-does-not-exist:
-                  description: Bad request
+                  description: Example response when a referenced schema was not found.
                   summary: A schema that is referenced in the policy does not exist
                   value:
                     errors:
@@ -894,10 +1617,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
-      summary: Update an existing policy
+      summary: Update an existing data policy
       tags:
-      - Data Governance Hub - Policies
-  /api/v1/data-validation/schemas:
+      - Data Hub - Data Policies
+  /api/v1/data-hub/management/start-trial:
+    post:
+      description: |-
+        Use this endpoint to start the Data Hub trial mode.
+
+        This endpoint requires at least HiveMQ version 4.17.0 on the REST API node.
+      operationId: startTrialMode
+      responses:
+        "204":
+          description: "Success, no response body"
+        "400":
+          content:
+            application/json:
+              examples:
+                trial-already-expired:
+                  description: Bad request
+                  summary: Data Hub trial mode is already expired
+                  value:
+                    errors:
+                    - title: Trial mode already expired
+                      detail: The trial mode period for data hub has already expired.
+                        Restart HiveMQ to get another 5 hours trial mode.
+                trial-already-running:
+                  description: Bad request
+                  summary: Data Hub trial mode is already running
+                  value:
+                    errors:
+                    - title: Trial mode already running
+                      detail: "The trial mode for data hub cannot be started, as it\
+                        \ is already running."
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Bad request
+        "503":
+          content:
+            application/json:
+              examples:
+                temporarily-not-available:
+                  description: The endpoint is temporarily not available
+                  summary: Temporarily not available
+                  value:
+                    errors:
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
+                        \ again later"
+              schema:
+                $ref: '#/components/schemas/Errors'
+          description: Temporarily not available
+      summary: Start trial mode
+      tags:
+      - Data Hub - Management
+  /api/v1/data-hub/schemas:
     get:
       description: "Get all schemas. \n\n This endpoint returns the content of the\
         \ schemas with the content-type `application/json`. \n\n This endpoint requires\
@@ -1055,7 +1829,7 @@ paths:
           description: Not all cluster nodes at minimum version
       summary: Get all schemas
       tags:
-      - Data Governance Hub - Schemas
+      - Data Hub - Schemas
     post:
       description: |-
         Creates a schema
@@ -1095,13 +1869,36 @@ paths:
             application/json:
               examples:
                 Schema-already-present:
-                  description: Bad request
+                  description: Example response when the schema is already present.
                   summary: The given schema is already present as latest version
                   value:
                     errors:
                     - title: Schema already present
                       detail: The given schema is already present as the latest version
                         for the schema id 'schemaId'.
+                param-missing:
+                  description: Example response when a required parameter is missing.
+                  summary: Required URL parameter missing
+                  value:
+                    errors:
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
+                schema-not-parsable:
+                  description: Example response when the submitted schema could not
+                    be parsed as JSON.
+                  summary: The submitted schema can not be parsed
+                  value:
+                    errors:
+                    - title: Schema not parsable
+                      detail: The submitted schema 'schema' can not be parsed.
+                schema-type-not-supported:
+                  description: Example response when the specified schema type is
+                    not supported.
+                  summary: The submitted schema type is not supported
+                  value:
+                    errors:
+                    - title: Schema type not supported
+                      detail: The submitted schema type 'schema-type' is not supported
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -1117,13 +1914,21 @@ paths:
                     - title: The endpoint is temporarily not available
                       detail: "The endpoint is temporarily not available, please try\
                         \ again later"
+                version-check-failed:
+                  description: Version check failed
+                  summary: Version check failed
+                  value:
+                    errors:
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
+                        \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
-          description: Temporarily not available
+          description: Not all cluster nodes at minimum version
       summary: Create a new schema
       tags:
-      - Data Governance Hub - Schemas
-  /api/v1/data-validation/schemas/{schemaId}:
+      - Data Hub - Schemas
+  /api/v1/data-hub/schemas/{schemaId}:
     delete:
       description: "Deletes the selected schema and all associated versions of the\
         \ schema. \n\n This endpoint requires HiveMQ version4.15.0 or above on all\
@@ -1186,7 +1991,7 @@ paths:
           description: Not all cluster nodes at minimum version
       summary: Delete all versions of the schema
       tags:
-      - Data Governance Hub - Schemas
+      - Data Hub - Schemas
     get:
       description: "Get a specific schema. \n\n This endpoint returns the content\
         \ of the latest version of the schema with the content-type `application/json`.\
@@ -1257,7 +2062,7 @@ paths:
           description: Resource not found
       summary: Get a schema
       tags:
-      - Data Governance Hub - Schemas
+      - Data Hub - Schemas
   /api/v1/management/backups:
     get:
       description: |-
@@ -1515,57 +2320,6 @@ paths:
       summary: Restore a new backup
       tags:
       - Backup & Restore
-  /api/v1/management/data-governance-hub/start-trial:
-    post:
-      description: |-
-        Use this endpoint to start the Data Governance Hub trial mode.
-
-        This endpoint requires at least HiveMQ version 4.17.0 on the REST API node.
-      operationId: startTrialMode
-      responses:
-        "204":
-          description: "Success, no response body"
-        "400":
-          content:
-            application/json:
-              examples:
-                trial-already-expired:
-                  description: Bad request
-                  summary: Data Governance Hub trial mode is already expired
-                  value:
-                    errors:
-                    - title: Trial mode already expired
-                      detail: The trial mode period for data governance hub has already
-                        expired. Restart HiveMQ to get another 5 hours trial mode.
-                trial-already-running:
-                  description: Bad request
-                  summary: Data Governance Hub trial mode is already running
-                  value:
-                    errors:
-                    - title: Trial mode already running
-                      detail: "The trial mode for data governance hub cannot be started,\
-                        \ as it is already running."
-              schema:
-                $ref: '#/components/schemas/Errors'
-          description: Bad request
-        "503":
-          content:
-            application/json:
-              examples:
-                temporarily-not-available:
-                  description: The endpoint is temporarily not available
-                  summary: Temporarily not available
-                  value:
-                    errors:
-                    - title: The endpoint is temporarily not available
-                      detail: "The endpoint is temporarily not available, please try\
-                        \ again later"
-              schema:
-                $ref: '#/components/schemas/Errors'
-          description: Temporarily not available
-      summary: Start trial mode
-      tags:
-      - Data Governance Hub - Management
   /api/v1/management/diagnostic-archives:
     post:
       description: Triggers the creation of a new diagnostic archive.
@@ -2552,6 +3306,132 @@ components:
           example: null
           items:
             $ref: '#/components/schemas/Backup'
+    BehaviorPolicy:
+      type: object
+      description: A policy which is used to validate and execute certain actions
+        based on the validation result.
+      example: null
+      properties:
+        behavior:
+          $ref: '#/components/schemas/BehaviorPolicyBehavior'
+        createdAt:
+          type: string
+          format: date-time
+          description: The formatted UTC timestamp indicating when the policy was
+            created.
+          example: null
+          readOnly: true
+        deserialization:
+          $ref: '#/components/schemas/BehaviorPolicyDeserialization'
+        id:
+          type: string
+          description: The unique identifier of the policy.
+          example: null
+        lastUpdatedAt:
+          type: string
+          format: date-time
+          description: The formatted UTC timestamp indicating when the policy was
+            updated the last time.
+          example: null
+          readOnly: true
+        matching:
+          $ref: '#/components/schemas/BehaviorPolicyMatching'
+        onTransitions:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/BehaviorPolicyOnTransition'
+    BehaviorPolicyBehavior:
+      type: object
+      description: "The behavior referenced by the policy, that is validated by the\
+        \ policy."
+      example: null
+      properties:
+        arguments:
+          type: object
+          description: The  arguments that the referenced validator type requires.
+          example: null
+        id:
+          type: string
+          description: The unique identifier of a pre-defined behavior.
+          example: null
+    BehaviorPolicyDeserialization:
+      type: object
+      description: The deserializers used by the policy for particular message and/or
+        payload types.
+      example: null
+      properties:
+        publish:
+          $ref: '#/components/schemas/BehaviorPolicyDeserializer'
+        will:
+          $ref: '#/components/schemas/BehaviorPolicyDeserializer'
+    BehaviorPolicyDeserializer:
+      type: object
+      description: The deserializer applied to a particular message or payload type.
+      example: null
+      properties:
+        schema:
+          $ref: '#/components/schemas/SchemaReference'
+    BehaviorPolicyList:
+      type: object
+      description: A listing of behavior policies.
+      example: null
+      properties:
+        _links:
+          $ref: '#/components/schemas/PaginationCursor'
+        items:
+          type: array
+          description: List of result items that are returned by this endpoint
+          example: null
+          items:
+            $ref: '#/components/schemas/BehaviorPolicy'
+    BehaviorPolicyMatching:
+      type: object
+      description: The matching rules the policy applies.
+      example: null
+      properties:
+        clientIdRegex:
+          type: string
+          description: The regex pattern to match the client id against.
+          example: null
+    BehaviorPolicyOnEvent:
+      type: object
+      description: "One or more operations that are triggered on the event. When this\
+        \ field is empty, the transition does not trigger any operations."
+      example: null
+      properties:
+        pipeline:
+          type: array
+          example: null
+          items:
+            $ref: '#/components/schemas/PolicyOperation'
+    BehaviorPolicyOnTransition:
+      type: object
+      description: The actions that are executed for the specified transition.
+      example: null
+      properties:
+        Connection.OnDisconnect:
+          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+        Event.OnAny:
+          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+        Mqtt.OnIncomingConnect:
+          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+        Mqtt.OnIncomingDisconnect:
+          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+        Mqtt.OnIncomingPublish:
+          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+        Mqtt.OnIncomingSubscribe:
+          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+        fromState:
+          type: string
+          description: The exact state from which the transition happened. Alternatively
+            a state filter can be used.
+          example: null
+        toState:
+          type: string
+          description: The exact state to which the transition happened. Alternatively
+            a state filter can be used.
+          example: null
     CertificateInformation:
       type: object
       description: The client certificate sent by the client
@@ -2803,6 +3683,100 @@ components:
       properties:
         connection:
           $ref: '#/components/schemas/Connection'
+    DataPolicy:
+      type: object
+      description: A data policy which is used to validate and execute certain actions
+        based on the validation result.
+      example: null
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          description: The formatted UTC timestamp indicating when the policy was
+            created.
+          example: null
+          readOnly: true
+        id:
+          type: string
+          description: The unique identifier of the policy.
+          example: null
+        lastUpdatedAt:
+          type: string
+          format: date-time
+          description: The formatted UTC timestamp indicating when the policy was
+            updated the last time.
+          example: null
+          readOnly: true
+        matching:
+          $ref: '#/components/schemas/DataPolicyMatching'
+        onFailure:
+          $ref: '#/components/schemas/DataPolicyAction'
+        onSuccess:
+          $ref: '#/components/schemas/DataPolicyAction'
+        validation:
+          $ref: '#/components/schemas/DataPolicyValidation'
+    DataPolicyAction:
+      type: object
+      description: "One or more operations the outcome of the validation triggers.\
+        \  When this field is empty, the outcome of the policy validation does not\
+        \ trigger any operations."
+      example: null
+      properties:
+        pipeline:
+          type: array
+          description: "The pipeline to execute, when this action is triggered. The\
+            \ operations in the pipeline are executed in-order."
+          example: null
+          items:
+            $ref: '#/components/schemas/PolicyOperation'
+    DataPolicyList:
+      type: object
+      description: A listing of data policies.
+      example: null
+      properties:
+        _links:
+          $ref: '#/components/schemas/PaginationCursor'
+        items:
+          type: array
+          description: List of result items that are returned by this endpoint
+          example: null
+          items:
+            $ref: '#/components/schemas/DataPolicy'
+    DataPolicyMatching:
+      type: object
+      description: The matching rules the policy applies.
+      example: null
+      properties:
+        topicFilter:
+          type: string
+          description: The topic filter for which the policy is matched.
+          example: null
+    DataPolicyValidation:
+      type: object
+      description: "The section of the policy that defines how incoming MQTT messages\
+        \ are validated. If this section is empty, the result of the policy validation\
+        \ is always successful."
+      example: null
+      properties:
+        validators:
+          type: array
+          description: The validators of the policy.
+          example: null
+          items:
+            $ref: '#/components/schemas/DataPolicyValidator'
+    DataPolicyValidator:
+      type: object
+      description: A policy validator which executes the defined validation.
+      example: null
+      properties:
+        arguments:
+          type: object
+          description: The required arguments of the referenced validator type.
+          example: null
+        type:
+          type: string
+          description: The type of the validator.
+          example: null
     DiagnosticArchive:
       type: object
       example: null
@@ -2872,75 +3846,10 @@ components:
         next:
           type: string
           example: null
-    Policy:
-      type: object
-      description: A policy which is used to validate and execute certain actions
-        based on the validation result.
-      example: null
-      properties:
-        createdAt:
-          type: string
-          format: date-time
-          description: The formatted UTC timestamp indicating when the policy was
-            created.
-          example: null
-          readOnly: true
-        id:
-          type: string
-          description: The unique identifier of the policy.
-          example: null
-        matching:
-          $ref: '#/components/schemas/PolicyMatching'
-        onFailure:
-          $ref: '#/components/schemas/PolicyAction'
-        onSuccess:
-          $ref: '#/components/schemas/PolicyAction'
-        validation:
-          $ref: '#/components/schemas/PolicyValidation'
-      required:
-      - id
-      - matching
-    PolicyAction:
-      type: object
-      description: "One or more operations the outcome of the validation triggers.\
-        \  When this field is empty, the outcome of the policy validation does not\
-        \ trigger any operations."
-      example: null
-      properties:
-        pipeline:
-          type: array
-          description: "The pipeline to execute, when this action is triggered. The\
-            \ operations in the pipeline are executed in-order."
-          example: null
-          items:
-            $ref: '#/components/schemas/PolicyOperation'
-    PolicyList:
-      type: object
-      description: A listing of policies.
-      example: null
-      properties:
-        _links:
-          $ref: '#/components/schemas/PaginationCursor'
-        items:
-          type: array
-          description: List of result items that are returned by this endpoint
-          example: null
-          items:
-            $ref: '#/components/schemas/Policy'
-    PolicyMatching:
-      type: object
-      description: The matching rules the policy applies.
-      example: null
-      properties:
-        topicFilter:
-          type: string
-          description: The topic filter for which the policy is matched.
-          example: null
-      required:
-      - topicFilter
     PolicyOperation:
       type: object
-      description: A policy operation which executes a referenced function.
+      description: The pipeline to execute when this action is triggered. The operations
+        in the pipeline are executed in order.
       example: null
       properties:
         arguments:
@@ -2956,39 +3865,6 @@ components:
           type: string
           description: The unique id of the operation in the pipeline.
           example: null
-      required:
-      - arguments
-      - functionId
-      - id
-    PolicyValidation:
-      type: object
-      description: "The section of the policy that defines how incoming MQTT messages\
-        \ are validated. If this section is empty, the result of the policy validation\
-        \ is always successful."
-      example: null
-      properties:
-        validators:
-          type: array
-          description: The validators of the policy.
-          example: null
-          items:
-            $ref: '#/components/schemas/PolicyValidator'
-    PolicyValidator:
-      type: object
-      description: A policy validator which executes the defined validation.
-      example: null
-      properties:
-        arguments:
-          type: object
-          description: The required arguments of the referenced validator type.
-          example: null
-        type:
-          type: string
-          description: The type of the validator.
-          example: null
-      required:
-      - arguments
-      - type
     ProxyInformation:
       type: object
       description: Proxy Protocol information
@@ -3055,10 +3931,6 @@ components:
           description: The version of the schema.
           example: null
           readOnly: true
-      required:
-      - id
-      - schemaDefinition
-      - type
     SchemaList:
       type: object
       description: A listing of schemas.
@@ -3072,6 +3944,20 @@ components:
           example: null
           items:
             $ref: '#/components/schemas/Schema'
+    SchemaReference:
+      type: object
+      description: A schema reference is a unique identifier for a schema.
+      example: null
+      properties:
+        schemaId:
+          type: string
+          description: The identifier of the schema.
+          example: null
+        version:
+          type: string
+          description: The version of the schema. The value "latest" may be used to
+            always refer to the latest schema.
+          example: null
     TLV:
       type: object
       description: Additional TLV fields contained in the proxy protocol information
