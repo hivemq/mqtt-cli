@@ -242,6 +242,12 @@ dependencies {
     }
 }
 
+tasks.compileTestJava {
+    javaCompiler.set(javaToolchains.compilerFor {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    })
+}
+
 /* ******************** integration Tests ******************** */
 
 sourceSets.create("integrationTest") {
@@ -260,6 +266,12 @@ dependencies {
     integrationTestImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemq-testcontainer.version")}")
     integrationTestImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
     integrationTestImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
+}
+
+tasks.named<JavaCompile>("compileIntegrationTestJava") {
+    javaCompiler.set(javaToolchains.compilerFor {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    })
 }
 
 val integrationTest by tasks.registering(Test::class) {
