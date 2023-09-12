@@ -18,8 +18,8 @@ package com.hivemq.cli.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.Policy;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -35,21 +35,21 @@ import static org.mockito.Mockito.when;
 
 public class GetPolicyTaskTest {
 
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
+    private final @NotNull DataHubDataPoliciesApi policiesApi = mock(DataHubDataPoliciesApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
 
     private static final @NotNull String POLICY_ID = "policy-1";
 
     @Test
     void execute_validId_success() throws ApiException {
-        final Policy policy = new Policy();
+        final DataPolicy policy = new DataPolicy();
 
         final GetPolicyTask task = new GetPolicyTask(outputFormatter, policiesApi, POLICY_ID, null);
 
-        when(policiesApi.getPolicy(eq(POLICY_ID), isNull())).thenReturn(policy);
+        when(policiesApi.getDataPolicy(eq(POLICY_ID), isNull())).thenReturn(policy);
 
         assertTrue(task.execute());
-        verify(policiesApi, times(1)).getPolicy(eq(POLICY_ID), isNull());
+        verify(policiesApi, times(1)).getDataPolicy(eq(POLICY_ID), isNull());
         verify(outputFormatter, times(1)).printJson(policy);
     }
 
@@ -57,7 +57,7 @@ public class GetPolicyTaskTest {
     void execute_apiException_printError() throws ApiException {
         final GetPolicyTask task = new GetPolicyTask(outputFormatter, policiesApi, POLICY_ID, null);
 
-        when(policiesApi.getPolicy(any(), isNull())).thenThrow(ApiException.class);
+        when(policiesApi.getDataPolicy(any(), isNull())).thenThrow(ApiException.class);
 
         assertFalse(task.execute());
         verify(outputFormatter, times(1)).printApiException(any(), any());

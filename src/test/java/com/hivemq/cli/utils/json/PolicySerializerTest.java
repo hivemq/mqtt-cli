@@ -18,7 +18,7 @@ package com.hivemq.cli.utils.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hivemq.cli.openapi.JSON;
-import com.hivemq.cli.openapi.hivemq.Policy;
+import com.hivemq.cli.openapi.hivemq.DataPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +30,7 @@ public class PolicySerializerTest {
 
     private final @NotNull Gson gson = new GsonBuilder().disableHtmlEscaping()
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
-            .registerTypeAdapter(Policy.class, new PolicySerializer())
+            .registerTypeAdapter(DataPolicy.class, new PolicySerializer())
             .create();
     private final @NotNull JSON openapiSerialization = new JSON();
 
@@ -43,7 +43,7 @@ public class PolicySerializerTest {
                 "\"onSuccess\":{\"pipeline\":[{\"id\":\"success\",\"functionId\":\"successFunction\",\"arguments\":{\"argB\":\"valB\",\"argA\":\"valA\"}}]}," +
                 "\"onFailure\":{\"pipeline\":[{\"id\":\"failure\",\"functionId\":\"failureFunction\",\"arguments\":{\"argA\":\"valA\",\"argB\":\"valB\"}}]}}";
 
-        final Policy policy = openapiSerialization.deserialize(policyJson, Policy.class);
+        final DataPolicy policy = openapiSerialization.deserialize(policyJson, DataPolicy.class);
         final String serialized = gson.toJson(policy);
         assertEquals(policyJson, serialized);
     }
@@ -52,7 +52,7 @@ public class PolicySerializerTest {
     void serialize_minimalFields_jsonIdentical() {
         final String policyJson = "{\"id\":\"policy-id\"," + "\"createdAt\":\"2023-01-01T01:02:03.004Z\"}";
 
-        final Policy policy = openapiSerialization.deserialize(policyJson, Policy.class);
+        final DataPolicy policy = openapiSerialization.deserialize(policyJson, DataPolicy.class);
         final String serialized = gson.toJson(policy);
         assertEquals(policyJson, serialized);
     }

@@ -18,7 +18,7 @@ package com.hivemq.cli.hivemq.schemas;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
 import com.hivemq.cli.openapi.hivemq.Schema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,13 +26,13 @@ import org.jetbrains.annotations.Nullable;
 public class GetSchemaTask {
 
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull DataGovernanceHubSchemasApi schemasApi;
+    private final @NotNull DataHubSchemasApi schemasApi;
     private final @NotNull String schemaId;
     private final @Nullable String @Nullable [] fields;
 
     public GetSchemaTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull DataGovernanceHubSchemasApi schemasApi,
+            final @NotNull DataHubSchemasApi schemasApi,
             final @NotNull String schemaId,
             final @Nullable String @Nullable [] fields) {
         this.outputFormatter = outputFormatter;

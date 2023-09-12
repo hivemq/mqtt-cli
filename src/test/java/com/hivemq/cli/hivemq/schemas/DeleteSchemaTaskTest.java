@@ -18,7 +18,7 @@ package com.hivemq.cli.hivemq.schemas;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 
 public class DeleteSchemaTaskTest {
 
-    private final @NotNull DataGovernanceHubSchemasApi schemasApi = mock(DataGovernanceHubSchemasApi.class);
+    private final @NotNull DataHubSchemasApi schemasApi = mock(DataHubSchemasApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
 
     private static final @NotNull String SCHEMA_ID = "schema-1";

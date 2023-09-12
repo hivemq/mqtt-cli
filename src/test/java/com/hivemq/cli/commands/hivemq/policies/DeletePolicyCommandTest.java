@@ -18,7 +18,7 @@ package com.hivemq.cli.commands.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class DeletePolicyCommandTest {
 
     private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
+    private final @NotNull DataHubDataPoliciesApi policiesApi = mock(DataHubDataPoliciesApi.class);
 
     private final @NotNull CommandLine commandLine =
             new CommandLine(new DeletePolicyCommand(hiveMQRestService, outputFormatter));
@@ -70,12 +70,12 @@ public class DeletePolicyCommandTest {
     @Test
     void call_taskSuccessful_return0() throws ApiException {
         assertEquals(0, commandLine.execute("--id=policy-1"));
-        verify(policiesApi).deletePolicy(eq("policy-1"));
+        verify(policiesApi).deleteDataPolicy(eq("policy-1"));
     }
 
     @Test
     void call_taskFailed_return1() throws ApiException {
-        doThrow(ApiException.class).when(policiesApi).deletePolicy(any());
+        doThrow(ApiException.class).when(policiesApi).deleteDataPolicy(any());
         assertEquals(1, commandLine.execute("--id=policy-1"));
     }
 }

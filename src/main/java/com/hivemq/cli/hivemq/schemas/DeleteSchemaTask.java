@@ -18,17 +18,17 @@ package com.hivemq.cli.hivemq.schemas;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
 import org.jetbrains.annotations.NotNull;
 
 public class DeleteSchemaTask {
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull DataGovernanceHubSchemasApi schemasApi;
+    private final @NotNull DataHubSchemasApi schemasApi;
     private final @NotNull String schemaId;
 
     public DeleteSchemaTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull DataGovernanceHubSchemasApi schemasApi,
+            final @NotNull DataHubSchemasApi schemasApi,
             final @NotNull String schemaId) {
         this.outputFormatter = outputFormatter;
         this.schemasApi = schemasApi;
