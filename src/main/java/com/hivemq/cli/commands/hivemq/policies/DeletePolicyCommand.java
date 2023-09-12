@@ -20,7 +20,7 @@ import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.hivemq.policies.DeletePolicyTask;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -60,7 +60,7 @@ public class DeletePolicyCommand implements Callable<Integer> {
     public @NotNull Integer call() {
         Logger.trace("Command {}", this);
 
-        final DataGovernanceHubPoliciesApi policiesApi =
+        final DataHubDataPoliciesApi policiesApi =
                 hiveMQRestService.getPoliciesApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
         if (policyId.isEmpty()) {

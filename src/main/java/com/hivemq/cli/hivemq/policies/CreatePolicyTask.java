@@ -20,19 +20,19 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.Policy;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataPolicy;
 import org.jetbrains.annotations.NotNull;
 
 public class CreatePolicyTask {
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi;
+    private final @NotNull DataHubDataPoliciesApi policiesApi;
     private final @NotNull Gson gson;
     private final @NotNull String definition;
 
     public CreatePolicyTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull DataGovernanceHubPoliciesApi policiesApi,
+            final @NotNull DataHubDataPoliciesApi policiesApi,
             final @NotNull Gson gson,
             final @NotNull String definition) {
         this.outputFormatter = outputFormatter;
@@ -42,16 +42,16 @@ public class CreatePolicyTask {
     }
 
     public boolean execute() {
-        final Policy policy;
+        final DataPolicy policy;
         try {
-            policy = gson.fromJson(definition, Policy.class);
+            policy = gson.fromJson(definition, DataPolicy.class);
         } catch (final JsonSyntaxException jsonSyntaxException) {
             outputFormatter.printError("Could not parse policy JSON: " + jsonSyntaxException.getMessage());
             return false;
         }
 
         try {
-            policiesApi.createPolicy(policy);
+            policiesApi.createDataPolicy(policy);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to create policy", apiException);
             return false;

@@ -18,7 +18,7 @@ package com.hivemq.cli.hivemq.schemas;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
 import com.hivemq.cli.openapi.hivemq.Schema;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 
 public class GetSchemaTaskTest {
 
-    private final @NotNull DataGovernanceHubSchemasApi schemasApi = mock(DataGovernanceHubSchemasApi.class);
+    private final @NotNull DataHubSchemasApi schemasApi = mock(DataHubSchemasApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
 
     @Test

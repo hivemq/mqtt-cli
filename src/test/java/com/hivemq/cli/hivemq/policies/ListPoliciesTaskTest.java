@@ -18,10 +18,10 @@ package com.hivemq.cli.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataPolicy;
+import com.hivemq.cli.openapi.hivemq.DataPolicyList;
 import com.hivemq.cli.openapi.hivemq.PaginationCursor;
-import com.hivemq.cli.openapi.hivemq.Policy;
-import com.hivemq.cli.openapi.hivemq.PolicyList;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 public class ListPoliciesTaskTest {
 
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
+    private final @NotNull DataHubDataPoliciesApi policiesApi = mock(DataHubDataPoliciesApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
 
     @Test
@@ -51,11 +51,11 @@ public class ListPoliciesTaskTest {
         final ListPoliciesTask task =
                 new ListPoliciesTask(outputFormatter, policiesApi, null, policyIds, null, null, null);
 
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new PolicyList());
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new DataPolicyList());
 
         assertTrue(task.execute());
         final String policyIdsQueryParam = "policy-1,policy-2,policy-3";
-        verify(policiesApi, times(1)).getAllPolicies(isNull(),
+        verify(policiesApi, times(1)).getAllDataPolicies(isNull(),
                 eq(policyIdsQueryParam),
                 isNull(),
                 isNull(),
@@ -69,11 +69,11 @@ public class ListPoliciesTaskTest {
         final ListPoliciesTask task =
                 new ListPoliciesTask(outputFormatter, policiesApi, null, null, schemaIds, null, null);
 
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new PolicyList());
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new DataPolicyList());
 
         assertTrue(task.execute());
         final String schemaIdsQueryParam = "schema-1,schema-2,schema-3";
-        verify(policiesApi, times(1)).getAllPolicies(isNull(),
+        verify(policiesApi, times(1)).getAllDataPolicies(isNull(),
                 isNull(),
                 eq(schemaIdsQueryParam),
                 isNull(),
@@ -86,10 +86,10 @@ public class ListPoliciesTaskTest {
         final ListPoliciesTask task =
                 new ListPoliciesTask(outputFormatter, policiesApi, "topic-1", null, null, null, null);
 
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new PolicyList());
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new DataPolicyList());
 
         assertTrue(task.execute());
-        verify(policiesApi, times(1)).getAllPolicies(isNull(), isNull(), isNull(), eq("topic-1"), any(), any());
+        verify(policiesApi, times(1)).getAllDataPolicies(isNull(), isNull(), isNull(), eq("topic-1"), any(), any());
     }
 
     @Test
@@ -98,40 +98,40 @@ public class ListPoliciesTaskTest {
         final ListPoliciesTask task =
                 new ListPoliciesTask(outputFormatter, policiesApi, null, null, null, fields, null);
 
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new PolicyList());
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), any())).thenReturn(new DataPolicyList());
 
         assertTrue(task.execute());
         final String fieldsQueryParam = "id,version,createdAt";
-        verify(policiesApi, times(1)).getAllPolicies(eq(fieldsQueryParam), isNull(), isNull(), isNull(), any(), any());
+        verify(policiesApi, times(1)).getAllDataPolicies(eq(fieldsQueryParam), isNull(), isNull(), isNull(), any(), any());
     }
 
     @Test
     void execute_cursorReturned_allPagesFetched() throws ApiException {
         final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, null, null, null, null);
 
-        final Policy policy1 = new Policy().id("policy-1");
-        final Policy policy2 = new Policy().id("policy-2");
-        final Policy policy3 = new Policy().id("policy-3");
-        final Policy policy4 = new Policy().id("policy-4");
+        final DataPolicy policy1 = new DataPolicy().id("policy-1");
+        final DataPolicy policy2 = new DataPolicy().id("policy-2");
+        final DataPolicy policy3 = new DataPolicy().id("policy-3");
+        final DataPolicy policy4 = new DataPolicy().id("policy-4");
 
         final String cursorPrefix = "/api/v1/data-validation/policies?cursor=";
-        final PolicyList page1 = new PolicyList().items(Collections.singletonList(policy1))
+        final DataPolicyList page1 = new DataPolicyList().items(Collections.singletonList(policy1))
                 .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
-        final PolicyList page2 = new PolicyList().items(Arrays.asList(policy2, policy3))
+        final DataPolicyList page2 = new DataPolicyList().items(Arrays.asList(policy2, policy3))
                 .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
-        final PolicyList page3 = new PolicyList().items(Collections.singletonList(policy4));
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), isNull())).thenReturn(page1);
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), eq("cursor-2"))).thenReturn(page3);
+        final DataPolicyList page3 = new DataPolicyList().items(Collections.singletonList(policy4));
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), isNull())).thenReturn(page1);
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), eq("cursor-2"))).thenReturn(page3);
 
         assertTrue(task.execute());
 
-        verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), isNull());
-        verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-1"));
-        verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-2"));
-        verify(policiesApi, times(3)).getAllPolicies(any(), any(), any(), any(), any(), any());
+        verify(policiesApi).getAllDataPolicies(isNull(), isNull(), isNull(), isNull(), any(), isNull());
+        verify(policiesApi).getAllDataPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-1"));
+        verify(policiesApi).getAllDataPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-2"));
+        verify(policiesApi, times(3)).getAllDataPolicies(any(), any(), any(), any(), any(), any());
 
-        final ArgumentCaptor<PolicyList> outputCaptor = ArgumentCaptor.forClass(PolicyList.class);
+        final ArgumentCaptor<DataPolicyList> outputCaptor = ArgumentCaptor.forClass(DataPolicyList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
         assertEquals(Arrays.asList(policy1, policy2, policy3, policy4), outputCaptor.getValue().getItems());
     }
@@ -140,26 +140,26 @@ public class ListPoliciesTaskTest {
     void execute_cursorReturnedLimitSpecified_limitNotExceeded() throws ApiException {
         final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, null, null, null, 3);
 
-        final Policy policy1 = new Policy().id("policy-1");
-        final Policy policy2 = new Policy().id("policy-2");
-        final Policy policy3 = new Policy().id("policy-3");
-        final Policy policy4 = new Policy().id("policy-4");
+        final DataPolicy policy1 = new DataPolicy().id("policy-1");
+        final DataPolicy policy2 = new DataPolicy().id("policy-2");
+        final DataPolicy policy3 = new DataPolicy().id("policy-3");
+        final DataPolicy policy4 = new DataPolicy().id("policy-4");
 
         final String cursorPrefix = "/api/v1/data-validation/schemas?cursor=";
-        final PolicyList page1 = new PolicyList().items(Arrays.asList(policy1, policy2))
+        final DataPolicyList page1 = new DataPolicyList().items(Arrays.asList(policy1, policy2))
                 .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
-        final PolicyList page2 = new PolicyList().items(Arrays.asList(policy3, policy4))
+        final DataPolicyList page2 = new DataPolicyList().items(Arrays.asList(policy3, policy4))
                 .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), isNull())).thenReturn(page1);
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), isNull())).thenReturn(page1);
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
 
         assertTrue(task.execute());
 
-        verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), isNull());
-        verify(policiesApi).getAllPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-1"));
-        verify(policiesApi, times(2)).getAllPolicies(any(), any(), any(), any(), any(), any());
+        verify(policiesApi).getAllDataPolicies(isNull(), isNull(), isNull(), isNull(), any(), isNull());
+        verify(policiesApi).getAllDataPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-1"));
+        verify(policiesApi, times(2)).getAllDataPolicies(any(), any(), any(), any(), any(), any());
 
-        final ArgumentCaptor<PolicyList> outputCaptor = ArgumentCaptor.forClass(PolicyList.class);
+        final ArgumentCaptor<DataPolicyList> outputCaptor = ArgumentCaptor.forClass(DataPolicyList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
         assertEquals(Arrays.asList(policy1, policy2, policy3), outputCaptor.getValue().getItems());
     }
@@ -168,7 +168,7 @@ public class ListPoliciesTaskTest {
     void execute_apiException_printError() throws ApiException {
         final ListPoliciesTask task = new ListPoliciesTask(outputFormatter, policiesApi, null, null, null, null, null);
 
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenThrow(ApiException.class);
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), any())).thenThrow(ApiException.class);
 
         assertFalse(task.execute());
         verify(outputFormatter, times(1)).printApiException(any(), any());

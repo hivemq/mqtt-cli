@@ -18,7 +18,7 @@ package com.hivemq.cli.commands.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class GetPolicyCommandTest {
 
     private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
+    private final @NotNull DataHubDataPoliciesApi policiesApi = mock(DataHubDataPoliciesApi.class);
 
     private final @NotNull CommandLine commandLine =
             new CommandLine(new GetPolicyCommand(hiveMQRestService, outputFormatter));
@@ -70,18 +70,18 @@ public class GetPolicyCommandTest {
     @Test
     void call_multipleFields_success() throws ApiException {
         assertEquals(0, commandLine.execute("--field=id", "--field=createdAt", "--id=policy-1"));
-        verify(policiesApi).getPolicy(eq("policy-1"), eq("id,createdAt"));
+        verify(policiesApi).getDataPolicy(eq("policy-1"), eq("id,createdAt"));
     }
 
     @Test
     void call_taskSuccessful_return0() throws ApiException {
         assertEquals(0, commandLine.execute("--id=policy-1"));
-        verify(policiesApi).getPolicy(eq("policy-1"), isNull());
+        verify(policiesApi).getDataPolicy(eq("policy-1"), isNull());
     }
 
     @Test
     void call_taskFailed_return1() throws ApiException {
-        when(policiesApi.getPolicy(any(), isNull())).thenThrow(ApiException.class);
+        when(policiesApi.getDataPolicy(any(), isNull())).thenThrow(ApiException.class);
         assertEquals(1, commandLine.execute("--id=policy-1"));
     }
 }
