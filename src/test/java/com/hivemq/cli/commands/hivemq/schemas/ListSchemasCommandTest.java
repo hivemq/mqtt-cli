@@ -18,7 +18,7 @@ package com.hivemq.cli.commands.hivemq.schemas;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
 import com.hivemq.cli.openapi.hivemq.SchemaList;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
@@ -41,7 +41,7 @@ public class ListSchemasCommandTest {
 
     private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
-    private final @NotNull DataGovernanceHubSchemasApi schemasApi = mock(DataGovernanceHubSchemasApi.class);
+    private final @NotNull DataHubSchemasApi schemasApi = mock(DataHubSchemasApi.class);
 
     private final @NotNull CommandLine commandLine =
             new CommandLine(new ListSchemasCommand(hiveMQRestService, outputFormatter));

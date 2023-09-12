@@ -18,20 +18,20 @@ package com.hivemq.cli.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.Policy;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class GetPolicyTask {
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi;
+    private final @NotNull DataHubDataPoliciesApi policiesApi;
     private final @NotNull String policyId;
     private final @Nullable String @Nullable [] fields;
 
     public GetPolicyTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull DataGovernanceHubPoliciesApi policiesApi,
+            final @NotNull DataHubDataPoliciesApi policiesApi,
             final @NotNull String policyId,
             final @Nullable String @Nullable [] fields) {
         this.outputFormatter = outputFormatter;
@@ -48,9 +48,9 @@ public class GetPolicyTask {
             fieldsQueryParam = String.join(",", fields);
         }
 
-        final Policy policy;
+        final DataPolicy policy;
         try {
-            policy = policiesApi.getPolicy(policyId, fieldsQueryParam);
+            policy = policiesApi.getDataPolicy(policyId, fieldsQueryParam);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to get policy", apiException);
             return false;

@@ -20,7 +20,7 @@ import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datagovernance.DataGovernanceOptions;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.hivemq.schemas.DeleteSchemaTask;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubSchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -60,7 +60,7 @@ public class DeleteSchemaCommand implements Callable<Integer> {
     public @NotNull Integer call() {
         Logger.trace("Command {}", this);
 
-        final DataGovernanceHubSchemasApi schemasApi =
+        final DataHubSchemasApi schemasApi =
                 hiveMQRestService.getSchemasApi(dataGovernanceOptions.getUrl(), dataGovernanceOptions.getRateLimit());
 
         if (schemaId.isEmpty()) {

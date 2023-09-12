@@ -19,7 +19,7 @@ package com.hivemq.cli.commands.hivemq.policies;
 import com.google.gson.Gson;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +44,7 @@ public class UpdatePolicyCommandTest {
     private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
     private final @NotNull Gson gson = new Gson();
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
+    private final @NotNull DataHubDataPoliciesApi policiesApi = mock(DataHubDataPoliciesApi.class);
 
     private final @NotNull CommandLine commandLine =
             new CommandLine(new UpdatePolicyCommand(hiveMQRestService, outputFormatter, gson));
@@ -105,12 +105,12 @@ public class UpdatePolicyCommandTest {
     @Test
     void call_taskSuccessful_return0() throws ApiException {
         assertEquals(0, commandLine.execute("--id=policy-1", "--definition=" + POLICY_JSON));
-        verify(policiesApi).updatePolicy(eq("policy-1"), any());
+        verify(policiesApi).updateDataPolicy(eq("policy-1"), any());
     }
 
     @Test
     void call_taskFailed_return1() throws ApiException {
-        when(policiesApi.updatePolicy(eq("policy-1"), any())).thenThrow(ApiException.class);
+        when(policiesApi.updateDataPolicy(eq("policy-1"), any())).thenThrow(ApiException.class);
         assertEquals(1, commandLine.execute("--id=policy-1", "--definition=" + POLICY_JSON));
     }
 }

@@ -18,10 +18,10 @@ package com.hivemq.cli.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataPolicy;
+import com.hivemq.cli.openapi.hivemq.DataPolicyList;
 import com.hivemq.cli.openapi.hivemq.PaginationCursor;
-import com.hivemq.cli.openapi.hivemq.Policy;
-import com.hivemq.cli.openapi.hivemq.PolicyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +36,7 @@ public class ListPoliciesTask {
     private static final @NotNull Pattern CURSOR_PATTERN = Pattern.compile("cursor=([^&]*)");
 
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi;
+    private final @NotNull DataHubDataPoliciesApi policiesApi;
     private final @Nullable String topic;
     private final @Nullable String @Nullable [] policyIds;
     private final @Nullable String @Nullable [] schemaIds;
@@ -45,7 +45,7 @@ public class ListPoliciesTask {
 
     public ListPoliciesTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull DataGovernanceHubPoliciesApi policiesApi,
+            final @NotNull DataHubDataPoliciesApi policiesApi,
             final @Nullable String topic,
             final @Nullable String @Nullable [] policyIds,
             final @Nullable String @Nullable [] schemaIds,
@@ -82,18 +82,18 @@ public class ListPoliciesTask {
             schemaIdsQueryParam = String.join(",", schemaIds);
         }
 
-        List<Policy> allPolicies = new ArrayList<>();
+        List<DataPolicy> allPolicies = new ArrayList<>();
 
         try {
             String nextCursor = null;
             do {
-                final PolicyList policyList = policiesApi.getAllPolicies(fieldsQueryParam,
+                final DataPolicyList policyList = policiesApi.getAllDataPolicies(fieldsQueryParam,
                         policyIdsQueryParam,
                         schemaIdsQueryParam,
                         topic,
                         50,
                         nextCursor);
-                final List<Policy> policies = policyList.getItems();
+                final List<DataPolicy> policies = policyList.getItems();
                 final PaginationCursor links = policyList.getLinks();
 
                 if (policies != null) {
@@ -121,7 +121,7 @@ public class ListPoliciesTask {
             return false;
         }
 
-        final PolicyList policyList = new PolicyList().items(allPolicies);
+        final DataPolicyList policyList = new DataPolicyList().items(allPolicies);
         outputFormatter.printJson(policyList);
 
         return true;

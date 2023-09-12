@@ -19,8 +19,8 @@ package com.hivemq.cli.hivemq.policies;
 import com.google.gson.Gson;
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.Policy;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,9 +36,9 @@ import static org.mockito.Mockito.when;
 
 public class CreatePolicyTaskTest {
 
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
+    private final @NotNull DataHubDataPoliciesApi policiesApi = mock(DataHubDataPoliciesApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
-    private final @NotNull ArgumentCaptor<Policy> policyCaptor = ArgumentCaptor.forClass(Policy.class);
+    private final @NotNull ArgumentCaptor<DataPolicy> policyCaptor = ArgumentCaptor.forClass(DataPolicy.class);
     private final @NotNull Gson gson = new Gson();
 
     private static final @NotNull String POLICY_ID = "policy-1";
@@ -46,15 +46,15 @@ public class CreatePolicyTaskTest {
             "{ \"id\": \"" + POLICY_ID + "\", \"matching\": { \"topicFilter\": \"a/#\" } }";
 
     @Test
-    void execute_validPolicy_success() throws ApiException {
-        final Policy policy = gson.fromJson(POLICY_JSON, Policy.class);
+    void execute_validDataPolicy_success() throws ApiException {
+        final DataPolicy policy = gson.fromJson(POLICY_JSON, DataPolicy.class);
 
         final CreatePolicyTask task = new CreatePolicyTask(outputFormatter, policiesApi, gson, POLICY_JSON);
 
-        when(policiesApi.createPolicy(policyCaptor.capture())).thenReturn(policy);
+        when(policiesApi.createDataPolicy(policyCaptor.capture())).thenReturn(policy);
 
         assertTrue(task.execute());
-        verify(policiesApi, times(1)).createPolicy(policy);
+        verify(policiesApi, times(1)).createDataPolicy(policy);
         verify(outputFormatter, times(0)).printJson(any());
         assertEquals(policy, policyCaptor.getValue());
     }
@@ -65,18 +65,18 @@ public class CreatePolicyTaskTest {
 
         assertFalse(task.execute());
         verify(outputFormatter, times(1)).printError(any());
-        verify(policiesApi, times(0)).createPolicy(any());
+        verify(policiesApi, times(0)).createDataPolicy(any());
     }
 
     @Test
     void execute_apiException_printError() throws ApiException {
         final CreatePolicyTask task = new CreatePolicyTask(outputFormatter, policiesApi, gson, POLICY_JSON);
 
-        when(policiesApi.createPolicy(any())).thenThrow(ApiException.class);
+        when(policiesApi.createDataPolicy(any())).thenThrow(ApiException.class);
 
         assertFalse(task.execute());
         verify(outputFormatter, times(1)).printApiException(any(), any());
-        verify(policiesApi, times(1)).createPolicy(any());
+        verify(policiesApi, times(1)).createDataPolicy(any());
     }
 
 }

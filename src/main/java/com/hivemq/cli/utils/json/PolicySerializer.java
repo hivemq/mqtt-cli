@@ -21,11 +21,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.hivemq.cli.openapi.hivemq.Policy;
-import com.hivemq.cli.openapi.hivemq.PolicyAction;
+import com.hivemq.cli.openapi.hivemq.DataPolicy;
+import com.hivemq.cli.openapi.hivemq.DataPolicyAction;
+import com.hivemq.cli.openapi.hivemq.DataPolicyValidation;
+import com.hivemq.cli.openapi.hivemq.DataPolicyValidator;
 import com.hivemq.cli.openapi.hivemq.PolicyOperation;
-import com.hivemq.cli.openapi.hivemq.PolicyValidation;
-import com.hivemq.cli.openapi.hivemq.PolicyValidator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,27 +35,27 @@ import java.lang.reflect.Type;
  * The generated OpenAPI classes do not preserve JSON field ordering.
  * This serializer manually restores the correct order.
  */
-public class PolicySerializer implements JsonSerializer<Policy> {
+public class PolicySerializer implements JsonSerializer<DataPolicy> {
 
     @Override
     public @NotNull JsonElement serialize(
-            final @NotNull Policy policy,
+            final @NotNull DataPolicy policy,
             final @NotNull Type typeOfSrc,
             final @NotNull JsonSerializationContext context) {
 
         final JsonObject object = new JsonObject();
-        object.add(Policy.SERIALIZED_NAME_ID, context.serialize(policy.getId()));
-        object.add(Policy.SERIALIZED_NAME_CREATED_AT, context.serialize(policy.getCreatedAt()));
-        object.add(Policy.SERIALIZED_NAME_MATCHING, context.serialize(policy.getMatching()));
-        object.add(Policy.SERIALIZED_NAME_VALIDATION, serializeValidation(policy.getValidation(), context));
-        object.add(Policy.SERIALIZED_NAME_ON_SUCCESS, serializePolicyAction(policy.getOnSuccess(), context));
-        object.add(Policy.SERIALIZED_NAME_ON_FAILURE, serializePolicyAction(policy.getOnFailure(), context));
+        object.add(DataPolicy.SERIALIZED_NAME_ID, context.serialize(policy.getId()));
+        object.add(DataPolicy.SERIALIZED_NAME_CREATED_AT, context.serialize(policy.getCreatedAt()));
+        object.add(DataPolicy.SERIALIZED_NAME_MATCHING, context.serialize(policy.getMatching()));
+        object.add(DataPolicy.SERIALIZED_NAME_VALIDATION, serializeValidation(policy.getValidation(), context));
+        object.add(DataPolicy.SERIALIZED_NAME_ON_SUCCESS, serializePolicyAction(policy.getOnSuccess(), context));
+        object.add(DataPolicy.SERIALIZED_NAME_ON_FAILURE, serializePolicyAction(policy.getOnFailure(), context));
 
         return object;
     }
 
     private @Nullable JsonElement serializeValidation(
-            final @Nullable PolicyValidation policyValidation, final @NotNull JsonSerializationContext context) {
+            final @Nullable DataPolicyValidation policyValidation, final @NotNull JsonSerializationContext context) {
         if (policyValidation == null) {
             return null;
         }
@@ -68,19 +68,19 @@ public class PolicySerializer implements JsonSerializer<Policy> {
 
         final JsonArray validatorsArray = new JsonArray();
 
-        for (final PolicyValidator validator : policyValidation.getValidators()) {
+        for (final DataPolicyValidator validator : policyValidation.getValidators()) {
             final JsonObject validatorObject = new JsonObject();
-            validatorObject.add(PolicyValidator.SERIALIZED_NAME_TYPE, context.serialize(validator.getType()));
-            validatorObject.add(PolicyValidator.SERIALIZED_NAME_ARGUMENTS, context.serialize(validator.getArguments()));
+            validatorObject.add(DataPolicyValidator.SERIALIZED_NAME_TYPE, context.serialize(validator.getType()));
+            validatorObject.add(DataPolicyValidator.SERIALIZED_NAME_ARGUMENTS, context.serialize(validator.getArguments()));
             validatorsArray.add(validatorObject);
         }
 
-        object.add(PolicyValidation.SERIALIZED_NAME_VALIDATORS, context.serialize(validatorsArray));
+        object.add(DataPolicyValidation.SERIALIZED_NAME_VALIDATORS, context.serialize(validatorsArray));
         return object;
     }
 
     private @Nullable JsonElement serializePolicyAction(
-            final @Nullable PolicyAction policyAction, final @NotNull JsonSerializationContext context) {
+            final @Nullable DataPolicyAction policyAction, final @NotNull JsonSerializationContext context) {
         if (policyAction == null) {
             return null;
         }
@@ -102,7 +102,7 @@ public class PolicySerializer implements JsonSerializer<Policy> {
             operationsArray.add(operationObject);
         }
 
-        object.add(PolicyAction.SERIALIZED_NAME_PIPELINE, context.serialize(operationsArray));
+        object.add(DataPolicyAction.SERIALIZED_NAME_PIPELINE, context.serialize(operationsArray));
         return object;
     }
 

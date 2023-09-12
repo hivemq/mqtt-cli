@@ -18,8 +18,8 @@ package com.hivemq.cli.commands.hivemq.policies;
 
 import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataGovernanceHubPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.PolicyList;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataPolicyList;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,7 @@ public class ListPoliciesCommandTest {
 
     private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
     private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
-    private final @NotNull DataGovernanceHubPoliciesApi policiesApi = mock(DataGovernanceHubPoliciesApi.class);
+    private final @NotNull DataHubDataPoliciesApi policiesApi = mock(DataHubDataPoliciesApi.class);
 
     private final @NotNull CommandLine commandLine =
             new CommandLine(new ListPoliciesCommand(hiveMQRestService, outputFormatter));
@@ -50,8 +50,8 @@ public class ListPoliciesCommandTest {
     void setUp() throws ApiException {
         TestLoggerUtils.resetLogger();
         when(hiveMQRestService.getPoliciesApi(any(), anyDouble())).thenReturn(policiesApi);
-        final PolicyList policyList = new PolicyList();
-        when(policiesApi.getAllPolicies(any(), any(), any(), any(), any(), any())).thenReturn(policyList);
+        final DataPolicyList policyList = new DataPolicyList();
+        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), any())).thenReturn(policyList);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ListPoliciesCommandTest {
     @Test
     void call_topicAndMultiplePolicyIdsAndSchemaIds_success() throws ApiException {
         assertEquals(0, commandLine.execute("--topic=t", "--id=p1", "--id=p2", "--schema-id=s1", "--schema-id=s2"));
-        verify(policiesApi).getAllPolicies(isNull(), eq("p1,p2"), eq("s1,s2"), eq("t"), any(), any());
+        verify(policiesApi).getAllDataPolicies(isNull(), eq("p1,p2"), eq("s1,s2"), eq("t"), any(), any());
     }
 
     @Test
@@ -90,12 +90,12 @@ public class ListPoliciesCommandTest {
     @Test
     void call_multipleFields_success() throws ApiException {
         assertEquals(0, commandLine.execute("--field=id", "--field=version"));
-        verify(policiesApi).getAllPolicies(eq("id,version"), isNull(), isNull(), isNull(), any(), any());
+        verify(policiesApi).getAllDataPolicies(eq("id,version"), isNull(), isNull(), isNull(), any(), any());
     }
 
     @Test
     void call_taskFailed_return1() throws ApiException {
-        doThrow(ApiException.class).when(policiesApi).getAllPolicies(any(), any(), any(), any(), any(), any());
+        doThrow(ApiException.class).when(policiesApi).getAllDataPolicies(any(), any(), any(), any(), any(), any());
         assertEquals(1, commandLine.execute());
     }
 }
