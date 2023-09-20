@@ -39,6 +39,19 @@ public class ShellPublishLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_shell_publish_mqtt3_qos0_logging() throws Exception {
+        mqttCliShell.connectClient(hivemq, '3');
+        final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "0");
+        mqttCliShell.executeAsync(publishCommand)
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitLog("sending PUBLISH")
+                .awaitLog("MqttPublish")
+                .awaitLog("finish PUBLISH")
+                .awaitLog("MqttPublish");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_shell_publish_mqtt5_qos0_logging() throws Exception {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "0");
@@ -67,6 +80,24 @@ public class ShellPublishLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_shell_publish_mqtt5_qos1_logging_not_authorized() throws IOException {
+        hivemq.setAuthorized(false);
+
+        mqttCliShell.connectClient(hivemq, '5');
+        final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "1");
+        mqttCliShell.executeAsync(publishCommand)
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitLog("sending PUBLISH")
+                .awaitLog("MqttPublish")
+                .awaitLog("received PUBACK")
+                .awaitLog("MqttPubAck")
+                .awaitLog("CLI_DENY")
+                .awaitStdErr("failed PUBLISH")
+                .awaitStdErr("Unable to publish");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_shell_publish_mqtt5_qos2_logging() throws IOException {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "2");
@@ -82,5 +113,23 @@ public class ShellPublishLoggingST {
                 .awaitLog("MqttPubComp")
                 .awaitLog("finish PUBLISH")
                 .awaitLog("MqttQos2Result");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_shell_publish_mqtt5_qos2_logging_not_authorized() throws IOException {
+        hivemq.setAuthorized(false);
+
+        mqttCliShell.connectClient(hivemq, '5');
+        final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "2");
+        mqttCliShell.executeAsync(publishCommand)
+                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitLog("sending PUBLISH")
+                .awaitLog("MqttPublish")
+                .awaitLog("received PUBREC")
+                .awaitLog("MqttPubRec")
+                .awaitLog("CLI_DENY")
+                .awaitStdErr("failed PUBLISH")
+                .awaitStdErr("Unable to publish");
     }
 }

@@ -44,6 +44,80 @@ public class SubscribeLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_with_message_mqtt3_qos0_logging() throws IOException {
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "3",
+                "-q",
+                "0",
+                "-t",
+                "test",
+                "-d");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        executionResult.awaitStdOut("sending CONNECT");
+        executionResult.awaitStdOut("MqttConnect");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("MqttConnAck");
+        executionResult.awaitStdOut("sending SUBSCRIBE");
+        executionResult.awaitStdOut("MqttSubscribe");
+        executionResult.awaitStdOut("received SUBACK");
+        executionResult.awaitStdOut("MqttSubAck");
+
+        final Mqtt5BlockingClient publisher = MqttClient.builder()
+                .serverHost(hivemq.getHost())
+                .serverPort(hivemq.getMqttPort())
+                .useMqttVersion5()
+                .buildBlocking();
+        publisher.connect();
+        publisher.publishWith()
+                .topic("test")
+                .qos(MqttQos.AT_MOST_ONCE)
+                .payload("message".getBytes(StandardCharsets.UTF_8))
+                .send();
+
+        executionResult.awaitStdOut("received PUBLISH");
+        executionResult.awaitStdOut("MqttPublish");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_mqtt3_qos0_logging_not_authorized() throws IOException {
+        hivemq.setAuthorized(false);
+
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "3",
+                "-q",
+                "0",
+                "-t",
+                "test",
+                "-d");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        executionResult.awaitStdOut("sending CONNECT");
+        executionResult.awaitStdOut("MqttConnect");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("MqttConnAck");
+        executionResult.awaitStdOut("sending SUBSCRIBE");
+        executionResult.awaitStdOut("MqttSubscribe");
+        executionResult.awaitStdOut("received SUBACK");
+        executionResult.awaitStdOut("MqttSubAck");
+        executionResult.awaitStdOut("FAILURE");
+        executionResult.awaitStdErr("failed SUBSCRIBE");
+        executionResult.awaitStdErr("Unable to subscribe");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_subscribe_with_message_mqtt5_qos0_logging() throws IOException {
         final List<String> subscribeCommand = List.of("sub",
                 "-h",
@@ -82,6 +156,113 @@ public class SubscribeLoggingST {
 
         executionResult.awaitStdOut("received PUBLISH");
         executionResult.awaitStdOut("MqttPublish");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_mqtt5_qos0_logging_not_authorized() throws IOException {
+        hivemq.setAuthorized(false);
+
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "5",
+                "-q",
+                "0",
+                "-t",
+                "test",
+                "-d");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        executionResult.awaitStdOut("sending CONNECT");
+        executionResult.awaitStdOut("MqttConnect");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("MqttConnAck");
+        executionResult.awaitStdOut("sending SUBSCRIBE");
+        executionResult.awaitStdOut("MqttSubscribe");
+        executionResult.awaitStdOut("received SUBACK");
+        executionResult.awaitStdOut("MqttSubAck");
+        executionResult.awaitStdOut("CLI_DENY");
+        executionResult.awaitStdErr("failed SUBSCRIBE");
+        executionResult.awaitStdErr("Unable to subscribe");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_with_message_mqtt3_qos1_logging() throws IOException {
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "3",
+                "-q",
+                "1",
+                "-t",
+                "test",
+                "-d");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        executionResult.awaitStdOut("sending CONNECT");
+        executionResult.awaitStdOut("MqttConnect");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("MqttConnAck");
+        executionResult.awaitStdOut("sending SUBSCRIBE");
+        executionResult.awaitStdOut("MqttSubscribe");
+        executionResult.awaitStdOut("received SUBACK");
+        executionResult.awaitStdOut("MqttSubAck");
+
+        final Mqtt5BlockingClient publisher = MqttClient.builder()
+                .serverHost(hivemq.getHost())
+                .serverPort(hivemq.getMqttPort())
+                .useMqttVersion5()
+                .buildBlocking();
+        publisher.connect();
+        publisher.publishWith()
+                .topic("test")
+                .qos(MqttQos.EXACTLY_ONCE)
+                .payload("message".getBytes(StandardCharsets.UTF_8))
+                .send();
+
+        executionResult.awaitStdOut("received PUBLISH");
+        executionResult.awaitStdOut("MqttPublish");
+        //Cannot verify PUBACK as the MQTT-Client does not support MQTT3 interceptors
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_mqtt3_qos1_logging_not_authorized() throws IOException {
+        hivemq.setAuthorized(false);
+
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "3",
+                "-q",
+                "1",
+                "-t",
+                "test",
+                "-d");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        executionResult.awaitStdOut("sending CONNECT");
+        executionResult.awaitStdOut("MqttConnect");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("MqttConnAck");
+        executionResult.awaitStdOut("sending SUBSCRIBE");
+        executionResult.awaitStdOut("MqttSubscribe");
+        executionResult.awaitStdOut("received SUBACK");
+        executionResult.awaitStdOut("MqttSubAck");
+        executionResult.awaitStdOut("FAILURE");
+        executionResult.awaitStdErr("failed SUBSCRIBE");
+        executionResult.awaitStdErr("Unable to subscribe");
     }
 
     @Test
@@ -130,7 +311,114 @@ public class SubscribeLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
-    void test_subscribe_mqtt5_qos2_logging() throws IOException {
+    void test_subscribe_mqtt5_qos1_logging_not_authorized() throws IOException {
+        hivemq.setAuthorized(false);
+
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "5",
+                "-q",
+                "1",
+                "-t",
+                "test",
+                "-d");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        executionResult.awaitStdOut("sending CONNECT");
+        executionResult.awaitStdOut("MqttConnect");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("MqttConnAck");
+        executionResult.awaitStdOut("sending SUBSCRIBE");
+        executionResult.awaitStdOut("MqttSubscribe");
+        executionResult.awaitStdOut("received SUBACK");
+        executionResult.awaitStdOut("MqttSubAck");
+        executionResult.awaitStdOut("CLI_DENY");
+        executionResult.awaitStdErr("failed SUBSCRIBE");
+        executionResult.awaitStdErr("Unable to subscribe");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_with_message_mqtt3_qos2_logging() throws IOException {
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "3",
+                "-q",
+                "2",
+                "-t",
+                "test",
+                "-d");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        executionResult.awaitStdOut("sending CONNECT");
+        executionResult.awaitStdOut("MqttConnect");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("MqttConnAck");
+        executionResult.awaitStdOut("sending SUBSCRIBE");
+        executionResult.awaitStdOut("MqttSubscribe");
+        executionResult.awaitStdOut("received SUBACK");
+        executionResult.awaitStdOut("MqttSubAck");
+
+        final Mqtt5BlockingClient publisher = MqttClient.builder()
+                .serverHost(hivemq.getHost())
+                .serverPort(hivemq.getMqttPort())
+                .useMqttVersion5()
+                .buildBlocking();
+        publisher.connect();
+        publisher.publishWith()
+                .topic("test")
+                .qos(MqttQos.EXACTLY_ONCE)
+                .payload("message".getBytes(StandardCharsets.UTF_8))
+                .send();
+
+        executionResult.awaitStdOut("received PUBLISH");
+        executionResult.awaitStdOut("MqttPublish");
+        //Cannot verify PUBREC, PUBREL and PUBCOMP as the MQTT-Client does not support MQTT3 interceptors
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_mqtt3_qos2_logging_not_authorized() throws IOException {
+        hivemq.setAuthorized(false);
+
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "3",
+                "-q",
+                "2",
+                "-t",
+                "test",
+                "-d");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        executionResult.awaitStdOut("sending CONNECT");
+        executionResult.awaitStdOut("MqttConnect");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("MqttConnAck");
+        executionResult.awaitStdOut("sending SUBSCRIBE");
+        executionResult.awaitStdOut("MqttSubscribe");
+        executionResult.awaitStdOut("received SUBACK");
+        executionResult.awaitStdOut("MqttSubAck");
+        executionResult.awaitStdOut("FAILURE");
+        executionResult.awaitStdErr("failed SUBSCRIBE");
+        executionResult.awaitStdErr("Unable to subscribe");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_with_message_mqtt5_qos2_logging() throws IOException {
         final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
@@ -174,5 +462,37 @@ public class SubscribeLoggingST {
         executionResult.awaitStdOut("MqttPubRel");
         executionResult.awaitStdOut("sending PUBCOMP");
         executionResult.awaitStdOut("MqttPubComp");
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_subscribe_mqtt5_qos2_logging_not_authorized() throws IOException {
+        hivemq.setAuthorized(false);
+
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "5",
+                "-q",
+                "2",
+                "-t",
+                "test",
+                "-d");
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
+
+        executionResult.awaitStdOut("sending CONNECT");
+        executionResult.awaitStdOut("MqttConnect");
+        executionResult.awaitStdOut("received CONNACK");
+        executionResult.awaitStdOut("MqttConnAck");
+        executionResult.awaitStdOut("sending SUBSCRIBE");
+        executionResult.awaitStdOut("MqttSubscribe");
+        executionResult.awaitStdOut("received SUBACK");
+        executionResult.awaitStdOut("MqttSubAck");
+        executionResult.awaitStdOut("CLI_DENY");
+        executionResult.awaitStdErr("failed SUBSCRIBE");
+        executionResult.awaitStdErr("Unable to subscribe");
     }
 }
