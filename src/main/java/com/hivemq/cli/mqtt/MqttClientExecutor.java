@@ -36,8 +36,6 @@ import com.hivemq.client.mqtt.mqtt3.message.subscribe.Mqtt3SubscribeBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.unsubscribe.Mqtt3Unsubscribe;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
 import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5ConnAckException;
-import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5PubAckException;
-import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5PubRecException;
 import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5SubAckException;
 import com.hivemq.client.mqtt.mqtt5.exceptions.Mqtt5UnsubAckException;
 import com.hivemq.client.mqtt.mqtt5.message.connect.Mqtt5Connect;
@@ -118,13 +116,15 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .subscribe(subscribeMessage, new SubscribeMqtt5PublishCallback(subscribeOptions, client))
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
+                        if (throwable instanceof Mqtt5SubAckException) {
+                            Logger.debug("{} received SUBACK\n    {}",
+                                    clientLogPrefix,
+                                    ((Mqtt5SubAckException) throwable).getMqttMessage());
+                        }
                         Logger.error("{} failed SUBSCRIBE to TOPIC '{}': {}",
                                 clientLogPrefix,
                                 topic,
                                 Throwables.getRootCause(throwable).getMessage());
-                        if (throwable instanceof Mqtt5SubAckException) {
-                            Logger.debug(((Mqtt5SubAckException) throwable).getMqttMessage());
-                        }
                         Logger.trace(throwable);
                     } else {
                         final ClientKey clientKey = ClientKey.of(client);
@@ -150,13 +150,15 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                 .subscribe(subscribeMessage, new SubscribeMqtt3PublishCallback(subscribeOptions, client))
                 .whenComplete((subAck, throwable) -> {
                     if (throwable != null) {
+                        if (throwable instanceof Mqtt3SubAckException) {
+                            Logger.debug("{} received SUBACK\n    {}",
+                                    clientLogPrefix,
+                                    ((Mqtt3SubAckException) throwable).getMqttMessage());
+                        }
                         Logger.error("{} failed SUBSCRIBE to TOPIC '{}': {}",
                                 clientLogPrefix,
                                 topic,
                                 Throwables.getRootCause(throwable).getMessage());
-                        if (throwable instanceof Mqtt3SubAckException) {
-                            Logger.debug(((Mqtt3SubAckException) throwable).getMqttMessage());
-                        }
                         Logger.trace(throwable);
                     } else {
                         getClientDataMap().get(ClientKey.of(client)).addSubscription(MqttTopicFilter.of(topic));
@@ -209,11 +211,6 @@ public class MqttClientExecutor extends AbstractMqttClientExecutor {
                         clientLogPrefix,
                         topic,
                         Throwables.getRootCause(throwable).getMessage());
-                if (throwable instanceof Mqtt5PubAckException) {
-                    Logger.debug(((Mqtt5PubAckException) throwable).getMqttMessage());
-                } else if (throwable instanceof Mqtt5PubRecException) {
-                    Logger.debug(((Mqtt5PubRecException) throwable).getMqttMessage());
-                }
                 Logger.trace(throwable);
             } else {
                 Logger.debug("{} finish PUBLISH\n    {}", clientLogPrefix, publishResult);

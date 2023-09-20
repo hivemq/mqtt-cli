@@ -23,11 +23,19 @@ import com.hivemq.embedded.EmbeddedExtension;
 import com.hivemq.embedded.EmbeddedHiveMQ;
 import com.hivemq.embedded.EmbeddedHiveMQBuilder;
 import com.hivemq.extension.sdk.api.ExtensionMain;
+import com.hivemq.extension.sdk.api.auth.PublishAuthorizer;
+import com.hivemq.extension.sdk.api.auth.SubscriptionAuthorizer;
+import com.hivemq.extension.sdk.api.auth.parameter.PublishAuthorizerInput;
+import com.hivemq.extension.sdk.api.auth.parameter.PublishAuthorizerOutput;
+import com.hivemq.extension.sdk.api.auth.parameter.SubscriptionAuthorizerInput;
+import com.hivemq.extension.sdk.api.auth.parameter.SubscriptionAuthorizerOutput;
 import com.hivemq.extension.sdk.api.interceptor.connack.ConnackOutboundInterceptor;
 import com.hivemq.extension.sdk.api.interceptor.connect.ConnectInboundInterceptor;
 import com.hivemq.extension.sdk.api.packets.connack.ConnackPacket;
 import com.hivemq.extension.sdk.api.packets.connect.ConnectPacket;
+import com.hivemq.extension.sdk.api.packets.publish.AckReasonCode;
 import com.hivemq.extension.sdk.api.packets.publish.PublishPacket;
+import com.hivemq.extension.sdk.api.packets.subscribe.SubackReasonCode;
 import com.hivemq.extension.sdk.api.packets.subscribe.SubscribePacket;
 import com.hivemq.extension.sdk.api.packets.unsubscribe.UnsubscribePacket;
 import com.hivemq.extension.sdk.api.parameter.ExtensionStartInput;
@@ -53,6 +61,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -148,6 +157,9 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
                                     unsubscribeInboundInput.getUnsubscribePacket()));
 
                         });
+
+                        Services.securityRegistry()
+                                .setAuthorizerProvider(authorizerProviderInput -> PublishSubscriptionAuthorizer.INSTANCE);
                     }
 
                     @Override
@@ -191,6 +203,7 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
         Objects.requireNonNull(publishPackets).clear();
         Objects.requireNonNull(subscribePackets).clear();
         Objects.requireNonNull(unsubscribePackets).clear();
+        setAuthorized(true);
     }
 
     public @NotNull List<ConnectPacket> getConnectPackets() {
@@ -241,6 +254,10 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
 
     public @NotNull String getHost() {
         return BIND_ADDRESS;
+    }
+
+    public void setAuthorized(final boolean isAuthorized) {
+        PublishSubscriptionAuthorizer.INSTANCE.getIsAuthorized().set(isAuthorized);
     }
 
     private int generatePort() throws IOException {
@@ -386,6 +403,43 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
         public @NotNull Builder withWebsocketEnabled(final boolean websocketEnabled) {
             this.websocketEnabled = websocketEnabled;
             return this;
+        }
+    }
+
+    private static class PublishSubscriptionAuthorizer implements PublishAuthorizer, SubscriptionAuthorizer {
+
+        static final @NotNull PublishSubscriptionAuthorizer INSTANCE = new PublishSubscriptionAuthorizer();
+        static final @NotNull String REASON_STRING = "CLI_DENY";
+
+        private final @NotNull AtomicBoolean isAuthorized = new AtomicBoolean(true);
+
+        private PublishSubscriptionAuthorizer() {
+        }
+
+        @Override
+        public void authorizePublish(
+                final @NotNull PublishAuthorizerInput publishAuthorizerInput,
+                final @NotNull PublishAuthorizerOutput publishAuthorizerOutput) {
+            if (isAuthorized.get()) {
+                publishAuthorizerOutput.authorizeSuccessfully();
+            } else {
+                publishAuthorizerOutput.failAuthorization(AckReasonCode.NOT_AUTHORIZED, REASON_STRING);
+            }
+        }
+
+        @Override
+        public void authorizeSubscribe(
+                final @NotNull SubscriptionAuthorizerInput subscriptionAuthorizerInput,
+                final @NotNull SubscriptionAuthorizerOutput subscriptionAuthorizerOutput) {
+            if (isAuthorized.get()) {
+                subscriptionAuthorizerOutput.authorizeSuccessfully();
+            } else {
+                subscriptionAuthorizerOutput.failAuthorization(SubackReasonCode.NOT_AUTHORIZED, REASON_STRING);
+            }
+        }
+
+        public @NotNull AtomicBoolean getIsAuthorized() {
+            return isAuthorized;
         }
     }
 }

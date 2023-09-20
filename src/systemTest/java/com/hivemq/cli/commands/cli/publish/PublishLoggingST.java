@@ -39,6 +39,36 @@ public class PublishLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_publish_mqtt3_qos0_logging() throws IOException, InterruptedException {
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "3",
+                "-q",
+                "0",
+                "-t",
+                "test",
+                "-m",
+                "message",
+                "-d");
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+
+        assertEquals(0, executionResult.getExitCode());
+        assertTrue(executionResult.getStandardOutput().contains("sending CONNECT"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttConnect"));
+        assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttConnAck"));
+        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttPublish"));
+        assertTrue(executionResult.getStandardOutput().contains("finish PUBLISH"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttPublish"));
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_publish_mqtt5_qos0_logging() throws IOException, InterruptedException {
         final List<String> publishCommand = List.of("pub",
                 "-h",
@@ -101,6 +131,41 @@ public class PublishLoggingST {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_publish_mqtt5_qos1_logging_not_authorized() throws IOException, InterruptedException {
+        hivemq.setAuthorized(false);
+
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "5",
+                "-q",
+                "1",
+                "-t",
+                "test",
+                "-m",
+                "message",
+                "-d");
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+
+        assertEquals(1, executionResult.getExitCode());
+        assertTrue(executionResult.getStandardOutput().contains("sending CONNECT"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttConnect"));
+        assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttConnAck"));
+        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttPublish"));
+        assertTrue(executionResult.getStandardOutput().contains("received PUBACK"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttPubAck"));
+        assertTrue(executionResult.getStandardOutput().contains("CLI_DENY"));
+        assertTrue(executionResult.getErrorOutput().contains("failed PUBLISH"));
+        assertTrue(executionResult.getErrorOutput().contains("Unable to publish"));
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_publish_mqtt5_qos2_logging() throws IOException, InterruptedException {
         final List<String> publishCommand = List.of("pub",
                 "-h",
@@ -133,5 +198,40 @@ public class PublishLoggingST {
         assertTrue(executionResult.getStandardOutput().contains("MqttPubComp"));
         assertTrue(executionResult.getStandardOutput().contains("finish PUBLISH"));
         assertTrue(executionResult.getStandardOutput().contains("MqttQos2Result"));
+    }
+
+    @Test
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_publish_mqtt5_qos2_logging_not_authorized() throws IOException, InterruptedException {
+        hivemq.setAuthorized(false);
+
+        final List<String> publishCommand = List.of("pub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttPort()),
+                "-V",
+                "5",
+                "-q",
+                "2",
+                "-t",
+                "test",
+                "-m",
+                "message",
+                "-d");
+        final ExecutionResult executionResult = MqttCli.execute(publishCommand);
+
+        assertEquals(1, executionResult.getExitCode());
+        assertTrue(executionResult.getStandardOutput().contains("sending CONNECT"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttConnect"));
+        assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttConnAck"));
+        assertTrue(executionResult.getStandardOutput().contains("sending PUBLISH"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttPublish"));
+        assertTrue(executionResult.getStandardOutput().contains("received PUBREC"));
+        assertTrue(executionResult.getStandardOutput().contains("MqttPubRec"));
+        assertTrue(executionResult.getStandardOutput().contains("CLI_DENY"));
+        assertTrue(executionResult.getErrorOutput().contains("failed PUBLISH"));
+        assertTrue(executionResult.getErrorOutput().contains("Unable to publish"));
     }
 }
