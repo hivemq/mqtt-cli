@@ -37,7 +37,7 @@ public class DataPolicyDeleteTask {
 
     public boolean execute() {
         try {
-                dataPoliciesApi.deleteDataPolicy(policyId);
+            dataPoliciesApi.deleteDataPolicy(policyId);
         } catch (final ApiException apiException) {
             outputFormatter.printApiException("Failed to delete policy", apiException);
             return false;

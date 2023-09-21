@@ -32,7 +32,8 @@ public class DataPolicyGetTask {
     public DataPolicyGetTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull DataHubDataPoliciesApi dataPoliciesApi,
-            final @NotNull String policyId, final @Nullable String @Nullable [] fields) {
+            final @NotNull String policyId,
+            final @Nullable String @Nullable [] fields) {
         this.outputFormatter = outputFormatter;
         this.dataPoliciesApi = dataPoliciesApi;
         this.policyId = policyId;

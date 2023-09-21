@@ -68,9 +68,9 @@ $ mqtt hivemq behavior-state get --id my-client-id
 
 ## Options
 
-| Option | Long Version | Explanation                                                                       | Required |
-|--------|--------------|-----------------------------------------------------------------------------------|:--------:|
-| `-i`   | `--id`       | The id of the client to fetch.                                                    |    X     |
+| Option | Long Version | Explanation                    | Required |
+|--------|--------------|--------------------------------|:--------:|
+| `-i`   | `--id`       | The id of the client to fetch. |    X     |
 
 ### API Connection Options
 
