@@ -17,11 +17,13 @@ mqtt hivemq
 
 ## Commands
 
-| Command  | Explanation                      |
-|----------|----------------------------------|
-| export   | See [Export](hivemq/export.md)   |
-| policies | See [Export](hivemq/policies.md) |
-| schemas  | See [Export](hivemq/schemas.md)  |
+| Command         | Explanation                                        |
+|-----------------|----------------------------------------------------|
+| export          | See [Export](hivemq/export.md)                     |
+| data-policy     | See [Data Policies](hivemq/data-policy.md)         |
+| behavior-policy | See [Behavior Policies](hivemq/behavior-policy.md) |
+| behavior-state  | See [Behavior State](hivemq/behavior-state.md)     |
+| schema          | See [Schemas](hivemq/schema.md)                    |
 
 ***
 
