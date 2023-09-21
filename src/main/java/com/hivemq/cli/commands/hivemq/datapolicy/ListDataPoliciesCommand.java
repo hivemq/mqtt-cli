@@ -42,12 +42,15 @@ public class ListDataPoliciesCommand implements Callable<Integer> {
     private @Nullable String @Nullable [] policyIds;
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-s", "--schema-id"}, description = "Filter by policies containing a schema id", paramLabel = "<schemaId>")
+    @CommandLine.Option(names = {"-s", "--schema-id"},
+                        description = "Filter by policies containing a schema id",
+                        paramLabel = "<schemaId>")
     private @Nullable String @Nullable [] schemaIds;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-f", "--field"},
-                        description = "Filter which JSON fields are included in the response", paramLabel = "<field>")
+                        description = "Filter which JSON fields are included in the response",
+                        paramLabel = "<field>")
     private @Nullable String @Nullable [] fields;
 
     @SuppressWarnings("unused")
@@ -91,7 +94,7 @@ public class ListDataPoliciesCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ListPoliciesCommand{" +
+        return "ListDataPoliciesCommand{" +
                 "topic='" +
                 topic +
                 '\'' +
@@ -103,7 +106,7 @@ public class ListDataPoliciesCommand implements Callable<Integer> {
                 Arrays.toString(fields) +
                 ", limit=" +
                 limit +
-                ", dataGovernanceOptions=" +
+                ", dataHubOptions=" +
                 dataHubOptions +
                 ", outputFormatter=" +
                 outputFormatter +

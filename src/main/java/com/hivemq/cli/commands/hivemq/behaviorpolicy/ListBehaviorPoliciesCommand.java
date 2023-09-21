@@ -96,19 +96,19 @@ public class ListBehaviorPoliciesCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ListPoliciesCommand{" +
+        return "ListBehaviorPoliciesCommand{" +
                 "topic='" +
                 topic +
                 '\'' +
                 ", policyIds=" +
                 Arrays.toString(policyIds) +
-                ", schemaIds=" +
+                ", clientIds=" +
                 Arrays.toString(clientIds) +
                 ", fields=" +
                 Arrays.toString(fields) +
                 ", limit=" +
                 limit +
-                ", dataGovernanceOptions=" +
+                ", dataHubOptions=" +
                 dataHubOptions +
                 ", outputFormatter=" +
                 outputFormatter +

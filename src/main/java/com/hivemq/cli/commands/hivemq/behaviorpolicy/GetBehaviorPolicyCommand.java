@@ -86,13 +86,13 @@ public class GetBehaviorPolicyCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "GetPolicyCommand{" +
+        return "GetBehaviorPolicyCommand{" +
                 "policyId='" +
                 policyId +
                 '\'' +
                 ", fields=" +
                 Arrays.toString(fields) +
-                ", dataGovernanceOptions=" +
+                ", dataHubOptions=" +
                 dataHubOptions +
                 ", outputFormatter=" +
                 outputFormatter +

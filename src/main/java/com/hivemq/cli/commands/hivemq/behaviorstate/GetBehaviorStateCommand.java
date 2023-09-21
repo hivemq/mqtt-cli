@@ -76,9 +76,18 @@ public class GetBehaviorStateCommand implements Callable<Integer> {
         }
     }
 
-    // TODO
     @Override
     public @NotNull String toString() {
-        return "G";
+        return "GetBehaviorStateCommand{" +
+                "clientId='" +
+                clientId +
+                '\'' +
+                ", dataHubOptions=" +
+                dataHubOptions +
+                ", outputFormatter=" +
+                outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
+                '}';
     }
 }

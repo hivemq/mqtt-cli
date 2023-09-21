@@ -84,16 +84,19 @@ public class CreateBehaviorPolicyCommand implements Callable<Integer> {
         }
     }
 
-    // TODO
     @Override
     public @NotNull String toString() {
-        return "CreatePolicyCommand{" +
+        return "CreateBehaviorPolicyCommand{" +
                 "definitionOptions=" +
                 definitionOptions +
-                ", dataGovernanceOptions=" +
+                ", dataHubOptions=" +
                 dataHubOptions +
                 ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
+                ", gson=" +
+                gson +
                 '}';
     }
 }
