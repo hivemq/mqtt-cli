@@ -95,13 +95,20 @@ public class UpdateDataPolicyCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "UpdatePolicyCommand{" +
-                "definitionOptions=" +
+        return "UpdateDataPolicyCommand{" +
+                "policyId='" +
+                policyId +
+                '\'' +
+                ", definitionOptions=" +
                 definitionOptions +
-                ", dataGovernanceOptions=" +
+                ", dataHubOptions=" +
                 dataHubOptions +
                 ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
+                ", gson=" +
+                gson +
                 '}';
     }
 }

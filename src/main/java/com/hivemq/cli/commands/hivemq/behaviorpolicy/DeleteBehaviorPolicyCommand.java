@@ -79,14 +79,16 @@ public class DeleteBehaviorPolicyCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "DeletePolicyCommand{" +
+        return "DeleteBehaviorPolicyCommand{" +
                 "policyId='" +
                 policyId +
                 '\'' +
-                ", dataGovernanceOptions=" +
+                ", dataHubOptions=" +
                 dataHubOptions +
-                ", formatter=" +
+                ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
                 '}';
     }
 }
