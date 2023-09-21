@@ -68,6 +68,7 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
                     mqtt3Publish);
         } catch (final Exception e) {
             Logger.error("An error occurred while processing an incoming PUBLISH.", e);
+            mqtt3Publish.acknowledge();
             return;
         }
 
