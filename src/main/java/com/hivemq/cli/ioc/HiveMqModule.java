@@ -20,25 +20,25 @@ import com.hivemq.cli.commandline.CommandErrorMessageHandler;
 import com.hivemq.cli.commandline.CommandLineConfig;
 import com.hivemq.cli.commands.hivemq.HiveMQCLICommand;
 import com.hivemq.cli.commands.hivemq.behaviorpolicy.BehaviorPolicyCommand;
-import com.hivemq.cli.commands.hivemq.behaviorpolicy.CreateBehaviorPolicyCommand;
-import com.hivemq.cli.commands.hivemq.behaviorpolicy.DeleteBehaviorPolicyCommand;
-import com.hivemq.cli.commands.hivemq.behaviorpolicy.GetBehaviorPolicyCommand;
-import com.hivemq.cli.commands.hivemq.behaviorpolicy.ListBehaviorPoliciesCommand;
-import com.hivemq.cli.commands.hivemq.behaviorpolicy.UpdateBehaviorPolicyCommand;
+import com.hivemq.cli.commands.hivemq.behaviorpolicy.BehaviorPolicyCreateCommand;
+import com.hivemq.cli.commands.hivemq.behaviorpolicy.BehaviorPolicyDeleteCommand;
+import com.hivemq.cli.commands.hivemq.behaviorpolicy.BehaviorPolicyGetCommand;
+import com.hivemq.cli.commands.hivemq.behaviorpolicy.BehaviorPolicyListCommand;
+import com.hivemq.cli.commands.hivemq.behaviorpolicy.BehaviorPolicyUpdateCommand;
 import com.hivemq.cli.commands.hivemq.behaviorstate.BehaviorStateCommand;
-import com.hivemq.cli.commands.hivemq.behaviorstate.GetBehaviorStateCommand;
-import com.hivemq.cli.commands.hivemq.datapolicy.CreateDataPolicyCommand;
+import com.hivemq.cli.commands.hivemq.behaviorstate.BehaviorStateGetCommand;
+import com.hivemq.cli.commands.hivemq.datapolicy.DataPolicyCreateCommand;
 import com.hivemq.cli.commands.hivemq.datapolicy.DataPolicyCommand;
-import com.hivemq.cli.commands.hivemq.datapolicy.DeleteDataPolicyCommand;
-import com.hivemq.cli.commands.hivemq.datapolicy.GetDataPolicyCommand;
-import com.hivemq.cli.commands.hivemq.datapolicy.ListDataPoliciesCommand;
-import com.hivemq.cli.commands.hivemq.datapolicy.UpdateDataPolicyCommand;
+import com.hivemq.cli.commands.hivemq.datapolicy.DataPolicyDeleteCommand;
+import com.hivemq.cli.commands.hivemq.datapolicy.DataPolicyGetCommand;
+import com.hivemq.cli.commands.hivemq.datapolicy.DataPolicyListCommand;
+import com.hivemq.cli.commands.hivemq.datapolicy.DataPolicyUpdateCommand;
 import com.hivemq.cli.commands.hivemq.export.ExportCommand;
 import com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommand;
-import com.hivemq.cli.commands.hivemq.schema.CreateSchemaCommand;
-import com.hivemq.cli.commands.hivemq.schema.DeleteSchemaCommand;
-import com.hivemq.cli.commands.hivemq.schema.GetSchemaCommand;
-import com.hivemq.cli.commands.hivemq.schema.ListSchemaCommand;
+import com.hivemq.cli.commands.hivemq.schema.SchemaCreateCommand;
+import com.hivemq.cli.commands.hivemq.schema.SchemaDeleteCommand;
+import com.hivemq.cli.commands.hivemq.schema.SchemaGetCommand;
+import com.hivemq.cli.commands.hivemq.schema.SchemaListCommand;
 import com.hivemq.cli.commands.hivemq.schema.SchemaCommand;
 import dagger.Module;
 import dagger.Provides;
@@ -60,44 +60,44 @@ class HiveMqModule {
             final @NotNull ExportCommand exportCommand,
             final @NotNull ExportClientsCommand exportClientsCommand,
             final @NotNull DataPolicyCommand dataPolicyCommand,
-            final @NotNull GetDataPolicyCommand getDataPolicyCommand,
-            final @NotNull UpdateDataPolicyCommand updateDataPolicyCommand,
-            final @NotNull ListDataPoliciesCommand listDataPoliciesCommand,
-            final @NotNull CreateDataPolicyCommand createDataPolicyCommand,
-            final @NotNull DeleteDataPolicyCommand deleteDataPolicyCommand,
+            final @NotNull DataPolicyGetCommand dataPolicyGetCommand,
+            final @NotNull DataPolicyUpdateCommand dataPolicyUpdateCommand,
+            final @NotNull DataPolicyListCommand dataPolicyListCommand,
+            final @NotNull DataPolicyCreateCommand dataPolicyCreateCommand,
+            final @NotNull DataPolicyDeleteCommand dataPolicyDeleteCommand,
             final @NotNull BehaviorPolicyCommand behaviorPolicyCommand,
-            final @NotNull GetBehaviorPolicyCommand getBehaviorPolicyCommand,
-            final @NotNull UpdateBehaviorPolicyCommand updateBehaviorPolicyCommand,
-            final @NotNull ListBehaviorPoliciesCommand listBehaviorPoliciesCommand,
-            final @NotNull CreateBehaviorPolicyCommand createBehaviorPolicyCommand,
-            final @NotNull DeleteBehaviorPolicyCommand deleteBehaviorPolicyCommand,
+            final @NotNull BehaviorPolicyGetCommand behaviorPolicyGetCommand,
+            final @NotNull BehaviorPolicyUpdateCommand behaviorPolicyUpdateCommand,
+            final @NotNull BehaviorPolicyListCommand behaviorPolicyListCommand,
+            final @NotNull BehaviorPolicyCreateCommand behaviorPolicyCreateCommand,
+            final @NotNull BehaviorPolicyDeleteCommand behaviorPolicyDeleteCommand,
             final @NotNull BehaviorStateCommand behaviorStateCommand,
-            final @NotNull GetBehaviorStateCommand getBehaviorStateCommand,
+            final @NotNull BehaviorStateGetCommand behaviorStateGetCommand,
             final @NotNull SchemaCommand schemaCommand,
-            final @NotNull GetSchemaCommand getSchemaCommand,
-            final @NotNull ListSchemaCommand listSchemaCommand,
-            final @NotNull CreateSchemaCommand createSchemaCommand,
-            final @NotNull DeleteSchemaCommand deleteSchemaCommand,
+            final @NotNull SchemaGetCommand schemaGetCommand,
+            final @NotNull SchemaListCommand schemaListCommand,
+            final @NotNull SchemaCreateCommand schemaCreateCommand,
+            final @NotNull SchemaDeleteCommand schemaDeleteCommand,
             final @NotNull CommandLineConfig config,
             final @NotNull CommandErrorMessageHandler handler) {
 
-        final CommandLine dataPolicyCommandLine = new CommandLine(dataPolicyCommand).addSubcommand(getDataPolicyCommand)
-                .addSubcommand(updateDataPolicyCommand)
-                .addSubcommand(listDataPoliciesCommand)
-                .addSubcommand(createDataPolicyCommand)
-                .addSubcommand(deleteDataPolicyCommand);
+        final CommandLine dataPolicyCommandLine = new CommandLine(dataPolicyCommand).addSubcommand(dataPolicyGetCommand)
+                .addSubcommand(dataPolicyUpdateCommand)
+                .addSubcommand(dataPolicyListCommand)
+                .addSubcommand(dataPolicyCreateCommand)
+                .addSubcommand(dataPolicyDeleteCommand);
         final CommandLine behaviorPolicyCommandLine =
-                new CommandLine(behaviorPolicyCommand).addSubcommand(getBehaviorPolicyCommand)
-                        .addSubcommand(updateBehaviorPolicyCommand)
-                        .addSubcommand(listBehaviorPoliciesCommand)
-                        .addSubcommand(createBehaviorPolicyCommand)
-                        .addSubcommand(deleteBehaviorPolicyCommand);
+                new CommandLine(behaviorPolicyCommand).addSubcommand(behaviorPolicyGetCommand)
+                        .addSubcommand(behaviorPolicyUpdateCommand)
+                        .addSubcommand(behaviorPolicyListCommand)
+                        .addSubcommand(behaviorPolicyCreateCommand)
+                        .addSubcommand(behaviorPolicyDeleteCommand);
         final CommandLine behaviorStateCommandLine =
-                new CommandLine(behaviorStateCommand).addSubcommand(getBehaviorStateCommand);
-        final CommandLine schemaCommandLine = new CommandLine(schemaCommand).addSubcommand(getSchemaCommand)
-                .addSubcommand(listSchemaCommand)
-                .addSubcommand(createSchemaCommand)
-                .addSubcommand(deleteSchemaCommand);
+                new CommandLine(behaviorStateCommand).addSubcommand(behaviorStateGetCommand);
+        final CommandLine schemaCommandLine = new CommandLine(schemaCommand).addSubcommand(schemaGetCommand)
+                .addSubcommand(schemaListCommand)
+                .addSubcommand(schemaCreateCommand)
+                .addSubcommand(schemaDeleteCommand);
 
         return new CommandLine(hivemqCliCommand).addSubcommand(new CommandLine(exportCommand).addSubcommand(
                         exportClientsCommand))

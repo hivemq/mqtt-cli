@@ -14,39 +14,34 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.hivemq.behaviorstate;
+package com.hivemq.cli.hivemq.datapolicy;
 
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataHubStateApi;
-import com.hivemq.cli.openapi.hivemq.FsmStatesInformationListItem;
+import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
 import org.jetbrains.annotations.NotNull;
 
-public class GetBehaviorStateTask {
+public class DataPolicyDeleteTask {
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull DataHubStateApi dataHubStateApi;
-    private final @NotNull String clientId;
+    private final @NotNull DataHubDataPoliciesApi dataPoliciesApi;
+    private final @NotNull String policyId;
 
-    public GetBehaviorStateTask(
+    public DataPolicyDeleteTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull DataHubStateApi dataHubStateApi,
-            final @NotNull String clientId) {
+            final @NotNull DataHubDataPoliciesApi dataPoliciesApi,
+            final @NotNull String policyId) {
         this.outputFormatter = outputFormatter;
-        this.dataHubStateApi = dataHubStateApi;
-        this.clientId = clientId;
+        this.dataPoliciesApi = dataPoliciesApi;
+        this.policyId = policyId;
     }
 
     public boolean execute() {
-        final FsmStatesInformationListItem clientStateList;
-
         try {
-            clientStateList = dataHubStateApi.getClientState(clientId);
+                dataPoliciesApi.deleteDataPolicy(policyId);
         } catch (final ApiException apiException) {
-            outputFormatter.printApiException("Failed to get client behavior state", apiException);
+            outputFormatter.printApiException("Failed to delete policy", apiException);
             return false;
         }
-
-        outputFormatter.printJson(clientStateList);
 
         return true;
     }

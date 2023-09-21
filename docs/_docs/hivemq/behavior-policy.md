@@ -3,7 +3,7 @@ nav_order: 1
 redirect_from: /docs/hivemq/behavior-policy.html
 ---
 
-# Behavior Policies
+# Behavior Policy
 
 ***
 
