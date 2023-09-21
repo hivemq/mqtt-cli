@@ -42,6 +42,8 @@ public class BehaviorPolicyListTask {
     private final @Nullable String @Nullable [] fields;
     private final @Nullable Integer limit;
 
+    private static final int DEFAULT_PAGE_SIZE = 50;
+
     public BehaviorPolicyListTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi,
@@ -87,7 +89,7 @@ public class BehaviorPolicyListTask {
                 final BehaviorPolicyList policyList = behaviorPoliciesApi.getAllBehaviorPolicies(fieldsQueryParam,
                         policyIdsQueryParam,
                         clientIdsQueryParam,
-                        50,
+                        DEFAULT_PAGE_SIZE,
                         nextCursor);
                 final List<BehaviorPolicy> policies = policyList.getItems();
                 final PaginationCursor links = policyList.getLinks();
