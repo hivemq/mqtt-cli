@@ -86,13 +86,17 @@ public class CreateDataPolicyCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "CreatePolicyCommand{" +
+        return "CreateDataPolicyCommand{" +
                 "definitionOptions=" +
                 definitionOptions +
-                ", dataGovernanceOptions=" +
+                ", dataHubOptions=" +
                 dataHubOptions +
                 ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
+                ", gson=" +
+                gson +
                 '}';
     }
 }

@@ -79,14 +79,16 @@ public class DeleteDataPolicyCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "DeletePolicyCommand{" +
+        return "DeleteDataPolicyCommand{" +
                 "policyId='" +
                 policyId +
                 '\'' +
-                ", dataGovernanceOptions=" +
+                ", dataHubOptions=" +
                 dataHubOptions +
-                ", formatter=" +
+                ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
                 '}';
     }
 }

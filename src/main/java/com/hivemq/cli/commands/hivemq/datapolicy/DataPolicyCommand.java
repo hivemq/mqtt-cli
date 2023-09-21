@@ -49,6 +49,6 @@ public class DataPolicyCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "DataPolicyCommand{" + ", spec=" + spec + '}';
+        return "DataPolicyCommand{" + "spec=" + spec + '}';
     }
 }
