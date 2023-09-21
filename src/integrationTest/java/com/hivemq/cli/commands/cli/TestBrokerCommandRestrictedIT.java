@@ -18,8 +18,6 @@ package com.hivemq.cli.commands.cli;
 
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import com.hivemq.cli.MqttCLIMain;
-import com.hivemq.cli.commands.hivemq.policies.CreatePolicyCommand;
-import com.hivemq.cli.ioc.DaggerMqttCLI;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +26,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.utility.CommandLine;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 

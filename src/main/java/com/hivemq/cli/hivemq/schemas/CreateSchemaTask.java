@@ -18,7 +18,7 @@ package com.hivemq.cli.hivemq.schemas;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.hivemq.cli.commands.hivemq.datagovernance.OutputFormatter;
+import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
 import com.hivemq.cli.openapi.hivemq.Schema;
