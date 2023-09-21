@@ -77,7 +77,7 @@ public class ShellSubscribeLoggingST {
         mqttCliShell.connectClient(hivemq, '3');
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-q", "0");
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitStdErr(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("MqttSubscribe")
                 .awaitLog("received SUBACK")
@@ -122,7 +122,7 @@ public class ShellSubscribeLoggingST {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-q", "0");
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitStdErr(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("MqttSubscribe")
                 .awaitLog("received SUBACK")
@@ -168,7 +168,7 @@ public class ShellSubscribeLoggingST {
         mqttCliShell.connectClient(hivemq, '3');
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-q", "1");
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitStdErr(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("MqttSubscribe")
                 .awaitLog("received SUBACK")
@@ -216,7 +216,7 @@ public class ShellSubscribeLoggingST {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-q", "1");
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitStdErr(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("MqttSubscribe")
                 .awaitLog("received SUBACK")
@@ -262,7 +262,7 @@ public class ShellSubscribeLoggingST {
         mqttCliShell.connectClient(hivemq, '3');
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-q", "2");
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitStdErr(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("MqttSubscribe")
                 .awaitLog("received SUBACK")
@@ -314,7 +314,7 @@ public class ShellSubscribeLoggingST {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> subscribeCommand = List.of("sub", "-t", "test", "-q", "2");
         mqttCliShell.executeAsync(subscribeCommand)
-                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitStdErr(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("MqttSubscribe")
                 .awaitLog("received SUBACK")
