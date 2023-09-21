@@ -86,7 +86,7 @@ public class ShellPublishLoggingST {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "1");
         mqttCliShell.executeAsync(publishCommand)
-                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitStdErr(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending PUBLISH")
                 .awaitLog("MqttPublish")
                 .awaitLog("received PUBACK")
@@ -123,7 +123,7 @@ public class ShellPublishLoggingST {
         mqttCliShell.connectClient(hivemq, '5');
         final List<String> publishCommand = List.of("pub", "-t", "test", "-m", "test", "-q", "2");
         mqttCliShell.executeAsync(publishCommand)
-                .awaitStdOut(String.format("cliTest@%s>", hivemq.getHost()))
+                .awaitStdErr(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending PUBLISH")
                 .awaitLog("MqttPublish")
                 .awaitLog("received PUBREC")
