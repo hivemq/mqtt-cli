@@ -18,8 +18,10 @@ package com.hivemq.cli.rest;
 
 import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.Configuration;
+import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataHubStateApi;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
@@ -43,11 +45,25 @@ public class HiveMQRestService {
         return new MqttClientsApi(apiClient);
     }
 
-    public @NotNull DataHubDataPoliciesApi getPoliciesApi(
+    public @NotNull DataHubDataPoliciesApi getDataPoliciesApi(
             final @NotNull String host,
             final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
         return new DataHubDataPoliciesApi(apiClient);
+    }
+
+    public @NotNull DataHubBehaviorPoliciesApi getBehaviorPoliciesApi(
+            final @NotNull String host,
+            final double requestPerSecondLimit) {
+        final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
+        return new DataHubBehaviorPoliciesApi(apiClient);
+    }
+
+    public @NotNull DataHubStateApi getBehaviorStateApi(
+            final @NotNull String host,
+            final double requestPerSecondLimit) {
+        final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
+        return new DataHubStateApi(apiClient);
     }
 
     public @NotNull DataHubSchemasApi getSchemasApi(
