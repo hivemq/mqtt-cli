@@ -21,10 +21,10 @@ mqtt hivemq behavior-policy
 | Command | Explanation                                           |
 |---------|-------------------------------------------------------|
 | create  | See [Create Behavior Policy](#create-behavior-policy) |
-| get     | See [Get Behavior Policy](#get-behavior-policy)                |
-| update  | See [Update Behavior Policy](#update-behavior-policy)          |
-| list    | See [List Behavior Policies](#list-behavior-policies)          |
-| delete  | See [Delete Behavior Policy](#delete-behavior-policy)          |
+| get     | See [Get Behavior Policy](#get-behavior-policy)       |
+| update  | See [Update Behavior Policy](#update-behavior-policy) |
+| list    | See [List Behavior Policies](#list-behavior-policies) |
+| delete  | See [Delete Behavior Policy](#delete-behavior-policy) |
 
 ***
 
@@ -152,7 +152,7 @@ $ mqtt hivemq behavior-policy get --id matchingThree
 
 Update an existing behavior policy.
 The policy definition may be provided either directly from the command line or from a file.
-The provided policy id argument must match the ID in the policy definition.
+The provided policy id argument must match the id in the policy definition.
 
 ```
 mqtt hivemq behavior-policy update
@@ -269,12 +269,12 @@ $ mqtt hivemq behavior-policy list -i behaviorOne -i behaviorTwo
 
 ## Options
 
-| Option | Long Version  | Explanation                                                                                                   | Required |
-|--------|---------------|---------------------------------------------------------------------------------------------------------------|:--------:|
-| `-i`   | `--id`        | Filter by behavior policies with a matching policy id. Can be specified multiple times.                       |          |
-| `-c`   | `--client-id` | Filter by behavior policies that apply to clients with a matching client id. Can be specified multiple times. |          |
-| `-f`   | `--field`     | Select which JSON fields appear in the response. Can be specified multiple times.                             |          |
-|        | `--limit`     | Limit the maximum number of policies returned.                                                                |          |
+| Option | Long Version  | Explanation                                                                                                   |
+|--------|---------------|---------------------------------------------------------------------------------------------------------------|
+| `-i`   | `--id`        | Filter by behavior policies with a matching policy id. Can be specified multiple times.                       |          
+| `-c`   | `--client-id` | Filter by behavior policies that apply to clients with a matching client id. Can be specified multiple times. |          
+| `-f`   | `--field`     | Select which JSON fields appear in the response. Can be specified multiple times.                             |          
+|        | `--limit`     | Limit the maximum number of policies returned.                                                                |          
 
 ### API Connection Options
 

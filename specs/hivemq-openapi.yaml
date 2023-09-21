@@ -207,8 +207,10 @@ paths:
         schema:
           type: string
           example: null
-      - description: MQTT ClientID string that is matched by the retrieved policies.
-        example: topic/my-topic
+      - description: Comma-separated list of MQTT client identifiers that are used
+          for filtering. Client identifiers are matched by the retrieved policies.
+          Multiple filters can be applied together.
+        example: "client1,client2"
         in: query
         name: clientIds
         schema:

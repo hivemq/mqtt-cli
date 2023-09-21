@@ -35,7 +35,8 @@ public class DataPolicyUpdateTask {
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull DataHubDataPoliciesApi dataPoliciesApi,
             final @NotNull Gson gson,
-            final @NotNull String policyId, final @NotNull String definition) {
+            final @NotNull String policyId,
+            final @NotNull String definition) {
         this.outputFormatter = outputFormatter;
         this.dataPoliciesApi = dataPoliciesApi;
         this.gson = gson;

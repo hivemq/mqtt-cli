@@ -43,6 +43,8 @@ public class DataPolicyListTask {
     private final @Nullable String @Nullable [] fields;
     private final @Nullable Integer limit;
 
+    private static final int DEFAULT_PAGE_SIZE = 50;
+
     public DataPolicyListTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull DataHubDataPoliciesApi dataPoliciesApi,
@@ -91,7 +93,7 @@ public class DataPolicyListTask {
                         policyIdsQueryParam,
                         schemaIdsQueryParam,
                         topic,
-                        50,
+                        DEFAULT_PAGE_SIZE,
                         nextCursor);
                 final List<DataPolicy> policies = policyList.getItems();
                 final PaginationCursor links = policyList.getLinks();
