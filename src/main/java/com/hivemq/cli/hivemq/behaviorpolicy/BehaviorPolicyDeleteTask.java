@@ -14,39 +14,34 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.hivemq.behaviorstate;
+package com.hivemq.cli.hivemq.behaviorpolicy;
 
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataHubStateApi;
-import com.hivemq.cli.openapi.hivemq.FsmStatesInformationListItem;
+import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
 import org.jetbrains.annotations.NotNull;
 
-public class GetBehaviorStateTask {
+public class BehaviorPolicyDeleteTask {
     private final @NotNull OutputFormatter outputFormatter;
-    private final @NotNull DataHubStateApi dataHubStateApi;
-    private final @NotNull String clientId;
+    private final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi;
+    private final @NotNull String policyId;
 
-    public GetBehaviorStateTask(
+    public BehaviorPolicyDeleteTask(
             final @NotNull OutputFormatter outputFormatter,
-            final @NotNull DataHubStateApi dataHubStateApi,
-            final @NotNull String clientId) {
+            final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi,
+            final @NotNull String policyId) {
         this.outputFormatter = outputFormatter;
-        this.dataHubStateApi = dataHubStateApi;
-        this.clientId = clientId;
+        this.behaviorPoliciesApi = behaviorPoliciesApi;
+        this.policyId = policyId;
     }
 
     public boolean execute() {
-        final FsmStatesInformationListItem clientStateList;
-
         try {
-            clientStateList = dataHubStateApi.getClientState(clientId);
+            behaviorPoliciesApi.deleteBehaviorPolicy(policyId);
         } catch (final ApiException apiException) {
-            outputFormatter.printApiException("Failed to get client behavior state", apiException);
+            outputFormatter.printApiException("Failed to delete behavior policy", apiException);
             return false;
         }
-
-        outputFormatter.printJson(clientStateList);
 
         return true;
     }
