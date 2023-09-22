@@ -7,8 +7,11 @@ redirect_from: /docs/hivemq/schemas.html
 
 ***
 
-The schema command of the HiveMQ command line offers a set of commands to work with schemas using a HiveMQ Data
-Validation API endpoint.
+The schema command of the HiveMQ command line offers a set of commands to work with schemas using a HiveMQ Data Hub API
+endpoint.
+
+**NOTE**: The HiveMQ Data Hub is a new product in the HiveMQ platform and commands using it may be subject to breaking
+changes in the future.
 
 ```
 mqtt hivemq schema

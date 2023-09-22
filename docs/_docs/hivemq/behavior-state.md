@@ -8,7 +8,10 @@ redirect_from: /docs/hivemq/behavior-state.html
 ***
 
 The behavior-state command of the HiveMQ command line offers a set of commands to query the behavior validation state of
-currently connected MQTT clients using a HiveMQ DataHub API endpoint.
+currently connected MQTT clients using a HiveMQ Data Hub API endpoint.
+
+**NOTE**: The HiveMQ Data Hub is a new product in the HiveMQ platform and commands using it may be subject to breaking
+changes in the future.
 
 ```
 mqtt hivemq behavior-state

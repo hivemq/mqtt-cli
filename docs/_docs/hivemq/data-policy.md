@@ -8,7 +8,10 @@ redirect_from: /docs/hivemq/policies.html
 ***
 
 The data-policy command of the HiveMQ command line offers a set of commands to work with data validation policies using
-a HiveMQ DataHub API endpoint.
+a HiveMQ Data Hub API endpoint.
+
+**NOTE**: The HiveMQ Data Hub is a new product in the HiveMQ platform and commands using it may be subject to breaking
+changes in the future.
 
 ```
 mqtt hivemq data-policy
