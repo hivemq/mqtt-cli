@@ -1,6 +1,8 @@
 ---
 nav_order: 1
-redirect_from: /docs/hivemq/schemas.html
+redirect_from: 
+    - /docs/hivemq/schemas.html
+     -/docs/hivemq/schema.html
 ---
 
 # Schemas
