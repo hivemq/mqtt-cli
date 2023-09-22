@@ -1,6 +1,8 @@
 ---
 nav_order: 1
-redirect_from: /docs/hivemq/policies.html
+redirect_from:
+    - /docs/hivemq/policies.html
+    - /docs/hivemq/data-policy.html
 ---
 
 # Data Policy
