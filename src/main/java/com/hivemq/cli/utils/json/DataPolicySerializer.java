@@ -31,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 
+import static com.hivemq.cli.utils.json.DataHubSerialization.serializePolicyOperation;
+
 /**
  * The generated OpenAPI classes do not preserve JSON field ordering.
  * This serializer manually restores the correct order.
@@ -94,12 +96,7 @@ public class DataPolicySerializer implements JsonSerializer<DataPolicy> {
         final JsonArray operationsArray = new JsonArray();
 
         for (final PolicyOperation operation : policyAction.getPipeline()) {
-            final JsonObject operationObject = new JsonObject();
-            operationObject.add(PolicyOperation.SERIALIZED_NAME_ID, context.serialize(operation.getId()));
-            operationObject.add(PolicyOperation.SERIALIZED_NAME_FUNCTION_ID,
-                    context.serialize(operation.getFunctionId()));
-            operationObject.add(PolicyOperation.SERIALIZED_NAME_ARGUMENTS, context.serialize(operation.getArguments()));
-            operationsArray.add(operationObject);
+            operationsArray.add(serializePolicyOperation(operation, context));
         }
 
         object.add(DataPolicyAction.SERIALIZED_NAME_PIPELINE, context.serialize(operationsArray));

@@ -23,12 +23,16 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.hivemq.cli.openapi.hivemq.BehaviorPolicy;
 import com.hivemq.cli.openapi.hivemq.BehaviorPolicyBehavior;
+import com.hivemq.cli.openapi.hivemq.BehaviorPolicyOnEvent;
 import com.hivemq.cli.openapi.hivemq.BehaviorPolicyOnTransition;
+import com.hivemq.cli.openapi.hivemq.PolicyOperation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.List;
+
+import static com.hivemq.cli.utils.json.DataHubSerialization.serializePolicyOperation;
 
 /**
  * The generated OpenAPI classes do not preserve JSON field ordering.
@@ -71,23 +75,42 @@ public class BehaviorPolicySerializer implements JsonSerializer<BehaviorPolicy> 
             onTransitionObject.add(BehaviorPolicyOnTransition.SERIALIZED_NAME_TO_STATE,
                     context.serialize(onTransition.getToState()));
             onTransitionObject.add(BehaviorPolicyOnTransition.SERIALIZED_NAME_EVENT_ON_ANY,
-                    context.serialize(onTransition.getEventOnAny()));
+                    serializeBehaviorPolicyOnEvent(onTransition.getEventOnAny(), context));
             onTransitionObject.add(BehaviorPolicyOnTransition.SERIALIZED_NAME_MQTT_ON_INBOUND_CONNECT,
-                    context.serialize(onTransition.getMqttOnInboundConnect()));
+                    serializeBehaviorPolicyOnEvent(onTransition.getMqttOnInboundConnect(), context));
             onTransitionObject.add(BehaviorPolicyOnTransition.SERIALIZED_NAME_MQTT_ON_INBOUND_PUBLISH,
-                    context.serialize(onTransition.getMqttOnInboundPublish()));
+                    serializeBehaviorPolicyOnEvent(onTransition.getMqttOnInboundPublish(), context));
             onTransitionObject.add(BehaviorPolicyOnTransition.SERIALIZED_NAME_MQTT_ON_INBOUND_SUBSCRIBE,
-                    context.serialize(onTransition.getMqttOnInboundSubscribe()));
+                    serializeBehaviorPolicyOnEvent(onTransition.getMqttOnInboundSubscribe(), context));
             onTransitionObject.add(BehaviorPolicyOnTransition.SERIALIZED_NAME_MQTT_ON_INBOUND_DISCONNECT,
-                    context.serialize(onTransition.getMqttOnInboundDisconnect()));
+                    serializeBehaviorPolicyOnEvent(onTransition.getMqttOnInboundDisconnect(), context));
             onTransitionObject.add(BehaviorPolicyOnTransition.SERIALIZED_NAME_CONNECTION_ON_DISCONNECT,
-                    context.serialize(onTransition.getConnectionOnDisconnect()));
+                    serializeBehaviorPolicyOnEvent(onTransition.getConnectionOnDisconnect(), context));
             arrayObject.add(onTransitionObject);
         }
 
         return arrayObject;
     }
 
+    private @Nullable JsonElement serializeBehaviorPolicyOnEvent(
+            final @Nullable BehaviorPolicyOnEvent onEvent, final @NotNull JsonSerializationContext context) {
+        if (onEvent == null) {
+            return null;
+        }
+
+        final JsonObject object = new JsonObject();
+        if (onEvent.getPipeline() == null) {
+            return object;
+        }
+
+        final JsonArray operationsArray = new JsonArray();
+        for (final PolicyOperation operation : onEvent.getPipeline()) {
+            operationsArray.add(serializePolicyOperation(operation, context));
+        }
+
+        object.add(BehaviorPolicyOnEvent.SERIALIZED_NAME_PIPELINE, context.serialize(operationsArray));
+        return object;
+    }
 
     private @Nullable JsonElement serializePolicyBehavior(
             final @Nullable BehaviorPolicyBehavior policyBehavior, final @NotNull JsonSerializationContext context) {
