@@ -16,6 +16,8 @@
 
 package com.hivemq.cli.rest;
 
+import com.google.gson.Gson;
+import com.google.gson.ToNumberPolicy;
 import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.Configuration;
 import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
@@ -46,29 +48,25 @@ public class HiveMQRestService {
     }
 
     public @NotNull DataHubDataPoliciesApi getDataPoliciesApi(
-            final @NotNull String host,
-            final double requestPerSecondLimit) {
+            final @NotNull String host, final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
         return new DataHubDataPoliciesApi(apiClient);
     }
 
     public @NotNull DataHubBehaviorPoliciesApi getBehaviorPoliciesApi(
-            final @NotNull String host,
-            final double requestPerSecondLimit) {
+            final @NotNull String host, final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
         return new DataHubBehaviorPoliciesApi(apiClient);
     }
 
     public @NotNull DataHubStateApi getBehaviorStateApi(
-            final @NotNull String host,
-            final double requestPerSecondLimit) {
+            final @NotNull String host, final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
         return new DataHubStateApi(apiClient);
     }
 
     public @NotNull DataHubSchemasApi getSchemasApi(
-            final @NotNull String host,
-            final double requestPerSecondLimit) {
+            final @NotNull String host, final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
         return new DataHubSchemasApi(apiClient);
     }
@@ -80,6 +78,12 @@ public class HiveMQRestService {
         final ApiClient apiClient = Configuration.getDefaultApiClient();
         apiClient.setHttpClient(okHttpClient);
         apiClient.setBasePath(host);
+        final Gson gson = apiClient.getJSON()
+                .getGson()
+                .newBuilder()
+                .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
+                .create();
+        apiClient.getJSON().setGson(gson);
         return apiClient;
     }
 }

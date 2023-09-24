@@ -18,6 +18,7 @@ package com.hivemq.cli.ioc;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.ToNumberPolicy;
 import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.commandline.CommandErrorMessageHandler;
 import com.hivemq.cli.commandline.CommandLineConfig;
@@ -86,6 +87,7 @@ class CliModule {
     @NotNull Gson provideGson() {
         return new GsonBuilder().setPrettyPrinting()
                 .disableHtmlEscaping()
+                .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
                 .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
                 .registerTypeAdapter(DataPolicy.class, new DataPolicySerializer())
                 .registerTypeAdapter(BehaviorPolicy.class, new BehaviorPolicySerializer())
