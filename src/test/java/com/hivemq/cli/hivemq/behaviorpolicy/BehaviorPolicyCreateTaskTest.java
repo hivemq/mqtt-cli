@@ -42,8 +42,11 @@ public class BehaviorPolicyCreateTaskTest {
     private final @NotNull Gson gson = new Gson();
 
     private static final @NotNull String POLICY_ID = "policy-1";
-    private static final @NotNull String POLICY_JSON =
-            "{ \"id\": \"" + POLICY_ID + "\", \"matching\": { \"topicFilter\": \"a/#\" } }";
+    private static final @NotNull String POLICY_JSON = "{ \"id\": \"" +
+            POLICY_ID +
+            "\"," +
+            "\"matching\": { \"clientIdRegex\": \".*\" }," +
+            "\"behavior\": {\"id\": \"Publish.quota\",\"arguments\": {\"maxPublishes\": 2}}}";
 
     @Test
     void execute_validBehaviorPolicy_success() throws ApiException {
