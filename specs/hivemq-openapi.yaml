@@ -875,12 +875,12 @@ paths:
                       stateName: Connected
                       firstSetAt: 2023-09-05T09:46:47.854Z
                       arguments:
-                        MinAmountOfPublishes: 5
-                        MaxAmountOfPublishes: 10
+                        minPublishes: 5
+                        maxPublishes: 10
                       variables:
-                        MinAmountOfPublishes: "5"
-                        PublishCount: "0"
-                        MaxAmountOfPublishes: "10"
+                        minPublishes: "5"
+                        publishCount: "0"
+                        maxPublishes: "10"
               schema:
                 $ref: '#/components/schemas/FsmStatesInformationListItem'
           description: Success
