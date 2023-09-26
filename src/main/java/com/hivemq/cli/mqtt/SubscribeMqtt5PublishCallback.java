@@ -50,39 +50,43 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
 
     @Override
     public void accept(final @NotNull Mqtt5Publish mqtt5Publish) {
-        String message;
         try {
-            if (isJsonOutput) {
-                message = new JsonMqttPublish(mqtt5Publish, isBase64).toString();
-            } else {
-                message = MqttPublishUtils.formatPayload(mqtt5Publish.getPayloadAsBytes(), isBase64);
+            String message;
+            try {
+                if (isJsonOutput) {
+                    message = new JsonMqttPublish(mqtt5Publish, isBase64).toString();
+                } else {
+                    message = MqttPublishUtils.formatPayload(mqtt5Publish.getPayloadAsBytes(), isBase64);
+                }
+
+                if (showTopics) {
+                    message = mqtt5Publish.getTopic() + ": " + message;
+                }
+
+                Logger.debug("{} received PUBLISH ('{}')\n    {}",
+                        LoggerUtils.getClientPrefix(client.getConfig()),
+                        new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
+                        mqtt5Publish);
+            } catch (final Exception e) {
+                Logger.error("An error occurred while processing an incoming PUBLISH.", e);
+                return;
             }
 
-            if (showTopics) {
-                message = mqtt5Publish.getTopic() + ": " + message;
+            if (outputFile != null) {
+                MqttPublishUtils.printToFile(outputFile, message);
             }
 
-            Logger.debug("{} received PUBLISH ('{}')\n    {}",
-                    LoggerUtils.getClientPrefix(client.getConfig()),
-                    new String(mqtt5Publish.getPayloadAsBytes(), StandardCharsets.UTF_8),
-                    mqtt5Publish);
-        } catch (final Exception e) {
-            Logger.error("An error occurred while processing an incoming PUBLISH.", e);
+            if (printToStdout) {
+                if (System.out.checkError()) {
+                    //TODO: Handle SIGPIPE
+                    //throw new RuntimeException("SIGNAL RECEIVED. PIPE CLOSED");
+                }
+                System.out.println(message);
+            }
+
+        } finally {
+            //Necessary to ensure log ordering
             mqtt5Publish.acknowledge();
-            return;
         }
-
-        if (outputFile != null) {
-            MqttPublishUtils.printToFile(outputFile, message);
-        }
-
-        if (printToStdout) {
-            if (System.out.checkError()) {
-                //TODO: Handle SIGPIPE
-                //throw new RuntimeException("SIGNAL RECEIVED. PIPE CLOSED");
-            }
-            System.out.println(message);
-        }
-        mqtt5Publish.acknowledge();
     }
 }
