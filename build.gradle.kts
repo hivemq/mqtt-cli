@@ -170,7 +170,7 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     group = "hivemq"
     generatorName.set("java")
     inputSpec.set(hivemqOpenApi.singleFile.path)
-    outputDir.set("$buildDir/tmp/$name")
+    outputDir.set(layout.buildDirectory.dir("tmp/$name").get().asFile.absolutePath)
     apiPackage.set("com.hivemq.cli.openapi.hivemq")
     modelPackage.set("com.hivemq.cli.openapi.hivemq")
     configOptions.put("dateLibrary", "java8")
@@ -194,7 +194,7 @@ val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
     group = "swarm"
     generatorName.set("java")
     inputSpec.set(swarmOpenApi.singleFile.path)
-    outputDir.set("$buildDir/tmp/$name")
+    outputDir.set(layout.buildDirectory.dir("tmp/$name").get().asFile.absolutePath)
     apiPackage.set("com.hivemq.cli.openapi.swarm")
     modelPackage.set("com.hivemq.cli.openapi.swarm")
     configOptions.put("dateLibrary", "java8")
