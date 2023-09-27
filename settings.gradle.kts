@@ -1,5 +1,3 @@
-rootProject.name = "mqtt-cli"
-
 pluginManagement {
     plugins {
         id("com.github.johnrengelman.shadow") version "${extra["plugin.shadow.version"]}"
@@ -20,3 +18,5 @@ pluginManagement {
         includeBuild("../hivemq/plugins")
     }
 }
+
+rootProject.name = "mqtt-cli"
