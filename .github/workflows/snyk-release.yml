@@ -10,7 +10,7 @@ jobs:
     environment: snyk-monitor-releases
 
     steps:
-      - name: Setup Java 8
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
