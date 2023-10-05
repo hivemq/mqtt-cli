@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup Java 8
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
