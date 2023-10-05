@@ -89,12 +89,12 @@ repositories {
 }
 
 dependencies {
-    implementation("io.swagger:swagger-annotations:${property("swagger.version")}")
+    implementation(libs.swagger.annotations)
     implementation("com.google.code.findbugs:jsr305:${property("find-bugs.version")}")
     implementation("com.squareup.okhttp3:okhttp:${property("ok-http.version")}")
     implementation("com.squareup.okhttp3:logging-interceptor:${property("ok-http.version")}")
     implementation("io.gsonfire:gson-fire:${property("gson-fire.version")}")
-    implementation("org.apache.commons:commons-lang3:${property("commons-lang.version")}")
+    implementation(libs.apache.commonsLang)
     implementation("javax.annotation:javax.annotation-api:${property("javax.version")}")
 
     implementation("org.jline:jline:${property("jline.version")}")
@@ -109,13 +109,13 @@ dependencies {
     annotationProcessor("info.picocli:picocli-codegen:${property("picocli.version")}")
     implementation("com.google.guava:guava:${property("guava.version")}")
     implementation("com.google.code.gson:gson:${property("gson.version")}")
-    implementation("commons-io:commons-io:${property("commons-io.version")}")
+    implementation(libs.apache.commonsIO)
     implementation("org.tinylog:tinylog-api:${property("tinylog.version")}")
     implementation("org.tinylog:tinylog-impl:${property("tinylog.version")}")
     implementation("org.jetbrains:annotations:${property("jetbrains-annotations.version")}")
-    implementation("org.bouncycastle:bcprov-jdk18on:${property("bouncycastle.version")}")
-    implementation("org.bouncycastle:bcpkix-jdk18on:${property("bouncycastle.version")}")
-    implementation("com.hivemq:hivemq-mqtt-client:${property("hivemq-client.version")}")
+    implementation(libs.bouncycastle.prov)
+    implementation(libs.bouncycastle.pkix)
+    implementation(libs.hivemq.mqttClient)
     implementation("io.netty:netty-handler:${property("netty.version")}")
     implementation("io.netty:netty-codec-http:${property("netty.version")}")
     implementation("io.netty:netty-transport-native-epoll:${property("netty.version")}:linux-x86_64")
@@ -236,8 +236,8 @@ tasks.test {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:${property("junit-jupiter.version")}")
-    testImplementation("org.mockito:mockito-core:${property("mockito.version")}")
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockito)
     testImplementation("com.squareup.okhttp3:mockwebserver:${property("ok-http.version")}")
     testImplementation("com.ginsberg:junit5-system-exit:${property("system-exit.version")}")
 
@@ -264,8 +264,8 @@ val integrationTestRuntimeOnly: Configuration by configurations.getting {
 
 dependencies {
     integrationTestImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemq-testcontainer.version")}")
-    integrationTestImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
-    integrationTestImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
+    integrationTestImplementation(libs.testcontainers)
+    integrationTestImplementation(libs.awaitility)
 }
 
 val integrationTest by tasks.registering(Test::class) {
@@ -292,8 +292,8 @@ val systemTestRuntimeOnly: Configuration by configurations.getting {
 
 dependencies {
     systemTestImplementation("com.hivemq:hivemq-testcontainer-junit5:${property("hivemq-testcontainer.version")}")
-    systemTestImplementation("org.testcontainers:testcontainers:${property("testcontainers.version")}")
-    systemTestImplementation("org.awaitility:awaitility:${property("awaitility.version")}")
+    systemTestImplementation(libs.testcontainers)
+    systemTestImplementation(libs.awaitility)
     systemTestImplementation("com.hivemq:hivemq-community-edition-embedded:${property("hivemq-community-edition-embedded.version")}")
     systemTestImplementation("org.junit-pioneer:junit-pioneer:${property("junit-pioneer.version")}")
 }
