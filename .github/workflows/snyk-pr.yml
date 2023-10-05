@@ -11,17 +11,19 @@ jobs:
 
     steps:
       - name: Setup Java 8
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '8'
+          java-version: |
+            8
+            11
 
       - uses: actions/checkout@v3
         with:
           path: mqtt-cli
 
       - name: Check for new issues
-        uses: hivemq/hivemq-snyk-composite-action@v1
+        uses: hivemq/hivemq-snyk-composite-action@v2.0.0
         with:
           snyk-args: --configuration-matching=^runtimeClasspath$ mqtt-cli
           snyk-token: ${{ secrets.SNYK_TOKEN }}
