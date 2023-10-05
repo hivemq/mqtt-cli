@@ -11,19 +11,22 @@ jobs:
 
     steps:
       - name: Setup Java 8
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '8'
+          java-version: |
+            8
+            11
 
       - uses: actions/checkout@v3
         with:
           path: mqtt-cli
 
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+
       - name: Run Snyk monitor
-        uses: snyk/actions/gradle-jdk11@master
+        shell: bash
+        run: snyk monitor --configuration-matching=^runtimeClasspath$ --target-reference=${{ github.ref_name }} mqtt-cli
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          command: monitor
-          args: --configuration-matching=^runtimeClasspath$ --target-reference=${{ github.ref_name }} mqtt-cli
