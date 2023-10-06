@@ -339,7 +339,7 @@ public class TlsOptions {
                     i++;
                 }
             }
-            trustManagerFactory = TrustManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(keyStore);
         } else if (defaultTruststoreExists) {
             final String defaultTruststorePassword = defaultCLIProperties.getTruststorePassword();
