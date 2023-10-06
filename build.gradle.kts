@@ -377,8 +377,8 @@ tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 //checks for java installations prior the execution.
 
 cliNative {
-    graalVersion.set(property("graal.version").toString())
-    javaVersion.set(property("java-native.version").toString())
+    graalVersion.set(libs.versions.graal)
+    javaVersion.set(libs.versions.javaNative)
 }
 
 //reflection configuration files are currently created manually with the command: ./gradlew -Pagent agentMainRun --stacktrace
@@ -388,7 +388,7 @@ val agentMainRun by tasks.registering(JavaExec::class) {
     group = "native"
 
     val launcher = javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(project.property("java-native.version").toString()))
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.javaNative.get()))
         vendor.set(JvmVendorSpec.GRAAL_VM)
 
     }
@@ -399,7 +399,7 @@ val agentMainRun by tasks.registering(JavaExec::class) {
 
 val nativeImageOptions by graalvmNative.binaries.named("main") {
     javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(property("java-native.version").toString()))
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.javaNative.get()))
         vendor.set(JvmVendorSpec.GRAAL_VM)
     })
     buildArgs.add("-Dio.netty.noUnsafe=true")
