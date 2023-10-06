@@ -50,8 +50,14 @@ application {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
+}
+
+tasks.compileJava {
+    javaCompiler.set(javaToolchains.compilerFor {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    })
 }
 
 tasks.jar {
@@ -292,12 +298,6 @@ dependencies {
     systemTestImplementation("org.junit-pioneer:junit-pioneer:${property("junit-pioneer.version")}")
 }
 
-tasks.named<JavaCompile>("compileSystemTestJava") {
-    javaCompiler.set(javaToolchains.compilerFor {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    })
-}
-
 val systemTest by tasks.registering(Test::class) {
     group = "verification"
     description = "Runs system tests."
@@ -305,9 +305,6 @@ val systemTest by tasks.registering(Test::class) {
     classpath = sourceSets["systemTest"].runtimeClasspath
     useJUnitPlatform()
     shouldRunAfter(tasks.test)
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    })
     dependsOn(tasks.shadowJar)
     systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
     systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
@@ -322,9 +319,6 @@ val systemTestNative by tasks.registering(Test::class) {
     classpath = sourceSets["systemTest"].runtimeClasspath
     useJUnitPlatform()
     shouldRunAfter(tasks.test)
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    })
     dependsOn(tasks.nativeCompile)
     systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
     systemProperties["cliExec"] =
