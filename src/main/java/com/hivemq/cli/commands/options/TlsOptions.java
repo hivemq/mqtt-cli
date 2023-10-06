@@ -79,7 +79,7 @@ public class TlsOptions {
     private @Nullable Collection<String> cipherSuites;
 
     @CommandLine.Option(names = {"--tls-version"},
-                        description = "The TLS protocol version to use (default: {'TLSv.1.2'})")
+                        description = "The TLS protocol version to use (default: {'" + DEFAULT_TLS_VERSION + "'})")
     private @Nullable Collection<String> supportedTLSVersions;
 
     @SuppressWarnings("unused")
