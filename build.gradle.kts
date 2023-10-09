@@ -291,7 +291,7 @@ val systemTestRuntimeOnly: Configuration by configurations.getting {
 }
 
 dependencies {
-    systemTestImplementation(libs.hivemq.testcontainer.junit)
+    systemTestImplementation(libs.hivemq.testcontainer.junit5)
     systemTestImplementation(libs.testcontainers)
     systemTestImplementation(libs.awaitility)
     systemTestImplementation(libs.hivemq.communityEditionEmbedded)
