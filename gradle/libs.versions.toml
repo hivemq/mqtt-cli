@@ -1,0 +1,89 @@
+[versions]
+apache-commonsIO = "2.13.0"
+apache-commonsLang = "3.12.0"
+apache-commonsText = "1.10.0"
+awaitility = "4.2.0"
+bouncycastle = "1.75"
+dagger = "2.46.1"
+findbugs = "3.0.2"
+graal = "22.3.0"
+graalvm-nativeImage-svm = "22.0.0.2"
+gson = "2.10.1"
+gsonFire = "1.8.5"
+guava = "32.0.1-jre"
+hivemq-communityEditionEmbedded = "2023.4"
+hivemq-mqttClient = "1.3.2"
+hivemq-testcontainer = "2.0.0"
+javaNative = "17"
+javax-annotation-api = "1.3.2"
+jetbrains-annotations = "23.1.0"
+jline = "3.21.0"
+junit-jupiter = "5.9.3"
+junit-pioneer = "2.0.1"
+junit-systemExit = "1.1.2"
+mockito = "4.11.0"
+netty = "4.1.94.Final"
+okhttp = "4.11.0"
+openCsv = "5.7.1"
+picocli = "4.7.0"
+swagger-annotations = "1.6.11"
+testcontainers = "1.18.3"
+tinylog = "2.6.2"
+
+[libraries]
+apache-commonsIO = { module = "commons-io:commons-io", version.ref = "apache-commonsIO" }
+apache-commonsLang = { module = "org.apache.commons:commons-lang3", version.ref = "apache-commonsLang" }
+apache-commonsText = { module = "org.apache.commons:commons-text", version.ref = "apache-commonsText" }
+awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
+bouncycastle-prov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-pkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+findbugs = { module = "com.google.code.findbugs:jsr305", version.ref = "findbugs" }
+graalvm-nativeImage-svm = { module = "org.graalvm.nativeimage:svm", version.ref = "graalvm-nativeImage-svm" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+gsonFire = { module = "io.gsonfire:gson-fire", version.ref = "gsonFire" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+hivemq-communityEditionEmbedded = { module = "com.hivemq:hivemq-community-edition-embedded", version.ref = "hivemq-communityEditionEmbedded" }
+hivemq-enterprise = { module = "com.hivemq:hivemq-enterprise" }
+hivemq-mqttClient = { module = "com.hivemq:hivemq-mqtt-client", version.ref = "hivemq-mqttClient" }
+hivemq-swarm = { module = "com.hivemq:hivemq-swarm" }
+hivemq-testcontainer-junit5 = { module = "com.hivemq:hivemq-testcontainer-junit5", version.ref = "hivemq-testcontainer" }
+javax-annotation-api = { module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotation-api" }
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
+jline = { module = "org.jline:jline", version.ref = "jline" }
+jline-terminal-jansi = { module = "org.jline:jline-terminal-jansi", version.ref = "jline" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+junit-pioneer = { module = "org.junit-pioneer:junit-pioneer", version.ref = "junit-pioneer" }
+junit-systemExit = { module = "com.ginsberg:junit5-system-exit", version.ref = "junit-systemExit" }
+junit-vintageEngine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit-jupiter" }
+mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+netty-codec-http = { module = "io.netty:netty-codec-http", version.ref = "netty" }
+netty-handler = { module = "io.netty:netty-handler", version.ref = "netty" }
+netty-transport-native-epoll = { module = "io.netty:netty-transport-native-epoll", version.ref = "netty" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+okhttp-mockWebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
+openCsv = { module = "com.opencsv:opencsv", version.ref = "openCsv" }
+picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
+picocli-codegen = { module = "info.picocli:picocli-codegen", version.ref = "picocli" }
+picocli-shellJline = { module = "info.picocli:picocli-shell-jline3", version.ref = "picocli" }
+swagger-annotations = { module = "io.swagger:swagger-annotations", version.ref = "swagger-annotations" }
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+tinylog-api = { module = "org.tinylog:tinylog-api", version.ref = "tinylog" }
+tinylog-impl = { module = "org.tinylog:tinylog-impl", version.ref = "tinylog" }
+
+[bundles]
+
+[plugins]
+defaults = { id = "io.github.sgtsilvio.gradle.defaults", version = "0.2.0" }
+forbiddenApis = { id = "de.thetaphi.forbiddenapis", version = "3.5.1" }
+gitPublish = { id = "org.ajoberstar.git-publish", version = "3.0.0" }
+githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.4.1" }
+graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.9.27" }
+jib = { id = "com.google.cloud.tools.jib", version = "3.3.2" }
+launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.4" }
+license = { id = "com.github.hierynomus.license", version = "0.16.1" }
+nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.4.0" }
+openapi-generator = { id = "org.openapi.generator", version = "4.3.1" } # >= 5.0.0 breaks the tasks
+shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
