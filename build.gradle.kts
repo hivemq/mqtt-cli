@@ -263,7 +263,7 @@ val integrationTestRuntimeOnly: Configuration by configurations.getting {
 }
 
 dependencies {
-    integrationTestImplementation(libs.hivemq.testcontainer.junit)
+    integrationTestImplementation(libs.hivemq.testcontainer.junit5)
     integrationTestImplementation(libs.testcontainers)
     integrationTestImplementation(libs.awaitility)
 }
