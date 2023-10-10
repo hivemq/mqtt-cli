@@ -484,11 +484,9 @@ val buildBrewZip by tasks.registering(Zip::class) {
     }
 }
 
-val buildBrewFormula by tasks.registering(Copy::class) {
-    dependsOn(buildBrewZip)
-
+val buildBrewFormula by tasks.registering(Sync::class) {
     from("packages/homebrew/mqtt-cli.rb")
-    into(layout.buildDirectory.dir("packages/homebrew"))
+    into(layout.buildDirectory.dir("packages/homebrew/formula"))
     filter {
         it.replace("@@description@@", project.description!!)
             .replace("@@version@@", project.version.toString())
@@ -609,7 +607,7 @@ gitPublish {
     repoUri.set("https://github.com/hivemq/homebrew-mqtt-cli.git")
     branch.set("master")
     commitMessage.set("Release version v${project.version}")
-    contents.from(buildBrewFormula) { include("mqtt-cli.rb") }
+    contents.from(buildBrewFormula)
 }
 
 /* ******************** docker ******************** */
