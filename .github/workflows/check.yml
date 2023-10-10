@@ -16,9 +16,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: |
-            8
-            11
+          java-version: 11
           cache: gradle
       - name: Login to Docker Hub
         uses: docker/login-action@v2
