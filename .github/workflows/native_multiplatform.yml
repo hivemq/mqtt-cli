@@ -6,13 +6,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest-xlarge, windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          version: '22.3.0'
+          version: '23.0.1'
           java-version: '17'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
