@@ -14,7 +14,9 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: |
+            8
+            11
           cache: gradle
       - name: Setup GraalVM
         uses: graalvm/setup-graalvm@v1
