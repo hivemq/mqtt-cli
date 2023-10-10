@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.utils.cli;
 
-import com.hivemq.cli.utils.OrphanProcessCleanup;
 import com.hivemq.cli.utils.cli.io.ProcessIO;
 import com.hivemq.cli.utils.cli.results.ExecutionResultAsync;
 import org.apache.commons.io.FileUtils;
@@ -47,6 +46,7 @@ public class MqttCliAsyncExtension implements AfterEachCallback {
         for (final Process startedProcess : startedProcesses) {
             startedProcess.destroyForcibly();
             startedProcess.waitFor();
+            System.setProperty(context.getUniqueId(), String.valueOf(startedProcess.pid()));
         }
         if (temporaryHomeDir != null) {
             FileUtils.deleteDirectory(temporaryHomeDir.toFile());
@@ -85,11 +85,10 @@ public class MqttCliAsyncExtension implements AfterEachCallback {
         processBuilder.environment().putAll(environmentVariables);
         final Process process = processBuilder.start();
 
+
         final ProcessIO processIO = ProcessIO.startReading(process);
-        final Process cliProcess = OrphanProcessCleanup.startOrphanCleanupProcess(process);
 
         startedProcesses.add(process);
-        startedProcesses.add(cliProcess);
 
         return new ExecutionResultAsync(processIO, String.join(" ", fullCommand));
     }

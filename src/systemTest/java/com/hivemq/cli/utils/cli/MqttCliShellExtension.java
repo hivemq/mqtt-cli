@@ -17,7 +17,6 @@
 package com.hivemq.cli.utils.cli;
 
 import com.hivemq.cli.utils.MqttVersionConverter;
-import com.hivemq.cli.utils.OrphanProcessCleanup;
 import com.hivemq.cli.utils.broker.HiveMQExtension;
 import com.hivemq.cli.utils.cli.io.LogWaiter;
 import com.hivemq.cli.utils.cli.io.ProcessIO;
@@ -51,7 +50,6 @@ public class MqttCliShellExtension implements BeforeEachCallback, AfterEachCallb
     private @Nullable ProcessIO processIO;
     private @Nullable Process process;
     private @Nullable LogWaiter logWaiter;
-    private @Nullable Process orphanCleanupProcess;
     private int connectClientMarker = 0;
 
     private final @NotNull Map<String, String> envVariables;
@@ -71,7 +69,8 @@ public class MqttCliShellExtension implements BeforeEachCallback, AfterEachCallb
 
         // Start and await the start of the shell
         this.process = startShellMode(homeDir);
-        this.orphanCleanupProcess = OrphanProcessCleanup.startOrphanCleanupProcess(process);
+        System.setProperty(context.getUniqueId(), String.valueOf(process.pid()));
+
         this.processIO = ProcessIO.startReading(process);
         new AwaitOutput(processIO, null, String.join(" ", getShellCommand(homeDir))).awaitStdOut("mqtt>");
 
@@ -87,9 +86,6 @@ public class MqttCliShellExtension implements BeforeEachCallback, AfterEachCallb
         }
         if (process != null) {
             process.destroyForcibly();
-        }
-        if (orphanCleanupProcess != null) {
-            orphanCleanupProcess.destroyForcibly();
         }
     }
 

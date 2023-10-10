@@ -237,6 +237,7 @@ tasks.test {
 
 dependencies {
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.platformLauncher)
     testImplementation(libs.mockito)
     testImplementation(libs.okhttp.mockWebserver)
     testImplementation(libs.junit.systemExit)
