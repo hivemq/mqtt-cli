@@ -16,13 +16,7 @@ jobs:
           distribution: temurin
           java-version: 11
       - name: Setup GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: '17'
-          distribution: 'graalvm'
-          components: 'native-image'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          native-image-job-reports: 'true'
+        run: ./gradlew installNativeImageTooling
       - name: Compile native executable
         run: ./gradlew nativeCompile
       - name: Upload native executable
