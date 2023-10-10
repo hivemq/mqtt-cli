@@ -56,7 +56,7 @@ java {
 
 tasks.compileJava {
     javaCompiler.set(javaToolchains.compilerFor {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion.set(JavaLanguageVersion.of(11))
     })
 }
 
@@ -392,6 +392,8 @@ val agentMainRun by tasks.registering(JavaExec::class) {
         vendor.set(JvmVendorSpec.GRAAL_VM)
 
     }
+
+
     javaLauncher.set(launcher)
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set("com.hivemq.cli.graal.NativeMain")
