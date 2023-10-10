@@ -1,26 +1,31 @@
 name: GraalVM Native Image builds
-on: [push, pull_request]
+on: [ push, pull_request ]
 jobs:
   build:
     name: mqtt-cli native image for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest-xlarge, windows-latest, ubuntu-latest]
+        os: [ macos-latest-xlarge, windows-latest, ubuntu-latest ]
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: graalvm/setup-graalvm@v1
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+          cache: gradle
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
         with:
           java-version: '17'
           distribution: 'graalvm'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
-
       - name: Compile native executable
         run: ./gradlew nativeCompile
-
       - name: Upload native executable
         uses: actions/upload-artifact@v3
         with:
