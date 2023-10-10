@@ -57,12 +57,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, AfterEachCallback {
@@ -207,14 +209,17 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     }
 
     public @NotNull List<ConnectPacket> getConnectPackets() {
+        await().atMost(Duration.ofSeconds(3)).until(() -> connectPackets != null && !connectPackets.isEmpty());
         return Objects.requireNonNull(connectPackets);
     }
 
     public @NotNull List<ConnackPacket> getConnackPackets() {
+        await().atMost(Duration.ofSeconds(3)).until(() -> connackPackets != null && !connackPackets.isEmpty());
         return Objects.requireNonNull(connackPackets);
     }
 
     public @NotNull List<PublishPacket> getPublishPackets() {
+        await().atMost(Duration.ofSeconds(3)).until(() -> publishPackets != null && !publishPackets.isEmpty());
         return Objects.requireNonNull(publishPackets);
     }
 
