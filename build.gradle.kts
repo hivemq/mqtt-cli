@@ -485,6 +485,8 @@ val buildBrewZip by tasks.registering(Zip::class) {
 }
 
 val buildBrewFormula by tasks.registering(Sync::class) {
+    dependsOn(buildBrewZip)
+
     from("packages/homebrew/mqtt-cli.rb")
     into(layout.buildDirectory.dir("packages/homebrew/formula"))
     filter {
