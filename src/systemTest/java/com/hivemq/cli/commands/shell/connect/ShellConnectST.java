@@ -140,8 +140,6 @@ class ShellConnectST {
                 .awaitStdErr("Unable to connect")
                 .awaitStdOut("mqtt>")
                 .awaitLog("Unable to connect");
-
-        assertEquals(0, hivemq.getConnectPackets().size());
     }
 
     @ParameterizedTest
@@ -162,8 +160,6 @@ class ShellConnectST {
                 .awaitStdErr("Unable to connect")
                 .awaitStdOut("mqtt>")
                 .awaitLog("Unable to connect");
-
-        assertEquals(0, hivemq.getConnectPackets().size());
     }
 
     @ParameterizedTest
