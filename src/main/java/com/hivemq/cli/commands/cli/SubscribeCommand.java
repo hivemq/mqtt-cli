@@ -22,6 +22,7 @@ import com.hivemq.cli.commands.options.DebugOptions;
 import com.hivemq.cli.commands.options.HelpOptions;
 import com.hivemq.cli.commands.options.SubscribeOptions;
 import com.hivemq.cli.mqtt.MqttClientExecutor;
+import com.hivemq.cli.mqtt.exception.SigpipeException;
 import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.MqttClient;
 import org.jetbrains.annotations.NotNull;
@@ -115,6 +116,8 @@ public class SubscribeCommand implements Callable<Integer> {
 
         try {
             stay();
+        } catch (final SigpipeException exception) {
+            return 0;
         } catch (final InterruptedException exception) {
             LoggerUtils.logCommandError("Unable to stay", exception, debugOptions);
             return 1;
@@ -125,6 +128,9 @@ public class SubscribeCommand implements Callable<Integer> {
 
     private void stay() throws InterruptedException {
         while (Objects.requireNonNull(subscribeClient).getState().isConnectedOrReconnect()) {
+            if (System.out.checkError()) {
+                throw new SigpipeException("Sigpipe signal detected.");
+            }
             Thread.sleep(IDLE_TIME);
         }
     }
@@ -144,7 +150,8 @@ public class SubscribeCommand implements Callable<Integer> {
                 subscribeOptions +
                 ", debugOptions=" +
                 debugOptions +
-                ", helpOptions=" + helpOptions +
+                ", helpOptions=" +
+                helpOptions +
                 '}';
     }
 }
