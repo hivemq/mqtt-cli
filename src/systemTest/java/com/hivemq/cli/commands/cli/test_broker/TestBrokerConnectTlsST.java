@@ -195,6 +195,34 @@ class TestBrokerConnectTlsST {
 
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_tls_pem_format_via_folder(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/capath/pem").getPath();
+
+        final List<String> testCommand = List.of("test",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--capath",
+                certificateAuthorityPublicKey);
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand);
+        executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
+
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_properties_tls_pem_format(
             @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
             @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
@@ -242,6 +270,34 @@ class TestBrokerConnectTlsST {
                 "--tls-version",
                 tlsVersion.toString(),
                 "--cafile",
+                certificateAuthorityPublicKey);
+
+        final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand);
+        executionResult.awaitStdOut("MQTT " + mqttVersion + ": OK");
+
+        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_tls_der_format_via_folder(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/capath/der").getPath();
+
+        final List<String> testCommand = List.of("test",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--capath",
                 certificateAuthorityPublicKey);
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(testCommand);

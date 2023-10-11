@@ -44,7 +44,8 @@ keytool -exportcert -alias ca -file $caFolder/$caCertName.cer -keystore $caFolde
 keytool -exportcert -alias ca -file $caFolder/$caCertName.pem -keystore $caFolder/$caKeystoreName.p12 -storepass $caKeystorePass -rfc
 ##JKS
 keytool -importkeystore -srckeystore $caFolder/$caKeystoreName.p12 -destkeystore $caFolder/$caKeystoreName.jks -srcstoretype PKCS12 -deststoretype JKS -srcstorepass $caKeystorePass -deststorepass $caKeystorePass -srcalias ca -destalias ca -srckeypass $caKeyPass -destkeypass $caKeyPass -noprompt
-
+mkdir -p $caFolder/capath/der && cp $caFolder/$caCertName.cer $caFolder/capath/der
+mkdir -p $caFolder/capath/pem && cp $caFolder/$caCertName.pem $caFolder/capath/pem
 
 
 #*****************************************#

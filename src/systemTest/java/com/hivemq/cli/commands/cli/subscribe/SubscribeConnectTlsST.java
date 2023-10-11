@@ -247,6 +247,48 @@ class SubscribeConnectTlsST {
 
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_tls_pem_format_via_folder(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/capath/pem").getPath();
+
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-t",
+                "topic",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--capath",
+                certificateAuthorityPublicKey,
+                "-d");
+
+        final ExecutionResultAsync executionResultAsync = mqttCli.executeAsync(subscribeCommand);
+        executionResultAsync.awaitStdOut("sending CONNECT");
+        executionResultAsync.awaitStdOut("received CONNACK");
+        executionResultAsync.awaitStdOut("sending SUBSCRIBE");
+        executionResultAsync.awaitStdOut("received SUBACK");
+
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
+            subscribeAssertion.setSubscriptions(expectedSubscriptions);
+        });
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void test_properties_tls_pem_format(
             @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
             @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
@@ -312,6 +354,48 @@ class SubscribeConnectTlsST {
                 "--tls-version",
                 tlsVersion.toString(),
                 "--cafile",
+                certificateAuthorityPublicKey,
+                "-d");
+
+        final ExecutionResultAsync executionResultAsync = mqttCli.executeAsync(subscribeCommand);
+        executionResultAsync.awaitStdOut("sending CONNECT");
+        executionResultAsync.awaitStdOut("received CONNACK");
+        executionResultAsync.awaitStdOut("sending SUBSCRIBE");
+        executionResultAsync.awaitStdOut("received SUBACK");
+
+        assertConnectPacket(hivemq.getConnectPackets().get(0),
+                connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
+                        mqttVersion)));
+
+        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
+            subscribeAssertion.setSubscriptions(expectedSubscriptions);
+        });
+    }
+
+    @CartesianTest
+    @Timeout(value = 3, unit = TimeUnit.MINUTES)
+    void test_tls_der_format_via_folder(
+            @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
+            @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/capath/der").getPath();
+
+        final List<String> subscribeCommand = List.of("sub",
+                "-h",
+                hivemq.getHost(),
+                "-p",
+                String.valueOf(hivemq.getMqttTlsPort()),
+                "-V",
+                String.valueOf(mqttVersion),
+                "-i",
+                "cliTest",
+                "-t",
+                "topic",
+                "-s",
+                "--tls-version",
+                tlsVersion.toString(),
+                "--capath",
                 certificateAuthorityPublicKey,
                 "-d");
 
