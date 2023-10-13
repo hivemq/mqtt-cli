@@ -41,6 +41,7 @@ abstract class JsonFormatted {
     }
 
     private static class Mqtt5UserPropertySerializer implements JsonSerializer<Mqtt5UserProperties> {
+
         @Override
         public @NotNull JsonElement serialize(
                 final @NotNull Mqtt5UserProperties src,
@@ -49,8 +50,8 @@ abstract class JsonFormatted {
             final JsonArray userPropertiesArray = new JsonArray();
             src.asList().forEach(mqtt5UserProperty -> {
                 final JsonObject userPropertyObject = new JsonObject();
-                userPropertyObject.addProperty(mqtt5UserProperty.getName().toString(),
-                        mqtt5UserProperty.getValue().toString());
+                userPropertyObject.addProperty("name", mqtt5UserProperty.getName().toString());
+                userPropertyObject.addProperty("value", mqtt5UserProperty.getValue().toString());
                 userPropertiesArray.add(userPropertyObject);
             });
             return userPropertiesArray;
