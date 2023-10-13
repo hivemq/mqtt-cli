@@ -25,6 +25,7 @@ import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttTopic;
 import com.hivemq.client.mqtt.datatypes.MqttUtf8String;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
+import com.hivemq.client.mqtt.mqtt5.datatypes.Mqtt5UserProperties;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
 import org.jetbrains.annotations.NotNull;
@@ -33,9 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal"})
 public class JsonMqttPublish extends JsonFormatted {
@@ -50,7 +48,7 @@ public class JsonMqttPublish extends JsonFormatted {
     private @Nullable Long messageExpiryInterval;
     private @Nullable String responseTopic;
     private @Nullable String correlationData;
-    private @Nullable Map<String, String> userProperties;
+    private @Nullable Mqtt5UserProperties userProperties;
 
     public JsonMqttPublish(final @NotNull Mqtt3Publish publish, final boolean isBase64) {
         payload = payloadToJson(publish.getPayloadAsBytes(), isBase64);
@@ -78,12 +76,8 @@ public class JsonMqttPublish extends JsonFormatted {
                 .map(cd -> StandardCharsets.UTF_8.decode(cd).toString()) //
                 .orElse(null);
 
-        if (publish.getUserProperties().asList().size() > 0) {
-            userProperties = new HashMap<>();
-            publish.getUserProperties()
-                    .asList()
-                    .forEach(up -> Objects.requireNonNull(userProperties)
-                            .put(up.getName().toString(), up.getValue().toString()));
+        if (!publish.getUserProperties().asList().isEmpty()) {
+            userProperties = publish.getUserProperties();
         }
     }
 
