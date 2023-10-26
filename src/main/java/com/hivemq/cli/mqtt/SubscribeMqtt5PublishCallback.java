@@ -77,10 +77,6 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
             }
 
             if (printToStdout) {
-                if (System.out.checkError()) {
-                    //TODO: Handle SIGPIPE
-                    //throw new RuntimeException("SIGNAL RECEIVED. PIPE CLOSED");
-                }
                 System.out.println(message);
             }
 
