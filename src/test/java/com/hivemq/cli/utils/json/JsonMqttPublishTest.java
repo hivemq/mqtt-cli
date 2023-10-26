@@ -17,6 +17,7 @@ package com.hivemq.cli.utils.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttTopic;
@@ -32,18 +33,22 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 
 import static com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator.UNSPECIFIED;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class JsonMqttPublishTest {
 
-    public static final @NotNull Type STRING_STRING_MAP = new TypeToken<Map<String, String>>() {}.getType();
+    public static final @NotNull Type STRING_STRING_MAP = new TypeToken<Map<String, String>>() {
+    }.getType();
     private static final @NotNull Gson GSON = new GsonBuilder().setPrettyPrinting().setLenient().create();
     public static final byte @NotNull [] BYTES = "hello".getBytes(StandardCharsets.UTF_8);
 
@@ -111,14 +116,16 @@ class JsonMqttPublishTest {
         when(publish.getResponseTopic()).thenReturn(Optional.of(MqttTopic.of("myResponseTopic")));
         when(publish.getCorrelationData()).thenReturn(Optional.of(ByteBuffer.wrap(BYTES).asReadOnlyBuffer()));
 
-        final Mqtt5UserProperties userProperties = Mqtt5UserProperties.of(
+        final Mqtt5UserProperties userProperties = Mqtt5UserProperties.of(//
                 Mqtt5UserProperty.of("name1", "value1"),
-                Mqtt5UserProperty.of("name2", "value2"));
+                Mqtt5UserProperty.of("name1", "value2"),
+                Mqtt5UserProperty.of("name2", "value3"));
         when(publish.getUserProperties()).thenReturn(userProperties);
 
         final JsonMqttPublish jsonMqttPublish = new JsonMqttPublish(publish, false);
         System.out.println(jsonMqttPublish);
-        final Map<String, Object> map = GSON.fromJson(jsonMqttPublish.toString(), new TypeToken<Map<String, Object>>() {}.getType());
+        final Map<String, Object> map = GSON.fromJson(jsonMqttPublish.toString(), new TypeToken<Map<String, Object>>() {
+        }.getType());
 
         assertEquals("hello", map.get("payload"));
         assertEquals("myTopic", map.get("topic"));
@@ -132,12 +139,17 @@ class JsonMqttPublishTest {
         assertEquals("hello", map.get("correlationData"));
         assertEquals("myResponseTopic", map.get("responseTopic"));
 
-        final Object userPropertiesMap = map.get("userProperties");
-        assertTrue(userPropertiesMap instanceof Map);
-        @SuppressWarnings("unchecked")
-        final Map<String, String> userPropertiesMapCasted = (Map<String, String>) userPropertiesMap;
-        assertEquals("value1", userPropertiesMapCasted.get("name1"));
-        assertEquals("value2", userPropertiesMapCasted.get("name2"));
+        final Object userPropertiesArrayList = map.get("userProperties");
+        assertTrue(userPropertiesArrayList instanceof ArrayList);
+        @SuppressWarnings("unchecked") //
+        final ArrayList<LinkedTreeMap<String, String>> userPropertiesMapCasted =
+                (ArrayList<LinkedTreeMap<String, String>>) userPropertiesArrayList;
+        assertEquals("name1", userPropertiesMapCasted.get(0).get("name"));
+        assertEquals("value1", userPropertiesMapCasted.get(0).get("value"));
+        assertEquals("name1", userPropertiesMapCasted.get(1).get("name"));
+        assertEquals("value2", userPropertiesMapCasted.get(1).get("value"));
+        assertEquals("name2", userPropertiesMapCasted.get(2).get("name"));
+        assertEquals("value3", userPropertiesMapCasted.get(2).get("value"));
     }
 
     @Test
