@@ -58,7 +58,6 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 junit-pioneer = { module = "org.junit-pioneer:junit-pioneer", version.ref = "junit-pioneer" }
 junit-platformLauncher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platformLauncher" }
 junit-systemExit = { module = "com.ginsberg:junit5-system-exit", version.ref = "junit-systemExit" }
-junit-vintageEngine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit-jupiter" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 netty-codec-http = { module = "io.netty:netty-codec-http", version.ref = "netty" }
 netty-handler = { module = "io.netty:netty-handler", version.ref = "netty" }
@@ -74,8 +73,6 @@ swagger-annotations = { module = "io.swagger:swagger-annotations", version.ref =
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 tinylog-api = { module = "org.tinylog:tinylog-api", version.ref = "tinylog" }
 tinylog-impl = { module = "org.tinylog:tinylog-impl", version.ref = "tinylog" }
-
-[bundles]
 
 [plugins]
 defaults = { id = "io.github.sgtsilvio.gradle.defaults", version = "0.2.0" }
