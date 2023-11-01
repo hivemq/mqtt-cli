@@ -5,7 +5,6 @@ apache-commonsText = "1.10.0"
 awaitility = "4.2.0"
 bouncycastle = "1.75"
 dagger = "2.46.1"
-findbugs = "3.0.2"
 graal = "22.3.0"
 graalvm-nativeImage-svm = "22.0.0.2"
 gson = "2.10.1"
@@ -18,6 +17,7 @@ javaNative = "17"
 javax-annotation-api = "1.3.2"
 jetbrains-annotations = "23.1.0"
 jline = "3.21.0"
+jsr305 = "3.0.2"
 junit-jupiter = "5.9.3"
 junit-pioneer = "2.0.1"
 junit-platformLauncher = "1.9.3"
@@ -36,11 +36,10 @@ apache-commonsIO = { module = "commons-io:commons-io", version.ref = "apache-com
 apache-commonsLang = { module = "org.apache.commons:commons-lang3", version.ref = "apache-commonsLang" }
 apache-commonsText = { module = "org.apache.commons:commons-text", version.ref = "apache-commonsText" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
-bouncycastle-prov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-pkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-prov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
-findbugs = { module = "com.google.code.findbugs:jsr305", version.ref = "findbugs" }
 graalvm-nativeImage-svm = { module = "org.graalvm.nativeimage:svm", version.ref = "graalvm-nativeImage-svm" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 gsonFire = { module = "io.gsonfire:gson-fire", version.ref = "gsonFire" }
@@ -54,6 +53,7 @@ javax-annotation-api = { module = "javax.annotation:javax.annotation-api", versi
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 jline = { module = "org.jline:jline", version.ref = "jline" }
 jline-terminal-jansi = { module = "org.jline:jline-terminal-jansi", version.ref = "jline" }
+jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 junit-pioneer = { module = "org.junit-pioneer:junit-pioneer", version.ref = "junit-pioneer" }
 junit-platformLauncher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platformLauncher" }

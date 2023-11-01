@@ -90,7 +90,7 @@ repositories {
 
 dependencies {
     implementation(libs.swagger.annotations)
-    implementation(libs.findbugs)
+    implementation(libs.jsr305)
     implementation(libs.okhttp)
     implementation(libs.okhttp.loggingInterceptor)
     implementation(libs.gsonFire)
