@@ -267,8 +267,8 @@ abstract class AbstractMqttClientExecutor {
     }
 
     private @NotNull Mqtt5Client connectMqtt5Client(
-            final @NotNull ConnectOptions connectOptions,
-            final @Nullable SubscribeOptions subscribeOptions) throws Exception {
+            final @NotNull ConnectOptions connectOptions, final @Nullable SubscribeOptions subscribeOptions)
+            throws Exception {
         final MqttClientBuilder clientBuilder = createBuilder(connectOptions);
         final Mqtt5Client client = clientBuilder.useMqttVersion5()
                 .advancedConfig()
@@ -316,9 +316,6 @@ abstract class AbstractMqttClientExecutor {
         client.toAsync()
                 .publishes(MqttGlobalPublishFilter.REMAINING,
                         buildRemainingMqtt5PublishesCallback(subscribeOptions, client));
-
-
-        System.setProperty("javax.net.debug", "ssl:handshake");
 
         mqtt5Connect(client, connectBuilder.build());
 
