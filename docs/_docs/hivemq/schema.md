@@ -27,6 +27,7 @@ mqtt hivemq schema
 |---------|-------------------------------------|
 | create  | See [Create Schema](#create-schema) |
 | get     | See [Get Schema](#get-schema)       |
+| list    | See [List Schemas](#list-schemas)   |
 | delete  | See [Delete Schema](#delete-schema) |
 
 ***
