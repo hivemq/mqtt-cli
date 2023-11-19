@@ -40,6 +40,11 @@ import com.hivemq.cli.commands.hivemq.schema.SchemaDeleteCommand;
 import com.hivemq.cli.commands.hivemq.schema.SchemaGetCommand;
 import com.hivemq.cli.commands.hivemq.schema.SchemaListCommand;
 import com.hivemq.cli.commands.hivemq.schema.SchemaCommand;
+import com.hivemq.cli.commands.hivemq.script.ScriptCommand;
+import com.hivemq.cli.commands.hivemq.script.ScriptCreateCommand;
+import com.hivemq.cli.commands.hivemq.script.ScriptDeleteCommand;
+import com.hivemq.cli.commands.hivemq.script.ScriptGetCommand;
+import com.hivemq.cli.commands.hivemq.script.ScriptListCommand;
 import dagger.Module;
 import dagger.Provides;
 import org.jetbrains.annotations.NotNull;
@@ -78,6 +83,11 @@ class HiveMqModule {
             final @NotNull SchemaListCommand schemaListCommand,
             final @NotNull SchemaCreateCommand schemaCreateCommand,
             final @NotNull SchemaDeleteCommand schemaDeleteCommand,
+            final @NotNull ScriptCommand scriptCommand,
+            final @NotNull ScriptGetCommand scriptGetCommand,
+            final @NotNull ScriptListCommand scriptListCommand,
+            final @NotNull ScriptCreateCommand scriptCreateCommand,
+            final @NotNull ScriptDeleteCommand scriptDeleteCommand,
             final @NotNull CommandLineConfig config,
             final @NotNull CommandErrorMessageHandler handler) {
 
@@ -98,6 +108,10 @@ class HiveMqModule {
                 .addSubcommand(schemaListCommand)
                 .addSubcommand(schemaCreateCommand)
                 .addSubcommand(schemaDeleteCommand);
+        final CommandLine scriptCommandLine = new CommandLine(scriptCommand).addSubcommand(scriptGetCommand)
+                .addSubcommand(scriptListCommand)
+                .addSubcommand(scriptCreateCommand)
+                .addSubcommand(scriptDeleteCommand);
 
         return new CommandLine(hivemqCliCommand).addSubcommand(new CommandLine(exportCommand).addSubcommand(
                         exportClientsCommand))
@@ -105,6 +119,7 @@ class HiveMqModule {
                 .addSubcommand(behaviorPolicyCommandLine)
                 .addSubcommand(behaviorStateCommandLine)
                 .addSubcommand(schemaCommandLine)
+                .addSubcommand(scriptCommandLine)
                 .setColorScheme(config.getColorScheme())
                 .setUsageHelpWidth(config.getCliWidth())
                 .setParameterExceptionHandler(handler);
