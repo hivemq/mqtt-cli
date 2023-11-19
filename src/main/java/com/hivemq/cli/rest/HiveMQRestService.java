@@ -23,6 +23,7 @@ import com.hivemq.cli.openapi.Configuration;
 import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
+import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
 import com.hivemq.cli.openapi.hivemq.DataHubStateApi;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import okhttp3.OkHttpClient;
@@ -69,6 +70,12 @@ public class HiveMQRestService {
             final @NotNull String host, final double requestPerSecondLimit) {
         final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
         return new DataHubSchemasApi(apiClient);
+    }
+
+    public @NotNull DataHubScriptsApi getScriptsApi(
+            final @NotNull String host, final double requestPerSecondLimit) {
+        final ApiClient apiClient = buildApiClient(host, requestPerSecondLimit);
+        return new DataHubScriptsApi(apiClient);
     }
 
     private static @NotNull ApiClient buildApiClient(final @NotNull String host, final double requestsPerSecondLimit) {
