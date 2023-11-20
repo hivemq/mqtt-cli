@@ -76,4 +76,13 @@ public class ScriptDeleteCommand implements Callable<Integer> {
         }
     }
 
+    @Override
+    public @NotNull String toString() {
+        return "DeleteScriptCommand{" +
+                "scriptId='" + scriptId + '\'' +
+                ", dataHubOptions=" + dataHubOptions +
+                ", outputFormatter=" + outputFormatter +
+                ", hiveMQRestService=" + hiveMQRestService +
+                '}';
+    }
 }

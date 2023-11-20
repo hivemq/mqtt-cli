@@ -77,7 +77,12 @@ public class ScriptCreateCommandTest {
 
     @Test
     void call_idMissing_error() {
-        assertEquals(2, commandLine.execute("--type=function", "--description=test", "--definition=" + SCRIPT_DEFINITION));
+        assertEquals(2, commandLine.execute("--type=transformation", "--description=test", "--definition=" + SCRIPT_DEFINITION));
+    }
+
+    @Test
+    void call_typeInvalid_error() {
+        assertEquals(2, commandLine.execute("--id=s1", "--type=invalid", "--description=test", "--definition=" + SCRIPT_DEFINITION));
     }
 
     @Test
@@ -85,14 +90,15 @@ public class ScriptCreateCommandTest {
         assertEquals(2, commandLine.execute("--id=s1", "--description=test", "--definition=" + SCRIPT_DEFINITION));
     }
 
+
     @Test
     void call_definitionMissing_error() {
-        assertEquals(2, commandLine.execute("--id=s1", "--type=function", "--description=test"));
+        assertEquals(2, commandLine.execute("--id=s1", "--type=transformation", "--description=test"));
     }
 
     @Test
-    void call_descriptionMissing_error() {
-        assertEquals(2, commandLine.execute("--id=s1", "--type=function", "--definition=" + SCRIPT_DEFINITION));
+    void call_optionalDescriptionMissing_success() {
+        assertEquals(0, commandLine.execute("--id=s1", "--type=transformation", "--definition=" + SCRIPT_DEFINITION));
     }
 
     @Test

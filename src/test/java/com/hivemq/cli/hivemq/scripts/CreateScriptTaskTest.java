@@ -56,7 +56,7 @@ public class CreateScriptTaskTest {
         final CreateScriptTask task = new CreateScriptTask(outputFormatter,
                 scriptsApi,
                 "script-1",
-                "JAVASCRIPT",
+                "TRANSFORMATION",
                 "Sample Script",
                 false,
                 ByteBuffer.wrap(SCRIPT_DEFINITION.getBytes()));
@@ -68,7 +68,7 @@ public class CreateScriptTaskTest {
         verify(scriptsApi, times(1)).createScript(scriptCaptor.capture());
         final Script createdScript = scriptCaptor.getValue();
         assertEquals("script-1", createdScript.getId());
-        assertEquals("JAVASCRIPT", createdScript.getFunctionType());
+        assertEquals("TRANSFORMATION", createdScript.getFunctionType());
         assertEquals("Sample Script", createdScript.getDescription());
         final String createdScriptDefinition = new String(java.util.Base64.getDecoder().decode(createdScript.getSource()));
         assertEquals(SCRIPT_DEFINITION, createdScriptDefinition);
@@ -79,7 +79,7 @@ public class CreateScriptTaskTest {
         final CreateScriptTask task = new CreateScriptTask(outputFormatter,
                 scriptsApi,
                 "script-1",
-                "JAVASCRIPT",
+                "TRANSFORMATION",
                 "Sample Script",
                 false,
                 ByteBuffer.wrap(new byte[]{}));

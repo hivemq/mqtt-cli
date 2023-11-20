@@ -29,6 +29,7 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "list",
@@ -94,6 +95,19 @@ public class ScriptListCommand implements Callable<Integer> {
         } else {
             return 1;
         }
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "ListScriptsCommand{" +
+                "functionTypes=" + Arrays.toString(functionTypes) +
+                ", scriptIds=" + Arrays.toString(scriptIds) +
+                ", fields=" + Arrays.toString(fields) +
+                ", limit=" + limit +
+                ", dataHubOptions=" + dataHubOptions +
+                ", outputFormatter=" + outputFormatter +
+                ", hiveMQRestService=" + hiveMQRestService +
+                '}';
     }
 
 }

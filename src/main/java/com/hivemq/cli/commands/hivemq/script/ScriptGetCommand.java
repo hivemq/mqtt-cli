@@ -28,6 +28,7 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "get",
@@ -81,5 +82,15 @@ public class ScriptGetCommand implements Callable<Integer> {
             return 1;
         }
     }
-    
+
+    @Override
+    public @NotNull String toString() {
+        return "GetScriptCommand{" +
+                "scriptId='" + scriptId + '\'' +
+                ", fields=" + Arrays.asList(fields) +
+                ", dataHubOptions=" + dataHubOptions +
+                ", outputFormatter=" + outputFormatter +
+                ", hiveMQRestService=" + hiveMQRestService +
+                '}';
+    }
 }
