@@ -68,7 +68,7 @@ public class ScriptCreateCommand implements Callable<Integer> {
     private @NotNull ScriptDefinitionOptions definitionOptions;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
-    @CommandLine.Option(names = {"--description"}, required = true, description = "The description of the script")
+    @CommandLine.Option(names = {"--description"}, required = false, description = "The description of the script")
     private @NotNull String description;
 
     @CommandLine.Mixin
@@ -124,7 +124,7 @@ public class ScriptCreateCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "ScriptCreateCommand{" +
+        return "CreateScriptCommand{" +
                 "scriptId='" + scriptId + '\'' +
                 ", functionType='" + functionType + '\'' +
                 ", printVersion=" + printVersion +

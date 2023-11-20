@@ -57,9 +57,6 @@ public class CreateScriptTask {
         final String definitionBase64 = java.util.Base64.getEncoder().encodeToString(definition.array());
         final Script script = new Script().id(scriptId).functionType(functionType).description(description).source(definitionBase64);
 
-        System.out.println("script.getId() = " + script.getId());
-        System.out.println("script.getFunctionType() = " + script.getFunctionType());
-
         final Script createdScript;
         try {
             createdScript = scriptsApi.createScript(script);

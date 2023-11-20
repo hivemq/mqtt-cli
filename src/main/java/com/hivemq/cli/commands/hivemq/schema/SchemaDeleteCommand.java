@@ -86,6 +86,8 @@ public class SchemaDeleteCommand implements Callable<Integer> {
                 dataHubOptions +
                 ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
                 '}';
     }
 }

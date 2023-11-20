@@ -171,6 +171,8 @@ public class SchemaCreateCommand implements Callable<Integer> {
                 dataHubOptions +
                 ", outputFormatter=" +
                 outputFormatter +
+                ", hiveMQRestService=" +
+                hiveMQRestService +
                 '}';
     }
 }
