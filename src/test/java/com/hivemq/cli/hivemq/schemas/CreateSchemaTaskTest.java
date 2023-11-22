@@ -42,8 +42,8 @@ import static org.mockito.Mockito.when;
 
 public class CreateSchemaTaskTest {
 
-    private final @NotNull DataHubSchemasApi schemasApi = mock(DataHubSchemasApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull DataHubSchemasApi schemasApi = mock();
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     @SuppressWarnings("FieldCanBeLocal")
     private final @NotNull String JSON_SCHEMA_DEFINITION = "{ \"type\": \"object\" }";

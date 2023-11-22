@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 public class ScriptCreateCommandTest {
 
-    private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
+    private final @NotNull HiveMQRestService hiveMQRestService = mock();
     private @NotNull OutputFormatter outputFormatter;
     private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final @NotNull JSON openapiSerialization = new JSON();

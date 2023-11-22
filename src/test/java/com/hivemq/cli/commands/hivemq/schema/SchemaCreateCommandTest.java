@@ -52,11 +52,11 @@ import static org.mockito.Mockito.when;
 
 public class SchemaCreateCommandTest {
 
-    private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
+    private final @NotNull HiveMQRestService hiveMQRestService = mock();
     private @NotNull OutputFormatter outputFormatter;
     private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final @NotNull JSON openapiSerialization = new JSON();
-    private final @NotNull DataHubSchemasApi schemasApi = mock(DataHubSchemasApi.class);
+    private final @NotNull DataHubSchemasApi schemasApi = mock();
 
     private @NotNull CommandLine commandLine;
 

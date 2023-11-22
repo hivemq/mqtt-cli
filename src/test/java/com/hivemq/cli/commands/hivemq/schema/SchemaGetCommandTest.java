@@ -37,9 +37,9 @@ import static org.mockito.Mockito.when;
 
 public class SchemaGetCommandTest {
 
-    private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
-    private final @NotNull DataHubSchemasApi schemasApi = mock(DataHubSchemasApi.class);
+    private final @NotNull HiveMQRestService hiveMQRestService = mock();
+    private final @NotNull OutputFormatter outputFormatter = mock();
+    private final @NotNull DataHubSchemasApi schemasApi = mock();
 
     private final @NotNull CommandLine commandLine =
             new CommandLine(new SchemaGetCommand(hiveMQRestService, outputFormatter));

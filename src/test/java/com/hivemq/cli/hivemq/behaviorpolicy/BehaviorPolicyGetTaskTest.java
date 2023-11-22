@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class BehaviorPolicyGetTaskTest {
 
     private final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi = mock(DataHubBehaviorPoliciesApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     private static final @NotNull String POLICY_ID = "policy-1";
 
