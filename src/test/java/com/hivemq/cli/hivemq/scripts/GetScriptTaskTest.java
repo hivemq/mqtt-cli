@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 class GetScriptTaskTest {
 
     private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     @Test
     void execute_scriptFound_printScript() throws ApiException {

@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 public class ListScriptsTaskTest {
 
     private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     @Test
     void execute_scriptIdsProvided_usedAsUrlParameter() throws ApiException {

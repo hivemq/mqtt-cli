@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 public class DeleteScriptTaskTest {
 
     private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     private static final @NotNull String SCRIPT_ID = "script-1";
 

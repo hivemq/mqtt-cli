@@ -41,9 +41,9 @@ import static org.mockito.Mockito.when;
 
 public class DataPolicyUpdateCommandTest {
 
-    private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
+    private final @NotNull HiveMQRestService hiveMQRestService = mock();
     private final @NotNull Gson gson = new Gson();
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
     private final @NotNull DataHubDataPoliciesApi policiesApi = mock(DataHubDataPoliciesApi.class);
 
     private final @NotNull CommandLine commandLine =

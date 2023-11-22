@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.nio.ByteBuffer;
+import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.when;
 public class CreateScriptTaskTest {
 
     private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     @SuppressWarnings("FieldCanBeLocal")
     private final @NotNull String SCRIPT_DEFINITION = "function transform(person) { return 'hello ' + person }";
@@ -70,7 +71,7 @@ public class CreateScriptTaskTest {
         assertEquals("script-1", createdScript.getId());
         assertEquals("TRANSFORMATION", createdScript.getFunctionType());
         assertEquals("Sample Script", createdScript.getDescription());
-        final String createdScriptDefinition = new String(java.util.Base64.getDecoder().decode(createdScript.getSource()));
+        final String createdScriptDefinition = new String(Base64.getDecoder().decode(createdScript.getSource()));
         assertEquals(SCRIPT_DEFINITION, createdScriptDefinition);
     }
 

@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 public class DataPolicyUpdateTaskTest {
 
     private final @NotNull DataHubDataPoliciesApi dataPoliciesApi = mock(DataHubDataPoliciesApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
     private final @NotNull ArgumentCaptor<DataPolicy> policyCaptor = ArgumentCaptor.forClass(DataPolicy.class);
     private final @NotNull Gson gson = new Gson();
 

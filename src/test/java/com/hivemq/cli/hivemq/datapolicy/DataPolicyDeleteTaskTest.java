@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 public class DataPolicyDeleteTaskTest {
 
     private final @NotNull DataHubDataPoliciesApi dataPoliciesApi = mock(DataHubDataPoliciesApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     private static final @NotNull String POLICY_ID = "policy-1";
 

@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 public class BehaviorPolicyListTaskTest {
 
     private final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi = mock(DataHubBehaviorPoliciesApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     @Test
     void execute_policyIdsProvided_usedAsUrlParameter() throws ApiException {

@@ -42,8 +42,8 @@ import static org.mockito.Mockito.when;
 
 public class ListSchemasTaskTest {
 
-    private final @NotNull DataHubSchemasApi schemasApi = mock(DataHubSchemasApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull DataHubSchemasApi schemasApi = mock();
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     @Test
     void execute_schemaIdsProvided_usedAsUrlParameter() throws ApiException {
