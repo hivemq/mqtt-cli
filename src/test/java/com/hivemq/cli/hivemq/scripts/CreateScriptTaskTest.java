@@ -18,6 +18,7 @@ package com.hivemq.cli.hivemq.scripts;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.hivemq.cli.commands.hivemq.datahub.FunctionType;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
@@ -57,7 +58,7 @@ public class CreateScriptTaskTest {
         final CreateScriptTask task = new CreateScriptTask(outputFormatter,
                 scriptsApi,
                 "script-1",
-                "TRANSFORMATION",
+                FunctionType.TRANSFORMATION,
                 "Sample Script",
                 false,
                 ByteBuffer.wrap(SCRIPT_DEFINITION.getBytes()));
@@ -80,7 +81,7 @@ public class CreateScriptTaskTest {
         final CreateScriptTask task = new CreateScriptTask(outputFormatter,
                 scriptsApi,
                 "script-1",
-                "TRANSFORMATION",
+                FunctionType.TRANSFORMATION,
                 "Sample Script",
                 false,
                 ByteBuffer.wrap(new byte[]{}));
@@ -95,7 +96,7 @@ public class CreateScriptTaskTest {
         final CreateScriptTask task = new CreateScriptTask(outputFormatter,
                 scriptsApi,
                 "script-1",
-                "TRANSFORMATION",
+                FunctionType.TRANSFORMATION,
                 "Sample Script",
                 true,
                 ByteBuffer.wrap(SCRIPT_DEFINITION.getBytes()));
@@ -109,7 +110,7 @@ public class CreateScriptTaskTest {
         assertEquals("script-1", createdScript.getId());
         assertEquals("TRANSFORMATION", createdScript.getFunctionType());
         assertEquals("Sample Script", createdScript.getDescription());
-        final String createdScriptDefinition = new String(java.util.Base64.getDecoder().decode(createdScript.getSource()));
+        final String createdScriptDefinition = new String(Base64.getDecoder().decode(createdScript.getSource()));
         assertEquals(SCRIPT_DEFINITION, createdScriptDefinition);
 
         final JsonObject versionObject = new JsonObject();
