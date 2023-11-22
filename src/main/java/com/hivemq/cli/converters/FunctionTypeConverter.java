@@ -16,20 +16,14 @@
 
 package com.hivemq.cli.converters;
 
+import com.hivemq.cli.commands.hivemq.datahub.FunctionType;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
-public class ScriptTypeConverter implements CommandLine.ITypeConverter<String> {
-
-    static final @NotNull String WRONG_INPUT_MESSAGE = "Value must be transformation only";
+public class FunctionTypeConverter implements CommandLine.ITypeConverter<FunctionType> {
 
     @Override
-    public @NotNull String convert(final @NotNull String s) throws Exception {
-        switch (s.toLowerCase()) {
-            case "transformation":
-                return "TRANSFORMATION";
-            default:
-                throw new Exception(WRONG_INPUT_MESSAGE);
-        }
+    public @NotNull FunctionType convert(final @NotNull String s) throws Exception {
+        return FunctionType.valueOfIgnoreCase(s);
     }
 }

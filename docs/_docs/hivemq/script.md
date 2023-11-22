@@ -110,7 +110,6 @@ $ mqtt hivemq script get --id hello_world
   "functionType": "TRANSFORMATION",
   "source": "ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ=="
 }
-
 ```
 
 ***

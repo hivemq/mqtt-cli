@@ -16,6 +16,7 @@
 
 package com.hivemq.cli.hivemq.scripts;
 
+import com.hivemq.cli.commands.hivemq.datahub.FunctionType;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +39,7 @@ public class ListScriptsTask {
 
     private final @NotNull OutputFormatter outputFormatter;
     private final @NotNull DataHubScriptsApi scriptsApi;
-    private final @Nullable String @Nullable [] functionTypes;
+    private final @Nullable FunctionType @Nullable [] functionTypes;
     private final @Nullable String @Nullable [] scriptIds;
     private final @Nullable String @Nullable [] fields;
     private final @Nullable Integer limit;
@@ -45,7 +47,7 @@ public class ListScriptsTask {
     public ListScriptsTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull DataHubScriptsApi scriptApi,
-            final @Nullable String @Nullable [] functionTypes,
+            final @Nullable FunctionType @Nullable [] functionTypes,
             final @Nullable String @Nullable [] scriptIds,
             final @Nullable String @Nullable [] fields,
             final @Nullable Integer limit) {
@@ -76,7 +78,8 @@ public class ListScriptsTask {
         if (functionTypes == null) {
             functionTypesQueryParam = null;
         } else {
-            functionTypesQueryParam = String.join(",", functionTypes);
+            functionTypesQueryParam = Arrays.stream(functionTypes)
+                    .map(Enum::name).collect(Collectors.joining(","));
         }
 
         List<Script> allScripts = new ArrayList<>();
