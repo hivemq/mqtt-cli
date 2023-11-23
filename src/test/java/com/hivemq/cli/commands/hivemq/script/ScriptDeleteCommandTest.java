@@ -39,7 +39,7 @@ public class ScriptDeleteCommandTest {
 
     private final @NotNull HiveMQRestService hiveMQRestService = mock();
     private final @NotNull OutputFormatter outputFormatter = mock();
-    private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
+    private final @NotNull DataHubScriptsApi scriptsApi = mock();
 
     private final @NotNull CommandLine commandLine =
             new CommandLine(new ScriptDeleteCommand(hiveMQRestService, outputFormatter));
