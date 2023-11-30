@@ -502,6 +502,19 @@ paths:
           content:
             application/json:
               examples:
+                referenced-incompatible-policy-functions:
+                  description: Example response when not all cluster nodes support
+                    the referenced script functions yet.
+                  summary: At least one referenced script function is not yet supported
+                    by all cluster nodes
+                  value:
+                    errors:
+                      - title: Incompatible policy
+                        detail: "The policy with id 'policy' could not be added because\
+                        \ its functions [fn:my-transform.js:1, fn:my-transform.js:2]\
+                        \ require at least HiveMQ version 4.23.0, but not all cluster\
+                        \ nodes have been updated to this version yet. Please try\
+                        \ again later."
                 temporarily-not-available:
                   description: The endpoint is temporarily not available
                   summary: Temporarily not available
@@ -827,6 +840,19 @@ paths:
           content:
             application/json:
               examples:
+                referenced-incompatible-policy-functions:
+                  description: Example response when not all cluster nodes support
+                    the referenced script functions yet.
+                  summary: At least one referenced script function is not yet supported
+                    by all cluster nodes
+                  value:
+                    errors:
+                      - title: Incompatible policy
+                        detail: "The policy with id 'policy' could not be added because\
+                        \ its functions [fn:my-transform.js:1, fn:my-transform.js:2]\
+                        \ require at least HiveMQ version 4.23.0, but not all cluster\
+                        \ nodes have been updated to this version yet. Please try\
+                        \ again later."
                 version-check-failed:
                   description: Version check failed
                   summary: Version check failed
@@ -1367,6 +1393,19 @@ paths:
           content:
             application/json:
               examples:
+                referenced-incompatible-policy-functions:
+                  description: Example response when not all cluster nodes support
+                    the referenced script functions yet.
+                  summary: At least one referenced script function is not yet supported
+                    by all cluster nodes
+                  value:
+                    errors:
+                      - title: Incompatible policy
+                        detail: "The policy with id 'policy' could not be added because\
+                        \ its functions [fn:my-transform.js:1, fn:my-transform.js:2]\
+                        \ require at least HiveMQ version 4.23.0, but not all cluster\
+                        \ nodes have been updated to this version yet. Please try\
+                        \ again later."
                 temporarily-not-available:
                   description: The endpoint is temporarily not available
                   summary: Temporarily not available
@@ -1713,6 +1752,19 @@ paths:
           content:
             application/json:
               examples:
+                referenced-incompatible-policy-functions:
+                  description: Example response when not all cluster nodes support
+                    the referenced script functions yet.
+                  summary: At least one referenced script function is not yet supported
+                    by all cluster nodes
+                  value:
+                    errors:
+                      - title: Incompatible policy
+                        detail: "The policy with id 'policy' could not be added because\
+                        \ its functions [fn:my-transform.js:1, fn:my-transform.js:2]\
+                        \ require at least HiveMQ version 4.23.0, but not all cluster\
+                        \ nodes have been updated to this version yet. Please try\
+                        \ again later."
                 version-check-failed:
                   description: Version check failed
                   summary: Version check failed
@@ -2212,29 +2264,30 @@ paths:
                   summary: Single Result
                   value:
                     items:
-                      - id: greet_function0
+                      - id: my-transform.js
                         version: 1
-                        createdAt: 2023-11-03T14:02:41.378Z
-                        description: This function greets a person.
+                        createdAt: 2023-11-21T13:08:09.898Z
+                        description: This script prefixes topics with 'transformed/'
                         functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ==
+                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
                 list-response-b:
                   description: Example response with multiple sripts. More pages left
                   summary: "Multiple results, more pages left"
                   value:
                     items:
-                      - id: greet_function0
+                      - id: my-transform.js
                         version: 1
-                        createdAt: 2023-11-03T13:59:47.262Z
-                        description: This function greets a person.
+                        createdAt: 2023-11-21T13:08:09.898Z
+                        description: This script prefixes topics with 'transformed/'
                         functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ==
-                      - id: greet_function1
+                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
+                      - id: my-transform-new.js
                         version: 1
-                        createdAt: 2023-11-03T13:59:48.348Z
-                        description: This function greets a person.
+                        createdAt: 2023-11-21T13:17:53.085Z
+                        description: "This script adds the user property ('foo', 'bar')\
+                        \ to a publish"
                         functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ==
+                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
                     _links:
                       next: /api/v1/data-hub/scripts?cursor=a-WfW-QB4L4Q==&limit=3
                 list-response-c:
@@ -2254,35 +2307,36 @@ paths:
                   summary: "List versions of one script, last page"
                   value:
                     items:
-                      - id: greet_function
+                      - id: my-transform.js
                         version: 1
-                        createdAt: 2023-11-03T13:59:47.262Z
-                        description: This function greets a person.
+                        createdAt: 2023-11-21T13:08:09.898Z
+                        description: This script prefixes topics with 'transformed/'
                         functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ==
-                      - id: greet_function
+                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
+                      - id: my-transform.js
                         version: 2
-                        createdAt: 2023-11-03T13:59:48.348Z
-                        description: This function greets a person.
+                        createdAt: 2023-11-21T13:17:53.085Z
+                        description: This script prefixes topics with 'transformed/'
                         functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ==
+                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
                 list-response-many:
                   description: Example response with multiple scripts
                   summary: Multiple results
                   value:
                     items:
-                      - id: greet_function0
+                      - id: my-transform.js
                         version: 1
-                        createdAt: 2023-11-03T13:59:47.262Z
-                        description: This function greets a person.
+                        createdAt: 2023-11-21T13:08:09.898Z
+                        description: This script prefixes topics with 'transformed/'
                         functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ==
-                      - id: greet_function1
+                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
+                      - id: my-transform-new.js
                         version: 1
-                        createdAt: 2023-11-03T13:59:48.348Z
-                        description: This function greets a person.
+                        createdAt: 2023-11-21T13:17:53.085Z
+                        description: "This script adds the user property ('foo', 'bar')\
+                        \ to a publish"
                         functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ==
+                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
               schema:
                 $ref: '#/components/schemas/ScriptList'
           description: Success
@@ -2311,10 +2365,10 @@ paths:
         content:
           application/json:
             example:
-              id: greet_function
-              description: This function greets a person.
+              id: my-transform.js
+              description: This script prefixes topics with 'transformed/'
               functionType: TRANSFORMATION
-              source: ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ==
+              source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
             schema:
               $ref: '#/components/schemas/Script'
         description: The script that should be created.
@@ -2328,12 +2382,12 @@ paths:
                   description: Example response.
                   summary: Script was created successfully
                   value:
-                    id: greet_function
+                    id: my-transform.js
                     version: 1
-                    createdAt: 2023-11-03T13:07:15.650Z
-                    description: This function greets a person.
+                    createdAt: 2023-11-21T13:08:09.898Z
+                    description: This script prefixes topics with 'transformed/'
                     functionType: TRANSFORMATION
-                    source: ZnVuY3Rpb24gdHJhbnNmb3JtKHBlcnNvbikgeyByZXR1cm4gJ2hlbGxvICcgKyBwZXJzb24gfQ==
+                    source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
               schema:
                 $ref: '#/components/schemas/Script'
           description: Success
@@ -2461,12 +2515,12 @@ paths:
                   description: Get script
                   summary: Get script
                   value:
-                    id: someFunction
+                    id: my-transform.js
                     version: 1
-                    createdAt: 2023-11-03T13:27:14.387Z
-                    description: ""
+                    createdAt: 2023-11-21T13:08:09.898Z
+                    description: This script prefixes topics with 'transformed/'
                     functionType: TRANSFORMATION
-                    source: Wm5WdVkzUnBiMjRnWVdOMEtIQmxjbk52YmlrZ2V5QnlaWFIxY200Z0oyaGxiR3h2SUNjZ0t5QndaWEp6YjI0Z2ZRPT0=
+                    source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
               schema:
                 $ref: '#/components/schemas/Script'
           description: Success
@@ -4333,18 +4387,18 @@ components:
           readOnly: true
         description:
           type: string
-          description: A free text that describes the function.
+          description: A string of free-form text describing the function.
         functionType:
           type: string
           description: "The type of the function. Restricted to only one value: TRANSFORMATION."
+          enum:
+            - TRANSFORMATION
         id:
           type: string
           description: The unique identifier of the script.
         source:
           type: string
-          description: "The base64 encoded function source code. An example of a function\
-            \ before it is encoded:<br>function transform(person) {<br>&nbsp;&nbsp;&nbsp;&nbsp;return\
-            \ 'hello ' + person<br>}"
+          description: The base64 encoded function source code.
         version:
           type: integer
           format: int32

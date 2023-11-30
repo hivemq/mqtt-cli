@@ -16,14 +16,14 @@
 
 package com.hivemq.cli.converters;
 
-import com.hivemq.cli.commands.hivemq.datahub.FunctionType;
+import com.hivemq.cli.openapi.hivemq.Script;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine;
 
-public class FunctionTypeConverter implements CommandLine.ITypeConverter<FunctionType> {
+public class FunctionTypeConverter implements CommandLine.ITypeConverter<Script.FunctionTypeEnum> {
 
     @Override
-    public @NotNull FunctionType convert(final @NotNull String s) throws Exception {
-        return FunctionType.valueOfIgnoreCase(s);
+    public @NotNull Script.FunctionTypeEnum convert(final @NotNull String s) throws Exception {
+        return Script.FunctionTypeEnum.fromValue(s.toUpperCase());
     }
 }
