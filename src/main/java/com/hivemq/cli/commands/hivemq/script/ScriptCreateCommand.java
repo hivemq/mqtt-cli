@@ -18,12 +18,12 @@ package com.hivemq.cli.commands.hivemq.script;
 
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datahub.DataHubOptions;
-import com.hivemq.cli.commands.hivemq.datahub.FunctionType;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.commands.hivemq.datahub.ScriptDefinitionOptions;
 import com.hivemq.cli.converters.FunctionTypeConverter;
 import com.hivemq.cli.hivemq.scripts.CreateScriptTask;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
+import com.hivemq.cli.openapi.hivemq.Script;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -56,7 +56,7 @@ public class ScriptCreateCommand implements Callable<Integer> {
                         required = true,
                         converter = FunctionTypeConverter.class,
                         description = "The function type")
-    private @NotNull FunctionType functionType;
+    private @NotNull Script.FunctionTypeEnum functionType;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--print-version"},

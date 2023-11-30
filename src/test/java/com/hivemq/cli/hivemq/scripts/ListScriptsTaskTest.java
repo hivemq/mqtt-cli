@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.hivemq.scripts;
 
-import com.hivemq.cli.commands.hivemq.datahub.FunctionType;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
@@ -60,7 +59,7 @@ public class ListScriptsTaskTest {
 
     @Test
     void execute_functionTypesProvided_usedAsUrlParameter() throws ApiException {
-        final FunctionType[] functionTypes = {FunctionType.TRANSFORMATION, FunctionType.TRANSFORMATION, FunctionType.TRANSFORMATION};
+        final Script.FunctionTypeEnum[] functionTypes = {Script.FunctionTypeEnum.TRANSFORMATION, Script.FunctionTypeEnum.TRANSFORMATION, Script.FunctionTypeEnum.TRANSFORMATION};
         final ListScriptsTask task = new ListScriptsTask(outputFormatter, scriptsApi, functionTypes, null, null, null);
 
         when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new ScriptList());

@@ -18,7 +18,6 @@ package com.hivemq.cli.hivemq.scripts;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.hivemq.cli.commands.hivemq.datahub.FunctionType;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
@@ -33,7 +32,7 @@ public class CreateScriptTask {
     private final @NotNull OutputFormatter outputFormatter;
     private final @NotNull DataHubScriptsApi scriptsApi;
     private final @NotNull String scriptId;
-    private final @NotNull FunctionType functionType;
+    private final @NotNull Script.FunctionTypeEnum functionType;
     private final @NotNull String description;
     private final @NotNull ByteBuffer definition;
     private final boolean printVersion;
@@ -42,7 +41,7 @@ public class CreateScriptTask {
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull DataHubScriptsApi scriptsApi,
             final @NotNull String scriptId,
-            final @NotNull FunctionType functionType,
+            final @NotNull Script.FunctionTypeEnum functionType,
             final @NotNull String description,
             final boolean printVersion,
             final @NotNull ByteBuffer definition) {
@@ -57,7 +56,7 @@ public class CreateScriptTask {
 
     public boolean execute() {
         final String definitionBase64 = Base64.getEncoder().encodeToString(definition.array());
-        final Script script = new Script().id(scriptId).functionType(functionType.name()).description(description).source(definitionBase64);
+        final Script script = new Script().id(scriptId).functionType(functionType).description(description).source(definitionBase64);
 
         final Script createdScript;
         try {
