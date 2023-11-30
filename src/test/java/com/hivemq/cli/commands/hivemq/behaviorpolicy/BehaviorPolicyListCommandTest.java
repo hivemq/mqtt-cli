@@ -39,8 +39,8 @@ import static org.mockito.Mockito.when;
 
 public class BehaviorPolicyListCommandTest {
 
-    private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull HiveMQRestService hiveMQRestService = mock();
+    private final @NotNull OutputFormatter outputFormatter = mock();
     private final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi = mock(DataHubBehaviorPoliciesApi.class);
 
     private final @NotNull CommandLine commandLine =

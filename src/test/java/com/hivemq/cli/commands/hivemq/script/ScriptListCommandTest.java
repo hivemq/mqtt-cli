@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.hivemq.datapolicy;
+package com.hivemq.cli.commands.hivemq.script;
 
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.DataPolicyList;
+import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
+import com.hivemq.cli.openapi.hivemq.ScriptList;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -37,21 +37,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DataPolicyListCommandTest {
+public class ScriptListCommandTest {
 
     private final @NotNull HiveMQRestService hiveMQRestService = mock();
     private final @NotNull OutputFormatter outputFormatter = mock();
-    private final @NotNull DataHubDataPoliciesApi policiesApi = mock(DataHubDataPoliciesApi.class);
+    private final @NotNull DataHubScriptsApi scriptsApi = mock();
 
     private final @NotNull CommandLine commandLine =
-            new CommandLine(new DataPolicyListCommand(hiveMQRestService, outputFormatter));
+            new CommandLine(new ScriptListCommand(hiveMQRestService, outputFormatter));
 
     @BeforeEach
     void setUp() throws ApiException {
         TestLoggerUtils.resetLogger();
-        when(hiveMQRestService.getDataPoliciesApi(any(), anyDouble())).thenReturn(policiesApi);
-        final DataPolicyList policyList = new DataPolicyList();
-        when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), any())).thenReturn(policyList);
+        when(hiveMQRestService.getScriptsApi(any(), anyDouble())).thenReturn(scriptsApi);
+        when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new ScriptList());
     }
 
     @Test
@@ -61,23 +60,23 @@ public class DataPolicyListCommandTest {
 
     @Test
     void call_urlAndRateLimitPassed_usedInApi() {
-        assertEquals(0, commandLine.execute("--rate=123", "--url=test-url", "--id=policy-1"));
-        verify(hiveMQRestService).getDataPoliciesApi(eq("test-url"), eq(123d));
+        assertEquals(0, commandLine.execute("--rate=123", "--url=test-url", "--id=script-1"));
+        verify(hiveMQRestService).getScriptsApi(eq("test-url"), eq(123d));
     }
 
     @Test
-    void call_topicAndMultiplePolicyIdsAndSchemaIds_success() throws ApiException {
-        assertEquals(0, commandLine.execute("--topic=t", "--id=p1", "--id=p2", "--schema-id=s1", "--schema-id=s2"));
-        verify(policiesApi).getAllDataPolicies(isNull(), eq("p1,p2"), eq("s1,s2"), eq("t"), any(), any());
+    void call_typeInvalid_error() {
+        assertEquals(2, commandLine.execute("--type=invalid"));
     }
 
     @Test
-    void call_multipleTopics_error() {
-        assertEquals(2, commandLine.execute("--topic=t1", "--topic=t2"));
+    void call_multipleTypesAndScriptIds_success() throws ApiException {
+        assertEquals(0, commandLine.execute("--type=transformation", "--type=transformation", "--id=s1", "--id=s2"));
+        verify(scriptsApi).getAllScripts(isNull(), eq("TRANSFORMATION,TRANSFORMATION"), eq("s1,s2"), any(), isNull());
     }
 
     @Test
-    void call_limitPositive_success() throws ApiException {
+    void call_limitPositive_success() {
         assertEquals(0, commandLine.execute("--limit=5"));
     }
 
@@ -89,13 +88,13 @@ public class DataPolicyListCommandTest {
 
     @Test
     void call_multipleFields_success() throws ApiException {
-        assertEquals(0, commandLine.execute("--field=id", "--field=version"));
-        verify(policiesApi).getAllDataPolicies(eq("id,version"), isNull(), isNull(), isNull(), any(), any());
+        assertEquals(0, commandLine.execute("--field=id", "--field=createdAt"));
+        verify(scriptsApi).getAllScripts(eq("id,createdAt"), isNull(), isNull(), any(), isNull());
     }
 
     @Test
     void call_taskFailed_return1() throws ApiException {
-        doThrow(ApiException.class).when(policiesApi).getAllDataPolicies(any(), any(), any(), any(), any(), any());
+        doThrow(ApiException.class).when(scriptsApi).getAllScripts(any(), any(), any(), any(), any());
         assertEquals(1, commandLine.execute());
     }
 }

@@ -32,8 +32,8 @@ import static org.mockito.Mockito.verify;
 
 public class DeleteSchemaTaskTest {
 
-    private final @NotNull DataHubSchemasApi schemasApi = mock(DataHubSchemasApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull DataHubSchemasApi schemasApi = mock();
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     private static final @NotNull String SCHEMA_ID = "schema-1";
 

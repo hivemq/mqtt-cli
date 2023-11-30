@@ -35,7 +35,7 @@ import static org.mockito.Mockito.when;
 public class GetBehaviorStateTaskTest {
 
     private final @NotNull DataHubStateApi stateApi = mock(DataHubStateApi.class);
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     private static final @NotNull String CLIENT_ID = "client-1";
 

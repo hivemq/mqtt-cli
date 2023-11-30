@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.hivemq.datapolicy;
+package com.hivemq.cli.commands.hivemq.script;
 
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -35,19 +35,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DataPolicyGetCommandTest {
+public class ScriptGetCommandTest {
 
     private final @NotNull HiveMQRestService hiveMQRestService = mock();
     private final @NotNull OutputFormatter outputFormatter = mock();
-    private final @NotNull DataHubDataPoliciesApi dataPoliciesApi = mock(DataHubDataPoliciesApi.class);
+    private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
 
     private final @NotNull CommandLine commandLine =
-            new CommandLine(new DataPolicyGetCommand(hiveMQRestService, outputFormatter));
+            new CommandLine(new ScriptGetCommand(hiveMQRestService, outputFormatter));
 
     @BeforeEach
     void setUp() {
         TestLoggerUtils.resetLogger();
-        when(hiveMQRestService.getDataPoliciesApi(any(), anyDouble())).thenReturn(dataPoliciesApi);
+        when(hiveMQRestService.getScriptsApi(any(), anyDouble())).thenReturn(scriptsApi);
     }
 
     @Test
@@ -58,30 +58,30 @@ public class DataPolicyGetCommandTest {
     @Test
     void call_idEmpty_error() {
         assertEquals(1, commandLine.execute("--id="));
-        verify(outputFormatter).printError(eq("The policy id must not be empty."));
+        verify(outputFormatter).printError(eq("The script id must not be empty."));
     }
 
     @Test
     void call_urlAndRateLimitPassed_usedInApi() {
-        assertEquals(0, commandLine.execute("--rate=123", "--url=test-url", "--id=policy-1"));
-        verify(hiveMQRestService).getDataPoliciesApi(eq("test-url"), eq(123d));
+        assertEquals(0, commandLine.execute("--rate=123", "--url=test-url", "--id=script-1"));
+        verify(hiveMQRestService).getScriptsApi(eq("test-url"), eq(123d));
     }
 
     @Test
     void call_multipleFields_success() throws ApiException {
-        assertEquals(0, commandLine.execute("--field=id", "--field=createdAt", "--id=policy-1"));
-        verify(dataPoliciesApi).getDataPolicy(eq("policy-1"), eq("id,createdAt"));
+        assertEquals(0, commandLine.execute("--field=id", "--field=createdAt", "--id=script-1"));
+        verify(scriptsApi).getScript(eq("script-1"), eq("id,createdAt"));
     }
 
     @Test
     void call_taskSuccessful_return0() throws ApiException {
-        assertEquals(0, commandLine.execute("--id=policy-1"));
-        verify(dataPoliciesApi).getDataPolicy(eq("policy-1"), isNull());
+        assertEquals(0, commandLine.execute("--id=script-1"));
+        verify(scriptsApi).getScript(eq("script-1"), isNull());
     }
 
     @Test
     void call_taskFailed_return1() throws ApiException {
-        when(dataPoliciesApi.getDataPolicy(any(), isNull())).thenThrow(ApiException.class);
-        assertEquals(1, commandLine.execute("--id=policy-1"));
+        when(scriptsApi.getScript(any(), isNull())).thenThrow(ApiException.class);
+        assertEquals(1, commandLine.execute("--id=script-1"));
     }
 }

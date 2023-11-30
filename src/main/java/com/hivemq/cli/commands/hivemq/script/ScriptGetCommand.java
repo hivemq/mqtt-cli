@@ -14,34 +14,41 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.hivemq.schema;
+package com.hivemq.cli.commands.hivemq.script;
 
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datahub.DataHubOptions;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
-import com.hivemq.cli.hivemq.schemas.DeleteSchemaTask;
-import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
+import com.hivemq.cli.hivemq.scripts.GetScriptTask;
+import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "delete",
-                     description = "Delete an existing schema",
+@CommandLine.Command(name = "get",
+                     description = "Get an existing script",
                      synopsisHeading = "%n@|bold Usage:|@  ",
                      descriptionHeading = "%n",
                      optionListHeading = "%n@|bold Options:|@%n",
                      commandListHeading = "%n@|bold Commands:|@%n",
                      versionProvider = MqttCLIMain.CLIVersionProvider.class,
                      mixinStandardHelpOptions = true)
-public class SchemaDeleteCommand implements Callable<Integer> {
+public class ScriptGetCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
-    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the schema")
-    private @NotNull String schemaId;
+    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the script")
+    private @NotNull String scriptId;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-f", "--field"},
+                        description = "Filter which JSON fields are included in the response")
+    private @Nullable String @Nullable [] fields;
 
     @CommandLine.Mixin
     private final @NotNull DataHubOptions dataHubOptions = new DataHubOptions();
@@ -50,7 +57,7 @@ public class SchemaDeleteCommand implements Callable<Integer> {
     private final @NotNull HiveMQRestService hiveMQRestService;
 
     @Inject
-    public SchemaDeleteCommand(
+    public ScriptGetCommand(
             final @NotNull HiveMQRestService hiveMQRestService, final @NotNull OutputFormatter outputFormatter) {
         this.outputFormatter = outputFormatter;
         this.hiveMQRestService = hiveMQRestService;
@@ -60,16 +67,16 @@ public class SchemaDeleteCommand implements Callable<Integer> {
     public @NotNull Integer call() {
         Logger.trace("Command {}", this);
 
-        final DataHubSchemasApi schemasApi =
-                hiveMQRestService.getSchemasApi(dataHubOptions.getUrl(), dataHubOptions.getRateLimit());
+        final DataHubScriptsApi scriptsApi =
+                hiveMQRestService.getScriptsApi(dataHubOptions.getUrl(), dataHubOptions.getRateLimit());
 
-        if (schemaId.isEmpty()) {
-            outputFormatter.printError("The schema id must not be empty.");
+        if (scriptId.isEmpty()) {
+            outputFormatter.printError("The script id must not be empty.");
             return 1;
         }
 
-        final DeleteSchemaTask deleteSchemaTask = new DeleteSchemaTask(outputFormatter, schemasApi, schemaId);
-        if (deleteSchemaTask.execute()) {
+        final GetScriptTask getScriptTask = new GetScriptTask(outputFormatter, scriptsApi, scriptId, fields);
+        if (getScriptTask.execute()) {
             return 0;
         } else {
             return 1;
@@ -78,16 +85,12 @@ public class SchemaDeleteCommand implements Callable<Integer> {
 
     @Override
     public @NotNull String toString() {
-        return "DeleteSchemaCommand{" +
-                "schemaId='" +
-                schemaId +
-                '\'' +
-                ", dataGovernanceOptions=" +
-                dataHubOptions +
-                ", outputFormatter=" +
-                outputFormatter +
-                ", hiveMQRestService=" +
-                hiveMQRestService +
+        return "GetScriptCommand{" +
+                "scriptId='" + scriptId + '\'' +
+                ", fields=" + Arrays.asList(fields) +
+                ", dataHubOptions=" + dataHubOptions +
+                ", outputFormatter=" + outputFormatter +
+                ", hiveMQRestService=" + hiveMQRestService +
                 '}';
     }
 }

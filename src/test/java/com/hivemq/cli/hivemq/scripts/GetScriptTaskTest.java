@@ -14,57 +14,46 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.hivemq.datapolicy;
+package com.hivemq.cli.hivemq.scripts;
 
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.DataPolicy;
+import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
+import com.hivemq.cli.openapi.hivemq.Script;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DataPolicyGetTaskTest {
+class GetScriptTaskTest {
 
-    private final @NotNull DataHubDataPoliciesApi dataPoliciesApi = mock(DataHubDataPoliciesApi.class);
+    private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock();
 
-    private static final @NotNull String POLICY_ID = "policy-1";
-
     @Test
-    void execute_validId_success() throws ApiException {
-        final DataPolicy policy = new DataPolicy();
+    void execute_scriptFound_printScript() throws ApiException {
+        final GetScriptTask task = new GetScriptTask(outputFormatter, scriptsApi, "test-1", null);
 
-        final DataPolicyGetTask task = new DataPolicyGetTask(outputFormatter, dataPoliciesApi, POLICY_ID,
-
-                null);
-
-        when(dataPoliciesApi.getDataPolicy(eq(POLICY_ID), isNull())).thenReturn(policy);
+        final Script script = new Script();
+        when(scriptsApi.getScript("test-1", null)).thenReturn(script);
 
         assertTrue(task.execute());
-        verify(dataPoliciesApi, times(1)).getDataPolicy(eq(POLICY_ID), isNull());
-        verify(outputFormatter, times(1)).printJson(policy);
+        verify(scriptsApi, times(1)).getScript("test-1", null);
+        verify(outputFormatter).printJson(script);
     }
 
     @Test
-    void execute_apiException_printError() throws ApiException {
-        final DataPolicyGetTask task = new DataPolicyGetTask(outputFormatter, dataPoliciesApi, POLICY_ID,
-
-                null);
-
-        when(dataPoliciesApi.getDataPolicy(any(), isNull())).thenThrow(ApiException.class);
+    void execute_exceptionThrown_printError() throws ApiException {
+        final GetScriptTask task = new GetScriptTask(outputFormatter, scriptsApi, "test-1", null);
+        when(scriptsApi.getScript("test-1", null)).thenThrow(ApiException.class);
 
         assertFalse(task.execute());
-        verify(outputFormatter, times(1)).printApiException(any(), any());
+        verify(outputFormatter).printApiException(any(), any());
     }
-
 }

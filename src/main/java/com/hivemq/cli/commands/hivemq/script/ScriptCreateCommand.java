@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.commands.hivemq.schema;
+package com.hivemq.cli.commands.hivemq.script;
 
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.commands.hivemq.datahub.DataHubOptions;
+import com.hivemq.cli.commands.hivemq.datahub.FunctionType;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
-import com.hivemq.cli.commands.hivemq.datahub.SchemaDefinitionOptions;
-import com.hivemq.cli.converters.SchemaTypeConverter;
-import com.hivemq.cli.hivemq.schemas.CreateSchemaTask;
-import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
+import com.hivemq.cli.commands.hivemq.datahub.ScriptDefinitionOptions;
+import com.hivemq.cli.converters.FunctionTypeConverter;
+import com.hivemq.cli.hivemq.scripts.CreateScriptTask;
+import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
-import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
@@ -39,47 +38,39 @@ import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "create",
-                     description = "Create a new schema",
+                     description = "Create a new script",
                      synopsisHeading = "%n@|bold Usage:|@  ",
                      descriptionHeading = "%n",
                      optionListHeading = "%n@|bold Options:|@%n",
                      commandListHeading = "%n@|bold Commands:|@%n",
                      versionProvider = MqttCLIMain.CLIVersionProvider.class,
                      mixinStandardHelpOptions = true)
-public class SchemaCreateCommand implements Callable<Integer> {
+public class ScriptCreateCommand implements Callable<Integer> {
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
-    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the schema")
-    private @NotNull String schemaId;
+    @CommandLine.Option(names = {"-i", "--id"}, required = true, description = "The id of the script")
+    private @NotNull String scriptId;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.Option(names = {"--type"},
                         required = true,
-                        converter = SchemaTypeConverter.class,
-                        description = "The schema type (default json)")
-    private @NotNull String schemaType;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--message-type"},
-                        description = "The Protobuf message type. Only used with --type PROTOBUF.")
-    private @Nullable String messageType;
-
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--allow-unknown"},
-                        defaultValue = "false",
-                        description = "Allow unknown Protobuf fields. Only used with --type PROTOBUF.")
-    private boolean allowUnknown;
-
+                        converter = FunctionTypeConverter.class,
+                        description = "The function type")
+    private @NotNull FunctionType functionType;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--print-version"},
                         defaultValue = "false",
-                        description = "Print the assigned schema version after successful creation.")
+                        description = "Print the assigned script version after successful creation.")
     private boolean printVersion;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
     @CommandLine.ArgGroup(multiplicity = "1")
-    private @NotNull SchemaDefinitionOptions definitionOptions;
+    private @NotNull ScriptDefinitionOptions definitionOptions;
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
+    @CommandLine.Option(names = {"--description"}, required = false, description = "The description of the script")
+    private @NotNull String description;
 
     @CommandLine.Mixin
     private final @NotNull DataHubOptions dataHubOptions = new DataHubOptions();
@@ -88,7 +79,7 @@ public class SchemaCreateCommand implements Callable<Integer> {
     private final @NotNull HiveMQRestService hiveMQRestService;
 
     @Inject
-    public SchemaCreateCommand(
+    public ScriptCreateCommand(
             final @NotNull HiveMQRestService hiveMQRestService, final @NotNull OutputFormatter outputFormatter) {
         this.outputFormatter = outputFormatter;
         this.hiveMQRestService = hiveMQRestService;
@@ -98,18 +89,8 @@ public class SchemaCreateCommand implements Callable<Integer> {
     public @NotNull Integer call() throws IOException {
         Logger.trace("Command {}", this);
 
-        final DataHubSchemasApi schemasApi =
-                hiveMQRestService.getSchemasApi(dataHubOptions.getUrl(), dataHubOptions.getRateLimit());
-
-        if (schemaType.equals("PROTOBUF") && messageType == null) {
-            outputFormatter.printError("Protobuf message type is missing. Option '--message-type' is not set.");
-            return 1;
-        }
-
-        if (schemaType.equals("JSON") && messageType != null) {
-            outputFormatter.printError("Option '--message-type' is not applicable to schemas of type 'JSON'.");
-            return 1;
-        }
+        final DataHubScriptsApi scriptsApi =
+                hiveMQRestService.getScriptsApi(dataHubOptions.getUrl(), dataHubOptions.getRateLimit());
 
         final String fileDefinition = definitionOptions.getFile();
         final ByteBuffer argumentDefinition = definitionOptions.getArgument();
@@ -128,51 +109,32 @@ public class SchemaCreateCommand implements Callable<Integer> {
             throw new RuntimeException("One of --file or --definition must be set.");
         }
 
-        final CreateSchemaTask createSchemaTask = new CreateSchemaTask(outputFormatter,
-                schemasApi,
-                schemaId,
-                schemaType,
-                messageType,
-                allowUnknown,
+        final CreateScriptTask createScriptTask = new CreateScriptTask(outputFormatter,
+                scriptsApi,
+                scriptId,
+                functionType,
+                description,
                 printVersion,
                 definitionBytes);
-        if (createSchemaTask.execute()) {
+        if (createScriptTask.execute()) {
             return 0;
         } else {
-            if (schemaType.equals("PROTOBUF") && fileDefinition != null) {
-                final String fileExtension = FilenameUtils.getExtension(fileDefinition);
-                if (fileExtension.equalsIgnoreCase("proto")) {
-                    outputFormatter.printError(
-                            "Hint: the provided definition file must be a compiled descriptor file (.desc), not a .proto file.");
-                }
-            }
-
             return 1;
         }
     }
 
     @Override
     public @NotNull String toString() {
-        return "CreateSchemaCommand{" +
-                "schemaId='" +
-                schemaId +
-                '\'' +
-                ", schemaType='" +
-                schemaType +
-                '\'' +
-                ", messageType='" +
-                messageType +
-                '\'' +
-                ", allowUnknown=" +
-                allowUnknown +
-                ", definitionOptions=" +
-                definitionOptions +
-                ", dataGovernanceOptions=" +
-                dataHubOptions +
-                ", outputFormatter=" +
-                outputFormatter +
-                ", hiveMQRestService=" +
-                hiveMQRestService +
+        return "CreateScriptCommand{" +
+                "scriptId='" + scriptId + '\'' +
+                ", functionType='" + functionType + '\'' +
+                ", printVersion=" + printVersion +
+                ", definitionOptions=" + definitionOptions +
+                ", description='" + description + '\'' +
+                ", dataHubOptions=" + dataHubOptions +
+                ", outputFormatter=" + outputFormatter +
+                ", hiveMQRestService=" + hiveMQRestService +
                 '}';
     }
+
 }

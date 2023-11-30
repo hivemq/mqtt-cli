@@ -41,10 +41,10 @@ import static org.mockito.Mockito.when;
 
 public class BehaviorPolicyCreateCommandTest {
 
-    private final @NotNull HiveMQRestService hiveMQRestService = mock(HiveMQRestService.class);
+    private final @NotNull HiveMQRestService hiveMQRestService = mock();
     private final @NotNull Gson gson = new Gson();
-    private final @NotNull OutputFormatter outputFormatter = mock(OutputFormatter.class);
-    private final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi = mock(DataHubBehaviorPoliciesApi.class);
+    private final @NotNull OutputFormatter outputFormatter = mock();
+    private final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi = mock();
 
     private final @NotNull CommandLine commandLine =
             new CommandLine(new BehaviorPolicyCreateCommand(hiveMQRestService, outputFormatter, gson));

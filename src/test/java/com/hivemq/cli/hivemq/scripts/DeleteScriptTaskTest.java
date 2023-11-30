@@ -14,55 +14,40 @@
  * limitations under the License.
  */
 
-package com.hivemq.cli.hivemq.behaviorpolicy;
+package com.hivemq.cli.hivemq.scripts;
 
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.BehaviorPolicy;
-import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-public class BehaviorPolicyGetTaskTest {
+public class DeleteScriptTaskTest {
 
-    private final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi = mock(DataHubBehaviorPoliciesApi.class);
+    private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock();
 
-    private static final @NotNull String POLICY_ID = "policy-1";
+    private static final @NotNull String SCRIPT_ID = "script-1";
 
     @Test
-    void execute_validId_success() throws ApiException {
-        final BehaviorPolicy policy = new BehaviorPolicy();
-
-        final BehaviorPolicyGetTask task =
-                new BehaviorPolicyGetTask(outputFormatter, behaviorPoliciesApi, POLICY_ID, null);
-
-        when(behaviorPoliciesApi.getBehaviorPolicy(eq(POLICY_ID), isNull())).thenReturn(policy);
-
+    void execute_validId_success() {
+        final DeleteScriptTask task = new DeleteScriptTask(outputFormatter, scriptsApi, SCRIPT_ID);
         assertTrue(task.execute());
-        verify(behaviorPoliciesApi, times(1)).getBehaviorPolicy(eq(POLICY_ID), isNull());
-        verify(outputFormatter, times(1)).printJson(policy);
     }
 
     @Test
     void execute_apiException_printError() throws ApiException {
-        final BehaviorPolicyGetTask task =
-                new BehaviorPolicyGetTask(outputFormatter, behaviorPoliciesApi, POLICY_ID, null);
-
-        when(behaviorPoliciesApi.getBehaviorPolicy(any(), isNull())).thenThrow(ApiException.class);
-
+        final DeleteScriptTask task = new DeleteScriptTask(outputFormatter, scriptsApi, SCRIPT_ID);
+        doThrow(ApiException.class).when(scriptsApi).deleteScript(any());
         assertFalse(task.execute());
         verify(outputFormatter, times(1)).printApiException(any(), any());
     }
-
 }
