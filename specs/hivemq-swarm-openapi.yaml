@@ -2,25 +2,38 @@ openapi: 3.0.1
 info:
   contact:
     url: https://www.hivemq.com
-  description: "\n# Introduction\n\nThe HiveMQ Swarm Commander REST API provides endpoints\
-    \ for the following use cases:\n- Listing all scenarios\n- Adding a scenario\n\
-    - Removing a scenario\n- Starting a scenario\n- Stopping a scenario\n\n## API\
-    \ style\nThe Commanders's API is organized in a [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer)\
-    \ fashion.\n\nThe API has predictable resource-oriented URLs that consume and\
-    \ return JSON with the content-type `application/json`.\nIt uses standard HTTP\
-    \ response codes and verbs. All transfered scenarios are encoded with Base64.\n\
-    \nThe base URL is the Host and configured port of your HiveMQ Swarm Commander.\n\
-    \n## Errors\nConventional HTTP response codes are used to indicate the success\
-    \ or failure of an API request.\nCodes in the 2xx range generally indicate success.\n\
-    Codes in the 4xx range indicate an error that failed given the information provided\
-    \ (e.g., a required parameter was omitted).\nCodes in the 5xx range indicate an\
-    \ error on the server side.\n\nFor all user errors a JSON response with additional\
-    \ details is returned in the format [Problem JSON](https://tools.ietf.org/html/rfc7807).\n\
-    \n## OpenAPI\nThe HiveMQ Swarm Commander REST API provides an OpenAPI 3.0 schema\
-    \ definition that\ncan be imported into popular API tooling (e.g. Postman) or\
-    \ can be used to generate client-code for multiple programming languages.\n"
+  description: |2
+
+    # Introduction
+
+    The HiveMQ Swarm Commander REST API provides endpoints for the following use cases:
+    - Listing all scenarios
+    - Adding a scenario
+    - Removing a scenario
+    - Starting a scenario
+    - Stopping a scenario
+
+    ## API style
+    The Commanders's API is organized in a [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) fashion.
+
+    The API has predictable resource-oriented URLs that consume and return JSON with the content-type `application/json`.
+    It uses standard HTTP response codes and verbs. All transfered scenarios are encoded with Base64.
+
+    The base URL is the Host and configured port of your HiveMQ Swarm Commander.
+
+    ## Errors
+    Conventional HTTP response codes are used to indicate the success or failure of an API request.
+    Codes in the 2xx range generally indicate success.
+    Codes in the 4xx range indicate an error that failed given the information provided (e.g., a required parameter was omitted).
+    Codes in the 5xx range indicate an error on the server side.
+
+    For all user errors a JSON response with additional details is returned in the format [Problem JSON](https://tools.ietf.org/html/rfc7807).
+
+    ## OpenAPI
+    The HiveMQ Swarm Commander REST API provides an OpenAPI 3.0 schema definition that
+    can be imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   title: HiveMQ Swarm REST API
-  version: 4.16.0
+  version: 4.23.0
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 paths:
@@ -546,37 +559,6 @@ components:
                     type: string
                   nativeMethod:
                     type: boolean
-            suppressed:
-              type: array
-              items:
-                type: object
-                properties:
-                  localizedMessage:
-                    type: string
-                  message:
-                    type: string
-                  stackTrace:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        classLoaderName:
-                          type: string
-                        className:
-                          type: string
-                        fileName:
-                          type: string
-                        lineNumber:
-                          type: integer
-                          format: int32
-                        methodName:
-                          type: string
-                        moduleName:
-                          type: string
-                        moduleVersion:
-                          type: string
-                        nativeMethod:
-                          type: boolean
         message:
           type: string
         sources:
@@ -641,37 +623,6 @@ components:
                     type: string
                   nativeMethod:
                     type: boolean
-            suppressed:
-              type: array
-              items:
-                type: object
-                properties:
-                  localizedMessage:
-                    type: string
-                  message:
-                    type: string
-                  stackTrace:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        classLoaderName:
-                          type: string
-                        className:
-                          type: string
-                        fileName:
-                          type: string
-                        lineNumber:
-                          type: integer
-                          format: int32
-                        methodName:
-                          type: string
-                        moduleName:
-                          type: string
-                        moduleVersion:
-                          type: string
-                        nativeMethod:
-                          type: boolean
         errorDetail:
           $ref: '#/components/schemas/ErrorDetailObject'
         message:

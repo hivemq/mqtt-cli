@@ -78,117 +78,117 @@ info:
     ## OpenAPI
     HiveMQ's REST API provides an OpenAPI 3.0 schema definition that can imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   title: HiveMQ REST API
-  version: 4.23.0-SNAPSHOT
+  version: 4.23.0
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
-  - description: |-
-      These endpoints can be used to manage the Data Hub.
-      
-      Currently, this includes the option to start a 5-hour long trial mode that temporarily removes all limitations.For more information on all capabilities the HiveMQ Data Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-hub/index.html).
-    name: Data Hub - Management
-  - description: |-
-      Policies describe how you want the HiveMQ broker to validate the behavior of MQTT clients.
-      Each policy has four sections:
-      
-      - Matching: Specifies which clients the policy engine validates.
-      - Deserialization: Specifies deserializers for different message payloads.
-      - Behavior: Specifies the behavior that is considered valid for matched clients.
-      - onTransitions: Specifies custom actions that are executed when a client transitions to a different state within the specified behavior model that is valid for that client.
-      These endpoints can be used to create, update, delete, and list behavior policies.
-      
-      For more information on all capabilities the HiveMQ Data Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-hub/index.html).
-    name: Data Hub - Behavior Policies
-  - description: |-
-      Data Policies describe how you want the HiveMQ broker to apply schemas to incoming MQTT message payload data and act on the validation results.
-      Each policy has four sections:
-      
-      - Matching: Specifies which packets the policy engine validates.
-      - Validation: Specifies how the packets are validated. For example, based on a JSON Schema.
-      - OnSuccess: Defines which actions are executed when the outcome of a validation is successful.
-      - OnFailure: Defines which actions are executed when the validation fails.
-      
-      These endpoints can be used to create, update, delete, and list data policies.
-      
-      For more information on all capabilities the HiveMQ Data Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-hub/index.html).
-    name: Data Hub - Data Policies
-  - description: |-
-      A schema defines the expected structure and format of incoming MQTT message payload data.
-      
-      This endpoint can be used to create, get, and delete schemas.
-      
-      Schemas can be enforced with the use of a policy.
-      
-      Currently, the following schema definitions are supported:
-      
-      - [JSON Schema](https://json-schema.org/)
-      - [Protocol Buffers (Protobuf)](https://protobuf.dev/)
-      
-      For more information on how to define and use a schema in HiveMQ, see [Schemas](https://docs.hivemq.com/hivemq/latest/data-hub/schemas.html).
-    name: Data Hub - Schemas
-  - description: |-
-      A script represents custom logic that can be executed in response to MQTT messages.
-      
-      This endpoint can be used to create, get, and delete scripts.
-      
-      For more information on how to define and use a script in HiveMQ, see [Scripts](https://docs.hivemq.com/hivemq/latest/data-hub/scripts.html).
-    name: Data Hub - Scripts
-  - description: |+
-      These endpoints can be used to retrieve states of clients for the Data Hub.
+- description: |-
+    These endpoints can be used to manage the Data Hub.
 
-    name: Data Hub - State
-  - description: |-
-      These endpoints can be used to create, download, inspect and restore backups created by HiveMQ.
-      
-      More information about the backup and restore capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/user-guide/backup-restore.html).
-      
-      ### Backup Requirements
-      Some prerequisites are necessary to create a backup or restore from a backup:
-      
-      - All HiveMQ nodes have at least version 4.4.0
-      - Only one backup/restore can be executed at the same time
-      
-      ### Export Requirements
-      The following requirements are necessary to successfully create a backup:
-      
-      - All HiveMQ nodes have at least 1GB of free disk space
-      - No cluster topology changes occur during the export. The backup is aborted when the topology changes to avoid inconsistent data in the backup.
-      
-      
-      ### Restore Requirements
-      
-      The requirements to successfully restore data from a backup are:
-      
-      - A clean HiveMQ deployment. This means that no clients must be connected and no persistent data exists on every HiveMQ node. The import will not start if there is data available in your cluster.
-      - Message data used by Extensions are only restored if the corresponding extension is already started before the restore is started.
-    name: Backup & Restore
-  - description: |-
-      This endpoint can be used to create diagnostic archives.
-      
-      More information about the diagnostic archive can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/diagnostic-archive.html).
-      
-      ### Diagnostic Archive Requirements
-      Some prerequisites are necessary to create a diagnostic archive:
-      
-      - Only HiveMQ nodes with at least version 4.11.0 will create an archive
-      - Only one diagnostic archive can be created at the same time
-    name: Diagnostic Archive
-  - description: |
-      A Trace Recording is a combination of filters which allows you to select messages of specific clients or topics, which are logged to a file in a human readable format.
-      Each trace recording creates cluster-wide trace files that can be downloaded as a collective zip file.
-      
-      You can log any MQTT message sent or received by the broker with a filter you apply. A Filter can either be a client identifier or a topic. Many filter combinations are possible. All filters are regular expressions.
-      
-      These endpoints can be used to create, download, inspect, stop and delete trace recordings.
-      
-      More information about the trace recording capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/analytic.html#trace-recording).
-    name: Trace Recordings
-  - description: "These endpoints can be used to inspect the MQTT clients that are known\
+    Currently, this includes the option to start a 5-hour long trial mode that temporarily removes all limitations.For more information on all capabilities the HiveMQ Data Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-hub/index.html).
+  name: Data Hub - Management
+- description: |-
+    Policies describe how you want the HiveMQ broker to validate the behavior of MQTT clients.
+    Each policy has four sections:
+
+    - Matching: Specifies which clients the policy engine validates.
+    - Deserialization: Specifies deserializers for different message payloads.
+    - Behavior: Specifies the behavior that is considered valid for matched clients.
+    - onTransitions: Specifies custom actions that are executed when a client transitions to a different state within the specified behavior model that is valid for that client.
+    These endpoints can be used to create, update, delete, and list behavior policies.
+
+    For more information on all capabilities the HiveMQ Data Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-hub/index.html).
+  name: Data Hub - Behavior Policies
+- description: |-
+    Data Policies describe how you want the HiveMQ broker to apply schemas to incoming MQTT message payload data and act on the validation results.
+    Each policy has four sections:
+
+    - Matching: Specifies which packets the policy engine validates.
+    - Validation: Specifies how the packets are validated. For example, based on a JSON Schema.
+    - OnSuccess: Defines which actions are executed when the outcome of a validation is successful.
+    - OnFailure: Defines which actions are executed when the validation fails.
+
+    These endpoints can be used to create, update, delete, and list data policies.
+
+    For more information on all capabilities the HiveMQ Data Hub offers, see the [HiveMQ documentation](https://docs.hivemq.com/hivemq/latest/data-hub/index.html).
+  name: Data Hub - Data Policies
+- description: |-
+    A schema defines the expected structure and format of incoming MQTT message payload data.
+
+    This endpoint can be used to create, get, and delete schemas.
+
+    Schemas can be enforced with the use of a policy.
+
+    Currently, the following schema definitions are supported:
+
+    - [JSON Schema](https://json-schema.org/)
+    - [Protocol Buffers (Protobuf)](https://protobuf.dev/)
+
+    For more information on how to define and use a schema in HiveMQ, see [Schemas](https://docs.hivemq.com/hivemq/latest/data-hub/schemas.html).
+  name: Data Hub - Schemas
+- description: |-
+    A script represents custom logic that can be executed in response to MQTT messages.
+
+    This endpoint can be used to create, get, and delete scripts.
+
+    For more information on how to define and use a script in HiveMQ, see [Scripts](https://docs.hivemq.com/hivemq/latest/data-hub/scripts.html).
+  name: Data Hub - Scripts
+- description: |+
+    These endpoints can be used to retrieve states of clients for the Data Hub.
+
+  name: Data Hub - State
+- description: |-
+    These endpoints can be used to create, download, inspect and restore backups created by HiveMQ.
+
+    More information about the backup and restore capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/user-guide/backup-restore.html).
+
+    ### Backup Requirements
+    Some prerequisites are necessary to create a backup or restore from a backup:
+
+    - All HiveMQ nodes have at least version 4.4.0
+    - Only one backup/restore can be executed at the same time
+
+    ### Export Requirements
+    The following requirements are necessary to successfully create a backup:
+
+    - All HiveMQ nodes have at least 1GB of free disk space
+    - No cluster topology changes occur during the export. The backup is aborted when the topology changes to avoid inconsistent data in the backup.
+
+
+    ### Restore Requirements
+
+    The requirements to successfully restore data from a backup are:
+
+    - A clean HiveMQ deployment. This means that no clients must be connected and no persistent data exists on every HiveMQ node. The import will not start if there is data available in your cluster.
+    - Message data used by Extensions are only restored if the corresponding extension is already started before the restore is started.
+  name: Backup & Restore
+- description: |-
+    This endpoint can be used to create diagnostic archives.
+
+    More information about the diagnostic archive can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/diagnostic-archive.html).
+
+    ### Diagnostic Archive Requirements
+    Some prerequisites are necessary to create a diagnostic archive:
+
+    - Only HiveMQ nodes with at least version 4.11.0 will create an archive
+    - Only one diagnostic archive can be created at the same time
+  name: Diagnostic Archive
+- description: |
+    A Trace Recording is a combination of filters which allows you to select messages of specific clients or topics, which are logged to a file in a human readable format.
+    Each trace recording creates cluster-wide trace files that can be downloaded as a collective zip file.
+
+    You can log any MQTT message sent or received by the broker with a filter you apply. A Filter can either be a client identifier or a topic. Many filter combinations are possible. All filters are regular expressions.
+
+    These endpoints can be used to create, download, inspect, stop and delete trace recordings.
+
+    More information about the trace recording capabilities of HiveMQ can be found in the [HiveMQ documentation](https://www.hivemq.com/docs/hivemq/latest/control-center/analytic.html#trace-recording).
+  name: Trace Recordings
+- description: "These endpoints can be used to inspect the MQTT clients that are known\
     \ to HiveMQ.\n\nWith millions of connected clients, keeping track of specific\
     \ clients can become a challenge. The HiveMQ REST API provides endpoints to list\
     \ and view all the MQTT clients known to HiveMQ. \nInformation about subscriptions,\
     \ connection status, TLS, and more, offer detailed insights into every client."
-    name: MQTT Clients
+  name: MQTT Clients
 paths:
   /api/v1/data-hub/behavior-validation/policies:
     get:
@@ -197,44 +197,44 @@ paths:
         \ at least HiveMQ version 4.20.0 on all cluster nodes."
       operationId: getAllBehaviorPolicies
       parameters:
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, createdAt, lastUpdatedAt, deserialization, matching, behavior,\
           \ onTransitions"
-          example: "id,createdAt"
-          in: query
-          name: fields
-          schema:
-            type: string
-        - description: Comma-separated list of policy ids used for filtering. Multiple
-            filters can be applied together.
-          example: "policy1,policy2"
-          in: query
-          name: policyIds
-          schema:
-            type: string
-        - description: Comma-separated list of MQTT client identifiers that are used
-            for filtering. Client identifiers are matched by the retrieved policies.
-            Multiple filters can be applied together.
-          example: "client1,client2"
-          in: query
-          name: clientIds
-          schema:
-            type: string
-        - description: Specifies the page size for the returned results. Has to be between
-            10 and 500. Default page size is 50. Limit is ignored if the 'topic' query
-            parameter is set.
-          example: 100
-          in: query
-          name: limit
-          schema:
-            type: integer
-            format: int32
-        - description: The cursor that has been returned by the previous result page.
-            Do not pass this parameter if you want to fetch the first page.
-          in: query
-          name: cursor
-          schema:
-            type: string
+        example: "id,createdAt"
+        in: query
+        name: fields
+        schema:
+          type: string
+      - description: Comma-separated list of policy ids used for filtering. Multiple
+          filters can be applied together.
+        example: "policy1,policy2"
+        in: query
+        name: policyIds
+        schema:
+          type: string
+      - description: Comma-separated list of MQTT client identifiers that are used
+          for filtering. Client identifiers are matched by the retrieved policies.
+          Multiple filters can be applied together.
+        example: "client1,client2"
+        in: query
+        name: clientIds
+        schema:
+          type: string
+      - description: Specifies the page size for the returned results. Has to be between
+          10 and 500. Default page size is 50. Limit is ignored if the 'topic' query
+          parameter is set.
+        example: 100
+        in: query
+        name: limit
+        schema:
+          type: integer
+          format: int32
+      - description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        in: query
+        name: cursor
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -246,84 +246,84 @@ paths:
                   summary: "Multiple results, last page"
                   value:
                     items:
-                      - id: P18
-                        createdAt: 2023-07-28T07:27:24.531Z
-                        lastUpdatedAt: 2023-07-28T07:27:24.531Z
-                        matching:
-                          clientIdRegex: .*
-                        behavior:
-                          id: Mqtt.events
-                          arguments: {}
-                        onTransitions:
-                          - fromState: Any.*
-                            toState: Any.*
-                            Event.OnAny:
-                              pipeline:
-                                - id: log1
-                                  functionId: System.log
-                                  arguments:
-                                    level: INFO
-                                    message: transition happened
-                      - id: P19
-                        createdAt: 2023-07-28T07:27:24.532Z
-                        lastUpdatedAt: 2023-07-28T07:27:24.532Z
-                        matching:
-                          clientIdRegex: .*
-                        behavior:
-                          id: Mqtt.events
-                          arguments: {}
-                        onTransitions:
-                          - fromState: Any.*
-                            toState: Any.*
-                            Event.OnAny:
-                              pipeline:
-                                - id: log1
-                                  functionId: System.log
-                                  arguments:
-                                    level: INFO
-                                    message: transition happened
+                    - id: P18
+                      createdAt: 2023-07-28T07:27:24.531Z
+                      lastUpdatedAt: 2023-07-28T07:27:24.531Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
+                    - id: P19
+                      createdAt: 2023-07-28T07:27:24.532Z
+                      lastUpdatedAt: 2023-07-28T07:27:24.532Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
                 list-response-b:
                   description: Example response with multiple policies. More pages
                     left
                   summary: "Multiple results, more pages left"
                   value:
                     items:
-                      - id: P0
-                        createdAt: 2023-07-28T07:44:35.382Z
-                        lastUpdatedAt: 2023-07-28T07:44:35.382Z
-                        matching:
-                          clientIdRegex: .*
-                        behavior:
-                          id: Mqtt.events
-                          arguments: {}
-                        onTransitions:
-                          - fromState: Any.*
-                            toState: Any.*
-                            Event.OnAny:
-                              pipeline:
-                                - id: log1
-                                  functionId: System.log
-                                  arguments:
-                                    level: INFO
-                                    message: transition happened
-                      - id: P1
-                        createdAt: 2023-07-28T07:44:35.405Z
-                        lastUpdatedAt: 2023-07-28T07:44:35.405Z
-                        matching:
-                          clientIdRegex: .*
-                        behavior:
-                          id: Mqtt.events
-                          arguments: {}
-                        onTransitions:
-                          - fromState: Any.*
-                            toState: Any.*
-                            Event.OnAny:
-                              pipeline:
-                                - id: log1
-                                  functionId: System.log
-                                  arguments:
-                                    level: INFO
-                                    message: transition happened
+                    - id: P0
+                      createdAt: 2023-07-28T07:44:35.382Z
+                      lastUpdatedAt: 2023-07-28T07:44:35.382Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
+                    - id: P1
+                      createdAt: 2023-07-28T07:44:35.405Z
+                      lastUpdatedAt: 2023-07-28T07:44:35.405Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
                     _links:
                       next: /api/v1/data-hub/behavior-validation/policies?cursor=a-Wva-QBoB5yAX_HJ0WRQ8ng==&limit=2
                 list-response-c:
@@ -332,8 +332,8 @@ paths:
                   summary: "Multiple results, requested 'id' field"
                   value:
                     items:
-                      - id: P0
-                      - id: P1
+                    - id: P0
+                    - id: P1
                     _links:
                       next: /api/v1/data-hub/behavior-validation/policies?cursor=a-Wva-QBoB5yAX_HZxWBM9mQ==&limit=2&fields=id
                 list-response-d:
@@ -341,24 +341,24 @@ paths:
                   summary: Single Result
                   value:
                     items:
-                      - id: policy1
-                        createdAt: 2023-07-28T07:34:14.150Z
-                        lastUpdatedAt: 2023-07-28T07:34:14.150Z
-                        matching:
-                          clientIdRegex: .*
-                        behavior:
-                          id: Mqtt.events
-                          arguments: {}
-                        onTransitions:
-                          - fromState: Any.*
-                            toState: Any.*
-                            Event.OnAny:
-                              pipeline:
-                                - id: log1
-                                  functionId: System.log
-                                  arguments:
-                                    level: INFO
-                                    message: transition happened
+                    - id: policy1
+                      createdAt: 2023-07-28T07:34:14.150Z
+                      lastUpdatedAt: 2023-07-28T07:34:14.150Z
+                      matching:
+                        clientIdRegex: .*
+                      behavior:
+                        id: Mqtt.events
+                        arguments: {}
+                      onTransitions:
+                      - fromState: Any.*
+                        toState: Any.*
+                        Event.OnAny:
+                          pipeline:
+                          - id: log1
+                            functionId: System.log
+                            arguments:
+                              level: INFO
+                              message: transition happened
               schema:
                 $ref: '#/components/schemas/BehaviorPolicyList'
           description: Success
@@ -371,15 +371,15 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Get all policies
       tags:
-        - Data Hub - Behavior Policies
+      - Data Hub - Behavior Policies
     post:
       description: |-
         Create a behavior policy
@@ -407,15 +407,15 @@ paths:
                 id: Mqtt.events
                 arguments: {}
               onTransitions:
-                - fromState: Any.*
-                  toState: Any.*
-                  Event.OnAny:
-                    pipeline:
-                      - id: log1
-                        functionId: System.log
-                        arguments:
-                          level: INFO
-                          message: transition happened
+              - fromState: Any.*
+                toState: Any.*
+                Event.OnAny:
+                  pipeline:
+                  - id: log1
+                    functionId: System.log
+                    arguments:
+                      level: INFO
+                      message: transition happened
             schema:
               $ref: '#/components/schemas/BehaviorPolicy'
         description: The policy that should be created.
@@ -448,15 +448,15 @@ paths:
                       id: Mqtt.events
                       arguments: {}
                     onTransitions:
-                      - fromState: Any.*
-                        toState: Any.*
-                        Event.OnAny:
-                          pipeline:
-                            - id: log1
-                              functionId: System.log
-                              arguments:
-                                level: INFO
-                                message: transition happened
+                    - fromState: Any.*
+                      toState: Any.*
+                      Event.OnAny:
+                        pipeline:
+                        - id: log1
+                          functionId: System.log
+                          arguments:
+                            level: INFO
+                            message: transition happened
               schema:
                 $ref: '#/components/schemas/BehaviorPolicy'
           description: Success
@@ -469,32 +469,32 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
                 policy-id-already-in-use:
                   description: Example response when the policy uses an already existing
                     id.
                   summary: The given policy ID is already in use
                   value:
                     errors:
-                      - title: Policy id already used
-                        detail: The given policy id 'policy-id' is already in use.
+                    - title: Policy id already used
+                      detail: The given policy id 'policy-id' is already in use.
                 policy-not-parsable:
                   description: Example response when the submitted policy could not
                     be parsed as JSON.
                   summary: The submitted policy cannot be parsed.
                   value:
                     errors:
-                      - title: Policy not parsable
-                        detail: The submitted policy 'policy' can not be parsed.
+                    - title: Policy not parsable
+                      detail: The submitted policy 'policy' can not be parsed.
                 policy-not-valid:
                   description: "Example response when the policy is invalid, because\
                     \ a field is missing."
                   summary: The submitted policy is not valid
                   value:
                     errors:
-                      - title: Policy is not valid
-                        detail: Required body entity parameter is missing
+                    - title: Policy is not valid
+                      detail: Required body entity parameter is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -509,8 +509,8 @@ paths:
                     by all cluster nodes
                   value:
                     errors:
-                      - title: Incompatible policy
-                        detail: "The policy with id 'policy' could not be added because\
+                    - title: Incompatible policy
+                      detail: "The policy with id 'policy' could not be added because\
                         \ its functions [fn:my-transform.js:1, fn:my-transform.js:2]\
                         \ require at least HiveMQ version 4.23.0, but not all cluster\
                         \ nodes have been updated to this version yet. Please try\
@@ -520,35 +520,35 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
                 version-check-failed:
                   description: Version check failed
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: Create a new policy
       tags:
-        - Data Hub - Behavior Policies
+      - Data Hub - Behavior Policies
   /api/v1/data-hub/behavior-validation/policies/{policyId}:
     delete:
       description: "Deletes an existing policy. \n\n "
       operationId: deleteBehaviorPolicy
       parameters:
-        - description: The identifier of the policy to delete.
-          example: policy1
-          in: path
-          name: policyId
-          required: true
-          schema:
-            type: string
+      - description: The identifier of the policy to delete.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
       responses:
         "204":
           description: "Success, no response body"
@@ -561,8 +561,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -575,8 +575,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
@@ -589,36 +589,36 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Delete a behavior policy
       tags:
-        - Data Hub - Behavior Policies
+      - Data Hub - Behavior Policies
     get:
       description: "Get a specific policy. \n\n This endpoint returns the content\
         \ of the policy with the content-type `application/json`. \n\n This endpoint\
         \ requires at least HiveMQ version 4.20.0 on all cluster nodes."
       operationId: getBehaviorPolicy
       parameters:
-        - description: The identifier of the policy.
-          example: policy1
-          in: path
-          name: policyId
-          required: true
-          schema:
-            type: string
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: The identifier of the policy.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, createdAt, lastUpdatedAt, deserialization, matching, behavior,\
           \ onTransitions"
-          example: "id,createdAt"
-          in: query
-          name: fields
-          schema:
-            type: string
+        example: "id,createdAt"
+        in: query
+        name: fields
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -647,15 +647,15 @@ paths:
                       id: Mqtt.events
                       arguments: {}
                     onTransitions:
-                      - fromState: Any.*
-                        toState: Any.*
-                        Event.OnAny:
-                          pipeline:
-                            - id: log1
-                              functionId: System.log
-                              arguments:
-                                level: INFO
-                                message: transition happened
+                    - fromState: Any.*
+                      toState: Any.*
+                      Event.OnAny:
+                        pipeline:
+                        - id: log1
+                          functionId: System.log
+                          arguments:
+                            level: INFO
+                            message: transition happened
               schema:
                 $ref: '#/components/schemas/BehaviorPolicy'
           description: Success
@@ -668,8 +668,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -682,14 +682,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Get a  policy
       tags:
-        - Data Hub - Behavior Policies
+      - Data Hub - Behavior Policies
     put:
       description: |-
         Update a behavior policy
@@ -698,13 +698,13 @@ paths:
          This endpoint requires at least HiveMQ version 4.20.0 on all cluster nodes.
       operationId: updateBehaviorPolicy
       parameters:
-        - description: The identifier of the policy.
-          example: policy1
-          in: path
-          name: policyId
-          required: true
-          schema:
-            type: string
+      - description: The identifier of the policy.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -726,15 +726,15 @@ paths:
                 id: Mqtt.events
                 arguments: {}
               onTransitions:
-                - fromState: Any.*
-                  toState: Any.*
-                  Event.OnAny:
-                    pipeline:
-                      - id: log1
-                        functionId: System.log
-                        arguments:
-                          level: INFO
-                          message: transition happened
+              - fromState: Any.*
+                toState: Any.*
+                Event.OnAny:
+                  pipeline:
+                  - id: log1
+                    functionId: System.log
+                    arguments:
+                      level: INFO
+                      message: transition happened
             schema:
               $ref: '#/components/schemas/BehaviorPolicy'
         description: The policy that should be updated.
@@ -767,15 +767,15 @@ paths:
                       id: Mqtt.events
                       arguments: {}
                     onTransitions:
-                      - fromState: Any.*
-                        toState: Any.*
-                        Event.OnAny:
-                          pipeline:
-                            - id: log1
-                              functionId: System.log
-                              arguments:
-                                level: INFO
-                                message: transition happened
+                    - fromState: Any.*
+                      toState: Any.*
+                      Event.OnAny:
+                        pipeline:
+                        - id: log1
+                          functionId: System.log
+                          arguments:
+                            level: INFO
+                            message: transition happened
               schema:
                 $ref: '#/components/schemas/BehaviorPolicy'
           description: Success
@@ -788,23 +788,23 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
                 policy-not-parsable:
                   description: The submitted policy cannot be parsed.
                   summary: The submitted policy can not be parsed
                   value:
                     errors:
-                      - title: Policy not parsable
-                        detail: The submitted policy 'policy' can not be parsed.
+                    - title: Policy not parsable
+                      detail: The submitted policy 'policy' can not be parsed.
                 policy-not-valid:
                   description: "Example response when the policy is invalid, because\
                     \ a field is missing."
                   summary: The submitted policy is not valid
                   value:
                     errors:
-                      - title: Policy is not valid
-                        detail: Required body entity parameter is missing
+                    - title: Policy is not valid
+                      detail: Required body entity parameter is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -817,8 +817,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Referenced policy not found
-                        detail: The referenced policy with id 'policyId' was not found.
+                    - title: Referenced policy not found
+                      detail: The referenced policy with id 'policyId' was not found.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Policy not found
@@ -831,8 +831,8 @@ paths:
                   summary: Etag not matching
                   value:
                     errors:
-                      - title: Precondition Failed
-                        detail: Policy does not match the given etag '123456789'.
+                    - title: Precondition Failed
+                      detail: Policy does not match the given etag '123456789'.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Precondition failed
@@ -847,8 +847,8 @@ paths:
                     by all cluster nodes
                   value:
                     errors:
-                      - title: Incompatible policy
-                        detail: "The policy with id 'policy' could not be added because\
+                    - title: Incompatible policy
+                      detail: "The policy with id 'policy' could not be added because\
                         \ its functions [fn:my-transform.js:1, fn:my-transform.js:2]\
                         \ require at least HiveMQ version 4.23.0, but not all cluster\
                         \ nodes have been updated to this version yet. Please try\
@@ -858,15 +858,15 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Update an existing policy
       tags:
-        - Data Hub - Behavior Policies
+      - Data Hub - Behavior Policies
   /api/v1/data-hub/behavior-validation/states/{clientId}:
     get:
       description: |-
@@ -875,13 +875,13 @@ paths:
         This endpoint requires at least HiveMQ version 4.20.0 on the REST API node.
       operationId: getClientState
       parameters:
-        - description: The client identifier.
-          example: client1
-          in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
+      - description: The client identifier.
+        example: client1
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -892,18 +892,18 @@ paths:
                   summary: Get the state of a client
                   value:
                     items:
-                      - policyId: reallyCoolBehaviorPolicy
-                        behaviorId: Publish.quota
-                        stateType: INTERMEDIATE
-                        stateName: Connected
-                        firstSetAt: 2023-09-05T09:46:47.854Z
-                        arguments:
-                          minPublishes: 5
-                          maxPublishes: 10
-                        variables:
-                          minPublishes: "5"
-                          publishCount: "0"
-                          maxPublishes: "10"
+                    - policyId: reallyCoolBehaviorPolicy
+                      behaviorId: Publish.quota
+                      stateType: INTERMEDIATE
+                      stateName: Connected
+                      firstSetAt: 2023-09-05T09:46:47.854Z
+                      arguments:
+                        minPublishes: 5
+                        maxPublishes: 10
+                      variables:
+                        minPublishes: "5"
+                        publishCount: "0"
+                        maxPublishes: "10"
               schema:
                 $ref: '#/components/schemas/FsmStatesInformationListItem'
           description: Success
@@ -916,8 +916,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -957,8 +957,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
@@ -971,15 +971,15 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: Get the state of a client
       tags:
-        - Data Hub - State
+      - Data Hub - State
   /api/v1/data-hub/data-validation/policies:
     get:
       description: "Get all data policies. \n\n This endpoint returns the content\
@@ -987,51 +987,51 @@ paths:
         \ requires at least HiveMQ version 4.15.0 on all cluster nodes."
       operationId: getAllDataPolicies
       parameters:
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, createdAt, lastUpdatedAt, matching, validation, onSuccess,\
           \ onFailure"
-          example: "id,createdAt"
-          in: query
-          name: fields
-          schema:
-            type: string
-        - description: Comma-separated list of policy IDs used for filtering. Multiple
-            filters can be applied together.
-          example: "policy1,policy2"
-          in: query
-          name: policyIds
-          schema:
-            type: string
-        - description: Comma-separated list of schema IDs used for filtering. Multiple
-            filters can be applied together.
-          example: "schema1,schema2"
-          in: query
-          name: schemaIds
-          schema:
-            type: string
-        - description: MQTT topic string that the retrieved policies must match. Returned
-            policies are sorted in the same way as they are applied to matching publishes.
-            'topic' filtering does not support pagination
-          example: topic/my-topic
-          in: query
-          name: topic
-          schema:
-            type: string
-        - description: Specifies the page size for the returned results. The value must
-            be between 10 and 500. The default page size is 50. The limit is ignored
-            if the 'topic' query parameter is set.
-          example: 100
-          in: query
-          name: limit
-          schema:
-            type: integer
-            format: int32
-        - description: The cursor that has been returned by the previous result page.
-            Do not pass this parameter if you want to fetch the first page.
-          in: query
-          name: cursor
-          schema:
-            type: string
+        example: "id,createdAt"
+        in: query
+        name: fields
+        schema:
+          type: string
+      - description: Comma-separated list of policy IDs used for filtering. Multiple
+          filters can be applied together.
+        example: "policy1,policy2"
+        in: query
+        name: policyIds
+        schema:
+          type: string
+      - description: Comma-separated list of schema IDs used for filtering. Multiple
+          filters can be applied together.
+        example: "schema1,schema2"
+        in: query
+        name: schemaIds
+        schema:
+          type: string
+      - description: MQTT topic string that the retrieved policies must match. Returned
+          policies are sorted in the same way as they are applied to matching publishes.
+          'topic' filtering does not support pagination
+        example: topic/my-topic
+        in: query
+        name: topic
+        schema:
+          type: string
+      - description: Specifies the page size for the returned results. The value must
+          be between 10 and 500. The default page size is 50. The limit is ignored
+          if the 'topic' query parameter is set.
+        example: 100
+        in: query
+        name: limit
+        schema:
+          type: integer
+          format: int32
+      - description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        in: query
+        name: cursor
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -1043,63 +1043,63 @@ paths:
                   summary: "Multiple results, last page"
                   value:
                     items:
-                      - id: policy1
-                        createdAt: 2023-04-26T13:32:47.032Z
-                        lastUpdatedAt: 2023-04-26T13:32:47.032Z
-                        matching:
-                          topicFilter: topic1
-                        validation:
-                          validators:
-                            - type: schema
-                              arguments:
-                                strategy: ALL_OF
-                                schemas:
-                                  - schemaId: schema
-                                    version: "1"
-                        onSuccess:
-                          pipeline:
-                            - id: logSuccessOperation
-                              functionId: System.log
-                              arguments:
-                                level: DEBUG
-                                message: "${clientId} sent a publish on topic '${topic}'\
+                    - id: policy1
+                      createdAt: 2023-04-26T13:32:47.032Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.032Z
+                      matching:
+                        topicFilter: topic1
+                      validation:
+                        validators:
+                        - type: schema
+                          arguments:
+                            strategy: ALL_OF
+                            schemas:
+                            - schemaId: schema
+                              version: "1"
+                      onSuccess:
+                        pipeline:
+                        - id: logSuccessOperation
+                          functionId: System.log
+                          arguments:
+                            level: DEBUG
+                            message: "${clientId} sent a publish on topic '${topic}'\
                               \ with result '${validationResult}'"
-                        onFailure:
-                          pipeline:
-                            - id: logFailureOperation
-                              functionId: System.log
-                              arguments:
-                                level: WARN
-                                message: "${clientId} sent an invalid publish on topic\
+                      onFailure:
+                        pipeline:
+                        - id: logFailureOperation
+                          functionId: System.log
+                          arguments:
+                            level: WARN
+                            message: "${clientId} sent an invalid publish on topic\
                               \ '${topic}' with result '${validationResult}'"
-                      - id: policy2
-                        createdAt: 2023-04-26T13:32:47.049Z
-                        lastUpdatedAt: 2023-04-26T13:32:47.049Z
-                        matching:
-                          topicFilter: topic2
-                        validation:
-                          validators:
-                            - type: schema
-                              arguments:
-                                strategy: ALL_OF
-                                schemas:
-                                  - schemaId: schema
-                                    version: "1"
-                        onSuccess:
-                          pipeline:
-                            - id: logSuccessOperation
-                              functionId: System.log
-                              arguments:
-                                level: DEBUG
-                                message: "${clientId} sent a publish on topic '${topic}'\
+                    - id: policy2
+                      createdAt: 2023-04-26T13:32:47.049Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.049Z
+                      matching:
+                        topicFilter: topic2
+                      validation:
+                        validators:
+                        - type: schema
+                          arguments:
+                            strategy: ALL_OF
+                            schemas:
+                            - schemaId: schema
+                              version: "1"
+                      onSuccess:
+                        pipeline:
+                        - id: logSuccessOperation
+                          functionId: System.log
+                          arguments:
+                            level: DEBUG
+                            message: "${clientId} sent a publish on topic '${topic}'\
                               \ with result '${validationResult}'"
-                        onFailure:
-                          pipeline:
-                            - id: logSuccessOperation
-                              functionId: System.log
-                              arguments:
-                                level: WARN
-                                message: "${clientId} sent an invalid publish on topic\
+                      onFailure:
+                        pipeline:
+                        - id: logSuccessOperation
+                          functionId: System.log
+                          arguments:
+                            level: WARN
+                            message: "${clientId} sent an invalid publish on topic\
                               \ '${topic}' with result '${validationResult}'"
                 list-response-b:
                   description: Example response with multiple policies. More pages
@@ -1107,93 +1107,93 @@ paths:
                   summary: "Multiple results, more pages left"
                   value:
                     items:
-                      - id: policy1
-                        createdAt: 2023-04-26T13:32:47.032Z
-                        lastUpdatedAt: 2023-04-26T13:32:47.032Z
-                        matching:
-                          topicFilter: topic1
-                        validation:
-                          validators:
-                            - type: schema
-                              arguments:
-                                strategy: ALL_OF
-                                schemas:
-                                  - schemaId: schema
-                                    version: "1"
-                        onSuccess:
-                          pipeline:
-                            - id: logSuccessOperation
-                              functionId: System.log
-                              arguments:
-                                level: DEBUG
-                                message: $clientId sent a publish on topic '$topic' with
-                                  result '$validationResult'
-                        onFailure:
-                          pipeline:
-                            - id: logFailureOperation
-                              functionId: System.log
-                              arguments:
-                                level: WARN
-                                message: $clientId sent an invalid publish on topic '$topic'
-                                  with result '$validationResult'
-                      - id: policy2
-                        createdAt: 2023-04-26T13:32:47.049Z
-                        lastUpdatedAt: 2023-04-26T13:32:47.049Z
-                        matching:
-                          topicFilter: topic2
-                        validation:
-                          validators:
-                            - type: schema
-                              arguments:
-                                strategy: ALL_OF
-                                schemas:
-                                  - schemaId: schema
-                                    version: "1"
-                        onSuccess:
-                          pipeline:
-                            - id: logSuccessOperation
-                              functionId: System.log
-                              arguments:
-                                level: DEBUG
-                                message: $clientId sent a publish on topic '$topic' with
-                                  result '$validationResult'
-                        onFailure:
-                          pipeline:
-                            - id: logSuccessOperation
-                              functionId: System.log
-                              arguments:
-                                level: WARN
-                                message: $clientId sent an invalid publish on topic '$topic'
-                                  with result '$validationResult'
-                      - id: policy3
-                        createdAt: 2023-04-26T13:32:47.049Z
-                        lastUpdatedAt: 2023-04-26T13:32:47.049Z
-                        matching:
-                          topicFilter: topic3
-                        validation:
-                          validators:
-                            - type: schema
-                              arguments:
-                                strategy: ALL_OF
-                                schemas:
-                                  - schemaId: schema
-                                    version: "1"
-                        onSuccess:
-                          pipeline:
-                            - id: logSuccessOperation
-                              functionId: System.log
-                              arguments:
-                                level: DEBUG
-                                message: $clientId sent a publish on topic '$topic' with
-                                  result '$validationResult'
-                        onFailure:
-                          pipeline:
-                            - id: logSuccessOperation
-                              functionId: System.log
-                              arguments:
-                                level: WARN
-                                message: $clientId sent an invalid publish on topic '$topic'
-                                  with result '$validationResult'
+                    - id: policy1
+                      createdAt: 2023-04-26T13:32:47.032Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.032Z
+                      matching:
+                        topicFilter: topic1
+                      validation:
+                        validators:
+                        - type: schema
+                          arguments:
+                            strategy: ALL_OF
+                            schemas:
+                            - schemaId: schema
+                              version: "1"
+                      onSuccess:
+                        pipeline:
+                        - id: logSuccessOperation
+                          functionId: System.log
+                          arguments:
+                            level: DEBUG
+                            message: $clientId sent a publish on topic '$topic' with
+                              result '$validationResult'
+                      onFailure:
+                        pipeline:
+                        - id: logFailureOperation
+                          functionId: System.log
+                          arguments:
+                            level: WARN
+                            message: $clientId sent an invalid publish on topic '$topic'
+                              with result '$validationResult'
+                    - id: policy2
+                      createdAt: 2023-04-26T13:32:47.049Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.049Z
+                      matching:
+                        topicFilter: topic2
+                      validation:
+                        validators:
+                        - type: schema
+                          arguments:
+                            strategy: ALL_OF
+                            schemas:
+                            - schemaId: schema
+                              version: "1"
+                      onSuccess:
+                        pipeline:
+                        - id: logSuccessOperation
+                          functionId: System.log
+                          arguments:
+                            level: DEBUG
+                            message: $clientId sent a publish on topic '$topic' with
+                              result '$validationResult'
+                      onFailure:
+                        pipeline:
+                        - id: logSuccessOperation
+                          functionId: System.log
+                          arguments:
+                            level: WARN
+                            message: $clientId sent an invalid publish on topic '$topic'
+                              with result '$validationResult'
+                    - id: policy3
+                      createdAt: 2023-04-26T13:32:47.049Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.049Z
+                      matching:
+                        topicFilter: topic3
+                      validation:
+                        validators:
+                        - type: schema
+                          arguments:
+                            strategy: ALL_OF
+                            schemas:
+                            - schemaId: schema
+                              version: "1"
+                      onSuccess:
+                        pipeline:
+                        - id: logSuccessOperation
+                          functionId: System.log
+                          arguments:
+                            level: DEBUG
+                            message: $clientId sent a publish on topic '$topic' with
+                              result '$validationResult'
+                      onFailure:
+                        pipeline:
+                        - id: logSuccessOperation
+                          functionId: System.log
+                          arguments:
+                            level: WARN
+                            message: $clientId sent an invalid publish on topic '$topic'
+                              with result '$validationResult'
                     _links:
                       next: /api/v1/data-validation/policies?cursor=a-eqj-GE9B5DkV-nhwVBk-nTL807ty&limit=3
                 list-response-c:
@@ -1202,9 +1202,9 @@ paths:
                   summary: "Multiple results, requested 'id' field"
                   value:
                     items:
-                      - id: policy1
-                      - id: policy2
-                      - id: policy3
+                    - id: policy1
+                    - id: policy2
+                    - id: policy3
                     _links:
                       next: /api/v1/data-validation/policies?cursor=a-eqj-GE9B5DkV-nhwVBk-nTL807ty&limit=3&fields=id
                 list-response-d:
@@ -1212,35 +1212,35 @@ paths:
                   summary: Single Result
                   value:
                     items:
-                      - id: policy1
-                        createdAt: 2023-04-26T13:32:47.032Z
-                        lastUpdatedAt: 2023-04-26T13:32:47.032Z
-                        matching:
-                          topicFilter: topic1
-                        validation:
-                          validators:
-                            - type: schema
-                              arguments:
-                                strategy: ALL_OF
-                                schemas:
-                                  - schemaId: schema
-                                    version: "1"
-                        onSuccess:
-                          pipeline:
-                            - id: logSuccessOperation
-                              functionId: System.log
-                              arguments:
-                                level: DEBUG
-                                message: $clientId sent a publish on topic '$topic' with
-                                  result '$validationResult'
-                        onFailure:
-                          pipeline:
-                            - id: logFailureOperation
-                              functionId: System.log
-                              arguments:
-                                level: WARN
-                                message: $clientId sent an invalid publish on topic '$topic'
-                                  with result '$validationResult'
+                    - id: policy1
+                      createdAt: 2023-04-26T13:32:47.032Z
+                      lastUpdatedAt: 2023-04-26T13:32:47.032Z
+                      matching:
+                        topicFilter: topic1
+                      validation:
+                        validators:
+                        - type: schema
+                          arguments:
+                            strategy: ALL_OF
+                            schemas:
+                            - schemaId: schema
+                              version: "1"
+                      onSuccess:
+                        pipeline:
+                        - id: logSuccessOperation
+                          functionId: System.log
+                          arguments:
+                            level: DEBUG
+                            message: $clientId sent a publish on topic '$topic' with
+                              result '$validationResult'
+                      onFailure:
+                        pipeline:
+                        - id: logFailureOperation
+                          functionId: System.log
+                          arguments:
+                            level: WARN
+                            message: $clientId sent an invalid publish on topic '$topic'
+                              with result '$validationResult'
               schema:
                 $ref: '#/components/schemas/DataPolicyList'
           description: Success
@@ -1253,15 +1253,15 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Get all data policies
       tags:
-        - Data Hub - Data Policies
+      - Data Hub - Data Policies
     post:
       description: |-
         Create a data policy
@@ -1277,27 +1277,27 @@ paths:
                 topicFilter: topic/+
               validation:
                 validators:
-                  - type: schema
-                    arguments:
-                      strategy: ALL_OF
-                      schemas:
-                        - schemaId: schema
-                          version: "1"
+                - type: schema
+                  arguments:
+                    strategy: ALL_OF
+                    schemas:
+                    - schemaId: schema
+                      version: "1"
               onSuccess:
                 pipeline:
-                  - id: logOperationSuccess
-                    functionId: System.log
-                    arguments:
-                      level: DEBUG
-                      message: "${clientId} sent a publish on topic '${topic}' with\
+                - id: logOperationSuccess
+                  functionId: System.log
+                  arguments:
+                    level: DEBUG
+                    message: "${clientId} sent a publish on topic '${topic}' with\
                       \ result '${validationResult}'"
               onFailure:
                 pipeline:
-                  - id: logOperationFailure
-                    functionId: System.log
-                    arguments:
-                      level: WARN
-                      message: "${clientId} sent an invalid publish on topic '${topic}'\
+                - id: logOperationFailure
+                  functionId: System.log
+                  arguments:
+                    level: WARN
+                    message: "${clientId} sent an invalid publish on topic '${topic}'\
                       \ with result '${validationResult}'"
             schema:
               $ref: '#/components/schemas/DataPolicy'
@@ -1319,27 +1319,27 @@ paths:
                       topicFilter: topic/+
                     validation:
                       validators:
-                        - type: schema
-                          arguments:
-                            strategy: ALL_OF
-                            schemas:
-                              - schemaId: schema1
-                                version: "1"
+                      - type: schema
+                        arguments:
+                          strategy: ALL_OF
+                          schemas:
+                          - schemaId: schema1
+                            version: "1"
                     onSuccess:
                       pipeline:
-                        - id: logOperationSuccess
-                          functionId: System.log
-                          arguments:
-                            level: DEBUG
-                            message: "${clientId} sent a publish on topic '${topic}'\
+                      - id: logOperationSuccess
+                        functionId: System.log
+                        arguments:
+                          level: DEBUG
+                          message: "${clientId} sent a publish on topic '${topic}'\
                             \ with result '${validationResult}'"
                     onFailure:
                       pipeline:
-                        - id: logOperationFailure
-                          functionId: System.log
-                          arguments:
-                            level: WARN
-                            message: "${clientId} sent an invalid publish on topic '${topic}'\
+                      - id: logOperationFailure
+                        functionId: System.log
+                        arguments:
+                          level: WARN
+                          message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
                 $ref: '#/components/schemas/DataPolicy'
@@ -1353,39 +1353,39 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
                 policy-id-already-in-use:
                   description: Example response when the policy uses an already existing
                     id.
                   summary: The given policy identifier is already in use
                   value:
                     errors:
-                      - title: Policy id already used
-                        detail: The given policy id 'policy-id' is already in use.
+                    - title: Policy id already used
+                      detail: The given policy id 'policy-id' is already in use.
                 policy-not-parsable:
                   description: Example response when the submitted policy could not
                     be parsed as JSON.
                   summary: The submitted policy can not be parsed
                   value:
                     errors:
-                      - title: Policy not parsable
-                        detail: The submitted policy 'policy' can not be parsed.
+                    - title: Policy not parsable
+                      detail: The submitted policy 'policy' can not be parsed.
                 policy-not-valid:
                   description: "Example response when the policy is invalid, because\
                     \ a field is missing."
                   summary: The submitted policy is not valid
                   value:
                     errors:
-                      - title: Policy is not valid
-                        detail: Required body entity parameter is missing
+                    - title: Policy is not valid
+                      detail: Required body entity parameter is missing
                 referenced-schema-does-not-exist:
                   description: Example response when a referenced schema was not found.
                   summary: A schema that is referenced in the policy does not exist
                   value:
                     errors:
-                      - title: Referenced schema does not exist
-                        detail: The referenced schema with id 'schema-id' does not exist.
+                    - title: Referenced schema does not exist
+                      detail: The referenced schema with id 'schema-id' does not exist.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -1400,8 +1400,8 @@ paths:
                     by all cluster nodes
                   value:
                     errors:
-                      - title: Incompatible policy
-                        detail: "The policy with id 'policy' could not be added because\
+                    - title: Incompatible policy
+                      detail: "The policy with id 'policy' could not be added because\
                         \ its functions [fn:my-transform.js:1, fn:my-transform.js:2]\
                         \ require at least HiveMQ version 4.23.0, but not all cluster\
                         \ nodes have been updated to this version yet. Please try\
@@ -1411,35 +1411,35 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
                 version-check-failed:
                   description: Version check failed
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Create a new data policy
       tags:
-        - Data Hub - Data Policies
+      - Data Hub - Data Policies
   /api/v1/data-hub/data-validation/policies/{policyId}:
     delete:
       description: "Deletes an existing data policy. \n\n "
       operationId: deleteDataPolicy
       parameters:
-        - description: The identifier of the data policy to delete.
-          example: policy1
-          in: path
-          name: policyId
-          required: true
-          schema:
-            type: string
+      - description: The identifier of the data policy to delete.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
       responses:
         "204":
           description: "Success, no response body"
@@ -1452,8 +1452,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -1466,8 +1466,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
@@ -1480,36 +1480,36 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Delete a data policy
       tags:
-        - Data Hub - Data Policies
+      - Data Hub - Data Policies
     get:
       description: "Get a specific data policy. \n\n This endpoint returns the content\
         \ of the policy with the content-type `application/json`. \n\n This endpoint\
         \ requires at least HiveMQ version 4.15.0 on all cluster nodes."
       operationId: getDataPolicy
       parameters:
-        - description: The identifier of the policy.
-          example: policy1
-          in: path
-          name: policyId
-          required: true
-          schema:
-            type: string
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: The identifier of the policy.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, createdAt, lastUpdatedAt, matching, validation, onSuccess,\
           \ onFailure"
-          example: "id,createdAt"
-          in: query
-          name: fields
-          schema:
-            type: string
+        example: "id,createdAt"
+        in: query
+        name: fields
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -1526,27 +1526,27 @@ paths:
                       topicFilter: topic/+
                     validation:
                       validators:
-                        - type: schema
-                          arguments:
-                            strategy: ALL_OF
-                            schemas:
-                              - schemaId: schema1
-                                version: "1"
+                      - type: schema
+                        arguments:
+                          strategy: ALL_OF
+                          schemas:
+                          - schemaId: schema1
+                            version: "1"
                     onSuccess:
                       pipeline:
-                        - id: logOperationSuccess
-                          functionId: System.log
-                          arguments:
-                            level: DEBUG
-                            message: "${clientId} sent a publish on topic '${topic}'\
+                      - id: logOperationSuccess
+                        functionId: System.log
+                        arguments:
+                          level: DEBUG
+                          message: "${clientId} sent a publish on topic '${topic}'\
                             \ with result '${validationResult}'"
                     onFailure:
                       pipeline:
-                        - id: logOperationFailure
-                          functionId: System.log
-                          arguments:
-                            level: WARN
-                            message: "${clientId} sent an invalid publish on topic '${topic}'\
+                      - id: logOperationFailure
+                        functionId: System.log
+                        arguments:
+                          level: WARN
+                          message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
                 $ref: '#/components/schemas/DataPolicy'
@@ -1560,8 +1560,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -1574,14 +1574,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Get a data policy
       tags:
-        - Data Hub - Data Policies
+      - Data Hub - Data Policies
     put:
       description: |-
         Update a data policy
@@ -1591,13 +1591,13 @@ paths:
          This endpoint requires at least HiveMQ version 4.17.0 on all cluster nodes.
       operationId: updateDataPolicy
       parameters:
-        - description: The identifier of the policy.
-          example: policy1
-          in: path
-          name: policyId
-          required: true
-          schema:
-            type: string
+      - description: The identifier of the policy.
+        example: policy1
+        in: path
+        name: policyId
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -1607,27 +1607,27 @@ paths:
                 topicFilter: topic/+
               validation:
                 validators:
-                  - type: schema
-                    arguments:
-                      strategy: ALL_OF
-                      schemas:
-                        - schemaId: schema
-                          version: "1"
+                - type: schema
+                  arguments:
+                    strategy: ALL_OF
+                    schemas:
+                    - schemaId: schema
+                      version: "1"
               onSuccess:
                 pipeline:
-                  - id: logOperationSuccess
-                    functionId: System.log
-                    arguments:
-                      level: DEBUG
-                      message: "${clientId} sent a publish on topic '${topic}' with\
+                - id: logOperationSuccess
+                  functionId: System.log
+                  arguments:
+                    level: DEBUG
+                    message: "${clientId} sent a publish on topic '${topic}' with\
                       \ result '${validationResult}'"
               onFailure:
                 pipeline:
-                  - id: logOperationFailure
-                    functionId: System.log
-                    arguments:
-                      level: WARN
-                      message: "${clientId} sent an invalid publish on topic '${topic}'\
+                - id: logOperationFailure
+                  functionId: System.log
+                  arguments:
+                    level: WARN
+                    message: "${clientId} sent an invalid publish on topic '${topic}'\
                       \ with result '${validationResult}'"
             schema:
               $ref: '#/components/schemas/DataPolicy'
@@ -1649,27 +1649,27 @@ paths:
                       topicFilter: topic/+
                     validation:
                       validators:
-                        - type: schema
-                          arguments:
-                            strategy: ALL_OF
-                            schemas:
-                              - schemaId: schema1
-                                version: "1"
+                      - type: schema
+                        arguments:
+                          strategy: ALL_OF
+                          schemas:
+                          - schemaId: schema1
+                            version: "1"
                     onSuccess:
                       pipeline:
-                        - id: logOperationSuccess
-                          functionId: System.log
-                          arguments:
-                            level: DEBUG
-                            message: "${clientId} sent a publish on topic '${topic}'\
+                      - id: logOperationSuccess
+                        functionId: System.log
+                        arguments:
+                          level: DEBUG
+                          message: "${clientId} sent a publish on topic '${topic}'\
                             \ with result '${validationResult}'"
                     onFailure:
                       pipeline:
-                        - id: logOperationFailure
-                          functionId: System.log
-                          arguments:
-                            level: WARN
-                            message: "${clientId} sent an invalid publish on topic '${topic}'\
+                      - id: logOperationFailure
+                        functionId: System.log
+                        arguments:
+                          level: WARN
+                          message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
                 $ref: '#/components/schemas/DataPolicy'
@@ -1683,40 +1683,40 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
                 policy-not-parsable:
                   description: Example response when the submitted policy could not
                     be parsed as JSON.
                   summary: The submitted policy can not be parsed
                   value:
                     errors:
-                      - title: Policy not parsable
-                        detail: The submitted policy 'policy' can not be parsed.
+                    - title: Policy not parsable
+                      detail: The submitted policy 'policy' can not be parsed.
                 policy-not-valid:
                   description: "Example response when the policy is invalid, because\
                     \ a field is missing."
                   summary: The submitted policy is not valid
                   value:
                     errors:
-                      - title: Policy is not valid
-                        detail: Required body entity parameter is missing
+                    - title: Policy is not valid
+                      detail: Required body entity parameter is missing
                 policy-topic-filter-not-matching:
                   description: Example response when the given topic filter does not
                     match the present one.
                   summary: The policy topic filter does not match
                   value:
                     errors:
-                      - title: Topic filter does not match
-                        detail: The policy with id 'policyId' has a topic filter 'my/topic/filter'
-                          that does not match the topic filter of the current policy.
+                    - title: Topic filter does not match
+                      detail: The policy with id 'policyId' has a topic filter 'my/topic/filter'
+                        that does not match the topic filter of the current policy.
                 referenced-schema-does-not-exist:
                   description: Example response when a referenced schema was not found.
                   summary: A schema that is referenced in the policy does not exist
                   value:
                     errors:
-                      - title: Referenced schema does not exist
-                        detail: The referenced schema with id 'schema-id' does not exist.
+                    - title: Referenced schema does not exist
+                      detail: The referenced schema with id 'schema-id' does not exist.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -1729,8 +1729,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Referenced policy not found
-                        detail: The referenced policy with id 'policyId' was not found.
+                    - title: Referenced policy not found
+                      detail: The referenced policy with id 'policyId' was not found.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Policy not found
@@ -1743,8 +1743,8 @@ paths:
                   summary: Etag not matching
                   value:
                     errors:
-                      - title: Precondition Failed
-                        detail: Policy does not match the given etag '123456789'.
+                    - title: Precondition Failed
+                      detail: Policy does not match the given etag '123456789'.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Precondition failed
@@ -1759,8 +1759,8 @@ paths:
                     by all cluster nodes
                   value:
                     errors:
-                      - title: Incompatible policy
-                        detail: "The policy with id 'policy' could not be added because\
+                    - title: Incompatible policy
+                      detail: "The policy with id 'policy' could not be added because\
                         \ its functions [fn:my-transform.js:1, fn:my-transform.js:2]\
                         \ require at least HiveMQ version 4.23.0, but not all cluster\
                         \ nodes have been updated to this version yet. Please try\
@@ -1770,15 +1770,15 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Update an existing data policy
       tags:
-        - Data Hub - Data Policies
+      - Data Hub - Data Policies
   /api/v1/data-hub/management/start-trial:
     post:
       description: |-
@@ -1798,16 +1798,16 @@ paths:
                   summary: Data Hub trial mode is already expired
                   value:
                     errors:
-                      - title: Trial mode already expired
-                        detail: The trial mode period for data hub has already expired.
-                          Restart HiveMQ to get another 5 hours trial mode.
+                    - title: Trial mode already expired
+                      detail: The trial mode period for data hub has already expired.
+                        Restart HiveMQ to get another 5 hours trial mode.
                 trial-already-running:
                   description: Bad request
                   summary: Data Hub trial mode is already running
                   value:
                     errors:
-                      - title: Trial mode already running
-                        detail: "The trial mode for data hub cannot be started, as it\
+                    - title: Trial mode already running
+                      detail: "The trial mode for data hub cannot be started, as it\
                         \ is already running."
               schema:
                 $ref: '#/components/schemas/Errors'
@@ -1821,15 +1821,15 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: Start trial mode
       tags:
-        - Data Hub - Management
+      - Data Hub - Management
   /api/v1/data-hub/schemas:
     get:
       description: "Get all schemas. \n\n This endpoint returns the content of the\
@@ -1837,41 +1837,41 @@ paths:
         \ at least HiveMQ version 4.16.0 on all cluster nodes."
       operationId: getAllSchemas
       parameters:
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, type, schemaDefinition, createdAt"
-          example: "id,createdAt"
-          in: query
-          name: fields
-          schema:
-            type: string
-        - description: Comma-separated list of schema types used for filtering. Multiple
-            filters can be applied together.
-          example: "JSON,PROTOBUF"
-          in: query
-          name: types
-          schema:
-            type: string
-        - description: Comma-separated list of schema ids used for filtering. Multiple
-            filters can be applied together.
-          example: "schema1,schema2"
-          in: query
-          name: schemaIds
-          schema:
-            type: string
-        - description: Specifies the page size for the returned results. Has to be between
-            10 and 500. Default page size is 50.
-          example: 100
-          in: query
-          name: limit
-          schema:
-            type: integer
-            format: int32
-        - description: The cursor that has been returned by the previous result page.
-            Do not pass this parameter if you want to fetch the first page.
-          in: query
-          name: cursor
-          schema:
-            type: string
+        example: "id,createdAt"
+        in: query
+        name: fields
+        schema:
+          type: string
+      - description: Comma-separated list of schema types used for filtering. Multiple
+          filters can be applied together.
+        example: "JSON,PROTOBUF"
+        in: query
+        name: types
+        schema:
+          type: string
+      - description: Comma-separated list of schema ids used for filtering. Multiple
+          filters can be applied together.
+        example: "schema1,schema2"
+        in: query
+        name: schemaIds
+        schema:
+          type: string
+      - description: Specifies the page size for the returned results. Has to be between
+          10 and 500. Default page size is 50.
+        example: 100
+        in: query
+        name: limit
+        schema:
+          type: integer
+          format: int32
+      - description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        in: query
+        name: cursor
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -1883,42 +1883,42 @@ paths:
                   summary: "Multiple results, last page"
                   value:
                     items:
-                      - id: schema1
-                        version: 1
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:28:35.164Z
-                      - id: schema2
-                        version: 1
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:38:35.164Z
-                      - id: schema3
-                        version: 1
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:48:35.164Z
+                    - id: schema1
+                      version: 1
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:28:35.164Z
+                    - id: schema2
+                      version: 1
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:38:35.164Z
+                    - id: schema3
+                      version: 1
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:48:35.164Z
                 list-response-b:
                   description: Example response with multiple schemas. More pages
                     left
                   summary: "Multiple results, more pages left"
                   value:
                     items:
-                      - id: schema1
-                        version: 1
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:28:35.164Z
-                      - id: schema2
-                        version: 1
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:38:35.164Z
-                      - id: schema3
-                        version: 1
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:48:35.164Z
+                    - id: schema1
+                      version: 1
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:28:35.164Z
+                    - id: schema2
+                      version: 1
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:38:35.164Z
+                    - id: schema3
+                      version: 1
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:48:35.164Z
                     _links:
                       next: /api/v1/data-hub/schemas?cursor=a-eqj-GE9B5DkV-nhwVBk-nTL807ty&limit=3
                 list-response-c:
@@ -1927,9 +1927,9 @@ paths:
                   summary: "Multiple results, requested 'id' field"
                   value:
                     items:
-                      - id: schema1
-                      - id: schema2
-                      - id: schema3
+                    - id: schema1
+                    - id: schema2
+                    - id: schema3
                     _links:
                       next: /api/v1/data-hub/schemas?cursor=a-eqj-GE9B5DkV-nhwVBk-nTL807ty&limit=3&fields=id
                 list-response-d:
@@ -1937,32 +1937,32 @@ paths:
                   summary: Single Result
                   value:
                     items:
-                      - id: schema1
-                        version: 1
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:28:35.164Z
+                    - id: schema1
+                      version: 1
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:28:35.164Z
                 list-response-e:
                   description: Example response with all versions of specific schema
                     id.
                   summary: "List versions of one schema, last page"
                   value:
                     items:
-                      - id: schema1
-                        version: 1
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:28:35.164Z
-                      - id: schema1
-                        version: 2
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:38:35.164Z
-                      - id: schema1
-                        version: 3
-                        type: JSON
-                        schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
-                        createdAt: 2023-03-01T13:48:35.164Z
+                    - id: schema1
+                      version: 1
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:28:35.164Z
+                    - id: schema1
+                      version: 2
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:38:35.164Z
+                    - id: schema1
+                      version: 3
+                      type: JSON
+                      schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
+                      createdAt: 2023-03-01T13:48:35.164Z
               schema:
                 $ref: '#/components/schemas/SchemaList'
           description: Success
@@ -1975,15 +1975,15 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Get all schemas
       tags:
-        - Data Hub - Schemas
+      - Data Hub - Schemas
     post:
       description: |-
         Creates a schema
@@ -2027,32 +2027,32 @@ paths:
                   summary: The given schema is already present as latest version
                   value:
                     errors:
-                      - title: Schema already present
-                        detail: The given schema is already present as the latest version
-                          for the schema id 'schemaId'.
+                    - title: Schema already present
+                      detail: The given schema is already present as the latest version
+                        for the schema id 'schemaId'.
                 param-missing:
                   description: Example response when a required parameter is missing.
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
                 schema-not-parsable:
                   description: Example response when the submitted schema could not
                     be parsed as JSON.
                   summary: The submitted schema can not be parsed
                   value:
                     errors:
-                      - title: Schema not parsable
-                        detail: The submitted schema 'schema' can not be parsed.
+                    - title: Schema not parsable
+                      detail: The submitted schema 'schema' can not be parsed.
                 schema-type-not-supported:
                   description: Example response when the specified schema type is
                     not supported.
                   summary: The submitted schema type is not supported
                   value:
                     errors:
-                      - title: Schema type not supported
-                        detail: The submitted schema type 'schema-type' is not supported
+                    - title: Schema type not supported
+                      detail: The submitted schema type 'schema-type' is not supported
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -2065,23 +2065,23 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
                 version-check-failed:
                   description: Version check failed
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Create a new schema
       tags:
-        - Data Hub - Schemas
+      - Data Hub - Schemas
   /api/v1/data-hub/schemas/{schemaId}:
     delete:
       description: "Deletes the selected schema and all associated versions of the\
@@ -2089,13 +2089,13 @@ paths:
         \ cluster nodes."
       operationId: deleteSchema
       parameters:
-        - description: The schema identifier of the schema versions to delete.
-          example: schema1
-          in: path
-          name: schemaId
-          required: true
-          schema:
-            type: string
+      - description: The schema identifier of the schema versions to delete.
+        example: schema1
+        in: path
+        name: schemaId
+        required: true
+        schema:
+          type: string
       responses:
         "204":
           description: "Success, no response body"
@@ -2108,8 +2108,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -2122,8 +2122,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
@@ -2136,15 +2136,15 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Delete all versions of the schema
       tags:
-        - Data Hub - Schemas
+      - Data Hub - Schemas
     get:
       description: "Get a specific schema. \n\n This endpoint returns the content\
         \ of the latest version of the schema with the content-type `application/json`.\
@@ -2152,20 +2152,20 @@ paths:
         \ nodes."
       operationId: getSchema
       parameters:
-        - description: The identifier of the schema.
-          example: schema1
-          in: path
-          name: schemaId
-          required: true
-          schema:
-            type: string
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: The identifier of the schema.
+        example: schema1
+        in: path
+        name: schemaId
+        required: true
+        schema:
+          type: string
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, type, schemaDefinition, createdAt"
-          example: "id,type"
-          in: query
-          name: fields
-          schema:
-            type: string
+        example: "id,type"
+        in: query
+        name: fields
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -2192,8 +2192,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -2206,54 +2206,54 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Get a schema
       tags:
-        - Data Hub - Schemas
+      - Data Hub - Schemas
   /api/v1/data-hub/scripts:
     get:
       description: Get all scripts.
       operationId: getAllScripts
       parameters:
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, version, description, runtime, functionType, createdAt"
-          example: "id,createdAt,source"
-          in: query
-          name: fields
-          schema:
-            type: string
-        - description: Comma-separated list of function types used for filtering. Multiple
-            filters can be applied together.
-          example: TRANSFORMATION
-          in: query
-          name: functionTypes
-          schema:
-            type: string
-        - description: Comma-separated list of script ids used for filtering. Multiple
-            filters can be applied together.
-          example: "script1,script2"
-          in: query
-          name: scriptIds
-          schema:
-            type: string
-        - description: Specifies the page size for the returned results. Has to be between
-            10 and 500. Default page size is 50.
-          example: 100
-          in: query
-          name: limit
-          schema:
-            type: integer
-            format: int32
-        - description: The cursor that has been returned by the previous result page.
-            Do not pass this parameter if you want to fetch the first page.
-          in: query
-          name: cursor
-          schema:
-            type: string
+        example: "id,createdAt,source"
+        in: query
+        name: fields
+        schema:
+          type: string
+      - description: Comma-separated list of function types used for filtering. Multiple
+          filters can be applied together.
+        example: TRANSFORMATION
+        in: query
+        name: functionTypes
+        schema:
+          type: string
+      - description: Comma-separated list of script ids used for filtering. Multiple
+          filters can be applied together.
+        example: "script1,script2"
+        in: query
+        name: scriptIds
+        schema:
+          type: string
+      - description: Specifies the page size for the returned results. Has to be between
+          10 and 500. Default page size is 50.
+        example: 100
+        in: query
+        name: limit
+        schema:
+          type: integer
+          format: int32
+      - description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        in: query
+        name: cursor
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -2264,30 +2264,30 @@ paths:
                   summary: Single Result
                   value:
                     items:
-                      - id: my-transform.js
-                        version: 1
-                        createdAt: 2023-11-21T13:08:09.898Z
-                        description: This script prefixes topics with 'transformed/'
-                        functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
+                    - id: my-transform.js
+                      version: 1
+                      createdAt: 2023-11-21T13:08:09.898Z
+                      description: This script prefixes topics with 'transformed/'
+                      functionType: TRANSFORMATION
+                      source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
                 list-response-b:
                   description: Example response with multiple sripts. More pages left
                   summary: "Multiple results, more pages left"
                   value:
                     items:
-                      - id: my-transform.js
-                        version: 1
-                        createdAt: 2023-11-21T13:08:09.898Z
-                        description: This script prefixes topics with 'transformed/'
-                        functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
-                      - id: my-transform-new.js
-                        version: 1
-                        createdAt: 2023-11-21T13:17:53.085Z
-                        description: "This script adds the user property ('foo', 'bar')\
+                    - id: my-transform.js
+                      version: 1
+                      createdAt: 2023-11-21T13:08:09.898Z
+                      description: This script prefixes topics with 'transformed/'
+                      functionType: TRANSFORMATION
+                      source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
+                    - id: my-transform-new.js
+                      version: 1
+                      createdAt: 2023-11-21T13:17:53.085Z
+                      description: "This script adds the user property ('foo', 'bar')\
                         \ to a publish"
-                        functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
+                      functionType: TRANSFORMATION
+                      source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
                     _links:
                       next: /api/v1/data-hub/scripts?cursor=a-WfW-QB4L4Q==&limit=3
                 list-response-c:
@@ -2296,9 +2296,9 @@ paths:
                   summary: "Multiple results, requested 'id' field"
                   value:
                     items:
-                      - id: script1
-                      - id: script2
-                      - id: script3
+                    - id: script1
+                    - id: script2
+                    - id: script3
                     _links:
                       next: /api/v1/data-hub/scripts?cursor=a-eqj-GE9B5DkV-nhwVBk-nTL807ty&limit=3&fields=id
                 list-response-e:
@@ -2307,36 +2307,36 @@ paths:
                   summary: "List versions of one script, last page"
                   value:
                     items:
-                      - id: my-transform.js
-                        version: 1
-                        createdAt: 2023-11-21T13:08:09.898Z
-                        description: This script prefixes topics with 'transformed/'
-                        functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
-                      - id: my-transform.js
-                        version: 2
-                        createdAt: 2023-11-21T13:17:53.085Z
-                        description: This script prefixes topics with 'transformed/'
-                        functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
+                    - id: my-transform.js
+                      version: 1
+                      createdAt: 2023-11-21T13:08:09.898Z
+                      description: This script prefixes topics with 'transformed/'
+                      functionType: TRANSFORMATION
+                      source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
+                    - id: my-transform.js
+                      version: 2
+                      createdAt: 2023-11-21T13:17:53.085Z
+                      description: This script prefixes topics with 'transformed/'
+                      functionType: TRANSFORMATION
+                      source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
                 list-response-many:
                   description: Example response with multiple scripts
                   summary: Multiple results
                   value:
                     items:
-                      - id: my-transform.js
-                        version: 1
-                        createdAt: 2023-11-21T13:08:09.898Z
-                        description: This script prefixes topics with 'transformed/'
-                        functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
-                      - id: my-transform-new.js
-                        version: 1
-                        createdAt: 2023-11-21T13:17:53.085Z
-                        description: "This script adds the user property ('foo', 'bar')\
+                    - id: my-transform.js
+                      version: 1
+                      createdAt: 2023-11-21T13:08:09.898Z
+                      description: This script prefixes topics with 'transformed/'
+                      functionType: TRANSFORMATION
+                      source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
+                    - id: my-transform-new.js
+                      version: 1
+                      createdAt: 2023-11-21T13:17:53.085Z
+                      description: "This script adds the user property ('foo', 'bar')\
                         \ to a publish"
-                        functionType: TRANSFORMATION
-                        source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
+                      functionType: TRANSFORMATION
+                      source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
               schema:
                 $ref: '#/components/schemas/ScriptList'
           description: Success
@@ -2349,15 +2349,15 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Get all scripts
       tags:
-        - Data Hub - Scripts
+      - Data Hub - Scripts
     post:
       description: Creates a script
       operationId: createScript
@@ -2400,16 +2400,16 @@ paths:
                   summary: Unable to parse JSON body
                   value:
                     errors:
-                      - title: Invalid input
-                        detail: Unable to parse JSON body
+                    - title: Invalid input
+                      detail: Unable to parse JSON body
                 script-already-present:
                   description: Example response when the script is already present.
-                  summary: The given script is already present as latest version
+                  summary: The given script is identical to the latest version
                   value:
                     errors:
-                      - title: Script already present
-                        detail: The given script is already present as the latest version
-                          for the script id 'scriptId'.
+                    - title: Script already present
+                      detail: The given script is identical to the latest version
+                        of the script with id 'scriptId'.
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -2422,27 +2422,27 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Create a new script
       tags:
-        - Data Hub - Scripts
+      - Data Hub - Scripts
   /api/v1/data-hub/scripts/{scriptId}:
     delete:
       description: Deletes the selected script.
       operationId: deleteScript
       parameters:
-        - description: The script identifier of the script to delete.
-          example: hello_world_function
-          in: path
-          name: scriptId
-          required: true
-          schema:
-            type: string
+      - description: The script identifier of the script to delete.
+        example: hello_world_function
+        in: path
+        name: scriptId
+        required: true
+        schema:
+          type: string
       responses:
         "204":
           description: "Success, no response body"
@@ -2465,8 +2465,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
@@ -2479,33 +2479,33 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: Delete a script
       tags:
-        - Data Hub - Scripts
+      - Data Hub - Scripts
     get:
       description: Get a specific script.
       operationId: getScript
       parameters:
-        - description: The identifier of the script.
-          example: hello_world_function
-          in: path
-          name: scriptId
-          required: true
-          schema:
-            type: string
-        - description: "Comma-separated list of fields to include in the response. Allowed\
+      - description: The identifier of the script.
+        example: hello_world_function
+        in: path
+        name: scriptId
+        required: true
+        schema:
+          type: string
+      - description: "Comma-separated list of fields to include in the response. Allowed\
           \ values are: id, version, description, runtime, functionType, createdAt"
-          example: "id,createdAt,source"
-          in: query
-          name: fields
-          schema:
-            type: string
+        example: "id,createdAt,source"
+        in: query
+        name: fields
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -2533,8 +2533,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -2547,14 +2547,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Get a script
       tags:
-        - Data Hub - Scripts
+      - Data Hub - Scripts
   /api/v1/management/backups:
     get:
       description: |-
@@ -2582,17 +2582,17 @@ paths:
                   summary: Multiple results in different states
                   value:
                     items:
-                      - id: 20200506-081317
-                        createdAt: 2020-05-06T08:13:17Z
-                        bytes: 85550653
-                        state: COMPLETED
-                      - id: 20201006-1902318
-                        createdAt: 2020-05-06T08:13:17Z
-                        state: IN_PROGRESS
-                      - id: 20201006-1902318
-                        createdAt: 2020-05-06T08:13:17Z
-                        state: FAILED
-                        failReason: Another backup is already in progress.
+                    - id: 20200506-081317
+                      createdAt: 2020-05-06T08:13:17Z
+                      bytes: 85550653
+                      state: COMPLETED
+                    - id: 20201006-1902318
+                      createdAt: 2020-05-06T08:13:17Z
+                      state: IN_PROGRESS
+                    - id: 20201006-1902318
+                      createdAt: 2020-05-06T08:13:17Z
+                      state: FAILED
+                      failReason: Another backup is already in progress.
               schema:
                 $ref: '#/components/schemas/BackupList'
           description: Success
@@ -2605,15 +2605,15 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: List all available backups
       tags:
-        - Backup & Restore
+      - Backup & Restore
     post:
       description: |-
         Triggers the creation of a new backup.
@@ -2645,15 +2645,15 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: Create a new backup
       tags:
-        - Backup & Restore
+      - Backup & Restore
   /api/v1/management/backups/{backupId}:
     get:
       description: |-
@@ -2666,12 +2666,12 @@ paths:
          This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
       operationId: getBackup
       parameters:
-        - description: The id of the backup.
-          in: path
-          name: backupId
-          required: true
-          schema:
-            type: string
+      - description: The id of the backup.
+        in: path
+        name: backupId
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -2698,8 +2698,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -2712,8 +2712,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
@@ -2726,15 +2726,15 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: Get backup information
       tags:
-        - Backup & Restore
+      - Backup & Restore
     post:
       description: |-
         Triggers the restore of a stored backup.
@@ -2742,12 +2742,12 @@ paths:
         This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
       operationId: restoreBackup
       parameters:
-        - description: The id of the backup.
-          in: path
-          name: backupId
-          required: true
-          schema:
-            type: string
+      - description: The id of the backup.
+        in: path
+        name: backupId
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -2773,8 +2773,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -2787,8 +2787,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
@@ -2801,15 +2801,15 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: Restore a new backup
       tags:
-        - Backup & Restore
+      - Backup & Restore
   /api/v1/management/diagnostic-archives:
     post:
       description: Triggers the creation of a new diagnostic archive.
@@ -2833,7 +2833,7 @@ paths:
           description: Success
       summary: Create a new diagnostic archive
       tags:
-        - Diagnostic Archive
+      - Diagnostic Archive
   /api/v1/management/files/backups/{backupId}:
     get:
       description: "Download a specific backup file. \n\n This endpoint returns the\
@@ -2843,12 +2843,12 @@ paths:
         \ least HiveMQ version 4.4.0. on all cluster nodes."
       operationId: downloadBackupFile
       parameters:
-        - description: The id of the backup.
-          in: path
-          name: backupId
-          required: true
-          schema:
-            type: string
+      - description: The id of the backup.
+        in: path
+        name: backupId
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -2871,8 +2871,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -2885,8 +2885,8 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
@@ -2899,15 +2899,15 @@ paths:
                   summary: Temporarily not available
                   value:
                     errors:
-                      - title: The endpoint is temporarily not available
-                        detail: "The endpoint is temporarily not available, please try\
+                    - title: The endpoint is temporarily not available
+                      detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Temporarily not available
       summary: Download a backup file
       tags:
-        - Backup & Restore
+      - Backup & Restore
   /api/v1/management/files/trace-recordings/{traceRecordingId}:
     get:
       description: "Download a specific trace recording. \n\n This endpoint returns\
@@ -2916,12 +2916,12 @@ paths:
         \ can be downloaded."
       operationId: downloadTraceRecordingFile
       parameters:
-        - description: The id of the trace recording.
-          in: path
-          name: traceRecordingId
-          required: true
-          schema:
-            type: string
+      - description: The id of the trace recording.
+        in: path
+        name: traceRecordingId
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -2944,8 +2944,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -2958,14 +2958,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Download a trace recording
       tags:
-        - Trace Recordings
+      - Trace Recordings
   /api/v1/management/trace-recordings:
     get:
       description: "Lists all known trace recordings. \n\nTrace recordings can be\
@@ -2985,23 +2985,23 @@ paths:
                   summary: Single result
                   value:
                     items:
-                      - name: test
-                        startAt: 2020-07-23T12:07:30.000Z
-                        endAt: 2020-07-23T13:07:30.000Z
-                        clientIdFilters:
-                          - regex: "client-[0-9]"
-                        topicFilters:
-                          - regex: topic/.*
-                        events:
-                          - MQTT_MESSAGE_CONNECT
-                          - MQTT_MESSAGE_DISCONNECT
-                        state: IN_PROGRESS
+                    - name: test
+                      startAt: 2020-07-23T12:07:30.000Z
+                      endAt: 2020-07-23T13:07:30.000Z
+                      clientIdFilters:
+                      - regex: "client-[0-9]"
+                      topicFilters:
+                      - regex: topic/.*
+                      events:
+                      - MQTT_MESSAGE_CONNECT
+                      - MQTT_MESSAGE_DISCONNECT
+                      state: IN_PROGRESS
               schema:
                 $ref: '#/components/schemas/TraceRecordingList'
           description: Success
       summary: Get all trace recordings
       tags:
-        - Trace Recordings
+      - Trace Recordings
     post:
       description: "Creates a new trace recording. \n\n To create a trace recording\
         \ you must specify a name, start date, end date, a set of filters and the\
@@ -3023,11 +3023,11 @@ paths:
                     startAt: 2020-07-23T12:07:30.000Z
                     endAt: 2020-07-23T13:07:30.000Z
                     clientIdFilters:
-                      - regex: "client-[0-9]"
+                    - regex: "client-[0-9]"
                     topicFilters:
-                      - regex: topic/.*
+                    - regex: topic/.*
                     events:
-                      - MQTT_MESSAGE_CONNECT
+                    - MQTT_MESSAGE_CONNECT
             schema:
               $ref: '#/components/schemas/TraceRecordingItem'
         description: The trace recording to create
@@ -3046,11 +3046,11 @@ paths:
                       startAt: 2020-07-23T12:07:30.000Z
                       endAt: 2020-07-23T13:07:30.000Z
                       clientIdFilters:
-                        - regex: test
+                      - regex: test
                       topicFilters:
-                        - regex: test-topic
+                      - regex: test-topic
                       events:
-                        - MQTT_MESSAGE_CONNECT
+                      - MQTT_MESSAGE_CONNECT
                       state: IN_PROGRESS
               schema:
                 $ref: '#/components/schemas/TraceRecordingItem'
@@ -3064,40 +3064,40 @@ paths:
                   summary: Required body entity parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required body entity parameter is missing
+                    - title: Required parameter missing
+                      detail: Required body entity parameter is missing
                 invalid-resource:
                   description: Bad request
                   summary: Invalid resource
                   value:
                     errors:
-                      - title: Invalid resource
-                        detail: "The fields {name, events, startAt, endAt} must be specified\
+                    - title: Invalid resource
+                      detail: "The fields {name, events, startAt, endAt} must be specified\
                         \ at creation"
                 param-missing:
                   description: Bad request
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
       summary: Create a trace recording
       tags:
-        - Trace Recordings
+      - Trace Recordings
   /api/v1/management/trace-recordings/{traceRecordingId}:
     delete:
       description: "Deletes an existing trace recording. \n\n "
       operationId: deleteTraceRecording
       parameters:
-        - description: The name of the trace recording to delete.
-          in: path
-          name: traceRecordingId
-          required: true
-          schema:
-            type: string
+      - description: The name of the trace recording to delete.
+        in: path
+        name: traceRecordingId
+        required: true
+        schema:
+          type: string
       responses:
         "204":
           description: "Success, no response body"
@@ -3110,8 +3110,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -3124,14 +3124,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Delete a trace recording
       tags:
-        - Trace Recordings
+      - Trace Recordings
     patch:
       description: |-
         Stops an existing trace recording.
@@ -3139,12 +3139,12 @@ paths:
         Only the state of the trace recording can be set to `STOPPED` with this endpoint, changes to other fields are ignored.
       operationId: stopTraceRecording
       parameters:
-        - description: The name of the trace recording to patch/stop.
-          in: path
-          name: traceRecordingId
-          required: true
-          schema:
-            type: string
+      - description: The name of the trace recording to patch/stop.
+        in: path
+        name: traceRecordingId
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -3174,11 +3174,11 @@ paths:
                       startAt: 2020-07-23T12:07:30.000Z
                       endAt: 2020-07-23T13:07:30.000Z
                       clientIdFilters:
-                        - regex: test
+                      - regex: test
                       topicFilters:
-                        - regex: test-topic
+                      - regex: test-topic
                       events:
-                        - MQTT_MESSAGE_CONNECT
+                      - MQTT_MESSAGE_CONNECT
                       state: STOPPED
               schema:
                 $ref: '#/components/schemas/TraceRecordingItem'
@@ -3192,23 +3192,23 @@ paths:
                   summary: Required body entity parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required body entity parameter is missing
+                    - title: Required parameter missing
+                      detail: Required body entity parameter is missing
                 invalid-resource:
                   description: Bad request
                   summary: Invalid resource
                   value:
                     errors:
-                      - title: Invalid resource
-                        detail: "The fields {name, events, startAt, endAt} must be specified\
+                    - title: Invalid resource
+                      detail: "The fields {name, events, startAt, endAt} must be specified\
                         \ at creation"
                 param-missing:
                   description: Bad request
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -3221,14 +3221,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Stop a trace recording.
       tags:
-        - Trace Recordings
+      - Trace Recordings
   /api/v1/mqtt/clients:
     get:
       description: |-
@@ -3242,19 +3242,19 @@ paths:
         This endpoint requires at least HiveMQ version 4.4.0. on all cluster nodes.
       operationId: getAllMqttClients
       parameters:
-        - description: Specifies the page size for the returned results. Has to be between
-            50 and 2500. Default page size is 500.
-          in: query
-          name: limit
-          schema:
-            type: integer
-            format: int32
-        - description: The cursor that has been returned by the previous result page.
-            Do not pass this parameter if you want to fetch the first page.
-          in: query
-          name: cursor
-          schema:
-            type: string
+      - description: Specifies the page size for the returned results. Has to be between
+          50 and 2500. Default page size is 500.
+        in: query
+        name: limit
+        schema:
+          type: integer
+          format: int32
+      - description: The cursor that has been returned by the previous result page.
+          Do not pass this parameter if you want to fetch the first page.
+        in: query
+        name: cursor
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -3271,22 +3271,22 @@ paths:
                   summary: "Multiple results, last page"
                   value:
                     items:
-                      - id: client-12
-                      - id: client-5
-                      - id: client-32
-                      - id: my-client-id2
-                      - id: my-client-id
+                    - id: client-12
+                    - id: client-5
+                    - id: client-32
+                    - id: my-client-id2
+                    - id: my-client-id
                 multiple-results-pages-left:
                   description: Example response with multiple clients. More pages
                     left.
                   summary: "Multiple results, more pages left"
                   value:
                     items:
-                      - id: client-12
-                      - id: client-5
-                      - id: client-32
-                      - id: my-client-id2
-                      - id: my-client-id
+                    - id: client-12
+                    - id: client-5
+                    - id: client-32
+                    - id: my-client-id2
+                    - id: my-client-id
                     _links:
                       next: /api/v1/mqtt/clients?cursor=a-MvelExpd5y0SrXBxDhBvnGmohbpzwGDQFdUyOYWBACqs1TgI4-cUo-A=&limit=5
                 single-result:
@@ -3294,7 +3294,7 @@ paths:
                   summary: Single result
                   value:
                     items:
-                      - id: client-12
+                    - id: client-12
               schema:
                 $ref: '#/components/schemas/ClientList'
           description: Success
@@ -3307,8 +3307,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -3321,8 +3321,8 @@ paths:
                   summary: The passed cursor is not valid anymore
                   value:
                     errors:
-                      - title: Cursor not valid anymore
-                        detail: "The passed cursor is not valid anymore, you can request\
+                    - title: Cursor not valid anymore
+                      detail: "The passed cursor is not valid anymore, you can request\
                         \ this resource without a cursor to start from the beginning"
               schema:
                 $ref: '#/components/schemas/Errors'
@@ -3336,15 +3336,15 @@ paths:
                   summary: Version check failed
                   value:
                     errors:
-                      - title: Endpoint not active yet
-                        detail: "Not all cluster nodes support this endpoint yet, please\
+                    - title: Endpoint not active yet
+                      detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Not all cluster nodes at minimum version
       summary: List all MQTT clients
       tags:
-        - MQTT Clients
+      - MQTT Clients
   /api/v1/mqtt/clients/{clientId}:
     delete:
       description: |-
@@ -3353,18 +3353,18 @@ paths:
          If your client identifiers contain special characters, please make sure that the clientId is URL encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: invalidateClientSession
       parameters:
-        - description: The MQTT client identifier.
-          in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
-        - description: Whether to prevent the will message.
-          in: query
-          name: preventWillMessage
-          schema:
-            type: boolean
-            default: false
+      - description: The MQTT client identifier.
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+      - description: Whether to prevent the will message.
+        in: query
+        name: preventWillMessage
+        schema:
+          type: boolean
+          default: false
       responses:
         "204":
           content:
@@ -3379,8 +3379,8 @@ paths:
                   summary: Query parameter can not be parsed
                   value:
                     errors:
-                      - title: Parameter invalid
-                        detail: Query parameter 'parameter-name' is invalid
+                    - title: Parameter invalid
+                      detail: Query parameter 'parameter-name' is invalid
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -3393,14 +3393,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Invalidate a client session
       tags:
-        - MQTT Clients
+      - MQTT Clients
     get:
       description: |-
         Returns detailed information for a specific client with it is current state.
@@ -3409,12 +3409,12 @@ paths:
         If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: getMqttClientDetails
       parameters:
-        - description: The MQTT client identifier.
-          in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
+      - description: The MQTT client identifier.
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -3480,10 +3480,10 @@ paths:
                           destinationIp: 127.0.0.3
                           destinationPort: 50123
                           tlvs:
-                            - key: PP2_TYPE_ALPN
-                              value: "1"
-                            - key: PP2_TYPE_AUTHORITY
-                              value: "2"
+                          - key: PP2_TYPE_ALPN
+                            value: "1"
+                          - key: PP2_TYPE_AUTHORITY
+                            value: "2"
                         tlsInformation:
                           cipherSuite: cipher_suite
                           tlsVersion: "1.2"
@@ -3509,8 +3509,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -3523,14 +3523,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Get detailed client information
       tags:
-        - MQTT Clients
+      - MQTT Clients
   /api/v1/mqtt/clients/{clientId}/connection:
     delete:
       description: |-
@@ -3539,18 +3539,18 @@ paths:
          If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: disconnectClient
       parameters:
-        - description: The MQTT client identifier.
-          in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
-        - description: Whether to prevent the will message.
-          in: query
-          name: preventWillMessage
-          schema:
-            type: boolean
-            default: false
+      - description: The MQTT client identifier.
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+      - description: Whether to prevent the will message.
+        in: query
+        name: preventWillMessage
+        schema:
+          type: boolean
+          default: false
       responses:
         "204":
           content:
@@ -3565,8 +3565,8 @@ paths:
                   summary: Query parameter can not be parsed
                   value:
                     errors:
-                      - title: Parameter invalid
-                        detail: Query parameter 'parameter-name' is invalid
+                    - title: Parameter invalid
+                      detail: Query parameter 'parameter-name' is invalid
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -3579,14 +3579,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Disconnect a client
       tags:
-        - MQTT Clients
+      - MQTT Clients
     get:
       description: |-
         Returns the information if a specific client is currently connected.
@@ -3595,12 +3595,12 @@ paths:
         If your client identifiers contain special characters, please make sure that the clientId is URL Encoded (a.k.a. percent-encoding, as in RFC 3986).
       operationId: getMqttClientConnectionState
       parameters:
-        - description: The MQTT client identifier.
-          in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
+      - description: The MQTT client identifier.
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -3624,8 +3624,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -3638,14 +3638,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: Get a clients connection state
       tags:
-        - MQTT Clients
+      - MQTT Clients
   /api/v1/mqtt/clients/{clientId}/subscriptions:
     get:
       description: |-
@@ -3654,12 +3654,12 @@ paths:
         This endpoint does not support pagination with cursor at the moment, but it might be added in future versions. Please make sure to check if a cursor is returned and another page is available to have a future-proof implementation.
       operationId: getSubscriptionsForMqttClient
       parameters:
-        - description: The MQTT client identifier.
-          in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
+      - description: The MQTT client identifier.
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           content:
@@ -3675,24 +3675,24 @@ paths:
                   summary: Multiple results
                   value:
                     items:
-                      - topicFilter: topic/0
-                        qos: AT_MOST_ONCE
-                        retainHandling: SEND
-                        retainAsPublished: true
-                        noLocal: false
-                        subscriptionIdentifier: 1
-                      - topicFilter: topic/2
-                        qos: EXACTLY_ONCE
-                        retainHandling: SEND
-                        retainAsPublished: false
-                        noLocal: true
-                        subscriptionIdentifier: 3
-                      - topicFilter: $share/sharename/topic/1
-                        qos: AT_LEAST_ONCE
-                        retainHandling: DO_NOT_SEND
-                        retainAsPublished: false
-                        noLocal: false
-                        subscriptionIdentifier: 2
+                    - topicFilter: topic/0
+                      qos: AT_MOST_ONCE
+                      retainHandling: SEND
+                      retainAsPublished: true
+                      noLocal: false
+                      subscriptionIdentifier: 1
+                    - topicFilter: topic/2
+                      qos: EXACTLY_ONCE
+                      retainHandling: SEND
+                      retainAsPublished: false
+                      noLocal: true
+                      subscriptionIdentifier: 3
+                    - topicFilter: $share/sharename/topic/1
+                      qos: AT_LEAST_ONCE
+                      retainHandling: DO_NOT_SEND
+                      retainAsPublished: false
+                      noLocal: false
+                      subscriptionIdentifier: 2
               schema:
                 $ref: '#/components/schemas/ClientSubscriptionList'
           description: Success
@@ -3705,8 +3705,8 @@ paths:
                   summary: Required URL parameter missing
                   value:
                     errors:
-                      - title: Required parameter missing
-                        detail: Required URL parameter 'parameterName' is missing
+                    - title: Required parameter missing
+                      detail: Required URL parameter 'parameterName' is missing
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Bad request
@@ -3719,14 +3719,14 @@ paths:
                   summary: Not found
                   value:
                     errors:
-                      - title: Resource not found
-                        detail: Resource with id 'my-resource-id' not found
+                    - title: Resource not found
+                      detail: Resource with id 'my-resource-id' not found
               schema:
                 $ref: '#/components/schemas/Errors'
           description: Resource not found
       summary: List all subscriptions for MQTT client
       tags:
-        - MQTT Clients
+      - MQTT Clients
 components:
   schemas:
     Backup:
@@ -3753,12 +3753,12 @@ components:
           type: string
           description: The current state of the backup
           enum:
-            - COMPLETED
-            - RESTORE_COMPLETED
-            - IN_PROGRESS
-            - RESTORE_IN_PROGRESS
-            - FAILED
-            - RESTORE_FAILED
+          - COMPLETED
+          - RESTORE_COMPLETED
+          - IN_PROGRESS
+          - RESTORE_IN_PROGRESS
+          - FAILED
+          - RESTORE_FAILED
     BackupItem:
       type: object
       properties:
@@ -3803,9 +3803,9 @@ components:
           items:
             $ref: '#/components/schemas/BehaviorPolicyOnTransition'
       required:
-        - behavior
-        - id
-        - matching
+      - behavior
+      - id
+      - matching
     BehaviorPolicyBehavior:
       type: object
       description: "The behavior referenced by the policy, that is validated by the\
@@ -3818,7 +3818,7 @@ components:
           type: string
           description: The unique identifier of a pre-defined behavior.
       required:
-        - id
+      - id
     BehaviorPolicyDeserialization:
       type: object
       description: The deserializers used by the policy for particular message and/or
@@ -3835,7 +3835,7 @@ components:
         schema:
           $ref: '#/components/schemas/SchemaReference'
       required:
-        - schema
+      - schema
     BehaviorPolicyList:
       type: object
       description: A listing of behavior policies.
@@ -3855,7 +3855,7 @@ components:
           type: string
           description: The regex pattern to match the client id against.
       required:
-        - clientIdRegex
+      - clientIdRegex
     BehaviorPolicyOnEvent:
       type: object
       description: "One or more operations that are triggered on the event. When this\
@@ -3866,7 +3866,7 @@ components:
           items:
             $ref: '#/components/schemas/PolicyOperation'
       required:
-        - pipeline
+      - pipeline
     BehaviorPolicyOnTransition:
       type: object
       description: The actions that are executed for the specified transition.
@@ -3892,8 +3892,8 @@ components:
           description: The exact state to which the transition happened. Alternatively
             a state filter can be used.
       required:
-        - fromState
-        - toState
+      - fromState
+      - toState
     CertificateInformation:
       type: object
       description: The client certificate sent by the client
@@ -4016,9 +4016,9 @@ components:
           type: string
           description: The Quality of Service level
           enum:
-            - AT_MOST_ONCE
-            - AT_LEAST_ONCE
-            - EXACTLY_ONCE
+          - AT_MOST_ONCE
+          - AT_LEAST_ONCE
+          - EXACTLY_ONCE
         retainAsPublished:
           type: boolean
           description: The Retain As Published flag
@@ -4026,9 +4026,9 @@ components:
           type: string
           description: Retain handling option
           enum:
-            - SEND
-            - SEND_IF_NEW_SUBSCRIPTION
-            - DO_NOT_SEND
+          - SEND
+          - SEND_IF_NEW_SUBSCRIPTION
+          - DO_NOT_SEND
         subscriptionIdentifier:
           type: integer
           format: int32
@@ -4127,8 +4127,8 @@ components:
         validation:
           $ref: '#/components/schemas/DataPolicyValidation'
       required:
-        - id
-        - matching
+      - id
+      - matching
     DataPolicyAction:
       type: object
       description: "One or more operations the outcome of the validation triggers.\
@@ -4160,7 +4160,7 @@ components:
           type: string
           description: The topic filter for which the policy is matched.
       required:
-        - topicFilter
+      - topicFilter
     DataPolicyValidation:
       type: object
       description: "The section of the policy that defines how incoming MQTT messages\
@@ -4183,8 +4183,8 @@ components:
           type: string
           description: The type of the validator.
       required:
-        - arguments
-        - type
+      - arguments
+      - type
     DiagnosticArchive:
       type: object
       properties:
@@ -4209,9 +4209,9 @@ components:
           type: string
           description: The current state of the diagnostic archive.
           enum:
-            - COMPLETED
-            - IN_PROGRESS
-            - FAILED
+          - COMPLETED
+          - IN_PROGRESS
+          - FAILED
     DiagnosticArchiveItem:
       type: object
       properties:
@@ -4294,9 +4294,9 @@ components:
           type: string
           description: The unique id of the operation in the pipeline.
       required:
-        - arguments
-        - functionId
-        - id
+      - arguments
+      - functionId
+      - id
     ProxyInformation:
       type: object
       description: Proxy Protocol information
@@ -4350,9 +4350,9 @@ components:
           description: The version of the schema.
           readOnly: true
       required:
-        - id
-        - schemaDefinition
-        - type
+      - id
+      - schemaDefinition
+      - type
     SchemaList:
       type: object
       description: A listing of schemas.
@@ -4376,8 +4376,8 @@ components:
           description: The version of the schema. The value "latest" may be used to
             always refer to the latest schema.
       required:
-        - schemaId
-        - version
+      - schemaId
+      - version
     Script:
       type: object
       properties:
@@ -4390,9 +4390,9 @@ components:
           description: A string of free-form text describing the function.
         functionType:
           type: string
-          description: "The type of the function. Restricted to only one value: TRANSFORMATION."
+          description: The type of the function.
           enum:
-            - TRANSFORMATION
+          - TRANSFORMATION
         id:
           type: string
           description: The unique identifier of the script.
@@ -4405,9 +4405,9 @@ components:
           description: The version of the script.
           readOnly: true
       required:
-        - functionType
-        - id
-        - source
+      - functionType
+      - id
+      - source
     ScriptList:
       type: object
       description: A listing of scripts.
@@ -4473,21 +4473,21 @@ components:
             type: string
             description: MQTT events to trace
             enum:
-              - MQTT_MESSAGE_CONNECT
-              - MQTT_MESSAGE_CONNACK
-              - MQTT_MESSAGE_SUBSCRIBE
-              - MQTT_MESSAGE_SUBACK
-              - MQTT_MESSAGE_PUBLISH
-              - MQTT_MESSAGE_PUBACK
-              - MQTT_MESSAGE_PUBREC
-              - MQTT_MESSAGE_PUBREL
-              - MQTT_MESSAGE_PUBCOMP
-              - MQTT_MESSAGE_UNSUBSCRIBE
-              - MQTT_MESSAGE_UNSUBACK
-              - MQTT_MESSAGE_PINGREQ
-              - MQTT_MESSAGE_PINGRESP
-              - MQTT_MESSAGE_DISCONNECT
-              - MQTT_MESSAGE_AUTH
+            - MQTT_MESSAGE_CONNECT
+            - MQTT_MESSAGE_CONNACK
+            - MQTT_MESSAGE_SUBSCRIBE
+            - MQTT_MESSAGE_SUBACK
+            - MQTT_MESSAGE_PUBLISH
+            - MQTT_MESSAGE_PUBACK
+            - MQTT_MESSAGE_PUBREC
+            - MQTT_MESSAGE_PUBREL
+            - MQTT_MESSAGE_PUBCOMP
+            - MQTT_MESSAGE_UNSUBSCRIBE
+            - MQTT_MESSAGE_UNSUBACK
+            - MQTT_MESSAGE_PINGREQ
+            - MQTT_MESSAGE_PINGRESP
+            - MQTT_MESSAGE_DISCONNECT
+            - MQTT_MESSAGE_AUTH
           uniqueItems: true
         name:
           type: string
@@ -4503,10 +4503,10 @@ components:
           description: "Current state of the recording. Only sent by the API, ignored\
             \ if specified on POST"
           enum:
-            - SCHEDULED
-            - IN_PROGRESS
-            - ABORTED
-            - STOPPED
+          - SCHEDULED
+          - IN_PROGRESS
+          - ABORTED
+          - STOPPED
         topicFilters:
           type: array
           description: Topic filters to trace
@@ -4519,7 +4519,7 @@ components:
         traceRecording:
           $ref: '#/components/schemas/TraceRecording'
       required:
-        - traceRecording
+      - traceRecording
     TraceRecordingList:
       type: object
       properties:
