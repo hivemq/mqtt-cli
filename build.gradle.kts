@@ -231,106 +231,95 @@ tasks.register<Sync>("updateOpenApiSpecs") {
 
 /* ******************** test ******************** */
 
-tasks.test {
-    useJUnitPlatform()
+@Suppress("UnstableApiUsage") //
+testing {
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter(libs.versions.junit.jupiter)
+
+            dependencies {
+                implementation(libs.junit.systemExit)
+                implementation(libs.mockito)
+                implementation(libs.okhttp.mockWebserver)
+            }
+        }
+
+        val integrationTest by registering(JvmTestSuite::class) {
+            testType = TestSuiteType.INTEGRATION_TEST
+
+            dependencies {
+                implementation(libs.awaitility)
+                implementation(libs.hivemq.testcontainer.junit5)
+                implementation(libs.junit.systemExit)
+                implementation(libs.mockito)
+                implementation(libs.testcontainers)
+
+                implementation(libs.dagger)
+                implementation(libs.gson)
+                implementation(libs.hivemq.mqttClient)
+                implementation(libs.okhttp)
+                implementation(libs.openCsv)
+                implementation(libs.picocli)
+                implementation(libs.tinylog.api)
+                implementation(project())
+            }
+        }
+
+        val systemTest by registering(JvmTestSuite::class) {
+            testType = TestSuiteType.FUNCTIONAL_TEST
+            targets {
+                all {
+                    testTask.configure {
+                        systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
+                    }
+
+                }
+
+                named("systemTest") {
+                    testTask.configure {
+                        dependsOn(tasks.shadowJar)
+                        systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
+                                tasks.shadowJar.map { it.outputs.files.singleFile }.get()
+                    }
+                }
+                register("systemTestNative") {
+                    testTask.configure {
+                        dependsOn(tasks.nativeCompile)
+                        systemProperties["cliExec"] =
+                            tasks.nativeCompile.map { it.outputs.files.singleFile }.get()
+                                .resolve(project.name).absolutePath
+                    }
+                }
+            }
+
+            dependencies {
+                implementation(libs.awaitility)
+                implementation(libs.hivemq.communityEditionEmbedded)
+                implementation(libs.hivemq.testcontainer.junit5)
+                implementation(libs.junit.pioneer)
+                implementation(libs.junit.platformLauncher)
+                implementation(libs.testcontainers)
+
+                implementation(libs.apache.commonsIO)
+                implementation(libs.gson)
+                implementation(libs.guava)
+                implementation(libs.hivemq.mqttClient)
+            }
+        }
+
+        tasks.named("check") {
+            dependsOn(integrationTest, systemTest)
+        }
+    }
 }
 
 dependencies {
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit.platformLauncher)
-    testImplementation(libs.mockito)
-    testImplementation(libs.okhttp.mockWebserver)
-    testImplementation(libs.junit.systemExit)
-
     modules {
         module("org.bouncycastle:bcpkix-jdk15on") { replacedBy("org.bouncycastle:bcpkix-jdk18on") }
         module("org.bouncycastle:bcprov-jdk15on") { replacedBy("org.bouncycastle:bcprov-jdk18on") }
         module("org.bouncycastle:bcutil-jdk15on") { replacedBy("org.bouncycastle:bcutil-jdk18on") }
     }
 }
-
-/* ******************** integration Tests ******************** */
-
-sourceSets.create("integrationTest") {
-    compileClasspath += sourceSets.main.get().output
-    runtimeClasspath += sourceSets.main.get().output
-}
-
-val integrationTestImplementation: Configuration by configurations.getting {
-    extendsFrom(configurations.testImplementation.get())
-}
-val integrationTestRuntimeOnly: Configuration by configurations.getting {
-    extendsFrom(configurations.testRuntimeOnly.get())
-}
-
-dependencies {
-    integrationTestImplementation(libs.hivemq.testcontainer.junit5)
-    integrationTestImplementation(libs.testcontainers)
-    integrationTestImplementation(libs.awaitility)
-}
-
-val integrationTest by tasks.registering(Test::class) {
-    group = "verification"
-    description = "Runs integration tests."
-    testClassesDirs = sourceSets[name].output.classesDirs
-    classpath = sourceSets[name].runtimeClasspath
-    useJUnitPlatform()
-    shouldRunAfter(tasks.test)
-}
-
-tasks.check { dependsOn(integrationTest) }
-
-/* ******************** system Tests ******************** */
-
-sourceSets.create("systemTest")
-
-val systemTestImplementation: Configuration by configurations.getting {
-    extendsFrom(configurations.testImplementation.get())
-}
-val systemTestRuntimeOnly: Configuration by configurations.getting {
-    extendsFrom(configurations.testRuntimeOnly.get())
-}
-
-dependencies {
-    systemTestImplementation(libs.hivemq.testcontainer.junit5)
-    systemTestImplementation(libs.testcontainers)
-    systemTestImplementation(libs.awaitility)
-    systemTestImplementation(libs.hivemq.communityEditionEmbedded)
-    systemTestImplementation(libs.junit.pioneer)
-}
-
-val systemTest by tasks.registering(Test::class) {
-    group = "verification"
-    description = "Runs system tests."
-    testClassesDirs = sourceSets["systemTest"].output.classesDirs
-    classpath = sourceSets["systemTest"].runtimeClasspath
-    useJUnitPlatform()
-    shouldRunAfter(tasks.test)
-    dependsOn(tasks.shadowJar)
-    systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
-    systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
-            tasks.shadowJar.map { it.outputs.files.singleFile }.get()
-    systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
-}
-
-val systemTestNative by tasks.registering(Test::class) {
-    group = "verification"
-    description = "Runs native system tests."
-    testClassesDirs = sourceSets["systemTest"].output.classesDirs
-    classpath = sourceSets["systemTest"].runtimeClasspath
-    useJUnitPlatform()
-    shouldRunAfter(tasks.test)
-    dependsOn(tasks.nativeCompile)
-    systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
-    systemProperties["cliExec"] =
-        tasks.nativeCompile.map { it.outputs.files.singleFile }.get().resolve(project.name).absolutePath
-    systemProperties["java"] = javaLauncher.get().executablePath.asFile.absolutePath
-    testLogging {
-        showStandardStreams = true
-    }
-}
-
-tasks.check { dependsOn(systemTest, systemTestNative) }
 
 /* ******************** compliance ******************** */
 
