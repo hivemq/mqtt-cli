@@ -38,8 +38,8 @@ plugins {
 val prevVersion = "4.22.0"
 version = "4.23.0"
 group = "com.hivemq"
-description = "MQTT CLI is a tool that provides a feature rich command line interface for connecting, " +
-        "publishing, subscribing, unsubscribing and disconnecting " +
+description = "MQTT CLI is a tool that provides a feature rich command line interface for connecting, " + //
+        "publishing, subscribing, unsubscribing and disconnecting " + //
         "various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 "
 
 application {
@@ -123,7 +123,7 @@ dependencies {
     constraints {
         implementation(libs.apache.commonsText) {
             because(
-                "Force a commons-text version that does not contain CVE-2022-42889, " +
+                "Force a commons-text version that does not contain CVE-2022-42889, " + //
                         "because opencsv brings the vulnerable version 1.9 as transitive dependency"
             )
         }
@@ -234,9 +234,11 @@ tasks.register<Sync>("updateOpenApiSpecs") {
 @Suppress("UnstableApiUsage") //
 testing {
     suites {
-        val test by getting(JvmTestSuite::class) {
+        withType<JvmTestSuite> {
             useJUnitJupiter(libs.versions.junit.jupiter)
+        }
 
+        val test by getting(JvmTestSuite::class) {
             dependencies {
                 implementation(libs.junit.systemExit)
                 implementation(libs.mockito)
@@ -272,22 +274,22 @@ testing {
                     testTask.configure {
                         systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
                     }
-
                 }
-
                 named("systemTest") {
                     testTask.configure {
                         dependsOn(tasks.shadowJar)
-                        systemProperties["cliExec"] = javaLauncher.get().executablePath.asFile.absolutePath + " -jar " +
-                                tasks.shadowJar.map { it.outputs.files.singleFile }.get()
+                        systemProperties["cliExec"] = listOf(
+                            javaLauncher.get().executablePath.asFile.absolutePath,
+                            "-jar",
+                            tasks.shadowJar.map { it.outputs.files.singleFile }.get()
+                        ).joinToString(" ")
                     }
                 }
                 register("systemTestNative") {
                     testTask.configure {
                         dependsOn(tasks.nativeCompile)
-                        systemProperties["cliExec"] =
-                            tasks.nativeCompile.map { it.outputs.files.singleFile }.get()
-                                .resolve(project.name).absolutePath
+                        systemProperties["cliExec"] = tasks.nativeCompile.map { it.outputs.files.singleFile }.get()
+                            .resolve(project.name).absolutePath
                     }
                 }
             }
@@ -398,6 +400,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
     buildArgs.add("--no-fallback")
     buildArgs.add("--enable-https")
     buildArgs.add("--features=com.hivemq.cli.graal.BouncyCastleFeature")
+    //@formatter:off
     buildArgs.add(
         "--initialize-at-build-time=" +
                 "org.bouncycastle," +
@@ -445,6 +448,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
                 "org.tinylog.writers," +
                 "org.tinylog.writers.raw"
     )
+    //@formatter:on
 }
 
 graalvmNative {
@@ -480,7 +484,7 @@ val buildBrewFormula by tasks.registering(Sync::class) {
     from("packages/homebrew/mqtt-cli.rb")
     into(layout.buildDirectory.dir("packages/homebrew/formula"))
     filter {
-        it.replace("@@description@@", project.description!!)
+        it.replace("@@description@@", project.description!!) //
             .replace("@@version@@", project.version.toString())
             .replace("@@filename@@", buildBrewZip.get().archiveFileName.get())
             .replace("@@shasum@@", sha256Hash(buildBrewZip.get().archiveFile.get().asFile))
