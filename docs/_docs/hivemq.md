@@ -24,6 +24,7 @@ mqtt hivemq
 | behavior-policy | See [Behavior Policy](hivemq/behavior-policy.md) |
 | behavior-state  | See [Behavior State](hivemq/behavior-state.md)   |
 | schema          | See [Schema](hivemq/schema.md)                   |
+| script          | See [Script](hivemq/script.md)                   |
 
 ***
 
