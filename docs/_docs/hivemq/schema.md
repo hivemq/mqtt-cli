@@ -5,7 +5,7 @@ redirect_from:
      -/docs/hivemq/schema.html
 ---
 
-# Schemas
+# Schema
 
 ***
 
