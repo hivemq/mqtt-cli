@@ -151,4 +151,8 @@ public class ProcessIO {
         processOutputWriter.write('\n');
         processOutputWriter.flush();
     }
+
+    public @NotNull String getCompleteProcessStdErr() {
+        return processStdErr.toString();
+    }
 }
