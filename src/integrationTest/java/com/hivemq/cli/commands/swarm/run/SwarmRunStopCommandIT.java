@@ -63,7 +63,8 @@ import static org.mockito.Mockito.verify;
 
 public class SwarmRunStopCommandIT {
 
-    private static final @NotNull String IMAGE_NAME = "hivemq/hivemq-swarm";
+    //TODO: Temporary fix, see: https://github.com/testcontainers/testcontainers-java/pull/8302
+    private static final @NotNull String IMAGE_NAME = "hivemq/hivemq-swarm:4.22.0";
     private static final int REST_PORT = 8080;
 
     private final @NotNull Network network = Network.newNetwork();
