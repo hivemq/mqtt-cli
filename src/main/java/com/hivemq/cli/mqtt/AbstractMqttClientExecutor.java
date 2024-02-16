@@ -513,7 +513,6 @@ abstract class AbstractMqttClientExecutor {
     private @NotNull Consumer<Mqtt5Publish> buildRemainingMqtt5PublishesCallback(
             final @Nullable SubscribeOptions subscribeOptions, final @NotNull Mqtt5Client client) {
         if (subscribeOptions != null) {
-            //new Exception().printStackTrace();
             return new SubscribeMqtt5PublishCallback(subscribeOptions, client);
         } else {
             return mqtt5Publish -> Logger.debug("received PUBLISH: {}, MESSAGE: '{}'",
