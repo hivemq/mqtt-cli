@@ -315,7 +315,8 @@ abstract class AbstractMqttClientExecutor {
 
         client.toAsync()
                 .publishes(MqttGlobalPublishFilter.REMAINING,
-                        buildRemainingMqtt5PublishesCallback(subscribeOptions, client));
+                        buildRemainingMqtt5PublishesCallback(subscribeOptions, client),
+                        true);
 
         mqtt5Connect(client, connectBuilder.build());
 
@@ -350,7 +351,8 @@ abstract class AbstractMqttClientExecutor {
 
         client.toAsync()
                 .publishes(MqttGlobalPublishFilter.REMAINING,
-                        buildRemainingMqtt3PublishesCallback(subscribeOptions, client));
+                        buildRemainingMqtt3PublishesCallback(subscribeOptions, client),
+                        true);
 
         mqtt3Connect(client, connectBuilder.build());
 

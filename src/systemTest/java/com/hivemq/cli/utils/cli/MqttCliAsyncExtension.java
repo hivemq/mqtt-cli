@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,8 +47,9 @@ public class MqttCliAsyncExtension implements AfterEachCallback {
         for (final Process startedProcess : startedProcesses) {
             startedProcess.destroyForcibly();
             startedProcess.waitFor();
-            System.setProperty(context.getUniqueId(), String.valueOf(startedProcess.pid()));
         }
+        System.setProperty(context.getUniqueId(),
+                startedProcesses.stream().map(Process::pid).map(String::valueOf).collect(Collectors.joining(":")));
         if (temporaryHomeDir != null) {
             FileUtils.deleteDirectory(temporaryHomeDir.toFile());
         }
@@ -120,5 +122,12 @@ public class MqttCliAsyncExtension implements AfterEachCallback {
      */
     public @NotNull ExecutionResultAsync executeAsync(final @NotNull List<String> command) throws IOException {
         return executeAsync(command, Map.of(), Map.of());
+    }
+
+    public void killProcesses() throws InterruptedException {
+        for (final Process startedProcess : startedProcesses) {
+            startedProcess.destroyForcibly();
+            startedProcess.waitFor();
+        }
     }
 }
