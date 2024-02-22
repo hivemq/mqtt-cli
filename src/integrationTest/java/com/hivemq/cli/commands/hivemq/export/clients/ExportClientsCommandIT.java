@@ -117,13 +117,13 @@ class ExportClientsCommandIT {
         final int returnCode = cmd.execute("-f=" + file.getAbsolutePath(),
                 "-url=http://" + hivemq.getHost() + ":" + hivemq.getMappedPort(HTTP_PORT),
                 "--csvSeparator=;",
-                "--csvQuoteChar=\\",
+                "--csvQuoteChar=|",
                 "--csvEscChar=/");
 
         assertEquals(0, returnCode);
 
         final CSVParser parser =
-                new CSVParserBuilder().withSeparator(';').withEscapeChar('/').withQuoteChar('\\').build();
+                new CSVParserBuilder().withSeparator(';').withEscapeChar('/').withQuoteChar('|').build();
 
         final CSVReader csvReader = new CSVReaderBuilder(new FileReader(file)).withCSVParser(parser).build();
 
