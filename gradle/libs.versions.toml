@@ -1,14 +1,14 @@
 [versions]
-apache-commonsIO = "2.13.0"
-apache-commonsLang = "3.12.0"
-apache-commonsText = "1.10.0"
+apache-commonsIO = "2.15.1"
+apache-commonsLang = "3.14.0"
+apache-commonsText = "1.11.0"
 awaitility = "4.2.0"
-bouncycastle = "1.75"
-dagger = "2.46.1"
+bouncycastle = "1.77"
+dagger = "2.50"
 graal = "22.3.0"
-graalvm-nativeImage-svm = "22.0.0.2"
+graalvm-nativeImage-svm = "22.3.5"
 gson = "2.10.1"
-gsonFire = "1.8.5"
+gsonFire = "1.9.0"
 guava = "33.0.0-jre"
 hivemq-communityEditionEmbedded = "2024.2"
 hivemq-mqttClient = "1.3.2"
@@ -16,20 +16,20 @@ hivemq-testcontainer = "2.0.0"
 javaNative = "17"
 javax-annotation-api = "1.3.2"
 jetbrains-annotations = "24.1.0"
-jline = "3.21.0"
+jline = "3.25.1"
 jsr305 = "3.0.2"
-junit-jupiter = "5.9.3"
-junit-pioneer = "2.0.1"
-junit-platformLauncher = "1.9.3"
+junit-jupiter = "5.10.2"
+junit-pioneer = "2.2.0"
+junit-platformLauncher = "1.10.2"
 junit-systemExit = "1.1.2"
 mockito = "5.10.0"
 netty = "4.1.107.Final"
-okhttp = "4.11.0"
-openCsv = "5.7.1"
+okhttp = "4.12.0"
+openCsv = "5.9"
 picocli = "4.7.0"
 swagger-annotations = "1.6.11"
-testcontainers = "1.18.3"
-tinylog = "2.6.2"
+testcontainers = "1.19.6"
+tinylog = "2.7.0"
 
 [libraries]
 apache-commonsIO = { module = "commons-io:commons-io", version.ref = "apache-commonsIO" }
@@ -76,13 +76,13 @@ tinylog-impl = { module = "org.tinylog:tinylog-impl", version.ref = "tinylog" }
 
 [plugins]
 defaults = { id = "io.github.sgtsilvio.gradle.defaults", version = "0.2.0" }
-forbiddenApis = { id = "de.thetaphi.forbiddenapis", version = "3.5.1" }
+forbiddenApis = { id = "de.thetaphi.forbiddenapis", version = "3.6" }
 gitPublish = { id = "org.ajoberstar.git-publish", version = "3.0.0" }
-githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.4.1" }
+githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.5.2" }
 graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.0" }
-jib = { id = "com.google.cloud.tools.jib", version = "3.3.2" }
+jib = { id = "com.google.cloud.tools.jib", version = "3.4.0" }
 launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.4" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
-nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.4.0" }
+nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.8.1" }
 openapi-generator = { id = "org.openapi.generator", version = "4.3.1" } # >= 5.0.0 breaks the tasks
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
