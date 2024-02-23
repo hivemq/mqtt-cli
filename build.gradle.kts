@@ -120,14 +120,6 @@ dependencies {
     implementation(libs.netty.codec.http)
     implementation(variantOf(libs.netty.transport.native.epoll) { classifier("linux-x86_64") })
     implementation(libs.openCsv)
-    constraints {
-        implementation(libs.apache.commonsText) {
-            because(
-                "Force a commons-text version that does not contain CVE-2022-42889, " + //
-                        "because opencsv brings the vulnerable version 1.9 as transitive dependency"
-            )
-        }
-    }
 }
 
 /* ******************** OpenAPI ******************** */
@@ -278,18 +270,15 @@ testing {
                 named("systemTest") {
                     testTask.configure {
                         dependsOn(tasks.shadowJar)
-                        systemProperties["cliExec"] = listOf(
-                            javaLauncher.get().executablePath.asFile.absolutePath,
-                            "-jar",
-                            tasks.shadowJar.map { it.outputs.files.singleFile }.get()
-                        ).joinToString(" ")
+                        systemProperties["cliExec"] = "${javaLauncher.get().executablePath.asFile.absolutePath} -jar ${
+                            tasks.shadowJar.get().archiveFile.get()
+                        }"
                     }
                 }
                 register("systemTestNative") {
                     testTask.configure {
                         dependsOn(tasks.nativeCompile)
-                        systemProperties["cliExec"] = tasks.nativeCompile.map { it.outputs.files.singleFile }.get()
-                            .resolve(project.name).absolutePath
+                        systemProperties["cliExec"] = tasks.nativeCompile.get().outputFile.get().toString()
                     }
                 }
             }
