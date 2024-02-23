@@ -278,7 +278,7 @@ testing {
                 register("systemTestNative") {
                     testTask.configure {
                         dependsOn(tasks.nativeCompile)
-                        systemProperties["cliExec"] = tasks.nativeCompile.get().outputFile.get()
+                        systemProperties["cliExec"] = tasks.nativeCompile.get().outputFile.get().toString()
                     }
                 }
             }
