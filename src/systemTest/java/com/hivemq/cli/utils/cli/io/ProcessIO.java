@@ -152,6 +152,10 @@ public class ProcessIO {
         processOutputWriter.flush();
     }
 
+    public @NotNull String getCompleteProcessStdOut() {
+        return processStdOut.toString();
+    }
+
     public @NotNull String getCompleteProcessStdErr() {
         return processStdErr.toString();
     }

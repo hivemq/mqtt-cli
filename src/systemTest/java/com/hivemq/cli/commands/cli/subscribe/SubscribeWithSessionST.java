@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 import static com.hivemq.cli.utils.broker.assertions.SubscribeAssertion.assertSubscribePacket;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SubscribeWithSessionST {
 
@@ -98,14 +99,16 @@ public class SubscribeWithSessionST {
 
         mqttCli.killProcesses();
 
-        publishMessage("message1");
+        publishMessage("offlineMessage");
 
         final ExecutionResultAsync executionResultAfterReconnect = mqttCli.executeAsync(subscribeCommand);
         executionResultAfterReconnect.awaitStdOut("sending CONNECT");
         executionResultAfterReconnect.awaitStdOut("received CONNACK");
-        executionResultAfterReconnect.awaitStdOut("message1");
         executionResultAfterReconnect.awaitStdOut("sending SUBSCRIBE");
         executionResultAfterReconnect.awaitStdOut("received SUBACK");
+        assertTrue(executionResultAfterReconnect.stdOutContains("received PUBLISH"));
+        assertTrue(executionResultAfterReconnect.stdOutContains("offlineMessage"));
+
 
         assertConnectPacket(hivemq.getConnectPackets().get(3), connectAssertion -> {
             connectAssertion.setCleanStart(false);

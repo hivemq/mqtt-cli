@@ -59,6 +59,10 @@ public class ExecutionResultAsync {
         return this;
     }
 
+    public boolean stdOutContains(final @NotNull String string) {
+        return processIO.getCompleteProcessStdOut().contains(string);
+    }
+
     public boolean stdErrContains(final @NotNull String string) {
         return processIO.getCompleteProcessStdErr().contains(string);
     }
