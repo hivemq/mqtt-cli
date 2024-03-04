@@ -17,13 +17,17 @@
 package com.hivemq.cli.hivemq.datapolicy;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
 import com.hivemq.cli.openapi.hivemq.DataPolicy;
+import com.hivemq.cli.utils.json.OffsetDateTimeSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+
+import java.time.OffsetDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -40,7 +44,8 @@ public class DataPolicyUpdateTaskTest {
     private final @NotNull DataHubDataPoliciesApi dataPoliciesApi = mock(DataHubDataPoliciesApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock();
     private final @NotNull ArgumentCaptor<DataPolicy> policyCaptor = ArgumentCaptor.forClass(DataPolicy.class);
-    private final @NotNull Gson gson = new Gson();
+    private final @NotNull Gson gson =
+            new GsonBuilder().registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer()).create();
 
     private static final @NotNull String POLICY_ID = "policy-1";
     private static final @NotNull String POLICY_JSON =
