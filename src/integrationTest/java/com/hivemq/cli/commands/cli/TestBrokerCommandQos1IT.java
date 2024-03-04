@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.commands.cli;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
@@ -28,6 +27,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Disabled("Tests are only used to check output")
 class TestBrokerCommandQos1IT {
@@ -52,14 +53,13 @@ class TestBrokerCommandQos1IT {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(0)
     void qos1_restricted_mqtt3_features() {
-        MqttCLIMain.main("test", "-V", "3", "-p", String.valueOf(hivemq.getMqttPort()));
+        assertEquals(0, MqttCLIMain.mainWithExitCode("test", "-V", "3", "-p", String.valueOf(hivemq.getMqttPort())));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(0)
     void qos1_restricted_mqtt5_features() {
-        MqttCLIMain.main("test", "-V", "5", "-a", "-p", String.valueOf(hivemq.getMqttPort()));
+        assertEquals(0,
+                MqttCLIMain.mainWithExitCode("test", "-V", "5", "-a", "-p", String.valueOf(hivemq.getMqttPort())));
     }
 }
