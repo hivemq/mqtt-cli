@@ -232,7 +232,6 @@ testing {
 
         val test by getting(JvmTestSuite::class) {
             dependencies {
-                implementation(libs.junit.systemExit)
                 implementation(libs.mockito)
                 implementation(libs.okhttp.mockWebserver)
             }
@@ -244,7 +243,6 @@ testing {
             dependencies {
                 implementation(libs.awaitility)
                 implementation(libs.hivemq.testcontainer.junit5)
-                implementation(libs.junit.systemExit)
                 implementation(libs.mockito)
                 implementation(libs.testcontainers)
 

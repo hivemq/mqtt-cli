@@ -39,6 +39,10 @@ public class MqttCLIMain {
     public static @Nullable MqttCLI MQTT_CLI = null;
 
     public static void main(final @NotNull String... args) {
+        System.exit(mainWithExitCode(args));
+    }
+
+    public static int mainWithExitCode(final @NotNull String... args) {
 
         Security.setProperty("crypto.policy", "unlimited");
 
@@ -50,20 +54,17 @@ public class MqttCLIMain {
             defaultCLIProperties.init();
         } catch (final Exception e) {
             System.err.println(e.getMessage());
-            System.exit(1);
+            return 1;
         }
 
         if (args.length == 0) {
             System.out.println(commandLine.getUsageMessage());
-            System.exit(0);
+            return 0;
         }
 
         Runtime.getRuntime().addShutdownHook(new DisconnectAllClientsTask());
 
-        final int exitCode = commandLine.execute(args);
-
-        System.exit(exitCode);
-
+        return commandLine.execute(args);
     }
 
     private static class DisconnectAllClientsTask extends Thread {

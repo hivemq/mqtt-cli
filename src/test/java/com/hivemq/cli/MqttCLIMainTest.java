@@ -15,11 +15,12 @@
  */
 package com.hivemq.cli;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MqttCLIMainTest {
 
@@ -34,26 +35,22 @@ class MqttCLIMainTest {
     }
 
     @Test
-    @ExpectSystemExitWithStatus(0)
     void mqtt_command() {
-        MqttCLIMain.main();
+        assertEquals(0, MqttCLIMain.mainWithExitCode());
     }
 
     @Test
-    @ExpectSystemExitWithStatus(0)
     void hivemq_command() {
-        MqttCLIMain.main("hivemq");
+        assertEquals(0, MqttCLIMain.mainWithExitCode("hivemq"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(0)
     void hivemq_export_command() {
-        MqttCLIMain.main("hivemq", "export");
+        assertEquals(0, MqttCLIMain.mainWithExitCode("hivemq", "export"));
     }
 
     @Test
-    @ExpectSystemExitWithStatus(0)
     void hivemq_export_clients_help_command() {
-        MqttCLIMain.main("hivemq", "export", "clients", "-h");
+        assertEquals(0, MqttCLIMain.mainWithExitCode("hivemq", "export", "clients", "-h"));
     }
 }
