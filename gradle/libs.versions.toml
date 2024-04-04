@@ -2,7 +2,7 @@
 apache-commonsIO = "2.16.0"
 apache-commonsLang = "3.14.0"
 apache-commonsText = "1.11.0"
-awaitility = "4.2.0"
+awaitility = "4.2.1"
 bouncycastle = "1.77"
 dagger = "2.51.1"
 graal = "22.3.0"
@@ -26,8 +26,8 @@ netty = "4.1.108.Final"
 okhttp = "4.12.0"
 openCsv = "5.9"
 picocli = "4.7.0"
-swagger-annotations = "1.6.13"
-testcontainers = "1.19.6"
+swagger-annotations = "1.6.14"
+testcontainers = "1.19.7"
 tinylog = "2.7.0"
 
 [libraries]
@@ -78,7 +78,7 @@ forbiddenApis = { id = "de.thetaphi.forbiddenapis", version = "3.7" }
 gitPublish = { id = "org.ajoberstar.git-publish", version = "3.0.1" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.5.2" }
 graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.1" }
-jib = { id = "com.google.cloud.tools.jib", version = "3.4.0" }
+jib = { id = "com.google.cloud.tools.jib", version = "3.4.2" }
 launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.5" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.8.1" }
