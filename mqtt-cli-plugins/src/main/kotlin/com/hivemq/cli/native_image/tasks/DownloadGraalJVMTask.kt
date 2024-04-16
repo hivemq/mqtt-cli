@@ -77,7 +77,7 @@ abstract class DownloadGraalJVMTask @Inject constructor(
 
     private fun getArchitecture(): String {
         return if (DefaultNativePlatform.getCurrentArchitecture().isAmd64) {
-            "amd64"
+            "x64"
         } else if (DefaultNativePlatform.getCurrentArchitecture().isArm) {
             "aarch64"
         } else if (DefaultNativePlatform.getCurrentArchitecture().name == "arm-v8") { //used for M1 Apple devices
