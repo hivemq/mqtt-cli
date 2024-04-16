@@ -26,7 +26,6 @@ class CliNativeImagePlugin : Plugin<Project> {
         val downloadTask = project.tasks.register<DownloadGraalJVMTask>("downloadGraalJvm") {
             group = "native"
             description = "Configures the correct download for Graal"
-            graalVersion.set(extension.graalVersion)
             javaVersion.set(extension.javaVersion)
             downloadBaseUrl.set(extension.graalBaseUrl)
         }
@@ -36,8 +35,8 @@ class CliNativeImagePlugin : Plugin<Project> {
             description = "Unzips the Graal JVM into the auto provisioning JDKS folder"
             dependsOn(downloadTask)
 
-            workingDir(downloadTask.flatMap { it.jdksDirectory })
-            commandLine("tar", "-xzf", downloadTask.flatMap { it.graalDownload }.get())
+            workingDir(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
+            commandLine("tar", "-xzf", downloadTask.flatMap { it.graalDownload }.get(), "--strip-components=1")
             outputs.dir(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
         }
 
@@ -47,47 +46,24 @@ class CliNativeImagePlugin : Plugin<Project> {
             dependsOn(downloadTask)
 
             from(project.zipTree(downloadTask.flatMap { it.graalDownload }.get()))
+            //rename("${downloadTask.map { it.graalFolderName }.get()}.*/(.+)", "$1")
             into(downloadTask.flatMap { it.jdksDirectory })
         }
 
-
-        project.tasks.register<Exec>("installNativeImageTooling") {
+        project.tasks.register("installNativeImageTooling") {
             group = "native"
             description = "Installs the native-image tooling and declares the Graal as auto provisioned"
 
             if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
                 dependsOn(extractTaskWindows)
-                val graalDirectory = extractTaskWindows.map { it.destinationDir }
-                    .zip(downloadTask.flatMap { it.graalFolderName }) { jdkFolder, graalFolder ->
-                        jdkFolder.resolve(graalFolder)
-                    }
-                workingDir(graalDirectory)
-                commandLine("cmd", "/C", getGuPath(), "install", "native-image")
-                doLast {
-                    graalDirectory.get().resolve("provisioned.ok").createNewFile()
-                }
             } else {
                 dependsOn(extractTask)
-                workingDir(extractTask.map { it.outputs.files.singleFile })
-                commandLine(getGuPath(), "install", "native-image")
-                doLast {
-                    extractTask.map { it.outputs.files.singleFile }.get().resolve("provisioned.ok").createNewFile()
-                }
             }
-        }
-    }
 
-    private fun getGuPath(): String {
-        return if (DefaultNativePlatform.getCurrentOperatingSystem().isLinux) {
-            "./bin/gu"
-        } else if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
-            "bin\\gu"
-        } else if (DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX) {
-            "./Contents/Home/bin/gu"
-        } else {
-            throw IllegalStateException(
-                "Unsupported operating system. (${DefaultNativePlatform.getCurrentOperatingSystem().displayName}"
-            )
+            doLast {
+                downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) }.get()
+                    .file("provisioned.ok").asFile.createNewFile()
+            }
         }
     }
 }

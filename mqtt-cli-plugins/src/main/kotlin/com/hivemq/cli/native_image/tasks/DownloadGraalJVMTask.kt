@@ -19,34 +19,26 @@ abstract class DownloadGraalJVMTask @Inject constructor(
 ) : DefaultTask() {
 
     @get:Input
-    val graalVersion = objectFactory.property<String>()
-
-    @get:Input
     val javaVersion = objectFactory.property<String>()
 
     @get:Input
     val downloadBaseUrl = objectFactory.property<String>()
 
     @get:Internal
-    val jdksDirectory: DirectoryProperty = objectFactory.directoryProperty().convention(
-        project.layout.dir(
-            project.providers.provider {
-                project.gradle.gradleUserHomeDir.toPath()
-                    .resolve("jdks")
-                    //.resolve("com.hivemq.cli.native_image")
-                    .toFile()
-            }
-        )
-    )
+    val jdksDirectory: DirectoryProperty =
+        objectFactory.directoryProperty().convention(project.layout.dir(project.providers.provider {
+            project.gradle.gradleUserHomeDir.toPath().resolve("jdks").toFile()
+        }))
 
     @get:Internal
     val graalFolderName = objectFactory.property<String>().convention(createGraalFolderName())
 
     @get:Internal
-    val graalDownloadFileName = objectFactory.property<String>().convention(createDownloadGraalFileName())
+    val graalDownloadFileName = objectFactory.property<String>().convention(createGraalFileName())
 
     @get:OutputFile
     val graalDownload: Provider<RegularFile> = jdksDirectory.file(graalDownloadFileName)
+
 
     @TaskAction
     fun download() {
@@ -55,27 +47,19 @@ abstract class DownloadGraalJVMTask @Inject constructor(
         }
     }
 
-    private fun createDownloadGraalFileName(): Provider<String> {
-        return createGraalFileName().map { graalFileName ->
-            "${graalFileName}.${getArchiveExtension()}"
+    private fun createGraalFolderName(): Provider<String> {
+        return javaVersion.map { javaVersion ->
+            "graalvm-community-openjdk-${javaVersion}"
         }
     }
 
     private fun createGraalFileName(): Provider<String> {
-        return javaVersion.zip(graalVersion) { javaVersion, graalVersion ->
-            "graalvm-ce-java${javaVersion}-${getOperatingSystem()}-${getArchitecture()}-${graalVersion}"
+        return javaVersion.map { javaVersion ->
+            "graalvm-community-jdk-${javaVersion}_${getOperatingSystem()}-${getArchitecture()}_bin.${getArchiveExtension()}"
         }
     }
 
-    private fun createGraalFolderName(): Provider<String> {
-        return javaVersion.zip(graalVersion) { javaVersion, graalVersion ->
-            "graalvm-ce-java${javaVersion}-${graalVersion}"
-        }
-    }
-
-    private fun createDownloadUrl(): String {
-        return "${downloadBaseUrl.get()}/vm-${graalVersion.get()}/" + createDownloadGraalFileName().get()
-    }
+    private fun createDownloadUrl() = "${downloadBaseUrl.get()}/jdk-${javaVersion.get()}/${createGraalFileName().get()}"
 
     private fun getOperatingSystem(): String {
         return if (DefaultNativePlatform.getCurrentOperatingSystem().isLinux) {
@@ -83,7 +67,7 @@ abstract class DownloadGraalJVMTask @Inject constructor(
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
             "windows"
         } else if (DefaultNativePlatform.getCurrentOperatingSystem().isMacOsX) {
-            "darwin"
+            "macos"
         } else {
             throw IllegalStateException(
                 "Unsupported operating system. (${DefaultNativePlatform.getCurrentOperatingSystem().displayName}"

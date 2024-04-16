@@ -56,7 +56,7 @@ java {
 
 tasks.compileJava {
     javaCompiler = javaToolchains.compilerFor {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
 
@@ -356,9 +356,9 @@ tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 //checks for java installations prior the execution.
 
 cliNative {
-    graalVersion = libs.versions.graal
     javaVersion = libs.versions.javaNative
 }
+val getMajorJavaVersion = libs.versions.javaNative.get().substringBefore(".")
 
 //reflection configuration files are currently created manually with the command: ./gradlew -Pagent agentMainRun --stacktrace
 //this yields an exception as the Graal plugin is currently quite buggy. The files are created nonetheless.
@@ -367,9 +367,8 @@ val agentMainRun by tasks.registering(JavaExec::class) {
     group = "native"
 
     val launcher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(libs.versions.javaNative.get())
+        languageVersion = JavaLanguageVersion.of(getMajorJavaVersion)
         vendor = JvmVendorSpec.GRAAL_VM
-
     }
     javaLauncher = launcher
     classpath = sourceSets.main.get().runtimeClasspath
@@ -378,12 +377,10 @@ val agentMainRun by tasks.registering(JavaExec::class) {
 
 val nativeImageOptions by graalvmNative.binaries.named("main") {
     javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(libs.versions.javaNative.get())
+        languageVersion = JavaLanguageVersion.of(getMajorJavaVersion)
         vendor = JvmVendorSpec.GRAAL_VM
     }
     buildArgs.add("-Dio.netty.noUnsafe=true")
-    buildArgs.add("-H:+ReportExceptionStackTraces")
-    buildArgs.add("-H:+TraceServiceLoaderFeature")
     buildArgs.add("--no-fallback")
     buildArgs.add("--enable-https")
     buildArgs.add("--features=com.hivemq.cli.graal.BouncyCastleFeature")
@@ -396,6 +393,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
                 "org.jctools.util.UnsafeAccess," +
                 "io.netty.util.ReferenceCountUtil," +
                 "io.netty.util.ResourceLeakDetector," +
+                "io.netty.util.ResourceLeakDetector\$Level," +
                 "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueue," +
                 "io.netty.util.internal.shaded.org.jctools.queues.BaseSpscLinkedArrayQueue," +
                 "io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess," +
@@ -403,6 +401,8 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
                 "io.netty.util.internal.SystemPropertyUtil," +
                 "io.netty.util.internal.PlatformDependent," +
                 "io.netty.util.internal.PlatformDependent0," +
+                "io.netty.util.internal.PlatformDependent\$1," +
+                "io.netty.util.internal.PlatformDependent\$2," +
                 "io.netty.util.internal.logging.JdkLogger," +
                 "io.netty.buffer.AbstractByteBufAllocator"
     )

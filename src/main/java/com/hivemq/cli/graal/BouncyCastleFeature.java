@@ -16,7 +16,6 @@
 
 package com.hivemq.cli.graal;
 
-import com.oracle.svm.core.annotate.AutomaticFeature;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.graalvm.nativeimage.hosted.Feature;
 import org.jetbrains.annotations.Nullable;
