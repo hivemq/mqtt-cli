@@ -5,11 +5,13 @@ import com.hivemq.cli.native_image.extensions.CliNativeExtensionImpl
 import com.hivemq.cli.native_image.tasks.DownloadGraalJVMTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Exec
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+import java.io.File
 
 
 class CliNativeImagePlugin : Plugin<Project> {
@@ -33,36 +35,41 @@ class CliNativeImagePlugin : Plugin<Project> {
         val extractTask = project.tasks.register<Exec>("extractGraalJvm") {
             group = "native"
             description = "Unzips the Graal JVM into the auto provisioning JDKS folder"
-            dependsOn(downloadTask)
+
+            inputs.file(downloadTask.flatMap { it.graalDownloadFile })
+            outputs.dir(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
 
             workingDir(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
-            commandLine("tar", "-xzf", downloadTask.flatMap { it.graalDownload }.get(), "--strip-components=1")
-            outputs.dir(downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) })
+            commandLine("tar", "-xzf", downloadTask.flatMap { it.graalDownloadFile }.get(), "--strip-components=1")
         }
 
         val extractTaskWindows = project.tasks.register<Copy>("extractGraalJvmWindows") {
             group = "native"
             description = "Unzips the Graal JVM into the auto provisioning JDKS folder"
-            dependsOn(downloadTask)
 
-            from(project.zipTree(downloadTask.flatMap { it.graalDownload }.get()))
+            inputs.file(downloadTask.flatMap { it.graalDownloadFile })
+
+            from(project.zipTree(downloadTask.flatMap { it.graalDownloadFile }.get()))
             //rename("${downloadTask.map { it.graalFolderName }.get()}.*/(.+)", "$1")
             into(downloadTask.flatMap { it.jdksDirectory })
         }
 
         project.tasks.register("installNativeImageTooling") {
             group = "native"
-            description = "Installs the native-image tooling and declares the Graal as auto provisioned"
+            description = "Declares the GraalVM installation as auto provisioned"
 
+            val graalVMFolderProvider: Provider<File>
             if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows) {
-                dependsOn(extractTaskWindows)
+                graalVMFolderProvider = extractTaskWindows.map { it.outputs.files.singleFile }
+                inputs.dir(graalVMFolderProvider)
             } else {
-                dependsOn(extractTask)
+                graalVMFolderProvider = extractTask.map { it.outputs.files.singleFile }
+                inputs.dir(graalVMFolderProvider)
             }
+            outputs.file(graalVMFolderProvider.get().resolve("provisioned.ok"))
 
             doLast {
-                downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) }.get()
-                    .file("provisioned.ok").asFile.createNewFile()
+                graalVMFolderProvider.get().resolve("provisioned.ok").createNewFile()
             }
         }
     }

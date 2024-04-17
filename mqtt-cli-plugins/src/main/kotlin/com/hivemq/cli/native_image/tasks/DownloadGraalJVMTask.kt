@@ -3,6 +3,7 @@ package com.hivemq.cli.native_image.tasks
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
@@ -37,13 +38,16 @@ abstract class DownloadGraalJVMTask @Inject constructor(
     val graalDownloadFileName = objectFactory.property<String>().convention(createGraalFileName())
 
     @get:OutputFile
-    val graalDownload: Provider<RegularFile> = jdksDirectory.file(graalDownloadFileName)
+    protected val graalDownloadFileProperty: RegularFileProperty = project.objects.fileProperty().value(jdksDirectory.file(graalDownloadFileName))
+
+    @get:Internal
+    val graalDownloadFile: Provider<RegularFile> = graalDownloadFileProperty
 
 
     @TaskAction
     fun download() {
         URL(createDownloadUrl()).openStream().use { input ->
-            graalDownload.get().asFile.outputStream().use { output -> input.copyTo(output) }
+            graalDownloadFile.get().asFile.outputStream().use { output -> input.copyTo(output) }
         }
     }
 
