@@ -5,6 +5,7 @@ import com.hivemq.cli.native_image.extensions.CliNativeExtensionImpl
 import com.hivemq.cli.native_image.tasks.DownloadGraalJVMTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.RelativePath
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Exec
@@ -50,8 +51,17 @@ class CliNativeImagePlugin : Plugin<Project> {
             inputs.file(downloadTask.flatMap { it.graalDownloadFile })
 
             from(project.zipTree(downloadTask.flatMap { it.graalDownloadFile }.get()))
-            //rename("${downloadTask.map { it.graalFolderName }.get()}.*/(.+)", "$1")
             into(downloadTask.flatMap { it.jdksDirectory })
+            eachFile {
+                val originalPath = relativePath.pathString
+                val parts: MutableList<String> = originalPath.split("/").toMutableList()
+                parts[0] = downloadTask.flatMap { it.graalFolderName }.get()
+                val newPath = parts.joinToString("/")
+                relativePath = RelativePath(!this.isDirectory, newPath)
+            }
+            doLast {
+                destinationDir = downloadTask.flatMap { it.jdksDirectory.dir(it.graalFolderName) }.get().asFile
+            }
         }
 
         project.tasks.register("installNativeImageTooling") {
