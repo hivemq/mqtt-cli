@@ -81,5 +81,5 @@ jib = { id = "com.google.cloud.tools.jib", version = "3.4.2" }
 launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.5" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.8.1" }
-openapi-generator = { id = "org.openapi.generator", version = "4.3.1" } # >= 5.0.0 breaks the tasks
+openapi-generator = { id = "org.openapi.generator", version = "7.5.0" } # >= 5.0.0 breaks the tasks
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
