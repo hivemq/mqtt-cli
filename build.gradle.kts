@@ -43,21 +43,21 @@ description = "MQTT CLI is a tool that provides a feature rich command line inte
         "various MQTT clients simultaneously and supports  MQTT 5.0 and MQTT 3.1.1 "
 
 application {
-    mainClass.set("com.hivemq.cli.MqttCLIMain")
+    mainClass = "com.hivemq.cli.MqttCLIMain"
 }
 
 /* ******************** java ******************** */
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
 tasks.compileJava {
-    javaCompiler.set(javaToolchains.compilerFor {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    })
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
 }
 
 tasks.jar {
@@ -75,11 +75,11 @@ tasks.jar {
 }
 
 tasks.jar {
-    archiveClassifier.set("plain")
+    archiveClassifier = "plain"
 }
 
 tasks.shadowJar {
-    archiveClassifier.set("")
+    archiveClassifier = ""
 }
 
 /* ******************** dependencies ******************** */
@@ -160,11 +160,11 @@ dependencies {
 
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     group = "hivemq"
-    generatorName.set("java")
-    inputSpec.set(hivemqOpenApi.singleFile.path)
-    outputDir.set(layout.buildDirectory.dir("tmp/$name").get().asFile.absolutePath)
-    apiPackage.set("com.hivemq.cli.openapi.hivemq")
-    modelPackage.set("com.hivemq.cli.openapi.hivemq")
+    generatorName = "java"
+    inputSpec = hivemqOpenApi.singleFile.path
+    outputDir = layout.buildDirectory.dir("tmp/$name").get().asFile.absolutePath
+    apiPackage = "com.hivemq.cli.openapi.hivemq"
+    modelPackage = "com.hivemq.cli.openapi.hivemq"
     configOptions.put("dateLibrary", "java8")
     configOptions.put("hideGenerationTimestamp", "true")
 
@@ -184,11 +184,11 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
 
 val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
     group = "swarm"
-    generatorName.set("java")
-    inputSpec.set(swarmOpenApi.singleFile.path)
-    outputDir.set(layout.buildDirectory.dir("tmp/$name").get().asFile.absolutePath)
-    apiPackage.set("com.hivemq.cli.openapi.swarm")
-    modelPackage.set("com.hivemq.cli.openapi.swarm")
+    generatorName = "java"
+    inputSpec = swarmOpenApi.singleFile.path
+    outputDir = layout.buildDirectory.dir("tmp/$name").get().asFile.absolutePath
+    apiPackage = "com.hivemq.cli.openapi.swarm"
+    modelPackage = "com.hivemq.cli.openapi.swarm"
     configOptions.put("dateLibrary", "java8")
     configOptions.put("hideGenerationTimestamp", "true")
 
@@ -356,9 +356,9 @@ tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 //checks for java installations prior the execution.
 
 cliNative {
-    graalVersion.set(libs.versions.graal)
-    javaVersion.set(libs.versions.javaNative)
+    javaVersion = libs.versions.javaNative
 }
+val majorJavaNativeVersion = libs.versions.javaNative.get().substringBefore(".")
 
 //reflection configuration files are currently created manually with the command: ./gradlew -Pagent agentMainRun --stacktrace
 //this yields an exception as the Graal plugin is currently quite buggy. The files are created nonetheless.
@@ -367,23 +367,20 @@ val agentMainRun by tasks.registering(JavaExec::class) {
     group = "native"
 
     val launcher = javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(libs.versions.javaNative.get()))
-        vendor.set(JvmVendorSpec.GRAAL_VM)
-
+        languageVersion = JavaLanguageVersion.of(majorJavaNativeVersion)
+        vendor = JvmVendorSpec.GRAAL_VM
     }
-    javaLauncher.set(launcher)
+    javaLauncher = launcher
     classpath = sourceSets.main.get().runtimeClasspath
-    mainClass.set("com.hivemq.cli.graal.NativeMain")
+    mainClass = "com.hivemq.cli.graal.NativeMain"
 }
 
 val nativeImageOptions by graalvmNative.binaries.named("main") {
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(libs.versions.javaNative.get()))
-        vendor.set(JvmVendorSpec.GRAAL_VM)
-    })
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(majorJavaNativeVersion)
+        vendor = JvmVendorSpec.GRAAL_VM
+    }
     buildArgs.add("-Dio.netty.noUnsafe=true")
-    buildArgs.add("-H:+ReportExceptionStackTraces")
-    buildArgs.add("-H:+TraceServiceLoaderFeature")
     buildArgs.add("--no-fallback")
     buildArgs.add("--enable-https")
     buildArgs.add("--features=com.hivemq.cli.graal.BouncyCastleFeature")
@@ -396,6 +393,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
                 "org.jctools.util.UnsafeAccess," +
                 "io.netty.util.ReferenceCountUtil," +
                 "io.netty.util.ResourceLeakDetector," +
+                "io.netty.util.ResourceLeakDetector\$Level," +
                 "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueue," +
                 "io.netty.util.internal.shaded.org.jctools.queues.BaseSpscLinkedArrayQueue," +
                 "io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess," +
@@ -403,6 +401,8 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
                 "io.netty.util.internal.SystemPropertyUtil," +
                 "io.netty.util.internal.PlatformDependent," +
                 "io.netty.util.internal.PlatformDependent0," +
+                "io.netty.util.internal.PlatformDependent\$1," +
+                "io.netty.util.internal.PlatformDependent\$2," +
                 "io.netty.util.internal.logging.JdkLogger," +
                 "io.netty.buffer.AbstractByteBufAllocator"
     )
@@ -439,9 +439,9 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
 }
 
 graalvmNative {
-    toolchainDetection.set(false)
+    toolchainDetection = false
     agent {
-        defaultMode.set("standard")
+        defaultMode = "standard"
         tasksToInstrumentPredicate.set { t -> t == agentMainRun.get() }
     }
     binaries {
@@ -453,8 +453,8 @@ graalvmNative {
 
 val buildBrewZip by tasks.registering(Zip::class) {
 
-    archiveClassifier.set("brew")
-    destinationDirectory.set(layout.buildDirectory.dir("packages/homebrew"))
+    archiveClassifier = "brew"
+    destinationDirectory = layout.buildDirectory.dir("packages/homebrew")
 
     into("brew") {
         from(tasks.shadowJar)
@@ -537,24 +537,24 @@ val buildRpmPackage by tasks.registering(Copy::class) {
 /* ******************** windows zip ******************** */
 
 launch4j {
-    headerType.set("console")
-    mainClassName.set(application.mainClass.get())
-    icon.set("$projectDir/icons/05-mqtt-cli-icon.ico")
+    headerType = "console"
+    mainClassName = application.mainClass.get()
+    icon = "$projectDir/icons/05-mqtt-cli-icon.ico"
     setJarTask(tasks.shadowJar.get())
-    copyConfigurable.set(emptyList<Any>())
-    copyright.set("Copyright 2019-present HiveMQ and the HiveMQ Community")
-    companyName.set("HiveMQ GmbH")
-    downloadUrl.set("https://openjdk.java.net/install/")
-    jreMinVersion.set("1.8")
-    windowTitle.set("MQTT CLI")
-    version.set(project.version.toString())
-    textVersion.set(project.version.toString())
+    copyConfigurable = emptyList<Any>()
+    copyright = "Copyright 2019-present HiveMQ and the HiveMQ Community"
+    companyName = "HiveMQ GmbH"
+    downloadUrl = "https://openjdk.java.net/install/"
+    jreMinVersion = "1.8"
+    windowTitle = "MQTT CLI"
+    version = project.version.toString()
+    textVersion = project.version.toString()
 }
 
 val buildWindowsZip by tasks.registering(Zip::class) {
 
-    archiveClassifier.set("win")
-    destinationDirectory.set(layout.buildDirectory.dir("packages/windows"))
+    archiveClassifier = "win"
+    destinationDirectory = layout.buildDirectory.dir("packages/windows")
 
     from("packages/windows") {
         filter { it.replace("@@exeName@@", launch4j.outfile.get()) }
@@ -573,7 +573,7 @@ val buildPackages by tasks.registering {
 
 githubRelease {
     token(System.getenv("githubToken"))
-    draft.set(true)
+    draft = true
     releaseAssets(
         tasks.shadowJar,
         buildBrewZip,
@@ -581,15 +581,15 @@ githubRelease {
         buildRpmPackage.map { fileTree(it.destinationDir) },
         buildWindowsZip,
     )
-    allowUploadToExisting.set(true)
+    allowUploadToExisting = true
 }
 
 /* ******************** Update the Homebrew-Formula with the newly built package ******************** */
 
 gitPublish {
-    repoUri.set("https://github.com/hivemq/homebrew-mqtt-cli.git")
-    branch.set("master")
-    commitMessage.set("Release version v${project.version}")
+    repoUri = "https://github.com/hivemq/homebrew-mqtt-cli.git"
+    branch = "master"
+    commitMessage = "Release version v${project.version}"
     contents.from(buildBrewFormula)
 }
 
@@ -612,7 +612,7 @@ jib {
 /* ******************** platform distribution ******************** */
 
 distributions.shadow {
-    distributionBaseName.set("mqtt-cli")
+    distributionBaseName = "mqtt-cli"
     contents {
         from("README.txt")
     }

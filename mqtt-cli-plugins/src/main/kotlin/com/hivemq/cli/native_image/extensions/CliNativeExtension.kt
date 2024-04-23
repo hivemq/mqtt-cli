@@ -5,12 +5,7 @@ import org.gradle.api.provider.Property
 interface CliNativeExtension {
 
     /**
-     * Graal version, default: 22.2.0
-     */
-    val graalVersion: Property<String>
-
-    /**
-     * Java version, default: 17
+     * Java version, default: 21.0.2
      */
     val javaVersion: Property<String>
 
