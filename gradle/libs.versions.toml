@@ -24,9 +24,9 @@ mockito = "5.11.0"
 netty = "4.1.109.Final"
 okhttp = "4.12.0"
 openCsv = "5.9"
-picocli = "4.7.5"
+picocli = "4.7.6"
 swagger-annotations = "1.6.14"
-testcontainers = "1.19.7"
+testcontainers = "1.19.8"
 tinylog = "2.7.0"
 
 [libraries]
