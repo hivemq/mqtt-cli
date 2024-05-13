@@ -10,7 +10,7 @@ MQTT CLI uses the following third party libraries:
  com.google.dagger:dagger                                                   | 2.51.1                                    | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.google.errorprone:error_prone_annotations                              | 2.26.1                                    | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.google.guava:failureaccess                                             | 1.0.2                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
- com.google.guava:guava                                                     | 33.1.0-jre                                | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
+ com.google.guava:guava                                                     | 33.2.0-jre                                | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.google.guava:listenablefuture                                          | 9999.0-empty-to-avoid-conflict-with-guava | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.hivemq:hivemq-mqtt-client                                              | 1.3.3                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.opencsv:opencsv                                                        | 5.9                                       | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
@@ -21,9 +21,9 @@ MQTT CLI uses the following third party libraries:
  commons-collections:commons-collections                                    | 3.2.2                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  commons-io:commons-io                                                      | 2.16.1                                    | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  commons-logging:commons-logging                                            | 1.2                                       | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
- info.picocli:picocli                                                       | 4.7.5                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
- info.picocli:picocli-codegen                                               | 4.7.5                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
- info.picocli:picocli-shell-jline3                                          | 4.7.5                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
+ info.picocli:picocli                                                       | 4.7.6                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
+ info.picocli:picocli-codegen                                               | 4.7.6                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
+ info.picocli:picocli-shell-jline3                                          | 4.7.6                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  io.gsonfire:gson-fire                                                      | 1.9.0                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  io.netty:netty-buffer                                                      | 4.1.109.Final                             | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  io.netty:netty-codec                                                       | 4.1.109.Final                             | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
