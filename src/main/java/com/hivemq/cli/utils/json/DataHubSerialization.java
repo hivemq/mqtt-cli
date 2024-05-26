@@ -35,6 +35,8 @@ public class DataHubSerialization {
                 context.serialize(policyOperation.getFunctionId()));
         operationObject.add(PolicyOperation.SERIALIZED_NAME_ARGUMENTS,
                 context.serialize(policyOperation.getArguments()));
+        operationObject.add(PolicyOperation.SERIALIZED_NAME_ON_BRANCH,
+                context.serialize(policyOperation.getOnBranch()));
         return operationObject;
     }
 }
