@@ -78,7 +78,7 @@ info:
     ## OpenAPI
     HiveMQ's REST API provides an OpenAPI 3.0 schema definition that can imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   title: HiveMQ REST API
-  version: 4.23.0
+  version: 4.29.0-SNAPSHOT
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
@@ -360,7 +360,7 @@ paths:
                               level: INFO
                               message: transition happened
               schema:
-                $ref: '#/components/schemas/BehaviorPolicyList'
+                $ref: "#/components/schemas/BehaviorPolicyList"
           description: Success
         "503":
           content:
@@ -375,7 +375,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Get all policies
       tags:
@@ -417,7 +417,7 @@ paths:
                       level: INFO
                       message: transition happened
             schema:
-              $ref: '#/components/schemas/BehaviorPolicy'
+              $ref: "#/components/schemas/BehaviorPolicy"
         description: The policy that should be created.
         required: true
       responses:
@@ -458,7 +458,7 @@ paths:
                             level: INFO
                             message: transition happened
               schema:
-                $ref: '#/components/schemas/BehaviorPolicy'
+                $ref: "#/components/schemas/BehaviorPolicy"
           description: Success
         "400":
           content:
@@ -496,7 +496,7 @@ paths:
                     - title: Policy is not valid
                       detail: Required body entity parameter is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "503":
           content:
@@ -532,7 +532,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Temporarily not available
       summary: Create a new policy
       tags:
@@ -564,7 +564,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -578,7 +578,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
         "503":
           content:
@@ -593,7 +593,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Delete a behavior policy
       tags:
@@ -657,7 +657,7 @@ paths:
                             level: INFO
                             message: transition happened
               schema:
-                $ref: '#/components/schemas/BehaviorPolicy'
+                $ref: "#/components/schemas/BehaviorPolicy"
           description: Success
         "400":
           content:
@@ -671,7 +671,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -685,7 +685,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Get a  policy
       tags:
@@ -736,7 +736,7 @@ paths:
                       level: INFO
                       message: transition happened
             schema:
-              $ref: '#/components/schemas/BehaviorPolicy'
+              $ref: "#/components/schemas/BehaviorPolicy"
         description: The policy that should be updated.
         required: true
       responses:
@@ -777,7 +777,7 @@ paths:
                             level: INFO
                             message: transition happened
               schema:
-                $ref: '#/components/schemas/BehaviorPolicy'
+                $ref: "#/components/schemas/BehaviorPolicy"
           description: Success
         "400":
           content:
@@ -806,7 +806,7 @@ paths:
                     - title: Policy is not valid
                       detail: Required body entity parameter is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -820,7 +820,7 @@ paths:
                     - title: Referenced policy not found
                       detail: The referenced policy with id 'policyId' was not found.
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Policy not found
         "412":
           content:
@@ -834,7 +834,7 @@ paths:
                     - title: Precondition Failed
                       detail: Policy does not match the given etag '123456789'.
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Precondition failed
         "503":
           content:
@@ -862,7 +862,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Update an existing policy
       tags:
@@ -905,7 +905,7 @@ paths:
                         publishCount: "0"
                         maxPublishes: "10"
               schema:
-                $ref: '#/components/schemas/FsmStatesInformationListItem'
+                $ref: "#/components/schemas/FsmStatesInformationListItem"
           description: Success
         "400":
           content:
@@ -919,7 +919,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -960,7 +960,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
         "503":
           content:
@@ -975,7 +975,7 @@ paths:
                       detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Temporarily not available
       summary: Get the state of a client
       tags:
@@ -1242,7 +1242,7 @@ paths:
                             message: $clientId sent an invalid publish on topic '$topic'
                               with result '$validationResult'
               schema:
-                $ref: '#/components/schemas/DataPolicyList'
+                $ref: "#/components/schemas/DataPolicyList"
           description: Success
         "503":
           content:
@@ -1257,7 +1257,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Get all data policies
       tags:
@@ -1300,7 +1300,7 @@ paths:
                     message: "${clientId} sent an invalid publish on topic '${topic}'\
                       \ with result '${validationResult}'"
             schema:
-              $ref: '#/components/schemas/DataPolicy'
+              $ref: "#/components/schemas/DataPolicy"
         description: The data policy to create.
         required: true
       responses:
@@ -1342,7 +1342,7 @@ paths:
                           message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
-                $ref: '#/components/schemas/DataPolicy'
+                $ref: "#/components/schemas/DataPolicy"
           description: Success
         "400":
           content:
@@ -1387,7 +1387,7 @@ paths:
                     - title: Referenced schema does not exist
                       detail: The referenced schema with id 'schema-id' does not exist.
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "503":
           content:
@@ -1423,7 +1423,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Create a new data policy
       tags:
@@ -1455,7 +1455,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -1469,7 +1469,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
         "503":
           content:
@@ -1484,7 +1484,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Delete a data policy
       tags:
@@ -1549,7 +1549,7 @@ paths:
                           message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
-                $ref: '#/components/schemas/DataPolicy'
+                $ref: "#/components/schemas/DataPolicy"
           description: Success
         "400":
           content:
@@ -1563,7 +1563,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -1577,7 +1577,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Get a data policy
       tags:
@@ -1630,7 +1630,7 @@ paths:
                     message: "${clientId} sent an invalid publish on topic '${topic}'\
                       \ with result '${validationResult}'"
             schema:
-              $ref: '#/components/schemas/DataPolicy'
+              $ref: "#/components/schemas/DataPolicy"
         description: The data policy that should be updated.
         required: true
       responses:
@@ -1672,7 +1672,7 @@ paths:
                           message: "${clientId} sent an invalid publish on topic '${topic}'\
                             \ with result '${validationResult}'"
               schema:
-                $ref: '#/components/schemas/DataPolicy'
+                $ref: "#/components/schemas/DataPolicy"
           description: Success
         "400":
           content:
@@ -1718,7 +1718,7 @@ paths:
                     - title: Referenced schema does not exist
                       detail: The referenced schema with id 'schema-id' does not exist.
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -1732,7 +1732,7 @@ paths:
                     - title: Referenced policy not found
                       detail: The referenced policy with id 'policyId' was not found.
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Policy not found
         "412":
           content:
@@ -1746,7 +1746,7 @@ paths:
                     - title: Precondition Failed
                       detail: Policy does not match the given etag '123456789'.
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Precondition failed
         "503":
           content:
@@ -1774,7 +1774,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Update an existing data policy
       tags:
@@ -1810,7 +1810,7 @@ paths:
                       detail: "The trial mode for data hub cannot be started, as it\
                         \ is already running."
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "503":
           content:
@@ -1825,7 +1825,7 @@ paths:
                       detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Temporarily not available
       summary: Start trial mode
       tags:
@@ -1964,7 +1964,7 @@ paths:
                       schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                       createdAt: 2023-03-01T13:48:35.164Z
               schema:
-                $ref: '#/components/schemas/SchemaList'
+                $ref: "#/components/schemas/SchemaList"
           description: Success
         "503":
           content:
@@ -1979,7 +1979,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Get all schemas
       tags:
@@ -1998,7 +1998,7 @@ paths:
               type: JSON
               schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
             schema:
-              $ref: '#/components/schemas/Schema'
+              $ref: "#/components/schemas/Schema"
         description: The schema that should be created.
         required: true
       responses:
@@ -2016,7 +2016,7 @@ paths:
                     schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                     createdAt: 2023-03-01T13:28:35.164Z
               schema:
-                $ref: '#/components/schemas/Schema'
+                $ref: "#/components/schemas/Schema"
           description: Success
         "400":
           content:
@@ -2054,7 +2054,7 @@ paths:
                     - title: Schema type not supported
                       detail: The submitted schema type 'schema-type' is not supported
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "503":
           content:
@@ -2077,7 +2077,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Create a new schema
       tags:
@@ -2111,7 +2111,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -2125,7 +2125,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
         "503":
           content:
@@ -2140,7 +2140,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Delete all versions of the schema
       tags:
@@ -2181,7 +2181,7 @@ paths:
                     schemaDefinition: ewogICIkaWQiOiAiaHR0cHM6Ly9leGFtcGxlLmNvbS9hZGRyZXNzLmpzb24iLAogICIkc2NoZW1hIjogImh0dHA6Ly9qc29uLXNjaGVtYS5vcmcvZHJhZnQtMDcvc2NoZW1hIiwKICAidHlwZSI6ICJvYmplY3QiLAogICJwcm9wZXJ0aWVzIjogewogICAgInN0cmVldF9hZGRyZXNzIjogeyAidHlwZSI6ICJzdHJpbmciIH0sCiAgICAiY2l0eSI6IHsgInR5cGUiOiAic3RyaW5nIiB9LAogICAgInN0YXRlIjogeyAidHlwZSI6ICJzdHJpbmciIH0KICB9LAogICJyZXF1aXJlZCI6IFsic3RyZWV0X2FkZHJlc3MiLCAiY2l0eSIsICJzdGF0ZSJdCn0=
                     createdAt: 2023-03-01T13:28:35.164Z
               schema:
-                $ref: '#/components/schemas/Schema'
+                $ref: "#/components/schemas/Schema"
           description: Success
         "400":
           content:
@@ -2195,7 +2195,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -2209,7 +2209,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Get a schema
       tags:
@@ -2338,7 +2338,7 @@ paths:
                       functionType: TRANSFORMATION
                       source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsgcHVibGlzaC51c2VyUHJvcGVydGllcy5wdXNoKHtuYW1lOiAnZm9vJywgdmFsdWU6ICdiYXInfSk7IHJldHVybiBwdWJsaXNoOyB9
               schema:
-                $ref: '#/components/schemas/ScriptList'
+                $ref: "#/components/schemas/ScriptList"
           description: Success
         "503":
           content:
@@ -2353,7 +2353,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Get all scripts
       tags:
@@ -2370,7 +2370,7 @@ paths:
               functionType: TRANSFORMATION
               source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
             schema:
-              $ref: '#/components/schemas/Script'
+              $ref: "#/components/schemas/Script"
         description: The script that should be created.
         required: true
       responses:
@@ -2389,7 +2389,7 @@ paths:
                     functionType: TRANSFORMATION
                     source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
               schema:
-                $ref: '#/components/schemas/Script'
+                $ref: "#/components/schemas/Script"
           description: Success
         "400":
           content:
@@ -2411,7 +2411,7 @@ paths:
                       detail: The given script is identical to the latest version
                         of the script with id 'scriptId'.
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "503":
           content:
@@ -2426,7 +2426,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Create a new script
       tags:
@@ -2453,8 +2453,11 @@ paths:
                 param-missing:
                   description: Bad request
                   summary: Required URL parameter missing
+                script-referenced:
+                  description: Bad request
+                  summary: Script was referenced recently
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -2468,7 +2471,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
         "503":
           content:
@@ -2483,7 +2486,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: Delete a script
       tags:
@@ -2522,7 +2525,7 @@ paths:
                     functionType: TRANSFORMATION
                     source: ZnVuY3Rpb24gdHJhbnNmb3JtKHB1Ymxpc2gsIGNvbnRleHQpIHsKICAgcHVibGlzaC50b3BpYyA9ICJ0cmFuc2Zvcm1lZC8iICsgcHVibGlzaC50b3BpYzsKICAgcmV0dXJuIHB1Ymxpc2g7Cn0=
               schema:
-                $ref: '#/components/schemas/Script'
+                $ref: "#/components/schemas/Script"
           description: Success
         "400":
           content:
@@ -2536,7 +2539,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -2550,7 +2553,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Get a script
       tags:
@@ -2594,7 +2597,7 @@ paths:
                       state: FAILED
                       failReason: Another backup is already in progress.
               schema:
-                $ref: '#/components/schemas/BackupList'
+                $ref: "#/components/schemas/BackupList"
           description: Success
         "503":
           content:
@@ -2609,7 +2612,7 @@ paths:
                       detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Temporarily not available
       summary: List all available backups
       tags:
@@ -2634,7 +2637,7 @@ paths:
                       createdAt: 2020-05-06T08:13:17Z
                       state: IN_PROGRESS
               schema:
-                $ref: '#/components/schemas/BackupItem'
+                $ref: "#/components/schemas/BackupItem"
           description: Success
         "503":
           content:
@@ -2649,7 +2652,7 @@ paths:
                       detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Temporarily not available
       summary: Create a new backup
       tags:
@@ -2687,7 +2690,7 @@ paths:
                       bytes: 85550653
                       state: COMPLETED
               schema:
-                $ref: '#/components/schemas/BackupItem'
+                $ref: "#/components/schemas/BackupItem"
           description: Success
         "400":
           content:
@@ -2701,7 +2704,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -2715,7 +2718,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
         "503":
           content:
@@ -2730,7 +2733,7 @@ paths:
                       detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Temporarily not available
       summary: Get backup information
       tags:
@@ -2762,7 +2765,7 @@ paths:
                       createdAt: 2020-05-06T08:13:17Z
                       state: IN_PROGRESS
               schema:
-                $ref: '#/components/schemas/BackupItem'
+                $ref: "#/components/schemas/BackupItem"
           description: Success
         "400":
           content:
@@ -2776,7 +2779,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -2790,7 +2793,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
         "503":
           content:
@@ -2805,7 +2808,7 @@ paths:
                       detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Temporarily not available
       summary: Restore a new backup
       tags:
@@ -2829,7 +2832,7 @@ paths:
                       createdAt: 2023-01-02T08:13:17Z
                       state: IN_PROGRESS
               schema:
-                $ref: '#/components/schemas/DiagnosticArchiveItem'
+                $ref: "#/components/schemas/DiagnosticArchiveItem"
           description: Success
       summary: Create a new diagnostic archive
       tags:
@@ -2874,7 +2877,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -2888,7 +2891,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
         "503":
           content:
@@ -2903,7 +2906,7 @@ paths:
                       detail: "The endpoint is temporarily not available, please try\
                         \ again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Temporarily not available
       summary: Download a backup file
       tags:
@@ -2947,7 +2950,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -2961,7 +2964,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Download a trace recording
       tags:
@@ -2997,7 +3000,7 @@ paths:
                       - MQTT_MESSAGE_DISCONNECT
                       state: IN_PROGRESS
               schema:
-                $ref: '#/components/schemas/TraceRecordingList'
+                $ref: "#/components/schemas/TraceRecordingList"
           description: Success
       summary: Get all trace recordings
       tags:
@@ -3029,7 +3032,7 @@ paths:
                     events:
                     - MQTT_MESSAGE_CONNECT
             schema:
-              $ref: '#/components/schemas/TraceRecordingItem'
+              $ref: "#/components/schemas/TraceRecordingItem"
         description: The trace recording to create
       responses:
         "201":
@@ -3053,7 +3056,7 @@ paths:
                       - MQTT_MESSAGE_CONNECT
                       state: IN_PROGRESS
               schema:
-                $ref: '#/components/schemas/TraceRecordingItem'
+                $ref: "#/components/schemas/TraceRecordingItem"
           description: Success
         "400":
           content:
@@ -3082,7 +3085,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
       summary: Create a trace recording
       tags:
@@ -3113,7 +3116,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -3127,7 +3130,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Delete a trace recording
       tags:
@@ -3157,7 +3160,7 @@ paths:
                   traceRecording:
                     state: STOPPED
             schema:
-              $ref: '#/components/schemas/TraceRecordingItem'
+              $ref: "#/components/schemas/TraceRecordingItem"
         description: The trace recording to change
       responses:
         "200":
@@ -3181,7 +3184,7 @@ paths:
                       - MQTT_MESSAGE_CONNECT
                       state: STOPPED
               schema:
-                $ref: '#/components/schemas/TraceRecordingItem'
+                $ref: "#/components/schemas/TraceRecordingItem"
           description: Success
         "400":
           content:
@@ -3210,7 +3213,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -3224,7 +3227,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Stop a trace recording.
       tags:
@@ -3296,7 +3299,7 @@ paths:
                     items:
                     - id: client-12
               schema:
-                $ref: '#/components/schemas/ClientList'
+                $ref: "#/components/schemas/ClientList"
           description: Success
         "400":
           content:
@@ -3310,7 +3313,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "410":
           content:
@@ -3325,7 +3328,7 @@ paths:
                       detail: "The passed cursor is not valid anymore, you can request\
                         \ this resource without a cursor to start from the beginning"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Cursor not valid anymore
         "503":
           content:
@@ -3340,7 +3343,7 @@ paths:
                       detail: "Not all cluster nodes support this endpoint yet, please\
                         \ try again later"
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Not all cluster nodes at minimum version
       summary: List all MQTT clients
       tags:
@@ -3382,7 +3385,7 @@ paths:
                     - title: Parameter invalid
                       detail: Query parameter 'parameter-name' is invalid
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -3396,7 +3399,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Invalidate a client session
       tags:
@@ -3498,7 +3501,7 @@ paths:
                             state: BY
                             version: "2"
               schema:
-                $ref: '#/components/schemas/ClientItem'
+                $ref: "#/components/schemas/ClientItem"
           description: Success
         "400":
           content:
@@ -3512,7 +3515,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -3526,7 +3529,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Get detailed client information
       tags:
@@ -3568,7 +3571,7 @@ paths:
                     - title: Parameter invalid
                       detail: Query parameter 'parameter-name' is invalid
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -3582,7 +3585,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Disconnect a client
       tags:
@@ -3613,7 +3616,7 @@ paths:
                     connection:
                       connected: false
               schema:
-                $ref: '#/components/schemas/ConnectionItem'
+                $ref: "#/components/schemas/ConnectionItem"
           description: Success
         "400":
           content:
@@ -3627,7 +3630,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -3641,7 +3644,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: Get a clients connection state
       tags:
@@ -3694,7 +3697,7 @@ paths:
                       noLocal: false
                       subscriptionIdentifier: 2
               schema:
-                $ref: '#/components/schemas/ClientSubscriptionList'
+                $ref: "#/components/schemas/ClientSubscriptionList"
           description: Success
         "400":
           content:
@@ -3708,7 +3711,7 @@ paths:
                     - title: Required parameter missing
                       detail: Required URL parameter 'parameterName' is missing
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Bad request
         "404":
           content:
@@ -3722,7 +3725,7 @@ paths:
                     - title: Resource not found
                       detail: Resource with id 'my-resource-id' not found
               schema:
-                $ref: '#/components/schemas/Errors'
+                $ref: "#/components/schemas/Errors"
           description: Resource not found
       summary: List all subscriptions for MQTT client
       tags:
@@ -3763,7 +3766,7 @@ components:
       type: object
       properties:
         backup:
-          $ref: '#/components/schemas/Backup'
+          $ref: "#/components/schemas/Backup"
     BackupList:
       type: object
       properties:
@@ -3771,14 +3774,14 @@ components:
           type: array
           description: List of result items that are returned by this endpoint
           items:
-            $ref: '#/components/schemas/Backup'
+            $ref: "#/components/schemas/Backup"
     BehaviorPolicy:
       type: object
       description: A policy which is used to validate and execute certain actions
         based on the validation result.
       properties:
         behavior:
-          $ref: '#/components/schemas/BehaviorPolicyBehavior'
+          $ref: "#/components/schemas/BehaviorPolicyBehavior"
         createdAt:
           type: string
           format: date-time
@@ -3786,7 +3789,7 @@ components:
             created.
           readOnly: true
         deserialization:
-          $ref: '#/components/schemas/BehaviorPolicyDeserialization'
+          $ref: "#/components/schemas/BehaviorPolicyDeserialization"
         id:
           type: string
           description: The unique identifier of the policy.
@@ -3797,11 +3800,11 @@ components:
             updated the last time.
           readOnly: true
         matching:
-          $ref: '#/components/schemas/BehaviorPolicyMatching'
+          $ref: "#/components/schemas/BehaviorPolicyMatching"
         onTransitions:
           type: array
           items:
-            $ref: '#/components/schemas/BehaviorPolicyOnTransition'
+            $ref: "#/components/schemas/BehaviorPolicyOnTransition"
       required:
       - behavior
       - id
@@ -3825,15 +3828,15 @@ components:
         payload types.
       properties:
         publish:
-          $ref: '#/components/schemas/BehaviorPolicyDeserializer'
+          $ref: "#/components/schemas/BehaviorPolicyDeserializer"
         will:
-          $ref: '#/components/schemas/BehaviorPolicyDeserializer'
+          $ref: "#/components/schemas/BehaviorPolicyDeserializer"
     BehaviorPolicyDeserializer:
       type: object
       description: The deserializer applied to a particular message or payload type.
       properties:
         schema:
-          $ref: '#/components/schemas/SchemaReference'
+          $ref: "#/components/schemas/SchemaReference"
       required:
       - schema
     BehaviorPolicyList:
@@ -3841,12 +3844,12 @@ components:
       description: A listing of behavior policies.
       properties:
         _links:
-          $ref: '#/components/schemas/PaginationCursor'
+          $ref: "#/components/schemas/PaginationCursor"
         items:
           type: array
           description: List of result items that are returned by this endpoint
           items:
-            $ref: '#/components/schemas/BehaviorPolicy'
+            $ref: "#/components/schemas/BehaviorPolicy"
     BehaviorPolicyMatching:
       type: object
       description: The matching rules the policy applies.
@@ -3864,7 +3867,7 @@ components:
         pipeline:
           type: array
           items:
-            $ref: '#/components/schemas/PolicyOperation'
+            $ref: "#/components/schemas/PolicyOperation"
       required:
       - pipeline
     BehaviorPolicyOnTransition:
@@ -3872,17 +3875,17 @@ components:
       description: The actions that are executed for the specified transition.
       properties:
         Connection.OnDisconnect:
-          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+          $ref: "#/components/schemas/BehaviorPolicyOnEvent"
         Event.OnAny:
-          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+          $ref: "#/components/schemas/BehaviorPolicyOnEvent"
         Mqtt.OnInboundConnect:
-          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+          $ref: "#/components/schemas/BehaviorPolicyOnEvent"
         Mqtt.OnInboundDisconnect:
-          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+          $ref: "#/components/schemas/BehaviorPolicyOnEvent"
         Mqtt.OnInboundPublish:
-          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+          $ref: "#/components/schemas/BehaviorPolicyOnEvent"
         Mqtt.OnInboundSubscribe:
-          $ref: '#/components/schemas/BehaviorPolicyOnEvent'
+          $ref: "#/components/schemas/BehaviorPolicyOnEvent"
         fromState:
           type: string
           description: The exact state from which the transition happened. Alternatively
@@ -3953,7 +3956,7 @@ components:
           description: Time the client connection was established
           nullable: true
         connection:
-          $ref: '#/components/schemas/ConnectionDetails'
+          $ref: "#/components/schemas/ConnectionDetails"
         id:
           type: string
           description: The MQTT client identifier
@@ -3962,7 +3965,7 @@ components:
           format: int64
           description: The current message queue size for this client
         restrictions:
-          $ref: '#/components/schemas/ClientRestrictions'
+          $ref: "#/components/schemas/ClientRestrictions"
         sessionExpiryInterval:
           type: integer
           format: int64
@@ -3975,17 +3978,17 @@ components:
       type: object
       properties:
         client:
-          $ref: '#/components/schemas/ClientDetails'
+          $ref: "#/components/schemas/ClientDetails"
     ClientList:
       type: object
       properties:
         _links:
-          $ref: '#/components/schemas/PaginationCursor'
+          $ref: "#/components/schemas/PaginationCursor"
         items:
           type: array
           description: List of result items that are returned by this endpoint
           items:
-            $ref: '#/components/schemas/Client'
+            $ref: "#/components/schemas/Client"
     ClientRestrictions:
       type: object
       description: The restrictions that are in effect for this client
@@ -4041,12 +4044,12 @@ components:
       type: object
       properties:
         _links:
-          $ref: '#/components/schemas/PaginationCursor'
+          $ref: "#/components/schemas/PaginationCursor"
         items:
           type: array
           description: List of result items that are returned by this endpoint
           items:
-            $ref: '#/components/schemas/ClientSubscription'
+            $ref: "#/components/schemas/ClientSubscription"
     Connection:
       type: object
       description: Information about the client's connection state
@@ -4082,13 +4085,13 @@ components:
           description: Password
           nullable: true
         proxyInformation:
-          $ref: '#/components/schemas/ProxyInformation'
+          $ref: "#/components/schemas/ProxyInformation"
         sourceIp:
           type: string
           description: The client's IP
           nullable: true
         tlsInformation:
-          $ref: '#/components/schemas/TlsInformation'
+          $ref: "#/components/schemas/TlsInformation"
         username:
           type: string
           description: Username
@@ -4097,7 +4100,7 @@ components:
       type: object
       properties:
         connection:
-          $ref: '#/components/schemas/Connection'
+          $ref: "#/components/schemas/Connection"
     DataPolicy:
       type: object
       description: A data policy which is used to validate and execute certain actions
@@ -4119,13 +4122,13 @@ components:
             updated the last time.
           readOnly: true
         matching:
-          $ref: '#/components/schemas/DataPolicyMatching'
+          $ref: "#/components/schemas/DataPolicyMatching"
         onFailure:
-          $ref: '#/components/schemas/DataPolicyAction'
+          $ref: "#/components/schemas/DataPolicyAction"
         onSuccess:
-          $ref: '#/components/schemas/DataPolicyAction'
+          $ref: "#/components/schemas/DataPolicyAction"
         validation:
-          $ref: '#/components/schemas/DataPolicyValidation'
+          $ref: "#/components/schemas/DataPolicyValidation"
       required:
       - id
       - matching
@@ -4140,18 +4143,18 @@ components:
           description: "The pipeline to execute, when this action is triggered. The\
             \ operations in the pipeline are executed in-order."
           items:
-            $ref: '#/components/schemas/PolicyOperation'
+            $ref: "#/components/schemas/PolicyOperation"
     DataPolicyList:
       type: object
       description: A listing of data policies.
       properties:
         _links:
-          $ref: '#/components/schemas/PaginationCursor'
+          $ref: "#/components/schemas/PaginationCursor"
         items:
           type: array
           description: List of result items that are returned by this endpoint
           items:
-            $ref: '#/components/schemas/DataPolicy'
+            $ref: "#/components/schemas/DataPolicy"
     DataPolicyMatching:
       type: object
       description: The matching rules the policy applies.
@@ -4171,7 +4174,7 @@ components:
           type: array
           description: The validators of the policy.
           items:
-            $ref: '#/components/schemas/DataPolicyValidator'
+            $ref: "#/components/schemas/DataPolicyValidator"
     DataPolicyValidator:
       type: object
       description: A policy validator which executes the defined validation.
@@ -4216,7 +4219,7 @@ components:
       type: object
       properties:
         diagnosticArchive:
-          $ref: '#/components/schemas/DiagnosticArchive'
+          $ref: "#/components/schemas/DiagnosticArchive"
     Error:
       type: object
       properties:
@@ -4232,13 +4235,13 @@ components:
         errors:
           type: array
           items:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     FsmStateInformationItem:
       type: object
       description: List of result items that are returned by this endpoint
       properties:
         arguments:
-          $ref: '#/components/schemas/JsonNode'
+          $ref: "#/components/schemas/JsonNode"
         behaviorId:
           type: string
           description: The unique identifier of the policy.
@@ -4267,7 +4270,7 @@ components:
           type: array
           description: List of result items that are returned by this endpoint
           items:
-            $ref: '#/components/schemas/FsmStateInformationItem'
+            $ref: "#/components/schemas/FsmStateInformationItem"
     JsonNode:
       type: object
       description: The arguments of the fsm derived from the behavior policy.
@@ -4278,6 +4281,23 @@ components:
       properties:
         next:
           type: string
+    PolicyOnBranch:
+      type: object
+      description: The pipeline to execute when messages are created by a transform
+        script for a particular stream.
+      properties:
+        pipeline:
+          type: array
+          description: The pipeline to execute for created messages. Currently this
+            may only contain a single Serdes.serialize operation.
+          items:
+            $ref: "#/components/schemas/PolicyOperation"
+        streamId:
+          type: string
+          description: "."
+      required:
+      - pipeline
+      - streamId
     PolicyOperation:
       type: object
       description: The pipeline to execute when this action is triggered. The operations
@@ -4293,6 +4313,10 @@ components:
         id:
           type: string
           description: The unique id of the operation in the pipeline.
+        onBranch:
+          type: array
+          items:
+            $ref: "#/components/schemas/PolicyOnBranch"
       required:
       - arguments
       - functionId
@@ -4320,7 +4344,7 @@ components:
           type: array
           description: Additional TLV fields contained in the proxy protocol information
           items:
-            $ref: '#/components/schemas/TLV'
+            $ref: "#/components/schemas/TLV"
           nullable: true
     Schema:
       type: object
@@ -4358,12 +4382,12 @@ components:
       description: A listing of schemas.
       properties:
         _links:
-          $ref: '#/components/schemas/PaginationCursor'
+          $ref: "#/components/schemas/PaginationCursor"
         items:
           type: array
           description: List of result items that are returned by this endpoint
           items:
-            $ref: '#/components/schemas/Schema'
+            $ref: "#/components/schemas/Schema"
     SchemaReference:
       type: object
       description: A schema reference is a unique identifier for a schema.
@@ -4413,12 +4437,12 @@ components:
       description: A listing of scripts.
       properties:
         _links:
-          $ref: '#/components/schemas/PaginationCursor'
+          $ref: "#/components/schemas/PaginationCursor"
         items:
           type: array
           description: List of result items that are returned by this endpoint
           items:
-            $ref: '#/components/schemas/Script'
+            $ref: "#/components/schemas/Script"
     TLV:
       type: object
       description: Additional TLV fields contained in the proxy protocol information
@@ -4436,7 +4460,7 @@ components:
       nullable: true
       properties:
         certificateInformation:
-          $ref: '#/components/schemas/CertificateInformation'
+          $ref: "#/components/schemas/CertificateInformation"
         cipherSuite:
           type: string
           description: The used cipher suite
@@ -4459,7 +4483,7 @@ components:
           type: array
           description: Client ID filters to trace
           items:
-            $ref: '#/components/schemas/TraceFilter'
+            $ref: "#/components/schemas/TraceFilter"
           uniqueItems: true
         endAt:
           type: string
@@ -4511,13 +4535,13 @@ components:
           type: array
           description: Topic filters to trace
           items:
-            $ref: '#/components/schemas/TraceFilter'
+            $ref: "#/components/schemas/TraceFilter"
           uniqueItems: true
     TraceRecordingItem:
       type: object
       properties:
         traceRecording:
-          $ref: '#/components/schemas/TraceRecording'
+          $ref: "#/components/schemas/TraceRecording"
       required:
       - traceRecording
     TraceRecordingList:
@@ -4527,4 +4551,4 @@ components:
           type: array
           description: List of result items that are returned by this endpoint
           items:
-            $ref: '#/components/schemas/TraceRecording'
+            $ref: "#/components/schemas/TraceRecording"
