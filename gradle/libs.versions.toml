@@ -76,7 +76,7 @@ defaults = { id = "io.github.sgtsilvio.gradle.defaults", version = "0.2.0" }
 forbiddenApis = { id = "de.thetaphi.forbiddenapis", version = "3.7" }
 gitPublish = { id = "org.ajoberstar.git-publish", version = "4.2.2" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.5.2" }
-graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.1" }
+graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.2" }
 jib = { id = "com.google.cloud.tools.jib", version = "3.4.2" }
 launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.5" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
