@@ -78,7 +78,7 @@ info:
     ## OpenAPI
     HiveMQ's REST API provides an OpenAPI 3.0 schema definition that can imported into popular API tooling (e.g. Postman) or can be used to generate client-code for multiple programming languages.
   title: HiveMQ REST API
-  version: 4.29.0-SNAPSHOT
+  version: 4.30.0-SNAPSHOT
   x-logo:
     url: https://www.hivemq.com/img/svg/hivemq-bee.svg
 tags:
@@ -4284,20 +4284,20 @@ components:
     PolicyOnBranch:
       type: object
       description: The pipeline to execute when messages are created by a transform
-        script for a particular stream.
+        script for a particular branch.
       properties:
+        branchId:
+          type: string
+          description: The name of the branch.
         pipeline:
           type: array
           description: The pipeline to execute for created messages. Currently this
             may only contain a single Serdes.serialize operation.
           items:
             $ref: "#/components/schemas/PolicyOperation"
-        streamId:
-          type: string
-          description: "."
       required:
+      - branchId
       - pipeline
-      - streamId
     PolicyOperation:
       type: object
       description: The pipeline to execute when this action is triggered. The operations
@@ -4315,6 +4315,8 @@ components:
           description: The unique id of the operation in the pipeline.
         onBranch:
           type: array
+          description: The branches for new messages created by this operation. For
+            transformation scripts only.
           items:
             $ref: "#/components/schemas/PolicyOnBranch"
       required:
