@@ -78,7 +78,7 @@ gitPublish = { id = "org.ajoberstar.git-publish", version = "4.2.2" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.5.2" }
 graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.2" }
 jib = { id = "com.google.cloud.tools.jib", version = "3.4.3" }
-launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.5" }
+launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.6" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.9.1" }
 openapi-generator = { id = "org.openapi.generator", version = "4.3.1" } # >= 5.0.0 breaks the tasks
