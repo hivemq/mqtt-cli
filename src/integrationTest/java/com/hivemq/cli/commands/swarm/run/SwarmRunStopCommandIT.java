@@ -32,7 +32,7 @@ import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
+import io.github.sgtsilvio.gradle.oci.junit.jupiter.OciImages;
 import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
@@ -42,6 +42,7 @@ import org.junit.jupiter.api.Timeout;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.hivemq.HiveMQContainer;
 import picocli.CommandLine;
 
 import java.io.PrintStream;
@@ -83,8 +84,9 @@ public class SwarmRunStopCommandIT {
             .withLogConsumer(outputFrame -> System.out.print("SWARM: " + outputFrame.getUtf8String()))
             .withExposedPorts(REST_PORT);
 
-    private final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension().withNetwork(network).withNetworkAliases("hivemq");
+    private final @NotNull HiveMQContainer hivemq =
+            new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")).withNetwork(network)
+                    .withNetworkAliases("hivemq");
 
     private @NotNull CommandLine commandLine;
     private @NotNull RunsApi runsApi;
