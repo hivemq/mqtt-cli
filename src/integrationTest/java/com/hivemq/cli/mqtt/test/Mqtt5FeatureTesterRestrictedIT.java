@@ -43,9 +43,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class Mqtt5FeatureTesterRestrictedIT {
 
     @Container
-    private final @NotNull HiveMQContainer hivemq =
-            new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")).withNetworkAliases("hivemq")
-                    .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/restricted-config.xml"));
+    private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
+            .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/restricted-config.xml"));
 
     private @NotNull Mqtt5FeatureTester mqtt5FeatureTester;
 

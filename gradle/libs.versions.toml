@@ -68,6 +68,7 @@ picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
 picocli-codegen = { module = "info.picocli:picocli-codegen", version.ref = "picocli" }
 picocli-shellJline = { module = "info.picocli:picocli-shell-jline3", version.ref = "picocli" }
 swagger-annotations = { module = "io.swagger:swagger-annotations", version.ref = "swagger-annotations" }
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-hivemq = { module = "org.testcontainers:hivemq", version.ref = "testcontainers" }
 testcontainers-junitJupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 tinylog-api = { module = "org.tinylog:tinylog-api", version.ref = "tinylog" }

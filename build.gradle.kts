@@ -292,8 +292,7 @@ testing {
                 implementation(libs.hivemq.communityEditionEmbedded)
                 implementation(libs.junit.pioneer)
                 implementation(libs.junit.platformLauncher)
-                implementation(libs.testcontainers.hivemq)
-                implementation(libs.testcontainers.junitJupiter)
+                implementation(libs.testcontainers)
 
                 implementation(libs.apache.commonsIO)
                 implementation(libs.gson)
@@ -614,15 +613,12 @@ oci {
     imageDefinitions.register("main") {
         allPlatforms {
             parentImages {
-                add("library:eclipse-temurin:sha256!603d23272e30bbefa9e7c436a7165c6303b9c67e27aae07472d8ddc748fe96a2") // 21.0.2_13-jre-jammy
+                add("library:eclipse-temurin:sha256!e2318d304bc50c798edea630a23f7b90b1adb14a02658de91d2c99027a071c26") // 21.0.3_9-jre-jammy
             }
             config {
                 entryPoint.add("java")
                 entryPoint.addAll(application.applicationDefaultJvmArgs)
-                entryPoint.addAll(
-                    "-cp",
-                    "/app/classpath/*:/app/libs/*",
-                )
+                entryPoint.addAll("-cp", "/app/classpath/*:/app/libs/*")
                 entryPoint.add(application.mainClass)
             }
             layers {
@@ -642,6 +638,7 @@ oci {
                 layer("resources") {
                     contents {
                         from("src/distribution")
+                        into("app")
                     }
                 }
             }

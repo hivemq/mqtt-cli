@@ -33,9 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Mqtt5FeatureTesterQos0IT {
 
     @Container
-    private final @NotNull HiveMQContainer hivemq =
-            new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")).withNetworkAliases("hivemq")
-                    .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/qos0-config.xml"));
+    private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
+            .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/qos0-config.xml"));
 
     private @NotNull Mqtt5FeatureTester mqtt5FeatureTester;
 
