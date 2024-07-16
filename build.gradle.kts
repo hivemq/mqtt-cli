@@ -267,6 +267,7 @@ testing {
             targets {
                 all {
                     testTask.configure {
+                        testLogging.showStandardStreams = true
                         systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
                     }
                 }
