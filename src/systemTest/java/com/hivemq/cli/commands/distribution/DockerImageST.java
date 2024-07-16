@@ -36,7 +36,9 @@ import static com.hivemq.cli.utils.broker.assertions.PublishAssertion.assertPubl
 
 public class DockerImageST {
 
-    final @NotNull GenericContainer<?> mqttCli = new GenericContainer<>(OciImages.getImageName("hivemq/mqtt-cli"));
+    @SuppressWarnings("resource")
+    final @NotNull GenericContainer<?> mqttCli = new GenericContainer<>(OciImages.getImageName("hivemq/mqtt-cli")) //
+            .withExtraHost("host.docker.internal","host-gateway");
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
