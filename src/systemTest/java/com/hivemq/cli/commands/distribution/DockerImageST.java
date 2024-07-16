@@ -38,8 +38,7 @@ public class DockerImageST {
 
     @SuppressWarnings("resource")
     final @NotNull GenericContainer<?> mqttCli = new GenericContainer<>(OciImages.getImageName("hivemq/mqtt-cli")) //
-            .withExtraHost("host.docker.internal", "host-gateway")
-            .withLogConsumer(outputFrame -> System.out.println(outputFrame.getUtf8String()));
+            .withExtraHost("host.docker.internal","host-gateway");
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
