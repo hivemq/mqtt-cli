@@ -42,7 +42,6 @@ public class CipherSuitesTlsST {
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder()
-            .withBindAddress("localhost")
             .withTlsConfiguration(TlsConfiguration.builder()
                     .withTlsVersions(TlsVersion.supportedAsList())
                     .withCipherSuites(CipherSuite.getAllAsString())

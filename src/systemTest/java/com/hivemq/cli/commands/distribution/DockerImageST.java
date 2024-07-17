@@ -42,7 +42,7 @@ public class DockerImageST {
 
     @RegisterExtension
     @SuppressWarnings("JUnitMalformedDeclaration")
-    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
+    private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().withBindAddress("0.0.0.0").build();
 
     @AfterEach
     void tearDown() {

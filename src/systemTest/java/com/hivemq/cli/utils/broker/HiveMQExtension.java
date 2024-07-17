@@ -70,7 +70,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, AfterEachCallback {
 
     private static final @NotNull String WEBSOCKETS_PATH = "/mqtt-custom";
-    private static final @NotNull String BIND_ADDRESS = "0.0.0.0";
+    private static final @NotNull String BIND_ADDRESS = "localhost";
 
     private @Nullable EmbeddedHiveMQ hivemq;
 
