@@ -19,18 +19,19 @@ package com.hivemq.cli.commands.hivemq.export.clients;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
+import io.github.sgtsilvio.gradle.oci.junit.jupiter.OciImages;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.hivemq.HiveMQContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 import picocli.CommandLine;
 
@@ -42,15 +43,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Testcontainers
 class ExportClientsCommandIT {
 
     public static final int HTTP_PORT = 8888;
 
-    @RegisterExtension
-    final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
-                            "hivemq.configs/rest-api-config.xml"))
-                    .withExposedPorts(HiveMQTestContainerExtension.MQTT_PORT, HTTP_PORT);
+    @Container
+    private final @NotNull HiveMQContainer hivemq =
+            new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
+                    "hivemq.configs/rest-api-config.xml")).withExposedPorts(1883, HTTP_PORT);
 
     private @NotNull File file;
 

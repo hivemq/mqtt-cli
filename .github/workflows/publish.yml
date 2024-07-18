@@ -17,12 +17,12 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 # v4
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: '11'
       - name: Publish
-        run: ./gradlew githubRelease gitPublishPush jib
         env:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           GRGIT_USER: ${{ secrets.JENKINS_GITHUB_TOKEN }}
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+        run: ./gradlew githubRelease gitPublishPush pushOciImage --registry dockerHub --tag . --tag latest # . is a placeholder for the default tag

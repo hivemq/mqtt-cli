@@ -29,13 +29,13 @@ import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.exceptions.ConnectionFailedException;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckReasonCode;
-import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
+import io.github.sgtsilvio.gradle.oci.junit.jupiter.OciImages;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.hivemq.HiveMQContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static com.hivemq.cli.mqtt.test.results.TestResult.OK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,26 +43,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Testcontainers
 class Mqtt5FeatureTesterDefaultIT {
 
-    private static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4"));
+    @Container
+    private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4"));
 
     private @NotNull Mqtt5FeatureTester mqtt5FeatureTester;
 
-    @BeforeAll
-    static void beforeAll() {
-        hivemq.start();
-    }
-
     @BeforeEach
     void setUp() {
-        mqtt5FeatureTester = new Mqtt5FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 3);
-    }
-
-    @AfterAll
-    static void afterAll() {
-        hivemq.stop();
+        mqtt5FeatureTester = new Mqtt5FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 10);
     }
 
     @Test

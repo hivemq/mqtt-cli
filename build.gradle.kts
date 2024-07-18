@@ -23,8 +23,8 @@ plugins {
     alias(libs.plugins.defaults)
     alias(libs.plugins.nebula.ospackage)
     alias(libs.plugins.launch4j)
+    alias(libs.plugins.oci)
     alias(libs.plugins.openapi.generator)
-    alias(libs.plugins.jib)
     alias(libs.plugins.license)
     alias(libs.plugins.forbiddenApis)
     alias(libs.plugins.githubRelease)
@@ -242,9 +242,10 @@ testing {
 
             dependencies {
                 implementation(libs.awaitility)
-                implementation(libs.hivemq.testcontainer.junit5)
+                implementation(libs.gradleOci.junitJupiter)
                 implementation(libs.mockito)
-                implementation(libs.testcontainers)
+                implementation(libs.testcontainers.junitJupiter)
+                implementation(libs.testcontainers.hivemq)
 
                 implementation(libs.dagger)
                 implementation(libs.gson)
@@ -254,6 +255,10 @@ testing {
                 implementation(libs.picocli)
                 implementation(libs.tinylog.api)
                 implementation(project())
+            }
+
+            ociImageDependencies {
+                runtime("hivemq:hivemq4:latest") { isChanging = true }
             }
         }
 
@@ -283,8 +288,8 @@ testing {
 
             dependencies {
                 implementation(libs.awaitility)
+                implementation(libs.gradleOci.junitJupiter)
                 implementation(libs.hivemq.communityEditionEmbedded)
-                implementation(libs.hivemq.testcontainer.junit5)
                 implementation(libs.junit.pioneer)
                 implementation(libs.junit.platformLauncher)
                 implementation(libs.testcontainers)
@@ -293,6 +298,10 @@ testing {
                 implementation(libs.gson)
                 implementation(libs.guava)
                 implementation(libs.hivemq.mqttClient)
+            }
+
+            ociImageDependencies {
+                runtime(project).tag("latest")
             }
         }
 
@@ -595,17 +604,47 @@ gitPublish {
 
 /* ******************** docker ******************** */
 
-jib {
-    from {
-        image = "openjdk:11-jre-slim-buster"
-    }
-    to {
-        image = "hivemq/mqtt-cli"
-        tags = setOf(project.version.toString())
-        auth {
-            username = System.getenv("DOCKER_USER") ?: ""
-            password = System.getenv("DOCKER_PASSWORD") ?: ""
+oci {
+    registries {
+        dockerHub {
+            optionalCredentials()
         }
+    }
+    imageDefinitions.register("main") {
+        allPlatforms {
+            parentImages {
+                add("library:eclipse-temurin:sha256!e2318d304bc50c798edea630a23f7b90b1adb14a02658de91d2c99027a071c26") // 21.0.3_9-jre-jammy
+            }
+            config {
+                entryPoint.add("java")
+                entryPoint.addAll(application.applicationDefaultJvmArgs)
+                entryPoint.addAll("-cp", "/app/classpath/*:/app/libs/*")
+                entryPoint.add(application.mainClass)
+            }
+            layers {
+                layer("libs") {
+                    contents {
+                        from(configurations.runtimeClasspath)
+                        into("app/libs")
+                    }
+                }
+                layer("jar") {
+                    contents {
+                        from(tasks.jar)
+                        into("app/classpath")
+                        rename(".*", "${project.name}-${project.version}.jar")
+                    }
+                }
+                layer("resources") {
+                    contents {
+                        from("src/distribution")
+                        into("app")
+                    }
+                }
+            }
+        }
+        specificPlatform(platform("linux", "amd64"))
+        specificPlatform(platform("linux", "arm64", "v8"))
     }
 }
 

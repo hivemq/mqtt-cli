@@ -18,38 +18,29 @@ package com.hivemq.cli.mqtt.test;
 
 import com.hivemq.cli.mqtt.test.results.QosTestResult;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
+import io.github.sgtsilvio.gradle.oci.junit.jupiter.OciImages;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.hivemq.HiveMQContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Testcontainers
 class Mqtt3FeatureTesterQos0IT {
 
-    private static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
-                    "mqtt/test/qos0-config.xml"));
+    @Container
+    private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
+            .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/qos0-config.xml"));
 
     private @NotNull Mqtt3FeatureTester mqtt3FeatureTester;
-
-    @BeforeAll
-    static void beforeAll() {
-        hivemq.start();
-    }
 
     @BeforeEach
     void setUp() {
         mqtt3FeatureTester = new Mqtt3FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 3);
-    }
-
-    @AfterAll
-    static void afterAll() {
-        hivemq.stop();
     }
 
     @Test
