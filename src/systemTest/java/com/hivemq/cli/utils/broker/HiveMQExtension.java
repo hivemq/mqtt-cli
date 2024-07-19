@@ -88,6 +88,7 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     private int tlsPort = -1;
     private int websocketsPort = -1;
 
+    private final @NotNull String bindAddress;
     private final @NotNull TlsConfiguration tlsConfiguration;
     private final boolean websocketEnabled;
 
@@ -95,7 +96,11 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
         return new Builder();
     }
 
-    private HiveMQExtension(final @NotNull TlsConfiguration tlsConfiguration, final boolean websocketEnabled) {
+    private HiveMQExtension(
+            final @NotNull String bindAddress,
+            final @NotNull TlsConfiguration tlsConfiguration,
+            final boolean websocketEnabled) {
+        this.bindAddress = bindAddress;
         this.tlsConfiguration = tlsConfiguration;
         this.websocketEnabled = websocketEnabled;
     }
@@ -258,7 +263,7 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     }
 
     public @NotNull String getHost() {
-        return BIND_ADDRESS;
+        return bindAddress;
     }
 
     public void setAuthorized(final boolean isAuthorized) {
@@ -279,7 +284,7 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
                 "    <listeners>\n" + "        " +
                 "        <tcp-listener>\n" +
                 "            <port>" + port + "</port>\n" +
-                "            <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
+                "            <bind-address>" + bindAddress + "</bind-address>\n" +
                 "        </tcp-listener>\n" +
                 tlsConfig +
                 websocketsConfig +
@@ -344,7 +349,7 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
             tlsConfig =
                     "<tls-tcp-listener>\n" +
                     "           <port>" + tlsPort + "</port>\n" +
-                    "           <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
+                    "           <bind-address>" + bindAddress + "</bind-address>\n" +
                     "           <tls>\n" +
                     tlsVersionsString +
                     cipherSuitesString +
@@ -375,7 +380,7 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
             websocketsConfig =
                     "<websocket-listener>\n" +
                     "          <port>" + websocketsPort + "</port>\n" +
-                    "          <bind-address>" + BIND_ADDRESS + "</bind-address>\n" +
+                    "          <bind-address>" + bindAddress + "</bind-address>\n" +
                     "          <path>" + WEBSOCKETS_PATH + "</path>\n" +
                     "          <name>my-websocket-listener</name>\n" +
                     "          <subprotocols>\n" +
@@ -390,6 +395,8 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     }
 
     public static class Builder {
+
+        private @NotNull String bindAddress = BIND_ADDRESS;
         private @NotNull TlsConfiguration tlsConfiguration = TlsConfiguration.builder().build();
         private boolean websocketEnabled = false;
 
@@ -397,7 +404,12 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
         }
 
         public @NotNull HiveMQExtension build() {
-            return new HiveMQExtension(tlsConfiguration, websocketEnabled);
+            return new HiveMQExtension(bindAddress, tlsConfiguration, websocketEnabled);
+        }
+
+        public @NotNull Builder withBindAddress(final @NotNull String bindAddress) {
+            this.bindAddress = bindAddress;
+            return this;
         }
 
         public @NotNull Builder withTlsConfiguration(final @NotNull TlsConfiguration tlsConfiguration) {

@@ -18,38 +18,30 @@ package com.hivemq.cli.commands.cli;
 
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.utils.TestLoggerUtils;
-import com.hivemq.testcontainer.junit5.HiveMQTestContainerExtension;
+import io.github.sgtsilvio.gradle.oci.junit.jupiter.OciImages;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.hivemq.HiveMQContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Disabled("Tests are only used to check output")
+@Testcontainers
 class TestBrokerCommandQos1IT {
 
-    static final @NotNull HiveMQTestContainerExtension hivemq =
-            new HiveMQTestContainerExtension(DockerImageName.parse("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
+    @Container
+    private final @NotNull HiveMQContainer hivemq =
+            new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
                     "mqtt/test/qos1-config.xml"));
-
-    @BeforeAll
-    static void beforeAll() {
-        hivemq.start();
-    }
 
     @BeforeEach
     void setUp() {
         TestLoggerUtils.resetLogger();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        hivemq.stop();
     }
 
     @Test
