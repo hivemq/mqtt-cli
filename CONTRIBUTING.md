@@ -1,8 +1,10 @@
-# Contributing to mqtt-cli
+# Contributing
 
-Welcome to the HiveMQ Community! Glad to see your interest in contributing to mqtt-cli.
-For some general information on how the HiveMQ Community is organized and how contributions will be accepted please have a look at 
-our [HiveMQ Community Repo](https://github.com/hivemq/hivemq-community). 
+Welcome to the HiveMQ Community!
+Glad to see your interest in contributing to MQTT CLI.
+Please checkout our [Contribution Guide](https://github.com/hivemq/hivemq-community/blob/master/CONTRIBUTING.adoc) to make sure your contribution will be accepted by the HiveMQ team.
+
+For information on how the HiveMQ Community is organized and how contributions will be accepted please have a look at our [HiveMQ Community Repo](https://github.com/hivemq/hivemq-community).
 
 ## Prerequisites
 
@@ -10,7 +12,7 @@ We recommend to develop your changes by using [IntelliJ IDEA](https://www.jetbra
 Therefore, the following guide will focus on creating your changes using IntelliJ. 
 
 Furthermore, the following is needed to make your development efforts as smoothly as possible:
-- A Java 8 JDK (for example [Azul Zulu JDK](https://www.azul.com/downloads/)) 
+- A Java 11 JDK (for example [Azul Zulu JDK](https://www.azul.com/downloads/)) 
 - [Docker](https://www.docker.com/) 
 - Fill out and sign the [Contributor License Agreement](https://www.hivemq.com/downloads/Contributor_License_Agreement.pdf)
   - Send the signed agreement  to (contributing@hivemq.com) with the subject `CLA for Project: <Project Name>`.
