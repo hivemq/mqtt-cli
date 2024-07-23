@@ -112,7 +112,7 @@ Furthermore, the following is needed to make your development efforts as smoothl
 
 ![merge.png](img/merge.png)
 
-## 🚀 Thank you for taking the time to contribute to mqtt-cli!  🚀
+## 🚀 Thank you for taking the time to contribute to mqtt-cli! 🚀
 
 We truly appreciate and value your time and work. ❤️
 
