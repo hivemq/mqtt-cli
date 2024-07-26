@@ -51,25 +51,24 @@ import static org.mockito.Mockito.verify;
 
 public class SwarmRunStartCommandIT {
 
-    //TODO: Temporary fix, see: https://github.com/testcontainers/testcontainers-java/pull/8302
-    private static final @NotNull String IMAGE_NAME = "hivemq/hivemq-swarm:4.22.0";
     private static final int REST_PORT = 8080;
 
     private final @NotNull Network network = Network.newNetwork();
-    private final @NotNull GenericContainer<?> swarm = new GenericContainer<>(IMAGE_NAME).withNetwork(network)
-            .withNetworkAliases("swarm")
-            .withEnv("SWARM_COMMANDER_AGENTS", "localhost:3881")
-            .withEnv("SWARM_COMMANDER_MODE", "rest")
-            .withEnv("SWARM_REST_ENABLED", "true")
-            .withEnv("SWARM_AGENT_BIND_ADDRESS", "localhost")
-            .withEnv("SWARM_AGENT_BIND_PORT", "3881")
-            .withEnv("SWARM_REST_LISTENER_HTTP_ENABLED", "true")
-            .withEnv("SWARM_REST_LISTENER_HTTP_PORT", Integer.toString(REST_PORT))
-            .withEnv("SWARM_REST_LISTENER_HTTP_HOST", "0.0.0.0")
-            .waitingFor(Wait.forLogMessage("(.*)Commander REST-API: successfully started.(.*)", 1))
-            .withEnv("LOG_LEVEL", "DEBUG")
-            .withLogConsumer(outputFrame -> System.out.print("SWARM: " + outputFrame.getUtf8String()))
-            .withExposedPorts(REST_PORT);
+    private final @NotNull GenericContainer<?> swarm =
+            new GenericContainer<>(OciImages.getImageName("hivemq/hivemq-swarm")).withNetwork(network)
+                    .withNetworkAliases("swarm")
+                    .withEnv("SWARM_COMMANDER_AGENTS", "localhost:3881")
+                    .withEnv("SWARM_COMMANDER_MODE", "rest")
+                    .withEnv("SWARM_REST_ENABLED", "true")
+                    .withEnv("SWARM_AGENT_BIND_ADDRESS", "localhost")
+                    .withEnv("SWARM_AGENT_BIND_PORT", "3881")
+                    .withEnv("SWARM_REST_LISTENER_HTTP_ENABLED", "true")
+                    .withEnv("SWARM_REST_LISTENER_HTTP_PORT", Integer.toString(REST_PORT))
+                    .withEnv("SWARM_REST_LISTENER_HTTP_HOST", "0.0.0.0")
+                    .waitingFor(Wait.forLogMessage("(.*)Commander REST-API: successfully started.(.*)", 1))
+                    .withEnv("LOG_LEVEL", "DEBUG")
+                    .withLogConsumer(outputFrame -> System.out.print("SWARM: " + outputFrame.getUtf8String()))
+                    .withExposedPorts(REST_PORT);
 
     private final @NotNull HiveMQContainer hivemq =
             new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")).withNetwork(network)
