@@ -259,6 +259,7 @@ testing {
 
             ociImageDependencies {
                 runtime("hivemq:hivemq4:latest") { isChanging = true }
+                runtime("hivemq:hivemq-swarm:latest") { isChanging = true }
             }
         }
 
