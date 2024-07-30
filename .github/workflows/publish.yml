@@ -23,6 +23,6 @@ jobs:
         env:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           GRGIT_USER: ${{ secrets.JENKINS_GITHUB_TOKEN }}
-          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+          ORG_GRADLE_PROJECT_dockerHubUsername: ${{ secrets.DOCKER_USERNAME }}
+          ORG_GRADLE_PROJECT_dockerHubPassword: ${{ secrets.DOCKER_TOKEN }}
         run: ./gradlew githubRelease gitPublishPush pushOciImage --registry dockerHub --tag . --tag latest # . is a placeholder for the default tag
