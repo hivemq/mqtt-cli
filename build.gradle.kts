@@ -309,6 +309,16 @@ testing {
         tasks.named("check") {
             dependsOn(integrationTest, systemTest)
         }
+
+        tasks.named("integrationTestOciRegistryData", oci.imagesTaskClass) {
+            val linuxAmd64 = oci.platformSelector(oci.platform("linux", "amd64"))
+            val linuxArm64v8 = oci.platformSelector(oci.platform("linux", "arm64", "v8"))
+            platformSelector = if (System.getenv("CI_RUN") != null) {
+                linuxAmd64
+            } else {
+                linuxAmd64.and(linuxArm64v8)
+            }
+        }
     }
 }
 
