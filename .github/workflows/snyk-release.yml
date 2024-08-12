@@ -27,6 +27,6 @@ jobs:
 
       - name: Run Snyk monitor
         shell: bash
-        run: snyk monitor --configuration-matching=^runtimeClasspath$ --target-reference=${{ github.ref_name }} --org=hivemq-releases --project-name=hivemq-mqtt-cli --remote-repo-url=hivemq-mqtt-cli --project-lifecycle=production mqtt-cli -d
+        run: snyk monitor --configuration-matching=^runtimeClasspath$ --target-reference=${{ github.ref_name }} --org=hivemq-releases --project-name=mqtt-cli --remote-repo-url=mqtt-cli --project-lifecycle=production mqtt-cli -d
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
