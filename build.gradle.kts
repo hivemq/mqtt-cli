@@ -162,7 +162,8 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     group = "hivemq"
     generatorName = "java"
     inputSpec = hivemqOpenApi.singleFile.path
-    outputDir = layout.buildDirectory.dir("tmp/$name").get().asFile.absolutePath
+    val outputDir = layout.buildDirectory.dir("tmp/$name")
+    this.outputDir = outputDir.map { it.asFile.absolutePath }
     apiPackage = "com.hivemq.cli.openapi.hivemq"
     modelPackage = "com.hivemq.cli.openapi.hivemq"
     configOptions.put("dateLibrary", "java8")
@@ -173,12 +174,13 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     val outputSrcDir = layout.buildDirectory.dir("generated/openapi/hivemq/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
     outputs.cacheIf { true }
-    doFirst { delete(outputDir) }
+    doFirst {
+        outputDir.get().asFile.deleteRecursively()
+    }
     doLast {
-        sync {
-            from("${outputDir.get()}/src/main/java")
-            into(outputSrcDir)
-        }
+        outputSrcDir.get().asFile.deleteRecursively()
+        outputDir.get().asFile.resolve("src/main/java").copyRecursively(outputSrcDir.get().asFile)
+        outputDir.get().asFile.deleteRecursively()
     }
 }
 
@@ -186,7 +188,8 @@ val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
     group = "swarm"
     generatorName = "java"
     inputSpec = swarmOpenApi.singleFile.path
-    outputDir = layout.buildDirectory.dir("tmp/$name").get().asFile.absolutePath
+    val outputDir = layout.buildDirectory.dir("tmp/$name")
+    this.outputDir = outputDir.map { it.asFile.absolutePath }
     apiPackage = "com.hivemq.cli.openapi.swarm"
     modelPackage = "com.hivemq.cli.openapi.swarm"
     configOptions.put("dateLibrary", "java8")
@@ -197,13 +200,14 @@ val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
     val outputSrcDir = layout.buildDirectory.dir("generated/openapi/swarm/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
     outputs.cacheIf { true }
-    doFirst { delete(outputDir) }
+    doFirst {
+        outputDir.get().asFile.deleteRecursively()
+    }
     doLast {
-        sync {
-            from("${outputDir.get()}/src/main/java")
-            into(outputSrcDir)
-            include("${apiPackage.get().replace('.', '/')}/**")
-        }
+        outputSrcDir.get().asFile.deleteRecursively()
+        val path = apiPackage.get().replace('.', '/')
+        outputDir.get().asFile.resolve("src/main/java/$path").copyRecursively(outputSrcDir.get().asFile.resolve(path))
+        outputDir.get().asFile.deleteRecursively()
     }
 }
 
