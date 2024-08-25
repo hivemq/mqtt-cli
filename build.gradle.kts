@@ -482,23 +482,29 @@ val buildBrewZip by tasks.registering(Zip::class) {
     }
 }
 
-val buildBrewFormula by tasks.registering(Sync::class) {
-    dependsOn(buildBrewZip)
-
-    from("packages/homebrew/mqtt-cli.rb")
-    into(layout.buildDirectory.dir("packages/homebrew/formula"))
+val buildBrewFormula by tasks.registering {
+    val inputFile = layout.projectDirectory.file("packages/homebrew/mqtt-cli.rb")
+    inputs.file(inputFile).withPropertyName("inputFile").withPathSensitivity(PathSensitivity.NONE)
     val description = provider { project.description!! }
+    inputs.property("description", description)
     val version = provider { project.version.toString() }
-    val filename = buildBrewZip.flatMap { it.archiveFileName }
-    val file = buildBrewZip.flatMap { it.archiveFile }
-    filter {
-        val bytes = file.get().asFile.readBytes()
-        val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
-        val checksum = digest.fold("") { string, b -> string + "%02x".format(b) }
-        it.replace("@@description@@", description.get()) //
-            .replace("@@version@@", version.get())
-            .replace("@@filename@@", filename.get())
-            .replace("@@shasum@@", checksum)
+    inputs.property("version", version)
+    val archiveFileName = buildBrewZip.flatMap { it.archiveFileName }
+    inputs.property("archiveFileName", archiveFileName)
+    val archiveFile = buildBrewZip.flatMap { it.archiveFile }
+    inputs.file(archiveFile).withPropertyName("archiveFile").withPathSensitivity(PathSensitivity.NONE)
+    val outputFile = layout.buildDirectory.file("packages/homebrew/mqtt-cli.rb")
+    outputs.file(outputFile).withPropertyName("outputFile")
+    doLast {
+        val archiveBytes = archiveFile.get().asFile.readBytes()
+        val archiveDigest = MessageDigest.getInstance("SHA-256").digest(archiveBytes)
+        val archiveChecksum = archiveDigest.fold("") { string, b -> string + "%02x".format(b) }
+        val content = inputFile.asFile.readText() //
+            .replace("@@description@@", description.get()) //
+            .replace("@@version@@", version.get()) //
+            .replace("@@filename@@", archiveFileName.get()) //
+            .replace("@@shasum@@", archiveChecksum)
+        outputFile.get().asFile.writeText(content)
     }
 }
 
