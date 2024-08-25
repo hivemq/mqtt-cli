@@ -326,13 +326,6 @@ testing {
     }
 }
 
-dependencies {
-    modules {
-        module("org.bouncycastle:bcpkix-jdk15on") { replacedBy("org.bouncycastle:bcpkix-jdk18on") }
-        module("org.bouncycastle:bcprov-jdk15on") { replacedBy("org.bouncycastle:bcprov-jdk18on") }
-        module("org.bouncycastle:bcutil-jdk15on") { replacedBy("org.bouncycastle:bcutil-jdk18on") }
-    }
-}
 
 /* ******************** compliance ******************** */
 
