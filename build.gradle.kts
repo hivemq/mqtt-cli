@@ -494,11 +494,18 @@ val buildBrewFormula by tasks.registering(Sync::class) {
 
     from("packages/homebrew/mqtt-cli.rb")
     into(layout.buildDirectory.dir("packages/homebrew/formula"))
+    val description = provider { project.description!! }
+    val version = provider { project.version.toString() }
+    val filename = buildBrewZip.flatMap { it.archiveFileName }
+    val file = buildBrewZip.flatMap { it.archiveFile }
     filter {
-        it.replace("@@description@@", project.description!!) //
-            .replace("@@version@@", project.version.toString())
-            .replace("@@filename@@", buildBrewZip.get().archiveFileName.get())
-            .replace("@@shasum@@", sha256Hash(buildBrewZip.get().archiveFile.get().asFile))
+        val bytes = file.get().asFile.readBytes()
+        val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
+        val checksum = digest.fold("") { string, b -> string + "%02x".format(b) }
+        it.replace("@@description@@", description.get()) //
+            .replace("@@version@@", version.get())
+            .replace("@@filename@@", filename.get())
+            .replace("@@shasum@@", checksum)
     }
 }
 
@@ -521,20 +528,20 @@ ospackage {
     user = "root"
     permissionGroup = "root"
 
-    into("/opt/$packageName")
+    val destinationPath = "/opt/$packageName"
+    into(destinationPath)
     from(tasks.shadowJar)
+    val jarFileName = tasks.shadowJar.flatMap { it.archiveFileName }
     from("packages/linux/mqtt", closureOf<CopySpec> {
         fileMode = 0b111_101_101 // 0755
-        filter {
-            it.replace("@@jarPath@@", "/opt/$packageName/${tasks.shadowJar.get().archiveFileName.get()}")
-        }
+        filter { it.replace("@@jarPath@@", "$destinationPath/${jarFileName.get()}") }
     })
     from("LICENSE", closureOf<CopySpec> {
         into("licenses")
         CopySpecEnhancement.fileType(this, Directive.LICENSE)
     })
 
-    link("/usr/bin/mqtt", "/opt/$packageName/mqtt", 0b111_101_101)
+    link("/usr/bin/mqtt", "$destinationPath/mqtt", 0b111_101_101)
 }
 
 tasks.buildDeb {
@@ -549,13 +556,17 @@ tasks.buildRpm {
 val buildDebianPackage by tasks.registering(Copy::class) {
     from(tasks.buildDeb.flatMap { it.archiveFile })
     into(layout.buildDirectory.dir("packages/debian"))
-    rename { "${project.name}-${project.version}.deb" }
+    val projectName = project.name
+    val projectVersion = provider { project.version.toString() }
+    rename { "$projectName-${projectVersion.get()}.deb" }
 }
 
 val buildRpmPackage by tasks.registering(Copy::class) {
     from(tasks.buildRpm.flatMap { it.archiveFile })
     into(layout.buildDirectory.dir("packages/rpm"))
-    rename { "${project.name}-${project.version}.rpm" }
+    val projectName = project.name
+    val projectVersion = provider { project.version.toString() }
+    rename { "$projectName-${projectVersion.get()}.rpm" }
 }
 
 /* ******************** windows zip ******************** */
@@ -576,12 +587,12 @@ launch4j {
 }
 
 val buildWindowsZip by tasks.registering(Zip::class) {
-
     archiveClassifier = "win"
     destinationDirectory = layout.buildDirectory.dir("packages/windows")
 
+    val exeFileName = launch4j.outfile
     from("packages/windows") {
-        filter { it.replace("@@exeName@@", launch4j.outfile.get()) }
+        filter { it.replace("@@exeName@@", exeFileName.get()) }
     }
     from(tasks.createExe.map { it.dest })
     from("LICENSE")
@@ -689,15 +700,6 @@ val updateVersionInFiles by tasks.registering {
             it.writeText(replacedText)
         }
     }
-}
-
-/* ******************** helpers ******************** */
-
-fun sha256Hash(file: File): String {
-    val bytes = file.readBytes()
-    val md = MessageDigest.getInstance("SHA-256")
-    val digest = md.digest(bytes)
-    return digest.fold("") { str, it -> str + "%02x".format(it) }
 }
 
 /* ******************** artifacts ******************** */
