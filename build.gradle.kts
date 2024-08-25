@@ -552,20 +552,24 @@ tasks.buildRpm {
     requires("jre", "1.8.0", Flags.GREATER or Flags.EQUAL)
 }
 
-val buildDebianPackage by tasks.registering(Copy::class) {
-    from(tasks.buildDeb.flatMap { it.archiveFile })
-    into(layout.buildDirectory.dir("packages/debian"))
-    val projectName = project.name
-    val projectVersion = provider { project.version.toString() }
-    rename { "$projectName-${projectVersion.get()}.deb" }
+val buildDebianPackage by tasks.registering {
+    val inputFile = tasks.buildDeb.flatMap { it.archiveFile }
+    inputs.file(inputFile).withPropertyName("inputFile").withPathSensitivity(PathSensitivity.NONE)
+    val outputFile = layout.buildDirectory.file(provider { "packages/debian/${project.name}-${project.version}.deb" })
+    outputs.file(outputFile).withPropertyName("outputFile")
+    doLast {
+        inputFile.get().asFile.copyTo(outputFile.get().asFile, true)
+    }
 }
 
-val buildRpmPackage by tasks.registering(Copy::class) {
-    from(tasks.buildRpm.flatMap { it.archiveFile })
-    into(layout.buildDirectory.dir("packages/rpm"))
-    val projectName = project.name
-    val projectVersion = provider { project.version.toString() }
-    rename { "$projectName-${projectVersion.get()}.rpm" }
+val buildRpmPackage by tasks.registering {
+    val inputFile = tasks.buildRpm.flatMap { it.archiveFile }
+    inputs.file(inputFile).withPropertyName("inputFile").withPathSensitivity(PathSensitivity.NONE)
+    val outputFile = layout.buildDirectory.file(provider { "packages/rpm/${project.name}-${project.version}.rpm" })
+    outputs.file(outputFile).withPropertyName("outputFile")
+    doLast {
+        inputFile.get().asFile.copyTo(outputFile.get().asFile, true)
+    }
 }
 
 /* ******************** windows zip ******************** */
@@ -608,13 +612,7 @@ val buildPackages by tasks.registering {
 githubRelease {
     token(System.getenv("githubToken"))
     draft = true
-    releaseAssets(
-        tasks.shadowJar,
-        buildBrewZip,
-        buildDebianPackage.map { fileTree(it.destinationDir) },
-        buildRpmPackage.map { fileTree(it.destinationDir) },
-        buildWindowsZip,
-    )
+    releaseAssets(tasks.shadowJar, buildBrewZip, buildDebianPackage, buildRpmPackage, buildWindowsZip)
     allowUploadToExisting = true
 }
 
