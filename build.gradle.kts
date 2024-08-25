@@ -607,11 +607,10 @@ val buildPackages by tasks.registering {
     dependsOn(buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip)
 }
 
-/* ******************** Publish Draft-Release with all packages to GitHub Releases ******************** */
+/* ******************** Attach all packages to GitHub release ******************** */
 
 githubRelease {
     token(System.getenv("githubToken"))
-    draft = true
     releaseAssets(tasks.shadowJar, buildBrewZip, buildDebianPackage, buildRpmPackage, buildWindowsZip)
     allowUploadToExisting = true
 }
