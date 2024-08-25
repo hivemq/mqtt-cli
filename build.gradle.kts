@@ -573,17 +573,17 @@ val buildRpmPackage by tasks.registering(Copy::class) {
 
 launch4j {
     headerType = "console"
-    mainClassName = application.mainClass.get()
+    mainClassName = application.mainClass
     icon = "$projectDir/icons/05-mqtt-cli-icon.ico"
-    setJarTask(tasks.shadowJar.get())
+    setJarTask(tasks.shadowJar.map { it })
     copyConfigurable = emptyList<Any>()
     copyright = "Copyright 2019-present HiveMQ and the HiveMQ Community"
     companyName = "HiveMQ GmbH"
     downloadUrl = "https://openjdk.java.net/install/"
     jreMinVersion = "1.8"
     windowTitle = "MQTT CLI"
-    version = project.version.toString()
-    textVersion = project.version.toString()
+    version = provider { project.version.toString() }
+    textVersion = provider { project.version.toString() }
 }
 
 val buildWindowsZip by tasks.registering(Zip::class) {
