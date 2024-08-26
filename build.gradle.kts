@@ -271,12 +271,12 @@ testing {
             testType = TestSuiteType.FUNCTIONAL_TEST
             targets {
                 all {
-                    testTask.configure {
+                    testTask {
                         systemProperties["junit.jupiter.testinstance.lifecycle.default"] = "per_class"
                     }
                 }
                 named("systemTest") {
-                    testTask.configure {
+                    testTask {
                         dependsOn(tasks.shadowJar)
                         systemProperties["cliExec"] = "${javaLauncher.get().executablePath.asFile.absolutePath} -jar ${
                             tasks.shadowJar.get().archiveFile.get()
@@ -284,7 +284,7 @@ testing {
                     }
                 }
                 register("systemTestNative") {
-                    testTask.configure {
+                    testTask {
                         dependsOn(tasks.nativeCompile)
                         systemProperties["cliExec"] = tasks.nativeCompile.get().outputFile.get().toString()
                     }
