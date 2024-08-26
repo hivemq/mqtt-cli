@@ -64,12 +64,12 @@ tasks.jar {
     manifest.attributes(
         "Built-JDK" to System.getProperty("java.version"),
         "Implementation-Title" to "MQTT CLI",
-        "Implementation-Version" to project.version,
+        "Implementation-Version" to provider { project.version.toString() },
         "Implementation-Vendor" to "HiveMQ GmbH",
         "Specification-Title" to "MQTT CLI",
-        "Specification-Version" to project.version,
+        "Specification-Version" to provider { project.version.toString() },
         "Specification-Vendor" to "HiveMQ GmbH",
-        "Main-Class" to application.mainClass.get(),
+        "Main-Class" to application.mainClass,
         "Built-Date" to SimpleDateFormat("yyyy-MM-dd").format(Date()),
     )
 }
