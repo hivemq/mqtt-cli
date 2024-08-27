@@ -35,8 +35,8 @@ plugins {
 
 /* ******************** metadata ******************** */
 
-val prevVersion = "4.30.0"
-version = "4.31.0"
+val prevVersion = "4.31.0"
+version = "4.32.0"
 group = "com.hivemq"
 description = "MQTT CLI is a tool that provides a feature rich command line interface for connecting, " + //
         "publishing, subscribing, unsubscribing and disconnecting " + //
