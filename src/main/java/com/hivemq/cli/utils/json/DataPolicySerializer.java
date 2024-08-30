@@ -21,11 +21,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.hivemq.cli.openapi.hivemq.DataPolicy;
-import com.hivemq.cli.openapi.hivemq.DataPolicyAction;
-import com.hivemq.cli.openapi.hivemq.DataPolicyValidation;
-import com.hivemq.cli.openapi.hivemq.DataPolicyValidator;
-import com.hivemq.cli.openapi.hivemq.PolicyOperation;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicy;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicyAction;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicyValidation;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicyValidator;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiPolicyOperation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,27 +37,31 @@ import static com.hivemq.cli.utils.json.DataHubSerialization.serializePolicyOper
  * The generated OpenAPI classes do not preserve JSON field ordering.
  * This serializer manually restores the correct order.
  */
-public class DataPolicySerializer implements JsonSerializer<DataPolicy> {
+public class DataPolicySerializer implements JsonSerializer<HivemqOpenapiDataPolicy> {
 
     @Override
     public @NotNull JsonElement serialize(
-            final @NotNull DataPolicy policy,
+            final @NotNull HivemqOpenapiDataPolicy policy,
             final @NotNull Type typeOfSrc,
             final @NotNull JsonSerializationContext context) {
 
         final JsonObject object = new JsonObject();
-        object.add(DataPolicy.SERIALIZED_NAME_ID, context.serialize(policy.getId()));
-        object.add(DataPolicy.SERIALIZED_NAME_CREATED_AT, context.serialize(policy.getCreatedAt()));
-        object.add(DataPolicy.SERIALIZED_NAME_MATCHING, context.serialize(policy.getMatching()));
-        object.add(DataPolicy.SERIALIZED_NAME_VALIDATION, serializeValidation(policy.getValidation(), context));
-        object.add(DataPolicy.SERIALIZED_NAME_ON_SUCCESS, serializePolicyAction(policy.getOnSuccess(), context));
-        object.add(DataPolicy.SERIALIZED_NAME_ON_FAILURE, serializePolicyAction(policy.getOnFailure(), context));
+        object.add(HivemqOpenapiDataPolicy.SERIALIZED_NAME_ID, context.serialize(policy.getId()));
+        object.add(HivemqOpenapiDataPolicy.SERIALIZED_NAME_CREATED_AT, context.serialize(policy.getCreatedAt()));
+        object.add(HivemqOpenapiDataPolicy.SERIALIZED_NAME_MATCHING, context.serialize(policy.getMatching()));
+        object.add(HivemqOpenapiDataPolicy.SERIALIZED_NAME_VALIDATION,
+                serializeValidation(policy.getValidation(), context));
+        object.add(HivemqOpenapiDataPolicy.SERIALIZED_NAME_ON_SUCCESS,
+                serializePolicyAction(policy.getOnSuccess(), context));
+        object.add(HivemqOpenapiDataPolicy.SERIALIZED_NAME_ON_FAILURE,
+                serializePolicyAction(policy.getOnFailure(), context));
 
         return object;
     }
 
     private @Nullable JsonElement serializeValidation(
-            final @Nullable DataPolicyValidation policyValidation, final @NotNull JsonSerializationContext context) {
+            final @Nullable HivemqOpenapiDataPolicyValidation policyValidation,
+            final @NotNull JsonSerializationContext context) {
         if (policyValidation == null) {
             return null;
         }
@@ -70,19 +74,22 @@ public class DataPolicySerializer implements JsonSerializer<DataPolicy> {
 
         final JsonArray validatorsArray = new JsonArray();
 
-        for (final DataPolicyValidator validator : policyValidation.getValidators()) {
+        for (final HivemqOpenapiDataPolicyValidator validator : policyValidation.getValidators()) {
             final JsonObject validatorObject = new JsonObject();
-            validatorObject.add(DataPolicyValidator.SERIALIZED_NAME_TYPE, context.serialize(validator.getType()));
-            validatorObject.add(DataPolicyValidator.SERIALIZED_NAME_ARGUMENTS, context.serialize(validator.getArguments()));
+            validatorObject.add(HivemqOpenapiDataPolicyValidator.SERIALIZED_NAME_TYPE,
+                    context.serialize(validator.getType()));
+            validatorObject.add(HivemqOpenapiDataPolicyValidator.SERIALIZED_NAME_ARGUMENTS,
+                    context.serialize(validator.getArguments()));
             validatorsArray.add(validatorObject);
         }
 
-        object.add(DataPolicyValidation.SERIALIZED_NAME_VALIDATORS, context.serialize(validatorsArray));
+        object.add(HivemqOpenapiDataPolicyValidation.SERIALIZED_NAME_VALIDATORS, context.serialize(validatorsArray));
         return object;
     }
 
     private @Nullable JsonElement serializePolicyAction(
-            final @Nullable DataPolicyAction policyAction, final @NotNull JsonSerializationContext context) {
+            final @Nullable HivemqOpenapiDataPolicyAction policyAction,
+            final @NotNull JsonSerializationContext context) {
         if (policyAction == null) {
             return null;
         }
@@ -95,11 +102,11 @@ public class DataPolicySerializer implements JsonSerializer<DataPolicy> {
 
         final JsonArray operationsArray = new JsonArray();
 
-        for (final PolicyOperation operation : policyAction.getPipeline()) {
+        for (final HivemqOpenapiPolicyOperation operation : policyAction.getPipeline()) {
             operationsArray.add(serializePolicyOperation(operation, context));
         }
 
-        object.add(DataPolicyAction.SERIALIZED_NAME_PIPELINE, context.serialize(operationsArray));
+        object.add(HivemqOpenapiDataPolicyAction.SERIALIZED_NAME_PIPELINE, context.serialize(operationsArray));
         return object;
     }
 

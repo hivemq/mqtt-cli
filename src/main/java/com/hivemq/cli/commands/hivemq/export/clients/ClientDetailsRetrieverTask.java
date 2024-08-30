@@ -18,8 +18,8 @@ package com.hivemq.cli.commands.hivemq.export.clients;
 
 import com.hivemq.cli.openapi.ApiCallback;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.ClientDetails;
-import com.hivemq.cli.openapi.hivemq.ClientItem;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientDetails;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientItem;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -40,7 +40,7 @@ public class ClientDetailsRetrieverTask implements Runnable {
     private final @NotNull MqttClientsApi mqttClientsApi;
     private final @NotNull CompletableFuture<Void> clientIdsFuture;
     private final @NotNull BlockingQueue<String> clientIdsQueue;
-    private final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+    private final @NotNull BlockingQueue<HivemqOpenapiClientDetails> clientDetailsQueue;
     private final @NotNull Semaphore clientDetailsInProgress;
     private final @NotNull AtomicBoolean failed = new AtomicBoolean(false);
 
@@ -48,7 +48,7 @@ public class ClientDetailsRetrieverTask implements Runnable {
             final @NotNull MqttClientsApi mqttClientsApi,
             final @NotNull CompletableFuture<Void> clientIdsFuture,
             final @NotNull BlockingQueue<String> clientIdsQueue,
-            final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue) {
+            final @NotNull BlockingQueue<HivemqOpenapiClientDetails> clientDetailsQueue) {
         this.mqttClientsApi = mqttClientsApi;
         this.clientIdsFuture = clientIdsFuture;
         this.clientIdsQueue = clientIdsQueue;
@@ -83,14 +83,14 @@ public class ClientDetailsRetrieverTask implements Runnable {
         Logger.debug("Finished retrieving client details");
     }
 
-    private static class ClientItemApiCallback implements ApiCallback<ClientItem> {
+    private static class ClientItemApiCallback implements ApiCallback<HivemqOpenapiClientItem> {
 
-        private final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+        private final @NotNull BlockingQueue<HivemqOpenapiClientDetails> clientDetailsQueue;
         private final @NotNull Semaphore clientDetailsInProgress;
         private final @NotNull AtomicBoolean failed;
 
         public ClientItemApiCallback(
-                final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
+                final @NotNull BlockingQueue<HivemqOpenapiClientDetails> clientDetailsQueue,
                 final @NotNull Semaphore clientDetailsInProgress,
                 final @NotNull AtomicBoolean failed) {
             this.clientDetailsQueue = clientDetailsQueue;
@@ -100,10 +100,10 @@ public class ClientDetailsRetrieverTask implements Runnable {
 
         @Override
         public void onSuccess(
-                final @NotNull ClientItem result,
+                final @NotNull HivemqOpenapiClientItem result,
                 final int statusCode,
                 final @NotNull Map<String, List<String>> responseHeaders) {
-            final ClientDetails clientDetails = result.getClient();
+            final HivemqOpenapiClientDetails clientDetails = result.getClient();
             if (clientDetails != null) {
                 try {
                     clientDetailsQueue.put(clientDetails);

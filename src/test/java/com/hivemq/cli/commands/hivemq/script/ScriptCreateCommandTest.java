@@ -22,7 +22,7 @@ import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.JSON;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
-import com.hivemq.cli.openapi.hivemq.Script;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScript;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import com.hivemq.cli.utils.json.ScriptSerializer;
@@ -65,14 +65,14 @@ public class ScriptCreateCommandTest {
         TestLoggerUtils.resetLogger();
 
         final Gson gson = new GsonBuilder().disableHtmlEscaping()
-                .registerTypeAdapter(Script.class, new ScriptSerializer())
+                .registerTypeAdapter(HivemqOpenapiScript.class, new ScriptSerializer())
                 .create();
 
         outputFormatter = spy(new OutputFormatter(new PrintStream(outputStream), gson));
         commandLine = new CommandLine(new ScriptCreateCommand(hiveMQRestService, outputFormatter));
 
         when(hiveMQRestService.getScriptsApi(any(), anyDouble())).thenReturn(scriptsApi);
-        when(scriptsApi.createScript(any())).thenReturn(new Script());
+        when(scriptsApi.createScript(any())).thenReturn(new HivemqOpenapiScript());
     }
 
     @Test
@@ -135,7 +135,8 @@ public class ScriptCreateCommandTest {
                 "\"scriptDefinition\":\"J2NvbnNvbGUubG9nKCdIZWxsbywgV29ybGQhJyk7\"," +
                 "\"arguments\":{}" +
                 "}";
-        final Script createdScript = openapiSerialization.deserialize(apiScriptResponseJson, Script.class);
+        final HivemqOpenapiScript createdScript =
+                openapiSerialization.deserialize(apiScriptResponseJson, HivemqOpenapiScript.class);
         when(scriptsApi.createScript(any())).thenReturn(createdScript);
 
         assertEquals(0,

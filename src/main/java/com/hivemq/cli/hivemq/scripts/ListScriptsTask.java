@@ -19,9 +19,9 @@ package com.hivemq.cli.hivemq.scripts;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
-import com.hivemq.cli.openapi.hivemq.PaginationCursor;
-import com.hivemq.cli.openapi.hivemq.Script;
-import com.hivemq.cli.openapi.hivemq.ScriptList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiPaginationCursor;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScript;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScriptList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +39,7 @@ public class ListScriptsTask {
 
     private final @NotNull OutputFormatter outputFormatter;
     private final @NotNull DataHubScriptsApi scriptsApi;
-    private final @Nullable Script.FunctionTypeEnum @Nullable [] functionTypes;
+    private final @Nullable HivemqOpenapiScript.FunctionTypeEnum @Nullable [] functionTypes;
     private final @Nullable String @Nullable [] scriptIds;
     private final @Nullable String @Nullable [] fields;
     private final @Nullable Integer limit;
@@ -47,7 +47,7 @@ public class ListScriptsTask {
     public ListScriptsTask(
             final @NotNull OutputFormatter outputFormatter,
             final @NotNull DataHubScriptsApi scriptApi,
-            final @Nullable Script.FunctionTypeEnum @Nullable [] functionTypes,
+            final @Nullable HivemqOpenapiScript.FunctionTypeEnum @Nullable [] functionTypes,
             final @Nullable String @Nullable [] scriptIds,
             final @Nullable String @Nullable [] fields,
             final @Nullable Integer limit) {
@@ -78,22 +78,24 @@ public class ListScriptsTask {
         if (functionTypes == null) {
             functionTypesQueryParam = null;
         } else {
-            functionTypesQueryParam = Arrays.stream(functionTypes).filter(Objects::nonNull)
-                    .map(Enum::name).collect(Collectors.joining(","));
+            functionTypesQueryParam = Arrays.stream(functionTypes)
+                    .filter(Objects::nonNull)
+                    .map(Enum::name)
+                    .collect(Collectors.joining(","));
         }
 
-        List<Script> allScripts = new ArrayList<>();
+        List<HivemqOpenapiScript> allScripts = new ArrayList<>();
 
         try {
             String nextCursor = null;
             do {
-                final ScriptList scriptList = scriptsApi.getAllScripts(fieldsQueryParam,
+                final HivemqOpenapiScriptList scriptList = scriptsApi.getAllScripts(fieldsQueryParam,
                         functionTypesQueryParam,
                         scriptIdsQueryParam,
                         50,
                         nextCursor);
-                final List<Script> scripts = scriptList.getItems();
-                final PaginationCursor links = scriptList.getLinks();
+                final List<HivemqOpenapiScript> scripts = scriptList.getItems();
+                final HivemqOpenapiPaginationCursor links = scriptList.getLinks();
 
                 if (scripts != null) {
                     allScripts.addAll(scripts);
@@ -121,7 +123,7 @@ public class ListScriptsTask {
             return false;
         }
 
-        final ScriptList scriptList = new ScriptList().items(allScripts);
+        final HivemqOpenapiScriptList scriptList = new HivemqOpenapiScriptList().items(allScripts);
         outputFormatter.printJson(scriptList);
 
         return true;

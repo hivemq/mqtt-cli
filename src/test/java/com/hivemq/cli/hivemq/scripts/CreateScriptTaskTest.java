@@ -21,7 +21,7 @@ import com.google.gson.JsonPrimitive;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
-import com.hivemq.cli.openapi.hivemq.Script;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScript;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ public class CreateScriptTaskTest {
 
     @BeforeEach
     void setUp() throws ApiException {
-        when(scriptsApi.createScript(any())).thenReturn(new Script());
+        when(scriptsApi.createScript(any())).thenReturn(new HivemqOpenapiScript());
     }
 
     @Test
@@ -57,19 +57,19 @@ public class CreateScriptTaskTest {
         final CreateScriptTask task = new CreateScriptTask(outputFormatter,
                 scriptsApi,
                 "script-1",
-                Script.FunctionTypeEnum.TRANSFORMATION,
+                HivemqOpenapiScript.FunctionTypeEnum.TRANSFORMATION,
                 "Sample Script",
                 false,
                 ByteBuffer.wrap(SCRIPT_DEFINITION.getBytes()));
 
-        final ArgumentCaptor<Script> scriptCaptor = ArgumentCaptor.forClass(Script.class);
+        final ArgumentCaptor<HivemqOpenapiScript> scriptCaptor = ArgumentCaptor.forClass(HivemqOpenapiScript.class);
 
         assertTrue(task.execute());
 
         verify(scriptsApi, times(1)).createScript(scriptCaptor.capture());
-        final Script createdScript = scriptCaptor.getValue();
+        final HivemqOpenapiScript createdScript = scriptCaptor.getValue();
         assertEquals("script-1", createdScript.getId());
-        assertEquals(Script.FunctionTypeEnum.TRANSFORMATION, createdScript.getFunctionType());
+        assertEquals(HivemqOpenapiScript.FunctionTypeEnum.TRANSFORMATION, createdScript.getFunctionType());
         assertEquals("Sample Script", createdScript.getDescription());
         final String createdScriptDefinition = new String(Base64.getDecoder().decode(createdScript.getSource()));
         assertEquals(SCRIPT_DEFINITION, createdScriptDefinition);
@@ -80,7 +80,7 @@ public class CreateScriptTaskTest {
         final CreateScriptTask task = new CreateScriptTask(outputFormatter,
                 scriptsApi,
                 "script-1",
-                Script.FunctionTypeEnum.TRANSFORMATION,
+                HivemqOpenapiScript.FunctionTypeEnum.TRANSFORMATION,
                 "Sample Script",
                 false,
                 ByteBuffer.wrap(new byte[]{}));
@@ -95,26 +95,27 @@ public class CreateScriptTaskTest {
         final CreateScriptTask task = new CreateScriptTask(outputFormatter,
                 scriptsApi,
                 "script-1",
-                Script.FunctionTypeEnum.TRANSFORMATION,
+                HivemqOpenapiScript.FunctionTypeEnum.TRANSFORMATION,
                 "Sample Script",
                 true,
                 ByteBuffer.wrap(SCRIPT_DEFINITION.getBytes()));
 
-        final ArgumentCaptor<Script> scriptCaptor = ArgumentCaptor.forClass(Script.class);
+        final ArgumentCaptor<HivemqOpenapiScript> scriptCaptor = ArgumentCaptor.forClass(HivemqOpenapiScript.class);
 
         assertTrue(task.execute());
 
         verify(scriptsApi, times(1)).createScript(scriptCaptor.capture());
-        final Script createdScript = scriptCaptor.getValue();
+        final HivemqOpenapiScript createdScript = scriptCaptor.getValue();
         assertEquals("script-1", createdScript.getId());
-        assertEquals(Script.FunctionTypeEnum.TRANSFORMATION, createdScript.getFunctionType());
+        assertEquals(HivemqOpenapiScript.FunctionTypeEnum.TRANSFORMATION, createdScript.getFunctionType());
         assertEquals("Sample Script", createdScript.getDescription());
         final String createdScriptDefinition = new String(Base64.getDecoder().decode(createdScript.getSource()));
         assertEquals(SCRIPT_DEFINITION, createdScriptDefinition);
 
         final JsonObject versionObject = new JsonObject();
         if (createdScript.getVersion() != null) {
-            versionObject.add(Script.SERIALIZED_NAME_VERSION, new JsonPrimitive(createdScript.getVersion()));
+            versionObject.add(HivemqOpenapiScript.SERIALIZED_NAME_VERSION,
+                    new JsonPrimitive(createdScript.getVersion()));
         }
         verify(outputFormatter).printJson(versionObject);
     }

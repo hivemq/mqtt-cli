@@ -20,8 +20,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.BehaviorPolicy;
 import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiBehaviorPolicy;
 import org.jetbrains.annotations.NotNull;
 
 public class BehaviorPolicyUpdateTask {
@@ -45,9 +45,9 @@ public class BehaviorPolicyUpdateTask {
     }
 
     public boolean execute() {
-        final BehaviorPolicy policy;
+        final HivemqOpenapiBehaviorPolicy policy;
         try {
-            policy = gson.fromJson(definition, BehaviorPolicy.class);
+            policy = gson.fromJson(definition, HivemqOpenapiBehaviorPolicy.class);
         } catch (final JsonSyntaxException jsonSyntaxException) {
             outputFormatter.printError("Could not parse behavior policy JSON: " + jsonSyntaxException.getMessage());
             return false;

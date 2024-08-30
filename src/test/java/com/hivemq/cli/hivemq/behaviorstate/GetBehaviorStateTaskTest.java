@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.behaviorstate;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubStateApi;
-import com.hivemq.cli.openapi.hivemq.FsmStatesInformationListItem;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiFsmStatesInformationListItem;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,8 @@ public class GetBehaviorStateTaskTest {
 
     @Test
     void execute_validId_success() throws ApiException {
-        final FsmStatesInformationListItem statesInformation = new FsmStatesInformationListItem();
+        final HivemqOpenapiFsmStatesInformationListItem statesInformation =
+                new HivemqOpenapiFsmStatesInformationListItem();
 
         final GetBehaviorStateTask task = new GetBehaviorStateTask(outputFormatter, stateApi, CLIENT_ID);
 

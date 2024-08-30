@@ -19,9 +19,9 @@ package com.hivemq.cli.hivemq.datapolicy;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.DataPolicy;
-import com.hivemq.cli.openapi.hivemq.DataPolicyList;
-import com.hivemq.cli.openapi.hivemq.PaginationCursor;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicy;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicyList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiPaginationCursor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,19 +84,19 @@ public class DataPolicyListTask {
             schemaIdsQueryParam = String.join(",", schemaIds);
         }
 
-        List<DataPolicy> allPolicies = new ArrayList<>();
+        List<HivemqOpenapiDataPolicy> allPolicies = new ArrayList<>();
 
         try {
             String nextCursor = null;
             do {
-                final DataPolicyList policyList = dataPoliciesApi.getAllDataPolicies(fieldsQueryParam,
+                final HivemqOpenapiDataPolicyList policyList = dataPoliciesApi.getAllDataPolicies(fieldsQueryParam,
                         policyIdsQueryParam,
                         schemaIdsQueryParam,
                         topic,
                         DEFAULT_PAGE_SIZE,
                         nextCursor);
-                final List<DataPolicy> policies = policyList.getItems();
-                final PaginationCursor links = policyList.getLinks();
+                final List<HivemqOpenapiDataPolicy> policies = policyList.getItems();
+                final HivemqOpenapiPaginationCursor links = policyList.getLinks();
 
                 if (policies != null) {
                     allPolicies.addAll(policies);
@@ -123,7 +123,7 @@ public class DataPolicyListTask {
             return false;
         }
 
-        final DataPolicyList policyList = new DataPolicyList().items(allPolicies);
+        final HivemqOpenapiDataPolicyList policyList = new HivemqOpenapiDataPolicyList().items(allPolicies);
 
         outputFormatter.printJson(policyList);
 

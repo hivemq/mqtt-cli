@@ -18,8 +18,8 @@ package com.hivemq.cli.hivemq.behaviorpolicy;
 
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.BehaviorPolicy;
 import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiBehaviorPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +42,7 @@ public class BehaviorPolicyGetTaskTest {
 
     @Test
     void execute_validId_success() throws ApiException {
-        final BehaviorPolicy policy = new BehaviorPolicy();
+        final HivemqOpenapiBehaviorPolicy policy = new HivemqOpenapiBehaviorPolicy();
 
         final BehaviorPolicyGetTask task =
                 new BehaviorPolicyGetTask(outputFormatter, behaviorPoliciesApi, POLICY_ID, null);

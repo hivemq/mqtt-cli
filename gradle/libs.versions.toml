@@ -13,6 +13,7 @@ guava = "33.3.0-jre"
 hivemq-communityEditionEmbedded = "2024.7"
 hivemq-mqttClient = "1.3.3"
 hivemq-testcontainer = "2.0.0"
+jackson-databind-nullable = "0.2.6"
 javaNative = "21.0.2"
 javax-annotation-api = "1.3.2"
 jetbrains-annotations = "24.1.0"
@@ -26,7 +27,7 @@ netty = "4.1.113.Final"
 okhttp = "4.12.0"
 openCsv = "5.9"
 picocli = "4.7.6"
-swagger-annotations = "1.6.14"
+swagger-annotations = "2.2.22"
 testcontainers = "1.20.1"
 tinylog = "2.7.0"
 
@@ -48,6 +49,7 @@ hivemq-communityEditionEmbedded = { module = "com.hivemq:hivemq-community-editio
 hivemq-enterprise = { module = "com.hivemq:hivemq-enterprise" }
 hivemq-mqttClient = { module = "com.hivemq:hivemq-mqtt-client", version.ref = "hivemq-mqttClient" }
 hivemq-swarm = { module = "com.hivemq:hivemq-swarm" }
+jackson-databind-nullable = { module = "org.openapitools:jackson-databind-nullable", version.ref = "jackson-databind-nullable" }
 javax-annotation-api = { module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotation-api" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
 jline = { module = "org.jline:jline", version.ref = "jline" }
@@ -67,7 +69,7 @@ openCsv = { module = "com.opencsv:opencsv", version.ref = "openCsv" }
 picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
 picocli-codegen = { module = "info.picocli:picocli-codegen", version.ref = "picocli" }
 picocli-shellJline = { module = "info.picocli:picocli-shell-jline3", version.ref = "picocli" }
-swagger-annotations = { module = "io.swagger:swagger-annotations", version.ref = "swagger-annotations" }
+swagger-annotations = { module = "io.swagger.core.v3:swagger-annotations", version.ref = "swagger-annotations" }
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-hivemq = { module = "org.testcontainers:hivemq", version.ref = "testcontainers" }
 testcontainers-junitJupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
@@ -84,5 +86,5 @@ launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.6" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.10.0" }
 oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.15.1" }
-openapi-generator = { id = "org.openapi.generator", version = "4.3.1" } # >= 5.0.0 breaks the tasks
+openapi-generator = { id = "org.openapi.generator", version = "7.8.0" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }

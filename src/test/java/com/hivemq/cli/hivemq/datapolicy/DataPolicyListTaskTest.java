@@ -19,9 +19,9 @@ package com.hivemq.cli.hivemq.datapolicy;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.DataPolicy;
-import com.hivemq.cli.openapi.hivemq.DataPolicyList;
-import com.hivemq.cli.openapi.hivemq.PaginationCursor;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicy;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicyList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiPaginationCursor;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -56,7 +56,7 @@ public class DataPolicyListTaskTest {
                 any(),
                 any(),
                 any(),
-                any())).thenReturn(new DataPolicyList());
+                any())).thenReturn(new HivemqOpenapiDataPolicyList());
 
         assertTrue(task.execute());
         final String policyIdsQueryParam = "policy-1,policy-2,policy-3";
@@ -80,7 +80,7 @@ public class DataPolicyListTaskTest {
                 any(),
                 any(),
                 any(),
-                any())).thenReturn(new DataPolicyList());
+                any())).thenReturn(new HivemqOpenapiDataPolicyList());
 
         assertTrue(task.execute());
         final String schemaIdsQueryParam = "schema-1,schema-2,schema-3";
@@ -103,7 +103,7 @@ public class DataPolicyListTaskTest {
                 any(),
                 any(),
                 any(),
-                any())).thenReturn(new DataPolicyList());
+                any())).thenReturn(new HivemqOpenapiDataPolicyList());
 
         assertTrue(task.execute());
         verify(dataPoliciesApi, times(1)).getAllDataPolicies(isNull(), isNull(), isNull(), eq("topic-1"), any(), any());
@@ -120,7 +120,7 @@ public class DataPolicyListTaskTest {
                 any(),
                 any(),
                 any(),
-                any())).thenReturn(new DataPolicyList());
+                any())).thenReturn(new HivemqOpenapiDataPolicyList());
 
         assertTrue(task.execute());
         final String fieldsQueryParam = "id,version,createdAt";
@@ -138,17 +138,20 @@ public class DataPolicyListTaskTest {
 
                 null, null, null, null, null);
 
-        final DataPolicy policy1 = new DataPolicy().id("policy-1");
-        final DataPolicy policy2 = new DataPolicy().id("policy-2");
-        final DataPolicy policy3 = new DataPolicy().id("policy-3");
-        final DataPolicy policy4 = new DataPolicy().id("policy-4");
+        final HivemqOpenapiDataPolicy policy1 = new HivemqOpenapiDataPolicy().id("policy-1");
+        final HivemqOpenapiDataPolicy policy2 = new HivemqOpenapiDataPolicy().id("policy-2");
+        final HivemqOpenapiDataPolicy policy3 = new HivemqOpenapiDataPolicy().id("policy-3");
+        final HivemqOpenapiDataPolicy policy4 = new HivemqOpenapiDataPolicy().id("policy-4");
 
         final String cursorPrefix = "/api/v1/data-hub/data-validation/policies?cursor=";
-        final DataPolicyList page1 = new DataPolicyList().items(Collections.singletonList(policy1))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
-        final DataPolicyList page2 = new DataPolicyList().items(Arrays.asList(policy2, policy3))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
-        final DataPolicyList page3 = new DataPolicyList().items(Collections.singletonList(policy4));
+        final HivemqOpenapiDataPolicyList page1 =
+                new HivemqOpenapiDataPolicyList().items(Collections.singletonList(policy1))
+                        .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-1"));
+        final HivemqOpenapiDataPolicyList page2 =
+                new HivemqOpenapiDataPolicyList().items(Arrays.asList(policy2, policy3))
+                        .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-2"));
+        final HivemqOpenapiDataPolicyList page3 =
+                new HivemqOpenapiDataPolicyList().items(Collections.singletonList(policy4));
         when(dataPoliciesApi.getAllDataPolicies(any(), any(), any(), any(), any(), isNull())).thenReturn(page1);
         when(dataPoliciesApi.getAllDataPolicies(any(), any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
         when(dataPoliciesApi.getAllDataPolicies(any(), any(), any(), any(), any(), eq("cursor-2"))).thenReturn(page3);
@@ -160,7 +163,8 @@ public class DataPolicyListTaskTest {
         verify(dataPoliciesApi).getAllDataPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-2"));
         verify(dataPoliciesApi, times(3)).getAllDataPolicies(any(), any(), any(), any(), any(), any());
 
-        final ArgumentCaptor<DataPolicyList> outputCaptor = ArgumentCaptor.forClass(DataPolicyList.class);
+        final ArgumentCaptor<HivemqOpenapiDataPolicyList> outputCaptor =
+                ArgumentCaptor.forClass(HivemqOpenapiDataPolicyList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
         assertEquals(Arrays.asList(policy1, policy2, policy3, policy4), outputCaptor.getValue().getItems());
     }
@@ -171,16 +175,18 @@ public class DataPolicyListTaskTest {
 
                 null, null, null, null, 3);
 
-        final DataPolicy policy1 = new DataPolicy().id("policy-1");
-        final DataPolicy policy2 = new DataPolicy().id("policy-2");
-        final DataPolicy policy3 = new DataPolicy().id("policy-3");
-        final DataPolicy policy4 = new DataPolicy().id("policy-4");
+        final HivemqOpenapiDataPolicy policy1 = new HivemqOpenapiDataPolicy().id("policy-1");
+        final HivemqOpenapiDataPolicy policy2 = new HivemqOpenapiDataPolicy().id("policy-2");
+        final HivemqOpenapiDataPolicy policy3 = new HivemqOpenapiDataPolicy().id("policy-3");
+        final HivemqOpenapiDataPolicy policy4 = new HivemqOpenapiDataPolicy().id("policy-4");
 
         final String cursorPrefix = "/api/v1/data-validation/schemas?cursor=";
-        final DataPolicyList page1 = new DataPolicyList().items(Arrays.asList(policy1, policy2))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
-        final DataPolicyList page2 = new DataPolicyList().items(Arrays.asList(policy3, policy4))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
+        final HivemqOpenapiDataPolicyList page1 =
+                new HivemqOpenapiDataPolicyList().items(Arrays.asList(policy1, policy2))
+                        .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-1"));
+        final HivemqOpenapiDataPolicyList page2 =
+                new HivemqOpenapiDataPolicyList().items(Arrays.asList(policy3, policy4))
+                        .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-2"));
         when(dataPoliciesApi.getAllDataPolicies(any(), any(), any(), any(), any(), isNull())).thenReturn(page1);
         when(dataPoliciesApi.getAllDataPolicies(any(), any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
 
@@ -190,7 +196,8 @@ public class DataPolicyListTaskTest {
         verify(dataPoliciesApi).getAllDataPolicies(isNull(), isNull(), isNull(), isNull(), any(), eq("cursor-1"));
         verify(dataPoliciesApi, times(2)).getAllDataPolicies(any(), any(), any(), any(), any(), any());
 
-        final ArgumentCaptor<DataPolicyList> outputCaptor = ArgumentCaptor.forClass(DataPolicyList.class);
+        final ArgumentCaptor<HivemqOpenapiDataPolicyList> outputCaptor =
+                ArgumentCaptor.forClass(HivemqOpenapiDataPolicyList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
         assertEquals(Arrays.asList(policy1, policy2, policy3), outputCaptor.getValue().getItems());
     }

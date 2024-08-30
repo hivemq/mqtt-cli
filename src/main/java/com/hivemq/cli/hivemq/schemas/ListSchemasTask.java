@@ -19,9 +19,9 @@ package com.hivemq.cli.hivemq.schemas;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
-import com.hivemq.cli.openapi.hivemq.PaginationCursor;
-import com.hivemq.cli.openapi.hivemq.Schema;
-import com.hivemq.cli.openapi.hivemq.SchemaList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiPaginationCursor;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiSchema;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiSchemaList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,18 +79,18 @@ public class ListSchemasTask {
             schemaTypesQueryParam = String.join(",", schemaTypes);
         }
 
-        List<Schema> allSchemas = new ArrayList<>();
+        List<HivemqOpenapiSchema> allSchemas = new ArrayList<>();
 
         try {
             String nextCursor = null;
             do {
-                final SchemaList schemaList = schemasApi.getAllSchemas(fieldsQueryParam,
+                final HivemqOpenapiSchemaList schemaList = schemasApi.getAllSchemas(fieldsQueryParam,
                         schemaTypesQueryParam,
                         schemaIdsQueryParam,
                         50,
                         nextCursor);
-                final List<Schema> schemas = schemaList.getItems();
-                final PaginationCursor links = schemaList.getLinks();
+                final List<HivemqOpenapiSchema> schemas = schemaList.getItems();
+                final HivemqOpenapiPaginationCursor links = schemaList.getLinks();
 
                 if (schemas != null) {
                     allSchemas.addAll(schemas);
@@ -118,7 +118,7 @@ public class ListSchemasTask {
             return false;
         }
 
-        final SchemaList schemaList = new SchemaList().items(allSchemas);
+        final HivemqOpenapiSchemaList schemaList = new HivemqOpenapiSchemaList().items(allSchemas);
         outputFormatter.printJson(schemaList);
 
         return true;

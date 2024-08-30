@@ -19,7 +19,7 @@ package com.hivemq.cli.commands.hivemq.script;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
-import com.hivemq.cli.openapi.hivemq.ScriptList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScriptList;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +50,7 @@ public class ScriptListCommandTest {
     void setUp() throws ApiException {
         TestLoggerUtils.resetLogger();
         when(hiveMQRestService.getScriptsApi(any(), anyDouble())).thenReturn(scriptsApi);
-        when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new ScriptList());
+        when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new HivemqOpenapiScriptList());
     }
 
     @Test

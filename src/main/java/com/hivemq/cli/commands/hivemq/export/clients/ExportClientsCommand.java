@@ -24,7 +24,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.ClientDetails;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientDetails;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.LoggerUtils;
@@ -162,7 +162,8 @@ public class ExportClientsCommand implements Callable<Integer> {
         // Setup rest service and queues
         final MqttClientsApi mqttClientsApi = new HiveMQRestService().getMqttClientsApi(url, rateLimit);
         final BlockingQueue<String> clientIdsQueue = new LinkedBlockingQueue<>(CLIENT_IDS_QUEUE_LIMIT);
-        final BlockingQueue<ClientDetails> clientDetailsQueue = new LinkedBlockingQueue<>(CLIENT_DETAILS_QUEUE_LIMIT);
+        final BlockingQueue<HivemqOpenapiClientDetails> clientDetailsQueue =
+                new LinkedBlockingQueue<>(CLIENT_DETAILS_QUEUE_LIMIT);
 
         Logger.info("Starting export of client details for HiveMQ at {}", url);
 

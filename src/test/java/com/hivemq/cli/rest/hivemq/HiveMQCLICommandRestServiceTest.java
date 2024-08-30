@@ -17,8 +17,8 @@
 package com.hivemq.cli.rest.hivemq;
 
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.Client;
-import com.hivemq.cli.openapi.hivemq.ClientList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClient;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientList;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
@@ -31,9 +31,20 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.List;
 
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.*;
-import static java.net.HttpURLConnection.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_CURSOR_NOT_VALID_ANYMORE;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_EMPTY;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_INVALID_CURSOR;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_REPLICATION;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_SINGLE_RESULT;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_WITH_CURSOR;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_GONE;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HiveMQCLICommandRestServiceTest {
 
@@ -58,8 +69,8 @@ class HiveMQCLICommandRestServiceTest {
 
         server.enqueue(response);
 
-        final ClientList clientList = mqttClientsApi.getAllMqttClients(2500, null);
-        final List<Client> clients = clientList.getItems();
+        final HivemqOpenapiClientList clientList = mqttClientsApi.getAllMqttClients(2500, null);
+        final List<HivemqOpenapiClient> clients = clientList.getItems();
 
         assertNotNull(clients);
         for (int i = 1; i < 11; i++) {
@@ -76,8 +87,8 @@ class HiveMQCLICommandRestServiceTest {
 
         server.enqueue(response);
 
-        final ClientList clientList = mqttClientsApi.getAllMqttClients(2500, null);
-        final List<Client> clients = clientList.getItems();
+        final HivemqOpenapiClientList clientList = mqttClientsApi.getAllMqttClients(2500, null);
+        final List<HivemqOpenapiClient> clients = clientList.getItems();
 
         assertNotNull(clients);
         assertEquals(1, clients.size());
@@ -89,8 +100,8 @@ class HiveMQCLICommandRestServiceTest {
 
         server.enqueue(response);
 
-        final ClientList clientList = mqttClientsApi.getAllMqttClients(2500, null);
-        final List<Client> clients = clientList.getItems();
+        final HivemqOpenapiClientList clientList = mqttClientsApi.getAllMqttClients(2500, null);
+        final List<HivemqOpenapiClient> clients = clientList.getItems();
 
         assertNotNull(clients);
         assertEquals(0, clients.size());
