@@ -21,7 +21,7 @@ import com.google.gson.JsonSyntaxException;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.DataPolicy;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicy;
 import org.jetbrains.annotations.NotNull;
 
 public class DataPolicyUpdateTask {
@@ -45,9 +45,9 @@ public class DataPolicyUpdateTask {
     }
 
     public boolean execute() {
-        final DataPolicy policy;
+        final HivemqOpenapiDataPolicy policy;
         try {
-            policy = gson.fromJson(definition, DataPolicy.class);
+            policy = gson.fromJson(definition, HivemqOpenapiDataPolicy.class);
         } catch (final JsonSyntaxException jsonSyntaxException) {
             outputFormatter.printError("Could not parse policy JSON: " + jsonSyntaxException.getMessage());
             return false;

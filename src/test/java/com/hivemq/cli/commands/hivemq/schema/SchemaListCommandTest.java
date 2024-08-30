@@ -19,7 +19,7 @@ package com.hivemq.cli.commands.hivemq.schema;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
-import com.hivemq.cli.openapi.hivemq.SchemaList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiSchemaList;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +50,7 @@ public class SchemaListCommandTest {
     void setUp() throws ApiException {
         TestLoggerUtils.resetLogger();
         when(hiveMQRestService.getSchemasApi(any(), anyDouble())).thenReturn(schemasApi);
-        when(schemasApi.getAllSchemas(any(), any(), any(), any(), any())).thenReturn(new SchemaList());
+        when(schemasApi.getAllSchemas(any(), any(), any(), any(), any())).thenReturn(new HivemqOpenapiSchemaList());
     }
 
     @Test

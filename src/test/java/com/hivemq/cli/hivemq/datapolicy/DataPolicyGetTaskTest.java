@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.datapolicy;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.DataPolicy;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +42,7 @@ public class DataPolicyGetTaskTest {
 
     @Test
     void execute_validId_success() throws ApiException {
-        final DataPolicy policy = new DataPolicy();
+        final HivemqOpenapiDataPolicy policy = new HivemqOpenapiDataPolicy();
 
         final DataPolicyGetTask task = new DataPolicyGetTask(outputFormatter, dataPoliciesApi, POLICY_ID,
 

@@ -120,6 +120,7 @@ dependencies {
     implementation(libs.netty.codec.http)
     implementation(variantOf(libs.netty.transport.native.epoll) { classifier("linux-x86_64") })
     implementation(libs.openCsv)
+    implementation(libs.jackson.databind.nullable)
 }
 
 /* ******************** OpenAPI ******************** */
@@ -159,24 +160,22 @@ dependencies {
 }
 
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
-    group = "hivemq"
+    group = "openapi"
     generatorName = "java"
-    inputSpec = hivemqOpenApi.singleFile.path
+    inputSpec = hivemqOpenApi.elements.map { it.single().asFile.path }
     val outputDir = layout.buildDirectory.dir("tmp/$name")
     this.outputDir = outputDir.map { it.asFile.absolutePath }
+    cleanupOutput = true
+
     apiPackage = "com.hivemq.cli.openapi.hivemq"
     modelPackage = "com.hivemq.cli.openapi.hivemq"
-    configOptions.put("dateLibrary", "java8")
+    modelNamePrefix = "HivemqOpenapi"
     configOptions.put("hideGenerationTimestamp", "true")
 
-    inputs.file(hivemqOpenApi.elements.map { it.first() }).withPropertyName("inputSpec")
-        .withPathSensitivity(PathSensitivity.NONE)
     val outputSrcDir = layout.buildDirectory.dir("generated/openapi/hivemq/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
     outputs.cacheIf { true }
-    doFirst {
-        outputDir.get().asFile.deleteRecursively()
-    }
+
     doLast {
         outputSrcDir.get().asFile.deleteRecursively()
         outputDir.get().asFile.resolve("src/main/java").copyRecursively(outputSrcDir.get().asFile)
@@ -185,24 +184,21 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
 }
 
 val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
-    group = "swarm"
+    group = "openapi"
     generatorName = "java"
-    inputSpec = swarmOpenApi.singleFile.path
+    inputSpec = swarmOpenApi.elements.map { it.single().asFile.path }
     val outputDir = layout.buildDirectory.dir("tmp/$name")
     this.outputDir = outputDir.map { it.asFile.absolutePath }
+    cleanupOutput = true
+
     apiPackage = "com.hivemq.cli.openapi.swarm"
     modelPackage = "com.hivemq.cli.openapi.swarm"
-    configOptions.put("dateLibrary", "java8")
     configOptions.put("hideGenerationTimestamp", "true")
 
-    inputs.file(swarmOpenApi.elements.map { it.first() }).withPropertyName("inputSpec")
-        .withPathSensitivity(PathSensitivity.NONE)
     val outputSrcDir = layout.buildDirectory.dir("generated/openapi/swarm/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
     outputs.cacheIf { true }
-    doFirst {
-        outputDir.get().asFile.deleteRecursively()
-    }
+
     doLast {
         outputSrcDir.get().asFile.deleteRecursively()
         val path = apiPackage.get().replace('.', '/')

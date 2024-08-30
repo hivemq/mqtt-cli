@@ -16,10 +16,10 @@
 
 package com.hivemq.cli.commands.hivemq.export.clients;
 
-import com.hivemq.cli.openapi.hivemq.Client;
-import com.hivemq.cli.openapi.hivemq.ClientList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClient;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiPaginationCursor;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
-import com.hivemq.cli.openapi.hivemq.PaginationCursor;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
@@ -50,14 +50,14 @@ public class ClientIdsRetrieverTask implements Runnable {
         String nextCursor = null;
         try {
             while (hasNextCursor) {
-                final ClientList clientList;
+                final HivemqOpenapiClientList clientList;
                 clientList = mqttClientsApi.getAllMqttClients(2500, nextCursor);
-                final List<Client> clients = clientList.getItems();
-                final PaginationCursor links = clientList.getLinks();
+                final List<HivemqOpenapiClient> clients = clientList.getItems();
+                final HivemqOpenapiPaginationCursor links = clientList.getLinks();
 
                 if (clients != null) {
                     receivedClientIds += clients.size();
-                    for (final Client client : clients) {
+                    for (final HivemqOpenapiClient client : clients) {
                         if (client.getId() != null) {
                             clientIdsQueue.put(client.getId());
                         }

@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.scripts;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
-import com.hivemq.cli.openapi.hivemq.Script;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScript;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +49,7 @@ public class GetScriptTask {
             fieldsQueryParam = String.join(",", fields);
         }
 
-        final Script script;
+        final HivemqOpenapiScript script;
         try {
             script = scriptsApi.getScript(scriptId, fieldsQueryParam);
         } catch (final ApiException apiException) {

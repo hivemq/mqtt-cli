@@ -16,7 +16,7 @@
 
 package com.hivemq.cli.commands.hivemq.export.clients;
 
-import com.hivemq.cli.openapi.hivemq.ClientDetails;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientDetails;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
 import okhttp3.mockwebserver.MockResponse;
@@ -46,7 +46,7 @@ class ClientDetailsRetrieverTaskTest {
     private @NotNull MockWebServer server;
     private @NotNull CompletableFuture<Void> clientIdsFuture;
     private @NotNull BlockingQueue<String> clientIdsQueue;
-    private @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+    private @NotNull BlockingQueue<HivemqOpenapiClientDetails> clientDetailsQueue;
     private @NotNull MqttClientsApi mqttClientsApi;
     private @NotNull ClientDetailsRetrieverTask clientDetailsRetrieverTask;
 
@@ -173,7 +173,7 @@ class ClientDetailsRetrieverTaskTest {
             try {
 
                 while (!clientDetailsRetrieverFuture.isDone() || !clientDetailsQueue.isEmpty()) {
-                    final ClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
+                    final HivemqOpenapiClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
                     if (clientDetails != null) {
                         receivedClientDetails.incrementAndGet();
                     }

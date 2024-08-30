@@ -16,7 +16,13 @@
 
 package com.hivemq.cli.rest.hivemq;
 
-import com.hivemq.cli.openapi.hivemq.*;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiCertificateInformation;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientDetails;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientRestrictions;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiConnectionDetails;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiProxyInformation;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiTLV;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiTlsInformation;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -24,8 +30,8 @@ import java.util.List;
 
 public class TestClientDetails {
 
-    public static ClientDetails getAllClientDetails() {
-        final ClientDetails clientDetails = new ClientDetails();
+    public static HivemqOpenapiClientDetails getAllClientDetails() {
+        final HivemqOpenapiClientDetails clientDetails = new HivemqOpenapiClientDetails();
         clientDetails.setId("test");
         clientDetails.setConnected(true);
         clientDetails.setSessionExpiryInterval(120L);
@@ -33,29 +39,29 @@ public class TestClientDetails {
         clientDetails.setMessageQueueSize(50L);
         clientDetails.setWillPresent(true);
 
-        final ClientRestrictions clientRestrictions = new ClientRestrictions();
+        final HivemqOpenapiClientRestrictions clientRestrictions = new HivemqOpenapiClientRestrictions();
         clientRestrictions.setMaxMessageSize(256000000L);
         clientRestrictions.setMaxQueueSize(1000L);
         clientRestrictions.setQueuedMessageStrategy("DISCARD");
         clientDetails.setRestrictions(clientRestrictions);
 
-        final ConnectionDetails connectionDetails = new ConnectionDetails();
+        final HivemqOpenapiConnectionDetails connectionDetails = new HivemqOpenapiConnectionDetails();
         connectionDetails.setSourceIp("127.0.0.1");
 
-        final ProxyInformation proxyInformation = new ProxyInformation();
+        final HivemqOpenapiProxyInformation proxyInformation = new HivemqOpenapiProxyInformation();
         proxyInformation.setSourceIp("5.35.166.178");
         proxyInformation.setSourcePort(40101);
         proxyInformation.setDestinationIp("127.125.124.124");
         proxyInformation.setDestinationPort(1883);
 
-        final TLV tlv1 = new TLV();
-        final TLV tlv2 = new TLV();
+        final HivemqOpenapiTLV tlv1 = new HivemqOpenapiTLV();
+        final HivemqOpenapiTLV tlv2 = new HivemqOpenapiTLV();
         tlv1.setKey("key1");
         tlv1.setValue("value1");
         tlv2.setKey("key2");
         tlv2.setValue("value1");
 
-        final List<TLV> tlvs = Arrays.asList(tlv1, tlv2);
+        final List<HivemqOpenapiTLV> tlvs = Arrays.asList(tlv1, tlv2);
 
         proxyInformation.setTlvs(tlvs);
         connectionDetails.setProxyInformation(proxyInformation);
@@ -69,11 +75,11 @@ public class TestClientDetails {
         connectionDetails.setPassword("pass-1".getBytes());
         connectionDetails.setCleanStart(true);
 
-        final TlsInformation tlsInformation = new TlsInformation();
+        final HivemqOpenapiTlsInformation tlsInformation = new HivemqOpenapiTlsInformation();
         tlsInformation.setCipherSuite("TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256");
         tlsInformation.setTlsVersion("TLSv1.2");
 
-        final CertificateInformation certificateInformation = new CertificateInformation();
+        final HivemqOpenapiCertificateInformation certificateInformation = new HivemqOpenapiCertificateInformation();
         certificateInformation.setCommonName("CertCN");
         certificateInformation.setOrganization("my-org");
         certificateInformation.setOrganizationalUnit("org-unit");

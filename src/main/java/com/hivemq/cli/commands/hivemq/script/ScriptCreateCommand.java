@@ -23,7 +23,7 @@ import com.hivemq.cli.commands.hivemq.datahub.ScriptDefinitionOptions;
 import com.hivemq.cli.converters.FunctionTypeConverter;
 import com.hivemq.cli.hivemq.scripts.CreateScriptTask;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
-import com.hivemq.cli.openapi.hivemq.Script;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScript;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -56,7 +56,7 @@ public class ScriptCreateCommand implements Callable<Integer> {
                         required = true,
                         converter = FunctionTypeConverter.class,
                         description = "The function type")
-    private @NotNull Script.FunctionTypeEnum functionType;
+    private @NotNull HivemqOpenapiScript.FunctionTypeEnum functionType;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--print-version"},

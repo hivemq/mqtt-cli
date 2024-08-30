@@ -22,7 +22,7 @@ import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.converters.FunctionTypeConverter;
 import com.hivemq.cli.hivemq.scripts.ListScriptsTask;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
-import com.hivemq.cli.openapi.hivemq.Script;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScript;
 import com.hivemq.cli.rest.HiveMQRestService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +48,7 @@ public class ScriptListCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"-t", "--type"},
                         converter = FunctionTypeConverter.class,
                         description = "Filter by script type")
-    private @Nullable Script.FunctionTypeEnum @Nullable [] functionTypes;
+    private @Nullable HivemqOpenapiScript.FunctionTypeEnum @Nullable [] functionTypes;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-i", "--id"}, description = "Filter by script id")

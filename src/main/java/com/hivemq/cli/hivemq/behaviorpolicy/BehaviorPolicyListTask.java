@@ -18,10 +18,10 @@ package com.hivemq.cli.hivemq.behaviorpolicy;
 
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.BehaviorPolicy;
-import com.hivemq.cli.openapi.hivemq.BehaviorPolicyList;
 import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.PaginationCursor;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiBehaviorPolicy;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiBehaviorPolicyList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiPaginationCursor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,18 +81,19 @@ public class BehaviorPolicyListTask {
             clientIdsQueryParam = String.join(",", clientIds);
         }
 
-        List<BehaviorPolicy> allPolicies = new ArrayList<>();
+        List<HivemqOpenapiBehaviorPolicy> allPolicies = new ArrayList<>();
 
         try {
             String nextCursor = null;
             do {
-                final BehaviorPolicyList policyList = behaviorPoliciesApi.getAllBehaviorPolicies(fieldsQueryParam,
+                final HivemqOpenapiBehaviorPolicyList policyList = behaviorPoliciesApi.getAllBehaviorPolicies(
+                        fieldsQueryParam,
                         policyIdsQueryParam,
                         clientIdsQueryParam,
                         DEFAULT_PAGE_SIZE,
                         nextCursor);
-                final List<BehaviorPolicy> policies = policyList.getItems();
-                final PaginationCursor links = policyList.getLinks();
+                final List<HivemqOpenapiBehaviorPolicy> policies = policyList.getItems();
+                final HivemqOpenapiPaginationCursor links = policyList.getLinks();
 
                 if (policies != null) {
                     allPolicies.addAll(policies);
@@ -119,7 +120,7 @@ public class BehaviorPolicyListTask {
             return false;
         }
 
-        final BehaviorPolicyList policyList = new BehaviorPolicyList().items(allPolicies);
+        final HivemqOpenapiBehaviorPolicyList policyList = new HivemqOpenapiBehaviorPolicyList().items(allPolicies);
 
         outputFormatter.printJson(policyList);
 

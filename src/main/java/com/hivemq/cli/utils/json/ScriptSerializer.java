@@ -20,7 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.hivemq.cli.openapi.hivemq.Script;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScript;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -29,21 +29,21 @@ import java.lang.reflect.Type;
  * The generated OpenAPI classes do not preserve JSON field ordering.
  * This serializer manually restores the correct order.
  */
-public class ScriptSerializer implements JsonSerializer<Script> {
+public class ScriptSerializer implements JsonSerializer<HivemqOpenapiScript> {
 
     @Override
     public @NotNull JsonElement serialize(
-            final @NotNull Script script,
+            final @NotNull HivemqOpenapiScript script,
             final @NotNull Type typeOfSrc,
             final @NotNull JsonSerializationContext context) {
 
         final JsonObject object = new JsonObject();
-        object.add(Script.SERIALIZED_NAME_ID,context.serialize(script.getId()));
-        object.add(Script.SERIALIZED_NAME_VERSION,context.serialize(script.getVersion()));
-        object.add(Script.SERIALIZED_NAME_CREATED_AT, context.serialize(script.getCreatedAt()));
-        object.add(Script.SERIALIZED_NAME_FUNCTION_TYPE, context.serialize(script.getFunctionType()));
-        object.add(Script.SERIALIZED_NAME_DESCRIPTION, context.serialize(script.getDescription()));
-        object.add(Script.SERIALIZED_NAME_SOURCE, context.serialize(script.getSource()));
+        object.add(HivemqOpenapiScript.SERIALIZED_NAME_ID, context.serialize(script.getId()));
+        object.add(HivemqOpenapiScript.SERIALIZED_NAME_VERSION, context.serialize(script.getVersion()));
+        object.add(HivemqOpenapiScript.SERIALIZED_NAME_CREATED_AT, context.serialize(script.getCreatedAt()));
+        object.add(HivemqOpenapiScript.SERIALIZED_NAME_FUNCTION_TYPE, context.serialize(script.getFunctionType()));
+        object.add(HivemqOpenapiScript.SERIALIZED_NAME_DESCRIPTION, context.serialize(script.getDescription()));
+        object.add(HivemqOpenapiScript.SERIALIZED_NAME_SOURCE, context.serialize(script.getSource()));
 
         return object;
     }

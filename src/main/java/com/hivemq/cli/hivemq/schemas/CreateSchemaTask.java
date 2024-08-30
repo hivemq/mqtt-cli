@@ -21,7 +21,7 @@ import com.google.gson.JsonPrimitive;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
-import com.hivemq.cli.openapi.hivemq.Schema;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiSchema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,10 +72,12 @@ public class CreateSchemaTask {
 
         final String definitionBase64 = Base64.getEncoder().encodeToString(definition.array());
 
-        final Schema schema =
-                new Schema().id(schemaId).type(schemaType).schemaDefinition(definitionBase64).arguments(arguments);
+        final HivemqOpenapiSchema schema = new HivemqOpenapiSchema().id(schemaId)
+                .type(schemaType)
+                .schemaDefinition(definitionBase64)
+                .arguments(arguments);
 
-        final Schema createdSchema;
+        final HivemqOpenapiSchema createdSchema;
         try {
             createdSchema = schemasApi.createSchema(schema);
         } catch (final ApiException apiException) {
@@ -86,7 +88,8 @@ public class CreateSchemaTask {
         if (printVersion) {
             final JsonObject versionObject = new JsonObject();
             if (createdSchema.getVersion() != null) {
-                versionObject.add(Schema.SERIALIZED_NAME_VERSION, new JsonPrimitive(createdSchema.getVersion()));
+                versionObject.add(HivemqOpenapiSchema.SERIALIZED_NAME_VERSION,
+                        new JsonPrimitive(createdSchema.getVersion()));
             }
             outputFormatter.printJson(versionObject);
         }

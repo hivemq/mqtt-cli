@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.datapolicy;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.DataPolicy;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +48,7 @@ public class DataPolicyGetTask {
             fieldsQueryParam = String.join(",", fields);
         }
 
-        final DataPolicy policy;
+        final HivemqOpenapiDataPolicy policy;
         try {
             policy = dataPoliciesApi.getDataPolicy(policyId, fieldsQueryParam);
         } catch (final ApiException apiException) {

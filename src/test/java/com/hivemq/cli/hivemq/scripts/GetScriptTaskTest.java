@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.scripts;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
-import com.hivemq.cli.openapi.hivemq.Script;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScript;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ class GetScriptTaskTest {
     void execute_scriptFound_printScript() throws ApiException {
         final GetScriptTask task = new GetScriptTask(outputFormatter, scriptsApi, "test-1", null);
 
-        final Script script = new Script();
+        final HivemqOpenapiScript script = new HivemqOpenapiScript();
         when(scriptsApi.getScript("test-1", null)).thenReturn(script);
 
         assertTrue(task.execute());

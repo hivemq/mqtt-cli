@@ -18,10 +18,10 @@ package com.hivemq.cli.hivemq.behaviorpolicy;
 
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.BehaviorPolicy;
-import com.hivemq.cli.openapi.hivemq.BehaviorPolicyList;
 import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.PaginationCursor;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiBehaviorPolicy;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiBehaviorPolicyList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiPaginationCursor;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -55,7 +55,7 @@ public class BehaviorPolicyListTaskTest {
                 any(),
                 any(),
                 any(),
-                any())).thenReturn(new BehaviorPolicyList());
+                any())).thenReturn(new HivemqOpenapiBehaviorPolicyList());
 
         assertTrue(task.execute());
         final String policyIdsQueryParam = "policy-1,policy-2,policy-3";
@@ -76,7 +76,7 @@ public class BehaviorPolicyListTaskTest {
                 any(),
                 any(),
                 any(),
-                any())).thenReturn(new BehaviorPolicyList());
+                any())).thenReturn(new HivemqOpenapiBehaviorPolicyList());
 
         assertTrue(task.execute());
         final String clientIdsQueryParam = "client-1,client-2,client-3";
@@ -97,7 +97,7 @@ public class BehaviorPolicyListTaskTest {
                 any(),
                 any(),
                 any(),
-                any())).thenReturn(new BehaviorPolicyList());
+                any())).thenReturn(new HivemqOpenapiBehaviorPolicyList());
 
         assertTrue(task.execute());
         final String fieldsQueryParam = "id,version,createdAt";
@@ -113,17 +113,20 @@ public class BehaviorPolicyListTaskTest {
         final BehaviorPolicyListTask task =
                 new BehaviorPolicyListTask(outputFormatter, behaviorPoliciesApi, null, null, null, null);
 
-        final BehaviorPolicy policy1 = new BehaviorPolicy().id("policy-1");
-        final BehaviorPolicy policy2 = new BehaviorPolicy().id("policy-2");
-        final BehaviorPolicy policy3 = new BehaviorPolicy().id("policy-3");
-        final BehaviorPolicy policy4 = new BehaviorPolicy().id("policy-4");
+        final HivemqOpenapiBehaviorPolicy policy1 = new HivemqOpenapiBehaviorPolicy().id("policy-1");
+        final HivemqOpenapiBehaviorPolicy policy2 = new HivemqOpenapiBehaviorPolicy().id("policy-2");
+        final HivemqOpenapiBehaviorPolicy policy3 = new HivemqOpenapiBehaviorPolicy().id("policy-3");
+        final HivemqOpenapiBehaviorPolicy policy4 = new HivemqOpenapiBehaviorPolicy().id("policy-4");
 
         final String cursorPrefix = "/api/v1/data-validation/policies?cursor=";
-        final BehaviorPolicyList page1 = new BehaviorPolicyList().items(Collections.singletonList(policy1))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
-        final BehaviorPolicyList page2 = new BehaviorPolicyList().items(Arrays.asList(policy2, policy3))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
-        final BehaviorPolicyList page3 = new BehaviorPolicyList().items(Collections.singletonList(policy4));
+        final HivemqOpenapiBehaviorPolicyList page1 =
+                new HivemqOpenapiBehaviorPolicyList().items(Collections.singletonList(policy1))
+                        .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-1"));
+        final HivemqOpenapiBehaviorPolicyList page2 =
+                new HivemqOpenapiBehaviorPolicyList().items(Arrays.asList(policy2, policy3))
+                        .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-2"));
+        final HivemqOpenapiBehaviorPolicyList page3 =
+                new HivemqOpenapiBehaviorPolicyList().items(Collections.singletonList(policy4));
         when(behaviorPoliciesApi.getAllBehaviorPolicies(any(), any(), any(), any(), isNull())).thenReturn(page1);
         when(behaviorPoliciesApi.getAllBehaviorPolicies(any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
         when(behaviorPoliciesApi.getAllBehaviorPolicies(any(), any(), any(), any(), eq("cursor-2"))).thenReturn(page3);
@@ -135,7 +138,8 @@ public class BehaviorPolicyListTaskTest {
         verify(behaviorPoliciesApi).getAllBehaviorPolicies(isNull(), isNull(), isNull(), any(), eq("cursor-2"));
         verify(behaviorPoliciesApi, times(3)).getAllBehaviorPolicies(any(), any(), any(), any(), any());
 
-        final ArgumentCaptor<BehaviorPolicyList> outputCaptor = ArgumentCaptor.forClass(BehaviorPolicyList.class);
+        final ArgumentCaptor<HivemqOpenapiBehaviorPolicyList> outputCaptor =
+                ArgumentCaptor.forClass(HivemqOpenapiBehaviorPolicyList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
         assertEquals(Arrays.asList(policy1, policy2, policy3, policy4), outputCaptor.getValue().getItems());
     }
@@ -145,16 +149,18 @@ public class BehaviorPolicyListTaskTest {
         final BehaviorPolicyListTask task =
                 new BehaviorPolicyListTask(outputFormatter, behaviorPoliciesApi, null, null, null, 3);
 
-        final BehaviorPolicy policy1 = new BehaviorPolicy().id("policy-1");
-        final BehaviorPolicy policy2 = new BehaviorPolicy().id("policy-2");
-        final BehaviorPolicy policy3 = new BehaviorPolicy().id("policy-3");
-        final BehaviorPolicy policy4 = new BehaviorPolicy().id("policy-4");
+        final HivemqOpenapiBehaviorPolicy policy1 = new HivemqOpenapiBehaviorPolicy().id("policy-1");
+        final HivemqOpenapiBehaviorPolicy policy2 = new HivemqOpenapiBehaviorPolicy().id("policy-2");
+        final HivemqOpenapiBehaviorPolicy policy3 = new HivemqOpenapiBehaviorPolicy().id("policy-3");
+        final HivemqOpenapiBehaviorPolicy policy4 = new HivemqOpenapiBehaviorPolicy().id("policy-4");
 
         final String cursorPrefix = "/api/v1/data-hub/behavior-validation/policies?cursor=";
-        final BehaviorPolicyList page1 = new BehaviorPolicyList().items(Arrays.asList(policy1, policy2))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
-        final BehaviorPolicyList page2 = new BehaviorPolicyList().items(Arrays.asList(policy3, policy4))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
+        final HivemqOpenapiBehaviorPolicyList page1 =
+                new HivemqOpenapiBehaviorPolicyList().items(Arrays.asList(policy1, policy2))
+                        .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-1"));
+        final HivemqOpenapiBehaviorPolicyList page2 =
+                new HivemqOpenapiBehaviorPolicyList().items(Arrays.asList(policy3, policy4))
+                        .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-2"));
         when(behaviorPoliciesApi.getAllBehaviorPolicies(any(), any(), any(), any(), isNull())).thenReturn(page1);
         when(behaviorPoliciesApi.getAllBehaviorPolicies(any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
 
@@ -164,7 +170,8 @@ public class BehaviorPolicyListTaskTest {
         verify(behaviorPoliciesApi).getAllBehaviorPolicies(isNull(), isNull(), isNull(), any(), eq("cursor-1"));
         verify(behaviorPoliciesApi, times(2)).getAllBehaviorPolicies(any(), any(), any(), any(), any());
 
-        final ArgumentCaptor<BehaviorPolicyList> outputCaptor = ArgumentCaptor.forClass(BehaviorPolicyList.class);
+        final ArgumentCaptor<HivemqOpenapiBehaviorPolicyList> outputCaptor =
+                ArgumentCaptor.forClass(HivemqOpenapiBehaviorPolicyList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
         assertEquals(Arrays.asList(policy1, policy2, policy3), outputCaptor.getValue().getItems());
     }

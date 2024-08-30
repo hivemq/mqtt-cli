@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.behaviorstate;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubStateApi;
-import com.hivemq.cli.openapi.hivemq.FsmStatesInformationListItem;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiFsmStatesInformationListItem;
 import org.jetbrains.annotations.NotNull;
 
 public class GetBehaviorStateTask {
@@ -37,7 +37,7 @@ public class GetBehaviorStateTask {
     }
 
     public boolean execute() {
-        final FsmStatesInformationListItem clientStateList;
+        final HivemqOpenapiFsmStatesInformationListItem clientStateList;
 
         try {
             clientStateList = dataHubStateApi.getClientState(clientId);

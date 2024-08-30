@@ -20,8 +20,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.hivemq.BehaviorPolicy;
 import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiBehaviorPolicy;
 import com.hivemq.cli.utils.json.OffsetDateTimeSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,8 @@ public class BehaviorPolicyCreateTaskTest {
 
     private final @NotNull DataHubBehaviorPoliciesApi behaviorPoliciesApi = mock(DataHubBehaviorPoliciesApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock();
-    private final @NotNull ArgumentCaptor<BehaviorPolicy> policyCaptor = ArgumentCaptor.forClass(BehaviorPolicy.class);
+    private final @NotNull ArgumentCaptor<HivemqOpenapiBehaviorPolicy> policyCaptor =
+            ArgumentCaptor.forClass(HivemqOpenapiBehaviorPolicy.class);
     private final @NotNull Gson gson =
             new GsonBuilder().registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer()).create();
 
@@ -55,7 +56,7 @@ public class BehaviorPolicyCreateTaskTest {
 
     @Test
     void execute_validBehaviorPolicy_success() throws ApiException {
-        final BehaviorPolicy policy = gson.fromJson(POLICY_JSON, BehaviorPolicy.class);
+        final HivemqOpenapiBehaviorPolicy policy = gson.fromJson(POLICY_JSON, HivemqOpenapiBehaviorPolicy.class);
 
         final BehaviorPolicyCreateTask task =
                 new BehaviorPolicyCreateTask(outputFormatter, behaviorPoliciesApi, gson, POLICY_JSON);

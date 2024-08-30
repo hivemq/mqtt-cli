@@ -19,9 +19,9 @@ package com.hivemq.cli.hivemq.scripts;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubScriptsApi;
-import com.hivemq.cli.openapi.hivemq.PaginationCursor;
-import com.hivemq.cli.openapi.hivemq.Script;
-import com.hivemq.cli.openapi.hivemq.ScriptList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiPaginationCursor;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScript;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiScriptList;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -50,7 +50,7 @@ public class ListScriptsTaskTest {
         final String[] scriptIds = {"script-1", "script-2", "script-3"};
         final ListScriptsTask task = new ListScriptsTask(outputFormatter, scriptsApi, null, scriptIds, null, null);
 
-        when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new ScriptList());
+        when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new HivemqOpenapiScriptList());
 
         assertTrue(task.execute());
         final String scriptIdsQueryParam = "script-1,script-2,script-3";
@@ -59,10 +59,13 @@ public class ListScriptsTaskTest {
 
     @Test
     void execute_functionTypesProvided_usedAsUrlParameter() throws ApiException {
-        final Script.FunctionTypeEnum[] functionTypes = {Script.FunctionTypeEnum.TRANSFORMATION, Script.FunctionTypeEnum.TRANSFORMATION, Script.FunctionTypeEnum.TRANSFORMATION};
+        final HivemqOpenapiScript.FunctionTypeEnum[] functionTypes = {
+                HivemqOpenapiScript.FunctionTypeEnum.TRANSFORMATION,
+                HivemqOpenapiScript.FunctionTypeEnum.TRANSFORMATION,
+                HivemqOpenapiScript.FunctionTypeEnum.TRANSFORMATION};
         final ListScriptsTask task = new ListScriptsTask(outputFormatter, scriptsApi, functionTypes, null, null, null);
 
-        when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new ScriptList());
+        when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new HivemqOpenapiScriptList());
 
         assertTrue(task.execute());
         final String functionTypesQueryParam = "TRANSFORMATION,TRANSFORMATION,TRANSFORMATION";
@@ -74,7 +77,7 @@ public class ListScriptsTaskTest {
         final String[] fields = {"id", "version", "createdAt"};
         final ListScriptsTask task = new ListScriptsTask(outputFormatter, scriptsApi, null, null, fields, null);
 
-        when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new ScriptList());
+        when(scriptsApi.getAllScripts(any(), any(), any(), any(), any())).thenReturn(new HivemqOpenapiScriptList());
 
         assertTrue(task.execute());
         final String fieldsQueryParam = "id,version,createdAt";
@@ -85,17 +88,17 @@ public class ListScriptsTaskTest {
     void execute_cursorReturned_allPagesFetched() throws ApiException {
         final ListScriptsTask task = new ListScriptsTask(outputFormatter, scriptsApi, null, null, null, null);
 
-        final Script script1 = new Script().id("script-1");
-        final Script script2 = new Script().id("script-2");
-        final Script script3 = new Script().id("script-3");
-        final Script script4 = new Script().id("script-4");
+        final HivemqOpenapiScript script1 = new HivemqOpenapiScript().id("script-1");
+        final HivemqOpenapiScript script2 = new HivemqOpenapiScript().id("script-2");
+        final HivemqOpenapiScript script3 = new HivemqOpenapiScript().id("script-3");
+        final HivemqOpenapiScript script4 = new HivemqOpenapiScript().id("script-4");
 
         final String cursorPrefix = "/api/v1/data-validation/scripts?cursor=";
-        final ScriptList page1 = new ScriptList().items(Collections.singletonList(script1))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
-        final ScriptList page2 = new ScriptList().items(Arrays.asList(script2, script3))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
-        final ScriptList page3 = new ScriptList().items(Collections.singletonList(script4));
+        final HivemqOpenapiScriptList page1 = new HivemqOpenapiScriptList().items(Collections.singletonList(script1))
+                .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-1"));
+        final HivemqOpenapiScriptList page2 = new HivemqOpenapiScriptList().items(Arrays.asList(script2, script3))
+                .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-2"));
+        final HivemqOpenapiScriptList page3 = new HivemqOpenapiScriptList().items(Collections.singletonList(script4));
         when(scriptsApi.getAllScripts(any(), any(), any(), any(), isNull())).thenReturn(page1);
         when(scriptsApi.getAllScripts(any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
         when(scriptsApi.getAllScripts(any(), any(), any(), any(), eq("cursor-2"))).thenReturn(page3);
@@ -107,7 +110,8 @@ public class ListScriptsTaskTest {
         verify(scriptsApi).getAllScripts(isNull(), isNull(), isNull(), any(), eq("cursor-2"));
         verify(scriptsApi, times(3)).getAllScripts(any(), any(), any(), any(), any());
 
-        final ArgumentCaptor<ScriptList> outputCaptor = ArgumentCaptor.forClass(ScriptList.class);
+        final ArgumentCaptor<HivemqOpenapiScriptList> outputCaptor =
+                ArgumentCaptor.forClass(HivemqOpenapiScriptList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
         assertEquals(Arrays.asList(script1, script2, script3, script4), outputCaptor.getValue().getItems());
     }
@@ -116,16 +120,16 @@ public class ListScriptsTaskTest {
     void execute_cursorReturnedLimitSpecified_limitNotExceeded() throws ApiException {
         final ListScriptsTask task = new ListScriptsTask(outputFormatter, scriptsApi, null, null, null, 3);
 
-        final Script script1 = new Script().id("script-1");
-        final Script script2 = new Script().id("script-2");
-        final Script script3 = new Script().id("script-3");
-        final Script script4 = new Script().id("script-4");
+        final HivemqOpenapiScript script1 = new HivemqOpenapiScript().id("script-1");
+        final HivemqOpenapiScript script2 = new HivemqOpenapiScript().id("script-2");
+        final HivemqOpenapiScript script3 = new HivemqOpenapiScript().id("script-3");
+        final HivemqOpenapiScript script4 = new HivemqOpenapiScript().id("script-4");
 
         final String cursorPrefix = "/api/v1/data-validation/scripts?cursor=";
-        final ScriptList page1 = new ScriptList().items(Arrays.asList(script1, script2))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-1"));
-        final ScriptList page2 = new ScriptList().items(Arrays.asList(script3, script4))
-                .links(new PaginationCursor().next(cursorPrefix + "cursor-2"));
+        final HivemqOpenapiScriptList page1 = new HivemqOpenapiScriptList().items(Arrays.asList(script1, script2))
+                .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-1"));
+        final HivemqOpenapiScriptList page2 = new HivemqOpenapiScriptList().items(Arrays.asList(script3, script4))
+                .links(new HivemqOpenapiPaginationCursor().next(cursorPrefix + "cursor-2"));
         when(scriptsApi.getAllScripts(any(), any(), any(), any(), isNull())).thenReturn(page1);
         when(scriptsApi.getAllScripts(any(), any(), any(), any(), eq("cursor-1"))).thenReturn(page2);
 
@@ -135,7 +139,8 @@ public class ListScriptsTaskTest {
         verify(scriptsApi).getAllScripts(isNull(), isNull(), isNull(), any(), eq("cursor-1"));
         verify(scriptsApi, times(2)).getAllScripts(any(), any(), any(), any(), any());
 
-        final ArgumentCaptor<ScriptList> outputCaptor = ArgumentCaptor.forClass(ScriptList.class);
+        final ArgumentCaptor<HivemqOpenapiScriptList> outputCaptor =
+                ArgumentCaptor.forClass(HivemqOpenapiScriptList.class);
         verify(outputFormatter).printJson(outputCaptor.capture());
         assertEquals(Arrays.asList(script1, script2, script3), outputCaptor.getValue().getItems());
     }

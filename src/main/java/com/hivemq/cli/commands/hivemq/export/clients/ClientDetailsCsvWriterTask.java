@@ -16,13 +16,13 @@
 
 package com.hivemq.cli.commands.hivemq.export.clients;
 
-import com.hivemq.cli.openapi.hivemq.CertificateInformation;
-import com.hivemq.cli.openapi.hivemq.ClientDetails;
-import com.hivemq.cli.openapi.hivemq.ClientRestrictions;
-import com.hivemq.cli.openapi.hivemq.ConnectionDetails;
-import com.hivemq.cli.openapi.hivemq.ProxyInformation;
-import com.hivemq.cli.openapi.hivemq.TLV;
-import com.hivemq.cli.openapi.hivemq.TlsInformation;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiCertificateInformation;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientDetails;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientRestrictions;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiConnectionDetails;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiProxyInformation;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiTLV;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiTlsInformation;
 import com.opencsv.CSVWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -79,14 +79,14 @@ public class ClientDetailsCsvWriterTask implements Runnable {
 
     private final @NotNull AtomicLong writtenClientDetails = new AtomicLong(0);
     private final @NotNull CompletableFuture<Void> clientDetailsFuture;
-    private final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue;
+    private final @NotNull BlockingQueue<HivemqOpenapiClientDetails> clientDetailsQueue;
     private final @NotNull File file;
     private final @NotNull CSVWriter csvWriter;
     private final @NotNull BufferedWriter bufferedFileWriter;
 
     public ClientDetailsCsvWriterTask(
             final @NotNull CompletableFuture<Void> clientDetailsFuture,
-            final @NotNull BlockingQueue<ClientDetails> clientDetailsQueue,
+            final @NotNull BlockingQueue<HivemqOpenapiClientDetails> clientDetailsQueue,
             final @NotNull File file,
             final char lineSeparator,
             final char quoteCharacter,
@@ -116,7 +116,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
 
             while (!clientDetailsFuture.isDone() || !clientDetailsQueue.isEmpty()) {
 
-                final ClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
+                final HivemqOpenapiClientDetails clientDetails = clientDetailsQueue.poll(50, TimeUnit.MILLISECONDS);
 
                 if (clientDetails != null) {
                     writeRow(clientDetails);
@@ -139,7 +139,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         csvWriter.writeNext(EXPORT_CSV_HEADER);
     }
 
-    private void writeRow(final @NotNull ClientDetails clientDetails) {
+    private void writeRow(final @NotNull HivemqOpenapiClientDetails clientDetails) {
         final List<String> row = new ArrayList<>();
         row.add(clientDetails.getId());
         row.add(toCsvString(clientDetails.getConnected()));
@@ -148,21 +148,21 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         row.add(toCsvString(clientDetails.getMessageQueueSize()));
         row.add(toCsvString(clientDetails.getWillPresent()));
 
-        final ClientRestrictions restrictions = clientDetails.getRestrictions();
+        final HivemqOpenapiClientRestrictions restrictions = clientDetails.getRestrictions();
         addRestrictions(row, restrictions);
 
-        final ConnectionDetails connectionDetails = clientDetails.getConnection();
+        final HivemqOpenapiConnectionDetails connectionDetails = clientDetails.getConnection();
         addConnectionDetails(row, connectionDetails);
 
         csvWriter.writeNext(row.toArray(new String[]{}));
     }
 
     private void addConnectionDetails(
-            final @NotNull List<String> row, final @Nullable ConnectionDetails connectionDetails) {
+            final @NotNull List<String> row, final @Nullable HivemqOpenapiConnectionDetails connectionDetails) {
         if (connectionDetails != null) {
             row.add(connectionDetails.getSourceIp());
 
-            final ProxyInformation proxyInformation = connectionDetails.getProxyInformation();
+            final HivemqOpenapiProxyInformation proxyInformation = connectionDetails.getProxyInformation();
             addProxyInformation(row, proxyInformation);
 
             row.add(connectionDetails.getMqttVersion());
@@ -180,7 +180,7 @@ public class ClientDetailsCsvWriterTask implements Runnable {
 
             row.add(toCsvString(connectionDetails.getCleanStart()));
 
-            final TlsInformation tlsInformation = connectionDetails.getTlsInformation();
+            final HivemqOpenapiTlsInformation tlsInformation = connectionDetails.getTlsInformation();
             addTlsInformation(row, tlsInformation);
         } else {
             row.add(null); // Ip
@@ -196,12 +196,14 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         }
     }
 
-    private void addTlsInformation(final @NotNull List<String> row, final @Nullable TlsInformation tlsInformation) {
+    private void addTlsInformation(
+            final @NotNull List<String> row, final @Nullable HivemqOpenapiTlsInformation tlsInformation) {
         if (tlsInformation != null) {
             row.add(tlsInformation.getCipherSuite());
             row.add(tlsInformation.getTlsVersion());
 
-            final CertificateInformation certificateInformation = tlsInformation.getCertificateInformation();
+            final HivemqOpenapiCertificateInformation certificateInformation =
+                    tlsInformation.getCertificateInformation();
             addCertificateInformation(row, certificateInformation);
         } else {
             row.add(null); // cipherSuite
@@ -211,7 +213,8 @@ public class ClientDetailsCsvWriterTask implements Runnable {
     }
 
     private void addCertificateInformation(
-            final @NotNull List<String> row, final @Nullable CertificateInformation certificateInformation) {
+            final @NotNull List<String> row,
+            final @Nullable HivemqOpenapiCertificateInformation certificateInformation) {
         if (certificateInformation != null) {
             row.add(certificateInformation.getCommonName());
             row.add(certificateInformation.getOrganization());
@@ -234,17 +237,17 @@ public class ClientDetailsCsvWriterTask implements Runnable {
     }
 
     private void addProxyInformation(
-            final @NotNull List<String> row, final @Nullable ProxyInformation proxyInformation) {
+            final @NotNull List<String> row, final @Nullable HivemqOpenapiProxyInformation proxyInformation) {
         if (proxyInformation != null) {
             row.add(proxyInformation.getSourceIp());
             row.add(toCsvString(proxyInformation.getSourcePort()));
             row.add(proxyInformation.getDestinationIp());
             row.add(toCsvString(proxyInformation.getDestinationPort()));
 
-            final List<TLV> tlvs = proxyInformation.getTlvs();
+            final List<HivemqOpenapiTLV> tlvs = proxyInformation.getTlvs();
             if (tlvs != null) {
                 final StringBuilder sb = new StringBuilder();
-                for (final TLV tlv : tlvs) {
+                for (final HivemqOpenapiTLV tlv : tlvs) {
                     sb.append(tlv.getKey()).append("=");
                     final String value = tlv.getValue();
                     if (value != null) {
@@ -265,7 +268,8 @@ public class ClientDetailsCsvWriterTask implements Runnable {
         }
     }
 
-    private void addRestrictions(final @NotNull List<String> row, final @Nullable ClientRestrictions restrictions) {
+    private void addRestrictions(
+            final @NotNull List<String> row, final @Nullable HivemqOpenapiClientRestrictions restrictions) {
         if (restrictions != null) {
             row.add(toCsvString(restrictions.getMaxMessageSize()));
             row.add(toCsvString(restrictions.getMaxQueueSize()));

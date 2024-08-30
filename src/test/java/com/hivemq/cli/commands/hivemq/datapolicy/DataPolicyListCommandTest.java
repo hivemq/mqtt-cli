@@ -19,7 +19,7 @@ package com.hivemq.cli.commands.hivemq.datapolicy;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubDataPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.DataPolicyList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiDataPolicyList;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +50,7 @@ public class DataPolicyListCommandTest {
     void setUp() throws ApiException {
         TestLoggerUtils.resetLogger();
         when(hiveMQRestService.getDataPoliciesApi(any(), anyDouble())).thenReturn(policiesApi);
-        final DataPolicyList policyList = new DataPolicyList();
+        final HivemqOpenapiDataPolicyList policyList = new HivemqOpenapiDataPolicyList();
         when(policiesApi.getAllDataPolicies(any(), any(), any(), any(), any(), any())).thenReturn(policyList);
     }
 
@@ -77,7 +77,7 @@ public class DataPolicyListCommandTest {
     }
 
     @Test
-    void call_limitPositive_success() throws ApiException {
+    void call_limitPositive_success() {
         assertEquals(0, commandLine.execute("--limit=5"));
     }
 

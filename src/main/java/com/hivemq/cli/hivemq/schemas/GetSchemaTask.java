@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.schemas;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
-import com.hivemq.cli.openapi.hivemq.Schema;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiSchema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +49,7 @@ public class GetSchemaTask {
             fieldsQueryParam = String.join(",", fields);
         }
 
-        final Schema schema;
+        final HivemqOpenapiSchema schema;
         try {
             schema = schemasApi.getSchema(schemaId, fieldsQueryParam);
         } catch (final ApiException apiException) {

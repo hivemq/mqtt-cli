@@ -19,7 +19,7 @@ package com.hivemq.cli.commands.hivemq.behaviorpolicy;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubBehaviorPoliciesApi;
-import com.hivemq.cli.openapi.hivemq.BehaviorPolicyList;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiBehaviorPolicyList;
 import com.hivemq.cli.rest.HiveMQRestService;
 import com.hivemq.cli.utils.TestLoggerUtils;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +50,7 @@ public class BehaviorPolicyListCommandTest {
     void setUp() throws ApiException {
         TestLoggerUtils.resetLogger();
         when(hiveMQRestService.getBehaviorPoliciesApi(any(), anyDouble())).thenReturn(behaviorPoliciesApi);
-        final BehaviorPolicyList policyList = new BehaviorPolicyList();
+        final HivemqOpenapiBehaviorPolicyList policyList = new HivemqOpenapiBehaviorPolicyList();
         when(behaviorPoliciesApi.getAllBehaviorPolicies(any(), any(), any(), any(), any())).thenReturn(policyList);
     }
 
@@ -78,7 +78,7 @@ public class BehaviorPolicyListCommandTest {
     }
 
     @Test
-    void call_limitPositive_success() throws ApiException {
+    void call_limitPositive_success() {
         assertEquals(0, commandLine.execute("--limit=5"));
     }
 

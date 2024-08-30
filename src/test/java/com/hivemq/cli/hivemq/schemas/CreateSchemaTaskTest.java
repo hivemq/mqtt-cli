@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.schemas;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
-import com.hivemq.cli.openapi.hivemq.Schema;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiSchema;
 import org.bouncycastle.util.encoders.Base64;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +59,7 @@ public class CreateSchemaTaskTest {
 
     @BeforeEach
     void setUp() throws ApiException {
-        when(schemasApi.createSchema(any())).thenReturn(new Schema());
+        when(schemasApi.createSchema(any())).thenReturn(new HivemqOpenapiSchema());
     }
 
     @Test
@@ -73,12 +73,12 @@ public class CreateSchemaTaskTest {
                 false,
                 ByteBuffer.wrap(JSON_SCHEMA_DEFINITION.getBytes(StandardCharsets.UTF_8)));
 
-        final ArgumentCaptor<Schema> schemaCaptor = ArgumentCaptor.forClass(Schema.class);
+        final ArgumentCaptor<HivemqOpenapiSchema> schemaCaptor = ArgumentCaptor.forClass(HivemqOpenapiSchema.class);
 
         assertTrue(task.execute());
 
         verify(schemasApi, times(1)).createSchema(schemaCaptor.capture());
-        final Schema createdSchema = schemaCaptor.getValue();
+        final HivemqOpenapiSchema createdSchema = schemaCaptor.getValue();
         assertEquals("test-1", createdSchema.getId());
         assertEquals("JSON", createdSchema.getType());
         final String createdSchemaDefinition = new String(Base64.decode(createdSchema.getSchemaDefinition()));
@@ -97,11 +97,11 @@ public class CreateSchemaTaskTest {
                 false,
                 ByteBuffer.wrap(Base64.decode(PROTOBUF_SCHEMA_DEFINITION)));
 
-        final ArgumentCaptor<Schema> schemaCaptor = ArgumentCaptor.forClass(Schema.class);
+        final ArgumentCaptor<HivemqOpenapiSchema> schemaCaptor = ArgumentCaptor.forClass(HivemqOpenapiSchema.class);
 
         assertTrue(task.execute());
         verify(schemasApi, times(1)).createSchema(schemaCaptor.capture());
-        final Schema createdSchema = schemaCaptor.getValue();
+        final HivemqOpenapiSchema createdSchema = schemaCaptor.getValue();
         assertEquals("test-1", createdSchema.getId());
         assertEquals("PROTOBUF", createdSchema.getType());
         assertEquals(PROTOBUF_SCHEMA_DEFINITION, createdSchema.getSchemaDefinition());

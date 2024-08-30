@@ -19,7 +19,7 @@ package com.hivemq.cli.hivemq.schemas;
 import com.hivemq.cli.commands.hivemq.datahub.OutputFormatter;
 import com.hivemq.cli.openapi.ApiException;
 import com.hivemq.cli.openapi.hivemq.DataHubSchemasApi;
-import com.hivemq.cli.openapi.hivemq.Schema;
+import com.hivemq.cli.openapi.hivemq.HivemqOpenapiSchema;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ public class GetSchemaTaskTest {
     void execute_schemaFound_printSchema() throws ApiException {
         final GetSchemaTask task = new GetSchemaTask(outputFormatter, schemasApi, "test-1", null);
 
-        final Schema schema = new Schema();
+        final HivemqOpenapiSchema schema = new HivemqOpenapiSchema();
         when(schemasApi.getSchema("test-1", null)).thenReturn(schema);
 
         assertTrue(task.execute());
