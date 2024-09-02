@@ -87,7 +87,7 @@ public class ScriptGetCommand implements Callable<Integer> {
     public @NotNull String toString() {
         return "GetScriptCommand{" +
                 "scriptId='" + scriptId + '\'' +
-                ", fields=" + Arrays.asList(fields) +
+                ", fields=" + Arrays.toString(fields) +
                 ", dataHubOptions=" + dataHubOptions +
                 ", outputFormatter=" + outputFormatter +
                 ", hiveMQRestService=" + hiveMQRestService +
