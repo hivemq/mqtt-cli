@@ -127,13 +127,12 @@ public class ScriptCreateCommandTest {
 
     @Test
     void execute_printVersionSet_versionPrinted() throws ApiException {
-        final @NotNull String apiScriptResponseJson = "{" +
+        final String apiScriptResponseJson = "{" +
                 "\"id\":\"s1\"," +
                 "\"version\":5," +
                 "\"createdAt\":\"2020-01-02T03:04:05.006Z\"," +
-                "\"type\":\"FUNCTION\"," +
-                "\"scriptDefinition\":\"J2NvbnNvbGUubG9nKCdIZWxsbywgV29ybGQhJyk7\"," +
-                "\"arguments\":{}" +
+                "\"functionType\":\"TRANSFORMATION\"," +
+                "\"source\":\"J2NvbnNvbGUubG9nKCdIZWxsbywgV29ybGQhJyk7\"" +
                 "}";
         final HivemqOpenapiScript createdScript =
                 openapiSerialization.deserialize(apiScriptResponseJson, HivemqOpenapiScript.class);
