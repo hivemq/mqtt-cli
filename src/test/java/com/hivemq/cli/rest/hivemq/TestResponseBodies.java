@@ -155,10 +155,10 @@ public class TestResponseBodies {
                     "      \"username\": \"user-1\",\n" +
                     "      \"password\": \"pass-1\", \n" +
                     "      \"cleanStart\": true,\n" +
-                    "      \"tls\": {\n" +
+                    "      \"tlsInformation\": {\n" +
                     "        \"cipherSuite\": \"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256\",\n" +
                     "        \"tlsVersion\": \"TLSv1.2\",\n" +
-                    "        \"certificate\": {\n" +
+                    "        \"certificateInformation\": {\n" +
                     "          \"commonName\": \"CertCN\",\n" +
                     "          \"organization\": \"my-org\",\n" +
                     "          \"organizationalUnit\": \"org-unit\",\n" +
@@ -208,8 +208,6 @@ public class TestResponseBodies {
                     "    \"id\": \"client-1\",\n" +
                     "    \"connected\": false,\n" +
                     "    \"sessionExpiryInterval\": 120,\n" +
-                    "    \"sessionExpiresAt\": \"2019-10-10T16:45:14Z\",\n" +
-                    "    \"disconnectedAt\": \"2019-10-10T16:43:14Z\",\n" +
                     "    \"messageQueueSize\": 674,\n" +
                     "    \"willPresent\": false,\n" +
                     "    \"restrictions\": {\n" +
