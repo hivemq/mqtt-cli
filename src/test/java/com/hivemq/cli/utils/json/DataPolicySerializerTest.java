@@ -51,7 +51,9 @@ public class DataPolicySerializerTest {
 
     @Test
     void serialize_minimalFields_jsonIdentical() {
-        final String policyJson = "{\"id\":\"policy-id\"," + "\"createdAt\":\"2023-01-01T01:02:03.004Z\"}";
+        final String policyJson = "{\"id\":\"policy-id\"," +
+                "\"createdAt\":\"2023-01-01T01:02:03.004Z\"," +
+                "\"matching\":{\"topicFilter\":\"filter\"}}";
 
         final HivemqOpenapiDataPolicy policy =
                 openapiSerialization.deserialize(policyJson, HivemqOpenapiDataPolicy.class);
