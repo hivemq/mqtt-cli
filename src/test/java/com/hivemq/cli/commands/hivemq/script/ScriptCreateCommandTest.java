@@ -52,7 +52,6 @@ public class ScriptCreateCommandTest {
     private final @NotNull HiveMQRestService hiveMQRestService = mock();
     private @NotNull OutputFormatter outputFormatter;
     private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    private final @NotNull JSON openapiSerialization = new JSON();
     private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
 
     private @NotNull CommandLine commandLine;
@@ -134,8 +133,7 @@ public class ScriptCreateCommandTest {
                 "\"functionType\":\"TRANSFORMATION\"," +
                 "\"source\":\"J2NvbnNvbGUubG9nKCdIZWxsbywgV29ybGQhJyk7\"" +
                 "}";
-        final HivemqOpenapiScript createdScript =
-                openapiSerialization.deserialize(apiScriptResponseJson, HivemqOpenapiScript.class);
+        final HivemqOpenapiScript createdScript = JSON.deserialize(apiScriptResponseJson, HivemqOpenapiScript.class);
         when(scriptsApi.createScript(any())).thenReturn(createdScript);
 
         assertEquals(0,

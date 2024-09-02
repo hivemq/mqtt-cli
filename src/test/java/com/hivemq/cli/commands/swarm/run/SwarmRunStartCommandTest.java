@@ -20,7 +20,13 @@ import com.hivemq.cli.commands.swarm.error.Error;
 import com.hivemq.cli.commands.swarm.error.SwarmApiErrorTransformer;
 import com.hivemq.cli.openapi.ApiClient;
 import com.hivemq.cli.openapi.ApiException;
-import com.hivemq.cli.openapi.swarm.*;
+import com.hivemq.cli.openapi.swarm.RunResponse;
+import com.hivemq.cli.openapi.swarm.RunsApi;
+import com.hivemq.cli.openapi.swarm.ScenariosApi;
+import com.hivemq.cli.openapi.swarm.StartRunRequest;
+import com.hivemq.cli.openapi.swarm.StartRunResponse;
+import com.hivemq.cli.openapi.swarm.UploadScenarioRequest;
+import com.hivemq.cli.openapi.swarm.UploadScenarioResponse;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,13 +35,18 @@ import org.mockito.ArgumentCaptor;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class SwarmRunStartCommandTest {
 
@@ -120,7 +131,7 @@ class SwarmRunStartCommandTest {
     @Test
     void uploadScenario_xml_error(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
         final Path scenario = tempDir.resolve("scenario.xml");
-        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(scenario, "scenario-content");
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),
@@ -152,7 +163,7 @@ class SwarmRunStartCommandTest {
     @Test
     void uploadScenario_vm_error(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
         final Path scenario = tempDir.resolve("scenario.vm");
-        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(scenario, "scenario-content");
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),
@@ -185,7 +196,7 @@ class SwarmRunStartCommandTest {
     void uploadScenarioSuccessButCantStart_error(final @TempDir @NotNull Path tempDir)
             throws IOException, ApiException {
         final Path scenario = tempDir.resolve("scenario.vm");
-        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(scenario, "scenario-content");
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),
@@ -214,7 +225,7 @@ class SwarmRunStartCommandTest {
     @Test
     void runScenarioAttached(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
         final Path scenario = tempDir.resolve("scenario.vm");
-        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(scenario, "scenario-content");
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),
@@ -251,7 +262,7 @@ class SwarmRunStartCommandTest {
     @Test
     void runScenarioDetached(final @TempDir @NotNull Path tempDir) throws IOException, ApiException {
         final Path scenario = tempDir.resolve("scenario.vm");
-        Files.write(scenario, "scenario-content".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(scenario, "scenario-content");
 
         final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
                 scenario.toFile(),

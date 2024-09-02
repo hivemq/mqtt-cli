@@ -40,8 +40,8 @@ import java.util.OptionalLong;
 
 import static com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5PayloadFormatIndicator.UNSPECIFIED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -140,7 +140,7 @@ class JsonMqttPublishTest {
         assertEquals("myResponseTopic", map.get("responseTopic"));
 
         final Object userPropertiesArrayList = map.get("userProperties");
-        assertTrue(userPropertiesArrayList instanceof ArrayList);
+        assertInstanceOf(ArrayList.class, userPropertiesArrayList);
         @SuppressWarnings("unchecked") //
         final ArrayList<LinkedTreeMap<String, String>> userPropertiesMapCasted =
                 (ArrayList<LinkedTreeMap<String, String>>) userPropertiesArrayList;

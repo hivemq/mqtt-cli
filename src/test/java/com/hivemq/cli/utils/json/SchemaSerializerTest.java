@@ -32,14 +32,13 @@ public class SchemaSerializerTest {
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
             .registerTypeAdapter(HivemqOpenapiSchema.class, new SchemaSerializer())
             .create();
-    private final @NotNull JSON openapiSerialization = new JSON();
 
     @Test
     void serialize_allFields_jsonIdentical() {
         final String schemaJson = "{\"id\":\"protobuf-1-schema\",\"version\":1,\"createdAt\":\"2023-01-01T01:02:03.004Z\"," +
                 "\"type\":\"schemaType\",\"schemaDefinition\":\"abc\",\"arguments\":{\"argB\":\"valB\",\"argA\":\"valA\"}}";
 
-        final HivemqOpenapiSchema schema = openapiSerialization.deserialize(schemaJson, HivemqOpenapiSchema.class);
+        final HivemqOpenapiSchema schema = JSON.deserialize(schemaJson, HivemqOpenapiSchema.class);
         final String serialized = gson.toJson(schema);
         assertEquals(schemaJson, serialized);
     }
