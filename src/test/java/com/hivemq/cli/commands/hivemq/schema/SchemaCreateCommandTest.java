@@ -55,7 +55,6 @@ public class SchemaCreateCommandTest {
     private final @NotNull HiveMQRestService hiveMQRestService = mock();
     private @NotNull OutputFormatter outputFormatter;
     private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    private final @NotNull JSON openapiSerialization = new JSON();
     private final @NotNull DataHubSchemasApi schemasApi = mock();
 
     private @NotNull CommandLine commandLine;
@@ -180,8 +179,7 @@ public class SchemaCreateCommandTest {
                 "\"schemaDefinition\":\"J3t9Jw==\"," +
                 "\"arguments\":{}" +
                 "}";
-        final HivemqOpenapiSchema createdSchema =
-                openapiSerialization.deserialize(apiSchemaResponseJson, HivemqOpenapiSchema.class);
+        final HivemqOpenapiSchema createdSchema = JSON.deserialize(apiSchemaResponseJson, HivemqOpenapiSchema.class);
         when(schemasApi.createSchema(any())).thenReturn(createdSchema);
 
         assertEquals(0, commandLine.execute("--id=s1", "--type=json", "--definition='{}'", "--print-version"));

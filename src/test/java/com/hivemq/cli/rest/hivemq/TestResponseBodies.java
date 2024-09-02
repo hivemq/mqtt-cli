@@ -217,16 +217,4 @@ public class TestResponseBodies {
                     "  }\n" +
                     "}";
             //@formatter:on
-
-    public static final @NotNull String CLIENT_DETAILS_NOT_FOUND =
-            //@formatter:off
-            "{\n" +
-                    "  \"errors\": [\n" +
-                    "    {\n" +
-                    "      \"title\": \"Requested resource not found\",\n" +
-                    "      \"detail\": \"Client with id 'client-1' not found\"\n" +
-                    "    }\n" +
-                    "  ]\n" +
-                    "}";
-            //@formatter:on
 }

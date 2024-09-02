@@ -32,7 +32,6 @@ public class DataPolicySerializerTest {
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeSerializer())
             .registerTypeAdapter(HivemqOpenapiDataPolicy.class, new DataPolicySerializer())
             .create();
-    private final @NotNull JSON openapiSerialization = new JSON();
 
     @Test
     void serialize_allFields_jsonIdentical() {
@@ -43,8 +42,7 @@ public class DataPolicySerializerTest {
                 "\"onSuccess\":{\"pipeline\":[{\"id\":\"success\",\"functionId\":\"successFunction\",\"arguments\":{\"argB\":\"valB\",\"argA\":\"valA\"}}]}," +
                 "\"onFailure\":{\"pipeline\":[{\"id\":\"failure\",\"functionId\":\"failureFunction\",\"arguments\":{\"argA\":\"valA\",\"argB\":\"valB\"}}]}}";
 
-        final HivemqOpenapiDataPolicy policy =
-                openapiSerialization.deserialize(dataPolicyJson, HivemqOpenapiDataPolicy.class);
+        final HivemqOpenapiDataPolicy policy = JSON.deserialize(dataPolicyJson, HivemqOpenapiDataPolicy.class);
         final String serialized = gson.toJson(policy);
         assertEquals(dataPolicyJson, serialized);
     }
@@ -55,8 +53,7 @@ public class DataPolicySerializerTest {
                 "\"createdAt\":\"2023-01-01T01:02:03.004Z\"," +
                 "\"matching\":{\"topicFilter\":\"filter\"}}";
 
-        final HivemqOpenapiDataPolicy policy =
-                openapiSerialization.deserialize(policyJson, HivemqOpenapiDataPolicy.class);
+        final HivemqOpenapiDataPolicy policy = JSON.deserialize(policyJson, HivemqOpenapiDataPolicy.class);
         final String serialized = gson.toJson(policy);
         assertEquals(policyJson, serialized);
     }
