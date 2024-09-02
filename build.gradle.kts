@@ -120,7 +120,6 @@ dependencies {
     implementation(libs.netty.codec.http)
     implementation(variantOf(libs.netty.transport.native.epoll) { classifier("linux-x86_64") })
     implementation(libs.openCsv)
-    implementation(libs.jackson.databind.nullable)
 }
 
 /* ******************** OpenAPI ******************** */
@@ -171,6 +170,7 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     modelPackage = "com.hivemq.cli.openapi.hivemq"
     modelNamePrefix = "HivemqOpenapi"
     configOptions.put("hideGenerationTimestamp", "true")
+    configOptions.put("openApiNullable", "false")
 
     val outputSrcDir = layout.buildDirectory.dir("generated/openapi/hivemq/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
@@ -194,6 +194,7 @@ val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
     apiPackage = "com.hivemq.cli.openapi.swarm"
     modelPackage = "com.hivemq.cli.openapi.swarm"
     configOptions.put("hideGenerationTimestamp", "true")
+    configOptions.put("openApiNullable", "false")
 
     val outputSrcDir = layout.buildDirectory.dir("generated/openapi/swarm/java")
     outputs.dir(outputSrcDir).withPropertyName("outputSrcDir")
