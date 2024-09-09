@@ -258,9 +258,14 @@ testing {
                 implementation(project())
             }
 
-            ociImageDependencies {
-                runtime("hivemq:hivemq4:latest") { isChanging = true }
-                runtime("hivemq:hivemq-swarm:latest") { isChanging = true }
+            oci.of(this) {
+                imageDependencies {
+                    runtime("hivemq:hivemq4:latest") { isChanging = true }
+                    runtime("hivemq:hivemq-swarm:latest") { isChanging = true }
+                }
+                val linuxAmd64 = platformSelector(platform("linux", "amd64"))
+                val linuxArm64v8 = platformSelector(platform("linux", "arm64", "v8"))
+                platformSelector = if (System.getenv("CI_RUN") != null) linuxAmd64 else linuxAmd64.and(linuxArm64v8)
             }
         }
 
@@ -302,23 +307,18 @@ testing {
                 implementation(libs.hivemq.mqttClient)
             }
 
-            ociImageDependencies {
-                runtime(project).tag("latest")
+            oci.of(this) {
+                imageDependencies {
+                    runtime(project).tag("latest")
+                }
+                val linuxAmd64 = platformSelector(platform("linux", "amd64"))
+                val linuxArm64v8 = platformSelector(platform("linux", "arm64", "v8"))
+                platformSelector = if (System.getenv("CI_RUN") != null) linuxAmd64 else linuxAmd64.and(linuxArm64v8)
             }
         }
 
         tasks.named("check") {
             dependsOn(integrationTest, systemTest)
-        }
-
-        tasks.named("integrationTestOciRegistryData", oci.imagesTaskClass) {
-            val linuxAmd64 = oci.platformSelector(oci.platform("linux", "amd64"))
-            val linuxArm64v8 = oci.platformSelector(oci.platform("linux", "arm64", "v8"))
-            platformSelector = if (System.getenv("CI_RUN") != null) {
-                linuxAmd64
-            } else {
-                linuxAmd64.and(linuxArm64v8)
-            }
         }
     }
 }
@@ -631,8 +631,8 @@ oci {
     }
     imageDefinitions.register("main") {
         allPlatforms {
-            parentImages {
-                add("library:eclipse-temurin:sha256!ea878d7ef79653c16f6bfdfbd3bf20ae80f4f645f66339e9153ae0d481385225") // 21.0.4_7-jre-jammy
+            dependencies {
+                runtime("library:eclipse-temurin:sha256!ea878d7ef79653c16f6bfdfbd3bf20ae80f4f645f66339e9153ae0d481385225") // 21.0.4_7-jre-jammy
             }
             config {
                 entryPoint.add("java")
