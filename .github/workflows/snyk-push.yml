@@ -4,12 +4,24 @@ on:
   push:
     branches:
       - master**
+  workflow_call:
+    inputs:
+      github_ref:
+        required: true
+        type: string
 
 jobs:
   run-snyk-monitor:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Select GitHub ref
+        id: select_github_ref
+        shell: bash
+        run: |
+          workflow_call_github_ref=${{ inputs.github_ref }}
+          echo "selected_github_ref=${workflow_call_github_ref:-${{ github.ref_name }}}" >> "$GITHUB_OUTPUT"
+
       - name: Setup Java
         uses: actions/setup-java@2dfa2011c5b2a0f1489bf9e433881c92c1631f88 # v4
         with:
@@ -21,6 +33,7 @@ jobs:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
         with:
           path: mqtt-cli
+          ref: ${{ steps.select_github_ref.outputs.selected_github_ref }}
 
       - name: Setup Snyk
         uses: snyk/actions/setup@master
@@ -28,7 +41,7 @@ jobs:
       - name: Run Snyk monitor
         shell: bash
         run: >
-          snyk monitor --configuration-matching=^runtimeClasspath$ --target-reference=${{ github.ref_name }} --org=hivemq-mqtt-cli
+          snyk monitor --configuration-matching=^runtimeClasspath$ --target-reference=${{ steps.select_github_ref.outputs.selected_github_ref }} --org=hivemq-mqtt-cli
           --project-name=mqtt-cli --remote-repo-url=mqtt-cli --project-lifecycle=development mqtt-cli -d
           --project-tags=kanbanize_board_name="\"Tooling++&++Extension,kanbanize_board_workflow_name=Development++Workflow,kanbanize_board_column_name=Selected,kanbanize_board_swimlane=Expedite,kanbanize_board_done_sections=4/5\""
         env:

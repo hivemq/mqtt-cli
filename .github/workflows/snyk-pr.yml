@@ -6,8 +6,15 @@ on:
       - master**
 
 jobs:
+  monitor-baseline-project:
+    uses: ./.github/workflows/snyk-push.yml
+    with:
+      github_ref: ${{ github.base_ref }}
+    secrets: inherit
+
   scan-for-new-issues:
     runs-on: ubuntu-latest
+    needs: monitor-baseline-project
 
     steps:
       - name: Setup Java
@@ -27,4 +34,3 @@ jobs:
         with:
           snyk-args: --org=hivemq-mqtt-cli --configuration-matching=^runtimeClasspath$ mqtt-cli -d
           snyk-token: ${{ secrets.SNYK_TOKEN }}
-          snyk-baseline-project-id: ${{ secrets.SNYK_PROJECT_ID_MASTER }}
