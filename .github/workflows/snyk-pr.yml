@@ -23,7 +23,7 @@ jobs:
           path: mqtt-cli
 
       - name: Check for new issues
-        uses: hivemq/hivemq-snyk-composite-action@0017dbcec3623e66de4090e198e9b041ad599e7d # v2.1.0
+        uses: hivemq/hivemq-snyk-composite-action@32f10ba84babecc503f10457c4f4ee29abcb9ba8 # v2.2.0
         with:
           snyk-args: --org=hivemq-mqtt-cli --configuration-matching=^runtimeClasspath$ mqtt-cli -d
           snyk-token: ${{ secrets.SNYK_TOKEN }}
