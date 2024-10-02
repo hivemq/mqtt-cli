@@ -42,7 +42,7 @@ public class SubscribeMqtt5PublishCallback implements Consumer<Mqtt5Publish> {
     SubscribeMqtt5PublishCallback(final @NotNull SubscribeOptions subscribeOptions, final @NotNull Mqtt5Client client) {
         printToStdout = subscribeOptions.isPrintToSTDOUT();
         outputFile = subscribeOptions.getOutputFile();
-        isBase64 = subscribeOptions.isBase64();
+        isBase64 = subscribeOptions.isPayloadEncodeToBase64();
         isJsonOutput = subscribeOptions.isJsonOutput();
         showTopics = subscribeOptions.isShowTopics();
         this.client = client;

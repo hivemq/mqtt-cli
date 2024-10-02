@@ -33,9 +33,16 @@ import picocli.CommandLine;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class SubscribeOptions {
+
+    @SuppressWarnings({"NotNullFieldNotInitialized", "unused"})
+    @CommandLine.Spec
+    private @NotNull CommandLine.Model.CommandSpec spec;
+
+    private final @NotNull List<String> deprecationWarnings;
 
     @SuppressWarnings({"NotNullFieldNotInitialized", "unused"}) //will be initialized via required
     @CommandLine.Option(names = {"-t", "--topic"}, required = true, description = "The topics to subscribe to")
@@ -48,37 +55,164 @@ public class SubscribeOptions {
                         description = "Quality of service for the corresponding topics (default for all: 2)")
     private @NotNull MqttQos @NotNull [] qos;
 
+    private @NotNull Mqtt5UserProperty @Nullable [] userProperties = null;
+    private boolean userPropertiesFromOption = false;
+    private boolean userPropertiesFromLegacyOption = false;
+
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-up", "--userProperty"},
+    @CommandLine.Option(names = {"--user-property"},
                         converter = Mqtt5UserPropertyConverter.class,
                         description = "A user property of the subscribe message")
-    private @Nullable Mqtt5UserProperty @Nullable [] userProperties;
+    private void userProperties(final @NotNull Mqtt5UserProperty @NotNull [] userProperties) {
+        if (userPropertiesFromLegacyOption) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the user properties legacy options \"-up\" or \"--userProperty\" and the current \"--user-property\" is used. Please only use \"--user-property\" as the legacy options will be removed in a future version.");
+        }
+        userPropertiesFromOption = true;
+        this.userProperties = userProperties;
+    }
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-of", "--outputToFile"},
+    @Deprecated(since = "4.34.0", forRemoval = true)
+    @CommandLine.Option(names = {"-up", "--userProperty"},
+                        hidden = true,
+                        converter = Mqtt5UserPropertyConverter.class,
+                        description = "Options \"-up\" and \"--userProperty\" are legacy, please use \"--user-property\". They will be removed in a future version.")
+    private void userPropertiesLegacy(final @NotNull Mqtt5UserProperty @NotNull [] userPropertiesLegacy) {
+        //only show message once as this method is executed multiple times
+        if (!userPropertiesFromLegacyOption) {
+            deprecationWarnings.add(
+                    "Options \"-up\" and \"--userProperty\" are legacy, please use \"--user-property\". They will be removed in a future version.");
+        }
+
+        if (userPropertiesFromOption) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the user properties legacy options \"-up\" or \"--userProperty\" and the current \"--user-property\" is used. Please only use \"--user-property\" as the legacy options will be removed in a future version.");
+        }
+        userPropertiesFromLegacyOption = true;
+        userProperties = userPropertiesLegacy;
+    }
+
+    private @Nullable File outputFile = null;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--output-to-file"},
                         description = "A file to which the received publish messages will be written")
-    private @Nullable File outputFile;
+    private void outputFile(final @NotNull File outputFile) {
+        if (this.outputFile != null) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the output file legacy options \"-of\" or \"--outputToFile\" and the current \"--output-to-file\" is used. Please only use \"--output-to-file\" as the legacy options will be removed in a future version.");
+        }
+        this.outputFile = outputFile;
+    }
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-b64", "--base64"},
+    @Deprecated(since = "4.34.0", forRemoval = true)
+    @CommandLine.Option(names = {"-of", "--outputToFile"},
+                        hidden = true,
+                        description = "Options \"-of\" and \"--outputToFile\" are legacy, please use \"--output-to-file\". They will be removed in a future version")
+    private void outputFileLegacy(final @NotNull File outputFileLegacy) {
+        deprecationWarnings.add(
+                "Options \"-of\" and \"--outputToFile\" are legacy, please use \"--output-to-file\". They will be removed in a future version.");
+
+        if (this.outputFile != null) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the output file legacy options \"-of\" or \"--outputToFile\" and the current \"--output-to-file\" is used. Please only use \"--output-to-file\" as the legacy options will be removed in a future version.");
+        }
+        this.outputFile = outputFileLegacy;
+    }
+
+    private boolean isPayloadEncodeToBase64 = false;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--base64"},
                         description = "Specify the encoding of the received messages as Base64 (default: false)")
-    private boolean base64;
+    private void isMessageBase64Encoded(final boolean base64) {
+        if (isPayloadEncodeToBase64) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the base64 legacy options \"-b64\" and the current \"--base64\" is used. Please only use \"--base64\" as the legacy options will be removed in a future version.");
+        }
+        isPayloadEncodeToBase64 = base64;
+    }
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-J", "--jsonOutput"},
-                        defaultValue = "false",
+    @Deprecated(since = "4.34.0", forRemoval = true)
+    @CommandLine.Option(names = {"-b64"},
+                        hidden = true,
+                        description = "Option \"-b64\" is legacy, please use \"--base64\". It will be removed in a future version")
+    private void isMessageBase64EncodedLegacy(final boolean base64Legacy) {
+        deprecationWarnings.add(
+                "Option \"-b64\" is legacy, please use \"--base64\". It will be removed in a future version.");
+
+        if (isPayloadEncodeToBase64) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the base64 legacy options \"-b64\" and the current \"--base64\" is used. Please only use \"--base64\" as the legacy options will be removed in a future version.");
+        }
+        isPayloadEncodeToBase64 = base64Legacy;
+    }
+
+    private boolean jsonOutput = false;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-J", "--json-output"},
                         description = "Print the received publishes in pretty JSON format")
-    private boolean jsonOutput;
+    private void jsonOutput(final boolean jsonOutput) {
+        if (this.jsonOutput) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the json output legacy options \"--jsonOutput\" and the current \"-J\" or \"--json-output\" is used. Please only use \"-J\" or \"--json-output\" as the legacy options will be removed in a future version.");
+        }
+        this.jsonOutput = jsonOutput;
+    }
 
     @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"-T", "--showTopics"},
-                        defaultValue = "false",
+    @Deprecated(since = "4.34.0", forRemoval = true)
+    @CommandLine.Option(names = {"--jsonOutput"},
+                        hidden = true,
+                        description = "Option \"--jsonOutput\" is legacy, please use \"--json-output\". It will be removed in a future version")
+    private void jsonOutputLegacy(final boolean jsonOutputLegacy) {
+        deprecationWarnings.add(
+                "Option \"--jsonOutput\" is legacy, please use \"--json-output\". It will be removed in a future version.");
+
+        if (jsonOutput) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the json output legacy options \"--jsonOutput\" and the current \"-J\" or \"--json-output\" is used. Please only use \"-J\" or \"--json-output\" as the legacy options will be removed in a future version.");
+        }
+        jsonOutput = true;
+    }
+
+    private boolean showTopics = false;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-T", "--show-topics"},
                         description = "Prepend the specific topic name to the received publish")
-    private boolean showTopics;
+    private void showTopics(final boolean showTopics) {
+        if (this.showTopics) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the show topics legacy options \"--showTopics\" and the current \"-T\" or \"--show-topics\" is used. Please only use \"-T\" or \"--show-topics\" as the legacy options will be removed in a future version.");
+        }
+        this.showTopics = showTopics;
+    }
+
+    @SuppressWarnings("unused")
+    @Deprecated(since = "4.34.0", forRemoval = true)
+    @CommandLine.Option(names = {"--showTopics"},
+                        hidden = true,
+                        description = "Option \"--showTopics\" is legacy, please use \"-T\" or \"--show-topics\". It will be removed in a future version")
+    private void showTopicsLegacy(final boolean showTopicsLegacy) {
+        deprecationWarnings.add(
+                "Option \"--showTopics\" is legacy, please use \"-T\" or \"--show-topics\". It will be removed in a future version.");
+
+        if (this.showTopics) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    "A mix of the show topics legacy options \"--showTopics\" and the current \"-T\" or \"--show-topics\" is used. Please only use \"-T\" or \"--show-topics\" as the legacy options will be removed in a future version.");
+        }
+        showTopics = true;
+    }
 
     private boolean printToSTDOUT = false;
 
-    public SubscribeOptions() {
+    public SubscribeOptions(final @NotNull List<String> deprecationWarnings) {
+        this.deprecationWarnings = deprecationWarnings;
         setDefaultOptions();
     }
 
@@ -98,8 +232,8 @@ public class SubscribeOptions {
         return printToSTDOUT;
     }
 
-    public boolean isBase64() {
-        return base64;
+    public boolean isPayloadEncodeToBase64() {
+        return isPayloadEncodeToBase64;
     }
 
     public boolean isJsonOutput() {
@@ -181,7 +315,7 @@ public class SubscribeOptions {
                 ", printToSTDOUT=" +
                 printToSTDOUT +
                 ", base64=" +
-                base64 +
+                isPayloadEncodeToBase64 +
                 ", jsonOutput=" +
                 jsonOutput +
                 ", showTopics=" +

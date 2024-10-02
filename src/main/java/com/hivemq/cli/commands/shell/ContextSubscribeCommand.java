@@ -25,6 +25,8 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
@@ -39,6 +41,8 @@ import java.util.concurrent.Executors;
 public class ContextSubscribeCommand extends ShellContextCommand implements Callable<Integer> {
 
     private static final int IDLE_TIME = 1000;
+
+    private final @NotNull List<String> deprecationWarnings = new ArrayList<>();
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-s", "--stay"},
@@ -55,7 +59,7 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
     }
 
     @CommandLine.Mixin
-    private final @NotNull SubscribeOptions subscribeOptions = new SubscribeOptions();
+    private final @NotNull SubscribeOptions subscribeOptions = new SubscribeOptions(deprecationWarnings);
 
     @Inject
     public ContextSubscribeCommand(final @NotNull MqttClientExecutor mqttClientExecutor) {
@@ -65,6 +69,8 @@ public class ContextSubscribeCommand extends ShellContextCommand implements Call
     @Override
     public @NotNull Integer call() {
         Logger.trace("Command {}", this);
+
+        LoggerUtils.logDeprecatedOptions(deprecationWarnings);
 
         if (contextClient == null) {
             Logger.error("The client to subscribe with does not exist");
