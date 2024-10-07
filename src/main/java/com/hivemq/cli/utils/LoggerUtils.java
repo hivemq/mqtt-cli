@@ -34,6 +34,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public class LoggerUtils {
 
         // TinyLog configuration
         // File Writer (creates logfiles under .mqtt-cli/logs folder)
-        final Map<String, String> configurationMap = new HashMap<String, String>() {{
+        final Map<String, String> configurationMap = new HashMap<>() {{
             put("writer", "file");
             put("writer.format", logfileFormatPattern);
             put("writer.file", logfilePath.toString());
@@ -73,7 +74,7 @@ public class LoggerUtils {
 
     public static void setupConsoleLogging(final boolean logToLogfile, final @NotNull String logLevel) {
         // TinyLog configuration
-        final Map<String, String> configurationMap = new HashMap<String, String>() {{
+        final Map<String, String> configurationMap = new HashMap<>() {{
             put("writer1", "console");
             if (logLevel.equals("debug") || logLevel.equals("trace")) {
                 put("writer1.format", "{message}");
@@ -94,7 +95,7 @@ public class LoggerUtils {
         if (logToLogfile) {
             LoggerUtils.useDefaultLogging();
         } else {
-            final Map<String, String> configurationMap = new HashMap<String, String>() {{
+            final Map<String, String> configurationMap = new HashMap<>() {{
                 put("writer.level", "off");
             }};
             Configuration.replace(configurationMap);
@@ -138,6 +139,19 @@ public class LoggerUtils {
             Logger.error(exception, "{}. Reason: '{}'", message, exceptionMessage);
         } else {
             Logger.error(exception, "{}. Use 'mqtt sh -l' to see more detailed information in the logfile.", message);
+        }
+    }
+
+    public static void logDeprecatedOptions(final @NotNull List<String> deprecationWarnings) {
+        if (!deprecationWarnings.isEmpty()) {
+            if (deprecationWarnings.size() == 1) {
+                Logger.warn(deprecationWarnings.get(0));
+            } else {
+                Logger.warn("There are deprecated options used in this command:");
+                for (final String deprecatedWarning : deprecationWarnings) {
+                    Logger.warn("  - " + deprecatedWarning);
+                }
+            }
         }
     }
 }

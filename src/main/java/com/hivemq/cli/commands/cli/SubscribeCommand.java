@@ -31,6 +31,8 @@ import org.tinylog.Logger;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
@@ -41,6 +43,7 @@ import java.util.concurrent.Callable;
 public class SubscribeCommand implements Callable<Integer> {
 
     private static final int IDLE_TIME = 5000;
+    private final @NotNull List<String> deprecationWarnings = new ArrayList<>();
     private final @NotNull MqttClientExecutor mqttClientExecutor;
     private @Nullable MqttClient subscribeClient;
 
@@ -64,7 +67,7 @@ public class SubscribeCommand implements Callable<Integer> {
     private final @NotNull ConnectOptions connectOptions = new ConnectOptions();
 
     @CommandLine.Mixin
-    private final @NotNull SubscribeOptions subscribeOptions = new SubscribeOptions();
+    private final @NotNull SubscribeOptions subscribeOptions = new SubscribeOptions(deprecationWarnings);
 
     @CommandLine.Mixin
     private final @NotNull DebugOptions debugOptions = new DebugOptions();
@@ -89,6 +92,8 @@ public class SubscribeCommand implements Callable<Integer> {
         LoggerUtils.setupConsoleLogging(logToLogfile, logLevel);
 
         Logger.trace("Command {}", this);
+
+        LoggerUtils.logDeprecatedOptions(deprecationWarnings);
 
         connectOptions.setDefaultOptions();
         connectOptions.logUnusedOptions();
