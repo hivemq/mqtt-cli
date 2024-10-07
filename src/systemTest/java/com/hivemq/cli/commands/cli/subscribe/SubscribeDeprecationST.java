@@ -70,7 +70,7 @@ class SubscribeDeprecationST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
 
         executionResult.awaitStdErr(
-                "Options \"-up\" and \"--userProperty\" are legacy, please use \"--user-property\". They will be removed in a future version.");
+                "Options \"-up\" and \"--userProperty\" are legacy, please use \"--user-property\". Legacy options will be removed in a future version.");
 
         assertSubscribe(executionResult);
 
@@ -140,7 +140,7 @@ class SubscribeDeprecationST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
 
         executionResult.awaitStdErr(
-                "Options \"-of\" and \"--outputToFile\" are legacy, please use \"--output-to-file\". They will be removed in a future version.");
+                "Options \"-of\" and \"--outputToFile\" are legacy, please use \"--output-to-file\". Legacy options will be removed in a future version.");
 
         assertSubscribe(executionResult);
 
@@ -200,7 +200,7 @@ class SubscribeDeprecationST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
 
         executionResult.awaitStdErr(
-                "Option \"-b64\" is legacy, please use \"--base64\". It will be removed in a future version.");
+                "Option \"-b64\" is legacy, please use \"--base64\". The legacy option will be removed in a future version.");
 
         assertSubscribe(executionResult);
 
@@ -250,7 +250,7 @@ class SubscribeDeprecationST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
 
         executionResult.awaitStdErr(
-                "Option \"--jsonOutput\" is legacy, please use \"--json-output\". It will be removed in a future version.");
+                "Option \"--jsonOutput\" is legacy, please use \"--json-output\". The legacy option will be removed in a future version.");
 
         assertSubscribe(executionResult);
 
@@ -313,7 +313,7 @@ class SubscribeDeprecationST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
 
         executionResult.awaitStdErr(
-                "Option \"--showTopics\" is legacy, please use \"-T\" or \"--show-topics\". It will be removed in a future version.");
+                "Option \"--showTopics\" is legacy, please use \"-T\" or \"--show-topics\". The legacy option will be removed in a future version.");
 
         assertSubscribe(executionResult);
 
