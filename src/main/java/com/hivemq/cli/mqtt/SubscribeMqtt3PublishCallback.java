@@ -42,7 +42,7 @@ public class SubscribeMqtt3PublishCallback implements Consumer<Mqtt3Publish> {
     SubscribeMqtt3PublishCallback(final @NotNull SubscribeOptions subscribeOptions, final @NotNull Mqtt3Client client) {
         printToStdout = subscribeOptions.isPrintToSTDOUT();
         outputFile = subscribeOptions.getOutputFile();
-        isBase64 = subscribeOptions.isPayloadEncodeToBase64();
+        isBase64 = subscribeOptions.isEncodePayloadInBase64();
         isJsonOutput = subscribeOptions.isJsonOutput();
         showTopics = subscribeOptions.isShowTopics();
         this.client = client;
