@@ -9,4 +9,7 @@
     ],
     useBaseBranchConfig: "merge",
     branchPrefix: "renovate/mqtt-cli/",
+    addLabels: [
+        "tooling-and-extensions-coordination",
+    ],
 }
