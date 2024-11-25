@@ -1,5 +1,5 @@
 [versions]
-apache-commonsIO = "2.17.0"
+apache-commonsIO = "2.18.0"
 apache-commonsLang = "3.17.0"
 apache-commonsText = "1.12.0"
 awaitility = "4.2.2"
@@ -84,5 +84,5 @@ launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.6" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.10.0" }
 oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.16.0" }
-openapi-generator = { id = "org.openapi.generator", version = "7.9.0" }
+openapi-generator = { id = "org.openapi.generator", version = "7.10.0" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
