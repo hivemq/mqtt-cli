@@ -529,7 +529,7 @@ ospackage {
     from(tasks.shadowJar)
     val jarFileName = tasks.shadowJar.flatMap { it.archiveFileName }
     from("packages/linux/mqtt", closureOf<CopySpec> {
-        fileMode = 0b111_101_101 // 0755
+        filePermissions { unix(0b111_101_101) }
         filter { it.replace("@@jarPath@@", "$destinationPath/${jarFileName.get()}") }
     })
     from("LICENSE", closureOf<CopySpec> {
