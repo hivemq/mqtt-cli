@@ -80,6 +80,7 @@ class CliNativeImagePlugin : Plugin<Project> {
 
             doLast {
                 graalVMFolderProvider.get().resolve("provisioned.ok").createNewFile()
+                graalVMFolderProvider.get().resolve(".ready").createNewFile()
             }
         }
     }
