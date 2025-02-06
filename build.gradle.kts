@@ -640,25 +640,23 @@ oci {
                 entryPoint.addAll("-cp", "/app/classpath/*:/app/libs/*")
                 entryPoint.add(application.mainClass)
             }
-            layers {
-                layer("libs") {
-                    contents {
-                        from(configurations.runtimeClasspath)
-                        into("app/libs")
-                    }
+            layer("libs") {
+                contents {
+                    from(configurations.runtimeClasspath)
+                    into("app/libs")
                 }
-                layer("jar") {
-                    contents {
-                        from(tasks.jar)
-                        into("app/classpath")
-                        rename(".*", "${project.name}-${project.version}.jar")
-                    }
+            }
+            layer("jar") {
+                contents {
+                    from(tasks.jar)
+                    into("app/classpath")
+                    rename(".*", "${project.name}-${project.version}.jar")
                 }
-                layer("resources") {
-                    contents {
-                        from("src/distribution")
-                        into("app")
-                    }
+            }
+            layer("resources") {
+                contents {
+                    from("src/distribution")
+                    into("app")
                 }
             }
         }
