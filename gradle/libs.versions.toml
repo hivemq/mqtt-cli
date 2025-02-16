@@ -82,7 +82,7 @@ githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.5.2
 graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.4" }
 launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.6" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
-nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.10.1" }
+nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.11.1" }
 oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.22.0" }
 openapi-generator = { id = "org.openapi.generator", version = "7.11.0" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
