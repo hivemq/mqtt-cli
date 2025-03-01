@@ -84,5 +84,5 @@ launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.6" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.11.1" }
 oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.22.0" }
-openapi-generator = { id = "org.openapi.generator", version = "7.11.0" }
+openapi-generator = { id = "org.openapi.generator", version = "7.12.0" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
