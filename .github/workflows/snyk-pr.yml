@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Setup Java
-        uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
         with:
           distribution: 'temurin'
           java-version: |
@@ -30,7 +30,7 @@ jobs:
           path: mqtt-cli
 
       - name: Check for new issues
-        uses: hivemq/hivemq-snyk-composite-action@ed15058181891d29fd10f0226f579c16188c0b20 # v2.2.1
+        uses: hivemq/hivemq-snyk-composite-action@dbe0008ff5a165ad9caf42e7cb2c52d378bd4667 # v2.3.0
         with:
           snyk-args: --org=hivemq-mqtt-cli --configuration-matching=^runtimeClasspath$ mqtt-cli -d
           snyk-token: ${{ secrets.SNYK_TOKEN }}
