@@ -1,5 +1,5 @@
 [versions]
-apache-commonsIO = "2.18.0"
+apache-commonsIO = "2.19.0"
 apache-commonsLang = "3.17.0"
 apache-commonsText = "1.13.1"
 awaitility = "4.3.0"
@@ -7,7 +7,7 @@ bouncycastle = "1.80"
 dagger = "2.56.2"
 graalvm-nativeImage-svm = "24.2.1"
 gradleOci-junitJupiter = "0.6.0"
-gson = "2.12.1"
+gson = "2.13.0"
 gsonFire = "1.9.0"
 guava = "33.4.8-jre"
 hivemq-communityEditionEmbedded = "2025.2"
@@ -21,7 +21,7 @@ jsr305 = "3.0.2"
 junit-jupiter = "5.12.2"
 junit-pioneer = "2.3.0"
 junit-platformLauncher = "1.12.2"
-mockito = "5.16.1"
+mockito = "5.17.0"
 netty = "4.1.119.Final"
 okhttp = "4.12.0"
 openCsv = "5.10"
@@ -76,7 +76,7 @@ tinylog-impl = { module = "org.tinylog:tinylog-impl", version.ref = "tinylog" }
 
 [plugins]
 defaults = { id = "io.github.sgtsilvio.gradle.defaults", version = "0.2.0" }
-forbiddenApis = { id = "de.thetaphi.forbiddenapis", version = "3.8" }
+forbiddenApis = { id = "de.thetaphi.forbiddenapis", version = "3.9" }
 gitPublish = { id = "org.ajoberstar.git-publish", version = "4.2.2" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.5.2" }
 graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.6" }
