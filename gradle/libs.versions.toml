@@ -27,7 +27,7 @@ okhttp = "4.12.0"
 openCsv = "5.10"
 picocli = "4.7.7"
 swagger-annotations = "2.2.30"
-testcontainers = "1.20.6"
+testcontainers = "1.21.0"
 tinylog = "2.7.0"
 
 [libraries]
@@ -84,5 +84,5 @@ launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.6" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.11.2" }
 oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.22.0" }
-openapi-generator = { id = "org.openapi.generator", version = "7.12.0" }
+openapi-generator = { id = "org.openapi.generator", version = "7.13.0" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
