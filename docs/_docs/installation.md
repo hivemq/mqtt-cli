@@ -56,7 +56,7 @@ hosts file.
 
 ## Windows Zip
 
-Download the [Windows Zipfile](https://github.com/hivemq/mqtt-cli/releases/download/v4.38.0/mqtt-cli-4.38.0-win.zip) and
+Download the [Windows Zipfile](https://github.com/hivemq/mqtt-cli/releases/download/v4.39.0/mqtt-cli-4.39.0-win.zip) and
 extract it in your preferred location.
 To execute MQTT CLI simply open the Windows Command Prompt with `⊞ Win` + `R` and execute `cmd`.
 Navigate into the extracted MQTT CLI folder and execute `mqtt-cli.exe`.
@@ -72,8 +72,8 @@ package from the [releases page](https://github.com/hivemq/mqtt-cli/releases) vi
 and install the package with `sudo dpkg -i`  or `sudo apt install`:
 
 ``` 
-wget https://github.com/hivemq/mqtt-cli/releases/download/v4.38.0/mqtt-cli-4.38.0.deb
-sudo apt install ./mqtt-cli-4.38.0.deb
+wget https://github.com/hivemq/mqtt-cli/releases/download/v4.39.0/mqtt-cli-4.39.0.deb
+sudo apt install ./mqtt-cli-4.39.0.deb
 ``` 
 
 ***
@@ -85,7 +85,7 @@ at [releases page](https://github.com/hivemq/mqtt-cli/releases).
 The preferred way is to install the package via the `yum` package manager. To install the package simply execute:
 
 ``` 
-sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v4.38.0/mqtt-cli-4.38.0.rpm
+sudo yum install -y https://github.com/hivemq/mqtt-cli/releases/download/v4.39.0/mqtt-cli-4.39.0.rpm
 ```
 
 ***
