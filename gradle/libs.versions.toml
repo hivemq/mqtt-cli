@@ -27,7 +27,7 @@ okhttp = "4.12.0"
 openCsv = "5.10"
 picocli = "4.7.7"
 swagger-annotations = "2.2.32"
-testcontainers = "1.21.0"
+testcontainers = "1.21.1"
 tinylog = "2.7.0"
 
 [libraries]
