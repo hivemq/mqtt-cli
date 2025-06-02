@@ -231,6 +231,7 @@ testing {
             useJUnitJupiter(libs.versions.junit.jupiter)
         }
 
+        @Suppress("unused")
         val test by getting(JvmTestSuite::class) {
             dependencies {
                 implementation(libs.mockito)
@@ -642,21 +643,24 @@ oci {
             }
             layer("libs") {
                 contents {
-                    from(configurations.runtimeClasspath)
-                    into("app/libs")
+                    into("app/libs") {
+                        from(configurations.runtimeClasspath)
+                    }
                 }
             }
             layer("jar") {
                 contents {
-                    from(tasks.jar)
-                    into("app/classpath")
-                    rename(".*", "${project.name}-${project.version}.jar")
+                    into("app/classpath") {
+                        from(tasks.jar)
+                        rename(".*", "${project.name}-${project.version}.jar")
+                    }
                 }
             }
             layer("resources") {
                 contents {
-                    from("src/distribution")
-                    into("app")
+                    into("app") {
+                        from("src/distribution")
+                    }
                 }
             }
         }
