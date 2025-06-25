@@ -69,7 +69,7 @@ mqtt hivemq schema create --id my-schema-id --type PROTOBUF --file my-schema.des
 |        | `--type`          | The type of the schema. (Currently supported schema types [`JSON`, `PROTOBUF`])                                                              |         |                        X                        |
 |        | `--definition`    | The definition of the schema. This should be a JSON Schema string for '--type JSON' or a compiled Protobuf descriptor for '--type PROTOBUF'. |         | Either `--definition` or `--file`, but not both |
 |        | `--file`          | A path to a file containing the definition of the schema.                                                                                    |         | Either `--definition` or `--file`, but not both |
-|        | `--message-type`  | Only used with '--type PROTOBUF'. The Protobuf message type to use for the schema.                                                           |         |            When `type` is `PROTOBUF`            |
+|        | `--message-type`  | Only used with '--type PROTOBUF'. The Protobuf message type to use for the schema.                                                           |         |            When `--type` = `PROTOBUF`, `--message-type Payload` must be used.             |
 |        | `--allow-unknown` | Only used with '--type PROTOBUF'. If provided, Protobuf messages may contain fields not specified in the schema.                             | `false` |                                                 |
 |        | `--print-version` | Print the assigned schema version after creation.                                                                                            | `false` |                                                 |
 
