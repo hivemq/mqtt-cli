@@ -1,11 +1,11 @@
 [versions]
-apache-commonsIO = "2.19.0"
+apache-commonsIO = "2.20.0"
 apache-commonsLang = "3.18.0"
 apache-commonsText = "1.13.1"
 awaitility = "4.3.0"
 bouncycastle = "1.81"
-dagger = "2.56.2"
-graalvm-nativeImage-svm = "24.2.1"
+dagger = "2.57"
+graalvm-nativeImage-svm = "24.2.2"
 gradleOci-junitJupiter = "0.7.0"
 gson = "2.13.1"
 gsonFire = "1.9.0"
@@ -83,6 +83,6 @@ graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.6" }
 launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.6" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.11.2" }
-oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.23.0" }
+oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.24.0" }
 openapi-generator = { id = "org.openapi.generator", version = "7.14.0" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
