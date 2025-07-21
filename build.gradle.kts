@@ -633,7 +633,7 @@ oci {
     imageDefinitions.register("main") {
         allPlatforms {
             dependencies {
-                runtime("library:eclipse-temurin:sha256!02fc89fa8766a9ba221e69225f8d1c10bb91885ddbd3c112448e23488ba40ab6") // 21.0.5_11-jre-jammy
+                runtime("library:eclipse-temurin:sha256!02fc89fa8766a9ba221e69225f8d1c10bb91885ddbd3c112448e23488ba40ab6") // 21.0.6_7-jre-jammy
             }
             config {
                 entryPoint.add("java")
