@@ -23,14 +23,14 @@ jobs:
           echo "selected_github_ref=${workflow_call_github_ref:-${{ github.ref_name }}}" >> "$GITHUB_OUTPUT"
 
       - name: Setup Java
-        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
         with:
           distribution: 'temurin'
           java-version: |
             8
             11
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           path: mqtt-cli
           ref: ${{ steps.select_github_ref.outputs.selected_github_ref }}

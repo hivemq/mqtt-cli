@@ -14,7 +14,7 @@ MQTT CLI uses the following third party libraries:
  com.google.guava:listenablefuture                                          | 9999.0-empty-to-avoid-conflict-with-guava | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.google.j2objc:j2objc-annotations                                       | 3.0.0                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.hivemq:hivemq-mqtt-client                                              | 1.3.7                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
- com.opencsv:opencsv                                                        | 5.11.2                                    | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
+ com.opencsv:opencsv                                                        | 5.12.0                                    | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.squareup.okhttp3:logging-interceptor                                   | 4.12.0                                    | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.squareup.okhttp3:okhttp                                                | 4.12.0                                    | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
  com.squareup.okio:okio-jvm                                                 | 3.6.0                                     | Apache-2.0       | https://spdx.org/licenses/Apache-2.0.html
