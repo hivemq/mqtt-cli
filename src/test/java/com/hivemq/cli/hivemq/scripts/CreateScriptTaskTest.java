@@ -41,11 +41,10 @@ import static org.mockito.Mockito.when;
 
 public class CreateScriptTaskTest {
 
+    private static final @NotNull String SCRIPT_DEFINITION = "function transform(person) { return 'hello ' + person }";
+
     private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
     private final @NotNull OutputFormatter outputFormatter = mock();
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private final @NotNull String SCRIPT_DEFINITION = "function transform(person) { return 'hello ' + person }";
 
     @BeforeEach
     void setUp() throws ApiException {

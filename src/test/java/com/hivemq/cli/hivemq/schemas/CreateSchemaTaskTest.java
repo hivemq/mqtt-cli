@@ -42,20 +42,18 @@ import static org.mockito.Mockito.when;
 
 public class CreateSchemaTaskTest {
 
-    private final @NotNull DataHubSchemasApi schemasApi = mock();
-    private final @NotNull OutputFormatter outputFormatter = mock();
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private final @NotNull String JSON_SCHEMA_DEFINITION = "{ \"type\": \"object\" }";
-
     // test.proto:
     // ```
     // syntax = "proto3";
     // message Test {}
     // ```
     // Created with `protoc test.proto -o /dev/stdout | base64`
-    @SuppressWarnings("FieldCanBeLocal")
-    private final @NotNull String PROTOBUF_SCHEMA_DEFINITION = "ChwKCnRlc3QucHJvdG8iBgoEVGVzdGIGcHJvdG8z";
+    private static final @NotNull String PROTOBUF_SCHEMA_DEFINITION = "ChwKCnRlc3QucHJvdG8iBgoEVGVzdGIGcHJvdG8z";
+
+    private static final @NotNull String JSON_SCHEMA_DEFINITION = "{ \"type\": \"object\" }";
+
+    private final @NotNull DataHubSchemasApi schemasApi = mock();
+    private final @NotNull OutputFormatter outputFormatter = mock();
 
     @BeforeEach
     void setUp() throws ApiException {

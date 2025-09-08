@@ -22,7 +22,7 @@ junit-jupiter = "5.13.4"
 junit-pioneer = "2.3.0"
 junit-platformLauncher = "1.13.4"
 mockito = "5.19.0"
-netty = "4.2.1.Final"
+netty = "4.2.6.Final"
 okhttp = "4.12.0"
 openCsv = "5.12.0"
 picocli = "4.7.7"
@@ -79,7 +79,7 @@ defaults = { id = "io.github.sgtsilvio.gradle.defaults", version = "0.2.0" }
 forbiddenApis = { id = "de.thetaphi.forbiddenapis", version = "3.9" }
 gitPublish = { id = "org.ajoberstar.git-publish", version = "4.2.2" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.5.2" }
-graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.10.6" }
+graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.11.0" }
 launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.7" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.11.2" }

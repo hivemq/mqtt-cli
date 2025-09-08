@@ -51,7 +51,6 @@ class ShellPublishST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
     @ParameterizedTest
@@ -65,7 +64,7 @@ class ShellPublishST {
                 .awaitLog("sending PUBLISH")
                 .awaitLog("finish PUBLISH");
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
         });
@@ -84,7 +83,7 @@ class ShellPublishST {
                 .awaitLog("sending PUBLISH")
                 .awaitLog("finish PUBLISH");
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
         });
@@ -135,7 +134,7 @@ class ShellPublishST {
                 .awaitLog("sending PUBLISH")
                 .awaitLog("finish PUBLISH");
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             publishAssertion.setQos(Qos.AT_LEAST_ONCE);
@@ -213,7 +212,7 @@ class ShellPublishST {
                 .awaitLog("sending PUBLISH")
                 .awaitLog("finish PUBLISH");
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             publishAssertion.setRetain(true);
@@ -241,7 +240,7 @@ class ShellPublishST {
             awaitOutput.awaitLog("messageExpiryInterval=120");
         }
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -267,7 +266,7 @@ class ShellPublishST {
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("finish PUBLISH");
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -293,7 +292,7 @@ class ShellPublishST {
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("finish PUBLISH");
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -319,7 +318,7 @@ class ShellPublishST {
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("finish PUBLISH");
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -345,7 +344,7 @@ class ShellPublishST {
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("finish PUBLISH");
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {
@@ -372,7 +371,7 @@ class ShellPublishST {
         awaitOutput.awaitLog("sending PUBLISH");
         awaitOutput.awaitLog("finish PUBLISH");
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setPayload(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8)));
             publishAssertion.setTopic("test");
             if (mqttVersion == '5') {

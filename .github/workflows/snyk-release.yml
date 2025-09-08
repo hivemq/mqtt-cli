@@ -13,10 +13,10 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: |
-            8
             11
+            21
 
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
