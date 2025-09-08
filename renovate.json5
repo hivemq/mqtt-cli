@@ -12,15 +12,4 @@
     addLabels: [
         'integrations-team-coordination',
     ],
-    packageRules: [
-        {
-            description: 'This project is already migrated to Netty 4.2 - we have to override the global rule to enable automatic updates',
-            matchPackageNames: [
-                'io.netty:*'
-            ],
-            allowedVersions: '>=4.2',
-            groupName: 'non-major netty dependencies',
-            groupSlug: 'non-major-netty'
-        },
-    ],
 }
