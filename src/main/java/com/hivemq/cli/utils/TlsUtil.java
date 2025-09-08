@@ -61,7 +61,6 @@ import java.util.Locale;
 public class TlsUtil {
 
     private TlsUtil() {
-
     }
 
     static final @NotNull String JKS_FILE_EXTENSION = "jks";
@@ -271,13 +270,13 @@ public class TlsUtil {
     }
 
     @VisibleForTesting
+    @SuppressWarnings("unchecked")
     static @NotNull Collection<X509Certificate> generateX509Certificates(final @NotNull File keyFile) throws Exception {
         final CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
 
         try {
             final Collection<? extends Certificate> certificateChainCollection =
                     certificateFactory.generateCertificates(new FileInputStream(keyFile));
-            //noinspection unchecked
             return (Collection<X509Certificate>) certificateChainCollection;
         } catch (final CertificateException | FileNotFoundException e) {
             throw new CertificateException(NO_VALID_CERTIFICATE);
