@@ -52,25 +52,22 @@ import static org.mockito.Mockito.when;
 
 public class SchemaCreateCommandTest {
 
-    private final @NotNull HiveMQRestService hiveMQRestService = mock();
-    private @NotNull OutputFormatter outputFormatter;
-    private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    private final @NotNull DataHubSchemasApi schemasApi = mock();
-
-    private @NotNull CommandLine commandLine;
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private final @NotNull String JSON_SCHEMA_DEFINITION = "{ \"type\": \"object\" }";
-
     // test.proto:
     // ```
     // syntax = "proto3";
     // message Test {}
     // ```
     // Created with `protoc -o /dev/stdout | base64`
-    @SuppressWarnings("FieldCanBeLocal")
-    private final @NotNull String PROTOBUF_SCHEMA_DEFINITION = "ChwKCnRlc3QucHJvdG8iBgoEVGVzdGIGcHJvdG8z";
+    private static final @NotNull String PROTOBUF_SCHEMA_DEFINITION = "ChwKCnRlc3QucHJvdG8iBgoEVGVzdGIGcHJvdG8z";
 
+    private static final @NotNull String JSON_SCHEMA_DEFINITION = "{ \"type\": \"object\" }";
+
+    private final @NotNull HiveMQRestService hiveMQRestService = mock();
+    private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private final @NotNull DataHubSchemasApi schemasApi = mock();
+
+    private @NotNull OutputFormatter outputFormatter;
+    private @NotNull CommandLine commandLine;
 
     @BeforeEach
     void setUp() throws ApiException {

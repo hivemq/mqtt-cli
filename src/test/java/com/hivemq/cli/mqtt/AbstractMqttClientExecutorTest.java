@@ -16,7 +16,14 @@
 
 package com.hivemq.cli.mqtt;
 
-import com.hivemq.cli.commands.options.*;
+import com.hivemq.cli.commands.options.AuthenticationOptions;
+import com.hivemq.cli.commands.options.ConnectOptions;
+import com.hivemq.cli.commands.options.ConnectRestrictionOptions;
+import com.hivemq.cli.commands.options.DisconnectOptions;
+import com.hivemq.cli.commands.options.PublishOptions;
+import com.hivemq.cli.commands.options.SubscribeOptions;
+import com.hivemq.cli.commands.options.UnsubscribeOptions;
+import com.hivemq.cli.commands.options.WillOptions;
 import com.hivemq.client.mqtt.MqttVersion;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttSharedTopicFilter;
@@ -39,7 +46,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,17 +58,13 @@ class AbstractMqttClientExecutorTest {
 
     private final @NotNull MqttClientExecutor mqttClientExecutor = new MqttClientExecutor();
 
-    private @NotNull ConnectOptions connectOptions;
-    private @NotNull ConnectRestrictionOptions connectRestrictionOptions;
-    private @NotNull AuthenticationOptions authenticationOptions;
-    private @NotNull WillOptions willOptions;
+    private final @NotNull ConnectOptions connectOptions = mock();
+    private final @NotNull ConnectRestrictionOptions connectRestrictionOptions = mock();
+    private final @NotNull AuthenticationOptions authenticationOptions = mock();
+    private final @NotNull WillOptions willOptions = mock();
 
     @BeforeEach
     void setUp() {
-        connectOptions = mock(ConnectOptions.class);
-        connectRestrictionOptions = mock(ConnectRestrictionOptions.class);
-        authenticationOptions = mock(AuthenticationOptions.class);
-        willOptions = mock(WillOptions.class);
         when(connectOptions.getConnectRestrictionOptions()).thenReturn(connectRestrictionOptions);
         when(connectOptions.getAuthenticationOptions()).thenReturn(authenticationOptions);
         when(connectOptions.getWillOptions()).thenReturn(willOptions);
@@ -93,7 +100,7 @@ class AbstractMqttClientExecutorTest {
         final List<MqttTopicFilter> duplicateList =
                 mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
         assertFalse(duplicateList.isEmpty());
-        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0));
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.getFirst());
     }
 
     @Test
@@ -106,8 +113,8 @@ class AbstractMqttClientExecutorTest {
         final List<MqttTopicFilter> duplicateList =
                 mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
         assertFalse(duplicateList.isEmpty());
-        assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0));
-        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getValue());
+        assertEquals(MqttTopicFilter.of("a"), duplicateList.getFirst());
+        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.getFirst().getValue());
     }
 
     @Test
@@ -120,8 +127,8 @@ class AbstractMqttClientExecutorTest {
         final List<MqttTopicFilter> duplicateList =
                 mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
         assertFalse(duplicateList.isEmpty());
-        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0));
-        //assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.getFirst());
+        //assertEquals(MqttTopicFilter.of("a"), duplicateList.getFirst().getValue());
     }
 
     @Test
@@ -134,8 +141,8 @@ class AbstractMqttClientExecutorTest {
         final List<MqttTopicFilter> duplicateList =
                 mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
         assertFalse(duplicateList.isEmpty());
-        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0));
-        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getValue());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.getFirst());
+        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.getFirst().getValue());
     }
 
     @Test
@@ -149,8 +156,8 @@ class AbstractMqttClientExecutorTest {
         final List<MqttTopicFilter> duplicateList =
                 mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
         assertEquals(1, duplicateList.size());
-        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0));
-        //assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
+        assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.getFirst());
+        //assertEquals(MqttTopicFilter.of("a"), duplicateList.getFirst().getValue());
     }
 
     @Test
@@ -172,7 +179,7 @@ class AbstractMqttClientExecutorTest {
             //assertNotNull(topicFilter.getValue());
             return topicFilter.equals(MqttSharedTopicFilter.of("group", "a"));
         }));
-        //assertEquals(MqttTopicFilter.of("a"), duplicateList.get(0).getValue());
+        //assertEquals(MqttTopicFilter.of("a"), duplicateList.getFirst().getValue());
         //assertEquals(MqttTopicFilter.of("a"), duplicateList.get(1).getValue());
     }
 
@@ -187,7 +194,7 @@ class AbstractMqttClientExecutorTest {
         final List<MqttTopicFilter> duplicateList =
                 mqttClientExecutor.checkForSharedTopicDuplicate(existingFilter, newTopic);
         assertEquals(2, duplicateList.size());
-        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(0).getValue());
+        //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.getFirst().getValue());
         //assertEquals(MqttSharedTopicFilter.of("group", "a"), duplicateList.get(1).getValue());
         assertTrue(duplicateList.stream().anyMatch(topicFilter -> topicFilter.equals(MqttTopicFilter.of("a"))));
         assertTrue(duplicateList.stream().anyMatch(topicFilter -> topicFilter.equals(MqttTopicFilter.of("+"))));
@@ -296,16 +303,12 @@ class AbstractMqttClientExecutorTest {
         private @Nullable Mqtt3Connect mqtt3ConnectMessage = null;
 
         @Override
-        void mqtt5Connect(
-                final @NotNull Mqtt5Client client,
-                final @NotNull Mqtt5Connect connectMessage) {
+        void mqtt5Connect(final @NotNull Mqtt5Client client, final @NotNull Mqtt5Connect connectMessage) {
             this.mqtt5ConnectMessage = connectMessage;
         }
 
         @Override
-        void mqtt3Connect(
-                final @NotNull Mqtt3Client client,
-                final @NotNull Mqtt3Connect connectMessage) {
+        void mqtt3Connect(final @NotNull Mqtt3Client client, final @NotNull Mqtt3Connect connectMessage) {
             this.mqtt3ConnectMessage = connectMessage;
         }
 
@@ -314,44 +317,48 @@ class AbstractMqttClientExecutorTest {
                 final @NotNull Mqtt5Client client,
                 final @NotNull SubscribeOptions subscribeOptions,
                 final @NotNull String topic,
-                final @NotNull MqttQos qos) {}
+                final @NotNull MqttQos qos) {
+        }
 
         @Override
         void mqtt3Subscribe(
                 final @NotNull Mqtt3Client client,
                 final @NotNull SubscribeOptions subscribeOptions,
                 final @NotNull String topic,
-                final @NotNull MqttQos qos) {}
+                final @NotNull MqttQos qos) {
+        }
 
         @Override
         void mqtt5Publish(
                 final @NotNull Mqtt5Client client,
                 final @NotNull PublishOptions publishOptions,
                 final @NotNull String topic,
-                final @NotNull MqttQos qos) {}
+                final @NotNull MqttQos qos) {
+        }
 
         @Override
         void mqtt3Publish(
                 final @NotNull Mqtt3Client client,
                 final @NotNull PublishOptions publishOptions,
                 final @NotNull String topic,
-                final @NotNull MqttQos qos) {}
+                final @NotNull MqttQos qos) {
+        }
 
         @Override
-        void mqtt5Unsubscribe(
-                final @NotNull Mqtt5Client client, final @NotNull UnsubscribeOptions unsubscribeOptions) {}
+        void mqtt5Unsubscribe(final @NotNull Mqtt5Client client, final @NotNull UnsubscribeOptions unsubscribeOptions) {
+        }
 
         @Override
-        void mqtt3Unsubscribe(
-                final @NotNull Mqtt3Client client, final @NotNull UnsubscribeOptions unsubscribeOptions) {}
+        void mqtt3Unsubscribe(final @NotNull Mqtt3Client client, final @NotNull UnsubscribeOptions unsubscribeOptions) {
+        }
 
         @Override
-        void mqtt5Disconnect(
-                final @NotNull Mqtt5Client client, final @NotNull DisconnectOptions disconnectOptions) {}
+        void mqtt5Disconnect(final @NotNull Mqtt5Client client, final @NotNull DisconnectOptions disconnectOptions) {
+        }
 
         @Override
-        void mqtt3Disconnect(
-                final @NotNull Mqtt3Client client, final @NotNull DisconnectOptions disconnectOptions) {}
+        void mqtt3Disconnect(final @NotNull Mqtt3Client client, final @NotNull DisconnectOptions disconnectOptions) {
+        }
 
         public @Nullable Mqtt5Connect getMqtt5ConnectMessage() {
             return mqtt5ConnectMessage;

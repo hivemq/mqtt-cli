@@ -32,7 +32,7 @@ public class TestLoggerUtils {
             frozen.setAccessible(true);
             frozen.set(null, false);
         } catch (final NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Could not reset logger", e);
         }
     }
 }

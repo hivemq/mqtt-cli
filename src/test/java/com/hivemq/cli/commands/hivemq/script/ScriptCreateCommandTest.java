@@ -49,15 +49,13 @@ import static org.mockito.Mockito.when;
 
 public class ScriptCreateCommandTest {
 
+    private static final @NotNull String SCRIPT_DEFINITION = "function transform(person) { return 'hello ' + person }";
+
     private final @NotNull HiveMQRestService hiveMQRestService = mock();
-    private @NotNull OutputFormatter outputFormatter;
     private final @NotNull ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final @NotNull DataHubScriptsApi scriptsApi = mock(DataHubScriptsApi.class);
 
     private @NotNull CommandLine commandLine;
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private final @NotNull String SCRIPT_DEFINITION = "function transform(person) { return 'hello ' + person }";
 
     @BeforeEach
     void setUp() throws ApiException {
@@ -67,7 +65,7 @@ public class ScriptCreateCommandTest {
                 .registerTypeAdapter(HivemqOpenapiScript.class, new ScriptSerializer())
                 .create();
 
-        outputFormatter = spy(new OutputFormatter(new PrintStream(outputStream), gson));
+        final OutputFormatter outputFormatter = spy(new OutputFormatter(new PrintStream(outputStream), gson));
         commandLine = new CommandLine(new ScriptCreateCommand(hiveMQRestService, outputFormatter));
 
         when(hiveMQRestService.getScriptsApi(any(), anyDouble())).thenReturn(scriptsApi);
@@ -76,12 +74,19 @@ public class ScriptCreateCommandTest {
 
     @Test
     void call_idMissing_error() {
-        assertEquals(2, commandLine.execute("--type=transformation", "--description=test", "--definition=" + SCRIPT_DEFINITION));
+        assertEquals(2,
+                commandLine.execute("--type=transformation",
+                        "--description=test",
+                        "--definition=" + SCRIPT_DEFINITION));
     }
 
     @Test
     void call_typeInvalid_error() {
-        assertEquals(2, commandLine.execute("--id=s1", "--type=invalid", "--description=test", "--definition=" + SCRIPT_DEFINITION));
+        assertEquals(2,
+                commandLine.execute("--id=s1",
+                        "--type=invalid",
+                        "--description=test",
+                        "--definition=" + SCRIPT_DEFINITION));
     }
 
     @Test

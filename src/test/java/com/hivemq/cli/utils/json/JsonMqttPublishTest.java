@@ -17,6 +17,7 @@ package com.hivemq.cli.utils.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.Strictness;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
@@ -47,10 +48,11 @@ import static org.mockito.Mockito.when;
 
 class JsonMqttPublishTest {
 
-    public static final @NotNull Type STRING_STRING_MAP = new TypeToken<Map<String, String>>() {
+    private static final @NotNull Type STRING_STRING_MAP = new TypeToken<Map<String, String>>() {
     }.getType();
-    private static final @NotNull Gson GSON = new GsonBuilder().setPrettyPrinting().setLenient().create();
-    public static final byte @NotNull [] BYTES = "hello".getBytes(StandardCharsets.UTF_8);
+    private static final @NotNull Gson GSON =
+            new GsonBuilder().setPrettyPrinting().setStrictness(Strictness.LENIENT).create();
+    private static final byte @NotNull [] BYTES = "hello".getBytes(StandardCharsets.UTF_8);
 
     @Test
     void mqtt3_base64Payload_converted() {
