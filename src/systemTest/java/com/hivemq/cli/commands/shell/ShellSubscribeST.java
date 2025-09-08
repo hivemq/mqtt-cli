@@ -53,7 +53,6 @@ class ShellSubscribeST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
     @ParameterizedTest
@@ -67,7 +66,7 @@ class ShellSubscribeST {
                 .awaitLog("sending SUBSCRIBE")
                 .awaitLog("received SUBACK");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -163,7 +162,7 @@ class ShellSubscribeST {
         awaitOutput.awaitLog("sending SUBSCRIBE");
         awaitOutput.awaitLog("received SUBACK");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                     Qos.EXACTLY_ONCE,
                     RetainHandling.SEND,
@@ -188,7 +187,7 @@ class ShellSubscribeST {
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -216,7 +215,7 @@ class ShellSubscribeST {
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -246,7 +245,7 @@ class ShellSubscribeST {
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -265,7 +264,7 @@ class ShellSubscribeST {
 
         final List<String> readLines = Files.readAllLines(outputFile);
         assertEquals(1, readLines.size());
-        assertEquals("message", readLines.get(0));
+        assertEquals("message", readLines.getFirst());
     }
 
     @ParameterizedTest
@@ -277,7 +276,7 @@ class ShellSubscribeST {
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -306,7 +305,7 @@ class ShellSubscribeST {
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -334,7 +333,7 @@ class ShellSubscribeST {
         final AwaitOutput awaitOutput =
                 mqttCliShell.executeAsync(subscribeCommand).awaitLog("sending SUBSCRIBE").awaitLog("received SUBACK");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0),
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(),
                 subscribeAssertion -> subscribeAssertion.setSubscriptions(List.of(new SubscriptionImpl("test",
                         Qos.EXACTLY_ONCE,
                         RetainHandling.SEND,
@@ -354,9 +353,13 @@ class ShellSubscribeST {
 
         publisher.publishWith().topic("test").payload(jsonObject.toString().getBytes(StandardCharsets.UTF_8)).send();
 
-        awaitOutput.awaitStdOut(
-                "{\n" + "  \"topic\": \"test\",\n" + "  \"payload\": {\n" + "    \"property1\": \"value1\",\n" +
-                        "    \"property2\": \"value2\",\n" + "    \"property3\": \"value3\"\n" + "  },\n");
+        awaitOutput.awaitStdOut("{\n" +
+                "  \"topic\": \"test\",\n" +
+                "  \"payload\": {\n" +
+                "    \"property1\": \"value1\",\n" +
+                "    \"property2\": \"value2\",\n" +
+                "    \"property3\": \"value3\"\n" +
+                "  },\n");
         awaitOutput.awaitStdOut("\"qos\": \"AT_MOST_ONCE\",");
         awaitOutput.awaitStdOut("\"receivedAt\":");
         awaitOutput.awaitStdOut("\"retain\": false");

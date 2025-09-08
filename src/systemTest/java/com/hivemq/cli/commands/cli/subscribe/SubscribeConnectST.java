@@ -57,9 +57,7 @@ class SubscribeConnectST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
-
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -111,7 +109,7 @@ class SubscribeConnectST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribeOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setCleanStart(false);
             if (mqttVersion == '3') {
@@ -130,7 +128,7 @@ class SubscribeConnectST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribeOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setCleanStart(true);
             if (mqttVersion == '3') {
@@ -150,7 +148,7 @@ class SubscribeConnectST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribeOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setKeepAlive(100);
         });
@@ -170,11 +168,11 @@ class SubscribeConnectST {
 
         final String expectedClientId;
         if (mqttVersion == '5') {
-            final ConnackPacket connackPacket = hivemq.getConnackPackets().get(0);
+            final ConnackPacket connackPacket = hivemq.getConnackPackets().getFirst();
             assertTrue(connackPacket.getAssignedClientIdentifier().isPresent());
             expectedClientId = connackPacket.getAssignedClientIdentifier().get();
         } else {
-            final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
+            final ConnectPacket connectPacket = hivemq.getConnectPackets().getFirst();
             expectedClientId = connectPacket.getClientId();
         }
 
@@ -185,7 +183,7 @@ class SubscribeConnectST {
                 expectedClientId,
                 hivemq.getHost()));
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setClientId(expectedClientId);
         });
@@ -204,7 +202,7 @@ class SubscribeConnectST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribeOutput(executionResult);
 
-        final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
+        final ConnectPacket connectPacket = hivemq.getConnectPackets().getFirst();
         if (mqttVersion == '3') {
             assertTrue(connectPacket.getClientId().startsWith("test-"));
         }
@@ -226,7 +224,7 @@ class SubscribeConnectST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribeOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
         });
@@ -246,7 +244,7 @@ class SubscribeConnectST {
             executionResult.awaitStdErr("Password-Only Authentication is not allowed in MQTT 3");
         } else {
             assertSubscribeOutput(executionResult);
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -268,7 +266,7 @@ class SubscribeConnectST {
             executionResult.awaitStdErr("Password-Only Authentication is not allowed in MQTT 3");
         } else {
             assertSubscribeOutput(executionResult);
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -293,7 +291,7 @@ class SubscribeConnectST {
             executionResult.awaitStdErr("Password-Only Authentication is not allowed in MQTT 3");
         } else {
             assertSubscribeOutput(executionResult);
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -313,7 +311,7 @@ class SubscribeConnectST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribeOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -334,7 +332,7 @@ class SubscribeConnectST {
                 mqttCli.executeAsync(subscribeCommand, Map.of("PASSWORD", "password"));
 
         assertSubscribeOutput(executionResult);
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -358,7 +356,7 @@ class SubscribeConnectST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
 
         assertSubscribeOutput(executionResult);
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -403,7 +401,7 @@ class SubscribeConnectST {
             executionResult.awaitStdErr("Will Response Topic was set but is unused in MQTT Version MQTT_3_1_1");
             executionResult.awaitStdErr("Will User Properties was set but is unused in MQTT Version MQTT_3_1_1");
 
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 final WillPublishBuilder expectedWillBuilder = Builders.willPublish()
                         .payload(ByteBuffer.wrap("will-message".getBytes(StandardCharsets.UTF_8)))
                         .topic("test-will-topic")
@@ -416,7 +414,7 @@ class SubscribeConnectST {
             });
 
         } else {
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 final WillPublishBuilder expectedWillBuilder = Builders.willPublish()
                         .payload(ByteBuffer.wrap("will-message".getBytes(StandardCharsets.UTF_8)))
                         .topic("test-will-topic")
@@ -452,7 +450,7 @@ class SubscribeConnectST {
             executionResult.awaitStdErr("Restriction receive maximum was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setReceiveMaximum(100);
@@ -476,7 +474,7 @@ class SubscribeConnectST {
                     "Restriction maximum packet size was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setMaximumPacketSize(100);
@@ -500,7 +498,7 @@ class SubscribeConnectST {
                     "Restriction topic alias maximum was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setTopicAliasMaximum(100);
@@ -518,7 +516,7 @@ class SubscribeConnectST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribeOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestProblemInformation(false);
@@ -541,7 +539,7 @@ class SubscribeConnectST {
                     "Restriction request problem information was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestProblemInformation(true);
@@ -564,7 +562,7 @@ class SubscribeConnectST {
                     "Restriction request response information was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestResponseInformation(true);
@@ -588,7 +586,7 @@ class SubscribeConnectST {
                     "Connect session expiry interval was set but is unused in MQTT Version MQTT_3_1_1");
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setSessionExpiryInterval(100);
@@ -613,7 +611,7 @@ class SubscribeConnectST {
             executionResult.awaitStdErr("Connect user properties were set but are unused in MQTT Version MQTT_3_1_1");
         }
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 final UserPropertiesImpl expectedUserProperties = UserPropertiesImpl.of(ImmutableList.of(

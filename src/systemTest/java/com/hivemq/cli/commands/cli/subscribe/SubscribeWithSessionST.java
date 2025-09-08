@@ -82,7 +82,7 @@ public class SubscribeWithSessionST {
 
         executionResult.awaitStdOut("message");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setCleanStart(false);
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '3') {
@@ -91,7 +91,7 @@ public class SubscribeWithSessionST {
                 connectAssertion.setSessionExpiryInterval(300L);
             }
         });
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("topic", Qos.AT_LEAST_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);

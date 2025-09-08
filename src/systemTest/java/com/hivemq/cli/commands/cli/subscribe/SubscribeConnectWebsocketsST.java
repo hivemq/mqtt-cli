@@ -43,15 +43,13 @@ public class SubscribeConnectWebsocketsST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().withWebsocketEnabled(true).build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_websockets(final char mqttVersion) throws Exception {
-        final List<String> subscribeCommand = List.of(
-                "sub",
+        final List<String> subscribeCommand = List.of("sub",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -71,12 +69,11 @@ public class SubscribeConnectWebsocketsST {
         executionResult.awaitStdOut("received CONNACK");
         executionResult.awaitStdOut("received SUBACK");
 
-        assertConnectPacket(
-                hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions =
                     List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);

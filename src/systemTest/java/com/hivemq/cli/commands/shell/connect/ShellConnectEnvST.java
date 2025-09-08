@@ -44,8 +44,8 @@ class ShellConnectEnvST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    private final @NotNull MqttCliShellExtension
-            mqttCliShell = new MqttCliShellExtension(Map.of(PASSWORD_ENV, "password"));
+    private final @NotNull MqttCliShellExtension mqttCliShell =
+            new MqttCliShellExtension(Map.of(PASSWORD_ENV, "password"));
 
     @ParameterizedTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -65,7 +65,7 @@ class ShellConnectEnvST {
             awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -87,7 +87,7 @@ class ShellConnectEnvST {
         awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("user");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));

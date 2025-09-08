@@ -60,7 +60,6 @@ class SubscribeST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
 
     @ParameterizedTest
@@ -76,11 +75,11 @@ class SubscribeST {
 
         executionResult.awaitStdOut("message");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -97,7 +96,7 @@ class SubscribeST {
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(subscribeCommand);
         assertSubscribe(executionResult);
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.AT_LEAST_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -219,9 +218,9 @@ class SubscribeST {
 
         final List<String> readLines = Files.readAllLines(messageFile);
         assertEquals(1, readLines.size());
-        assertEquals("message", readLines.get(0));
+        assertEquals("message", readLines.getFirst());
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -248,7 +247,7 @@ class SubscribeST {
 
         executionResult.awaitStdOut("message");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
 
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
@@ -276,7 +275,7 @@ class SubscribeST {
         final String encodedPayload = Base64.getEncoder().encodeToString("message".getBytes(StandardCharsets.UTF_8));
         executionResult.awaitStdOut(encodedPayload);
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -296,7 +295,7 @@ class SubscribeST {
 
         executionResult.awaitStdOut("topic: message");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
@@ -318,15 +317,19 @@ class SubscribeST {
         jsonObject.addProperty("property3", "value3");
         publishMessage("topic", jsonObject.toString());
 
-        executionResult.awaitStdOut(
-                "{\n" + "  \"topic\": \"topic\",\n" + "  \"payload\": {\n" + "    \"property1\": \"value1\",\n" +
-                        "    \"property2\": \"value2\",\n" + "    \"property3\": \"value3\"\n" + "  },\n");
+        executionResult.awaitStdOut("{\n" +
+                "  \"topic\": \"topic\",\n" +
+                "  \"payload\": {\n" +
+                "    \"property1\": \"value1\",\n" +
+                "    \"property2\": \"value2\",\n" +
+                "    \"property3\": \"value3\"\n" +
+                "  },\n");
         executionResult.awaitStdOut("\"qos\": \"EXACTLY_ONCE\",");
         executionResult.awaitStdOut("\"receivedAt\":");
         executionResult.awaitStdOut("\"retain\": false");
         executionResult.awaitStdOut("}");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
             final List<Subscription> expectedSubscriptions = List.of(createSubscription("topic", Qos.EXACTLY_ONCE));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });

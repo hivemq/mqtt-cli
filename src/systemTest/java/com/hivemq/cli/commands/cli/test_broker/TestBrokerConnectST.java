@@ -105,7 +105,7 @@ class TestBrokerConnectST {
         final ExecutionResult executionResult = MqttCli.execute(testCommand);
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
         });
@@ -127,7 +127,7 @@ class TestBrokerConnectST {
             assertEquals(1, executionResult.getExitCode());
         } else {
             assertTestOutput(executionResult, mqttVersion);
-            assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -150,7 +150,7 @@ class TestBrokerConnectST {
             assertEquals(1, executionResult.getExitCode());
         } else {
             assertTestOutput(executionResult, mqttVersion);
-            assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -177,7 +177,7 @@ class TestBrokerConnectST {
             assertEquals(1, executionResult.getExitCode());
         } else {
             assertTestOutput(executionResult, mqttVersion);
-            assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -198,7 +198,7 @@ class TestBrokerConnectST {
         assertTestOutput(executionResult, mqttVersion);
 
         assertTestOutput(executionResult, mqttVersion);
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -216,7 +216,7 @@ class TestBrokerConnectST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("testuser");
             connectAssertion.setPassword(ByteBuffer.wrap("testpasswordproperties".getBytes(StandardCharsets.UTF_8)));
@@ -236,7 +236,7 @@ class TestBrokerConnectST {
         final ExecutionResult executionResult = MqttCli.execute(testCommand, Map.of("PASSWORD", "password"));
 
         assertTestOutput(executionResult, mqttVersion);
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -254,7 +254,7 @@ class TestBrokerConnectST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("testuser");
             connectAssertion.setPassword(ByteBuffer.wrap("testpasswordenvproperties".getBytes(StandardCharsets.UTF_8)));
@@ -278,7 +278,7 @@ class TestBrokerConnectST {
         final ExecutionResult executionResult = MqttCli.execute(testCommand);
 
         assertTestOutput(executionResult, mqttVersion);
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -299,7 +299,7 @@ class TestBrokerConnectST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("testuser");
             connectAssertion.setPassword(ByteBuffer.wrap("testpasswordfile".getBytes(StandardCharsets.UTF_8)));

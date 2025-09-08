@@ -49,7 +49,7 @@ class TestBrokerST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -64,7 +64,7 @@ class TestBrokerST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -80,7 +80,7 @@ class TestBrokerST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -96,7 +96,7 @@ class TestBrokerST {
 
         assertTestOutput(executionResult, mqttVersion);
 
-        assertTestConnectPacket(hivemq.getConnectPackets().get(0),
+        assertTestConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }

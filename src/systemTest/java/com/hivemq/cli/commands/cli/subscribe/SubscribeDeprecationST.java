@@ -54,7 +54,6 @@ class SubscribeDeprecationST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
 
     @ParameterizedTest
@@ -82,12 +81,9 @@ class SubscribeDeprecationST {
 
         executionResult.awaitStdOut("message");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(new SubscriptionImpl("topic",
-                    Qos.EXACTLY_ONCE,
-                    RetainHandling.SEND,
-                    false,
-                    false));
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
 
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
             if (mqttVersion == '5') {
@@ -150,14 +146,11 @@ class SubscribeDeprecationST {
 
         final List<String> readLines = Files.readAllLines(messageFile);
         assertEquals(1, readLines.size());
-        assertEquals("message", readLines.get(0));
+        assertEquals("message", readLines.getFirst());
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(new SubscriptionImpl("topic",
-                    Qos.EXACTLY_ONCE,
-                    RetainHandling.SEND,
-                    false,
-                    false));
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
     }
@@ -209,12 +202,9 @@ class SubscribeDeprecationST {
         final String encodedPayload = Base64.getEncoder().encodeToString("message".getBytes(StandardCharsets.UTF_8));
         executionResult.awaitStdOut(encodedPayload);
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(new SubscriptionImpl("topic",
-                    Qos.EXACTLY_ONCE,
-                    RetainHandling.SEND,
-                    false,
-                    false));
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
     }
@@ -272,12 +262,9 @@ class SubscribeDeprecationST {
         executionResult.awaitStdOut("\"retain\": false");
         executionResult.awaitStdOut("}");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(new SubscriptionImpl("topic",
-                    Qos.EXACTLY_ONCE,
-                    RetainHandling.SEND,
-                    false,
-                    false));
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
     }
@@ -321,12 +308,9 @@ class SubscribeDeprecationST {
 
         executionResult.awaitStdOut("topic: message");
 
-        assertSubscribePacket(hivemq.getSubscribePackets().get(0), subscribeAssertion -> {
-            final List<Subscription> expectedSubscriptions = List.of(new SubscriptionImpl("topic",
-                    Qos.EXACTLY_ONCE,
-                    RetainHandling.SEND,
-                    false,
-                    false));
+        assertSubscribePacket(hivemq.getSubscribePackets().getFirst(), subscribeAssertion -> {
+            final List<Subscription> expectedSubscriptions =
+                    List.of(new SubscriptionImpl("topic", Qos.EXACTLY_ONCE, RetainHandling.SEND, false, false));
             subscribeAssertion.setSubscriptions(expectedSubscriptions);
         });
     }

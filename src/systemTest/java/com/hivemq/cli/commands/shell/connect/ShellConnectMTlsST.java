@@ -48,9 +48,7 @@ class ShellConnectMTlsST {
             .build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
-
 
     //KEYSTORE / TRUSTSTORE
 
@@ -91,7 +89,7 @@ class ShellConnectMTlsST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -136,7 +134,7 @@ class ShellConnectMTlsST {
                 .awaitStdOut(String.format("cliTest@%s", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -182,7 +180,7 @@ class ShellConnectMTlsST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -226,7 +224,7 @@ class ShellConnectMTlsST {
         awaitOutput.awaitLog("sending CONNECT");
         awaitOutput.awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -274,7 +272,7 @@ class ShellConnectMTlsST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -322,7 +320,7 @@ class ShellConnectMTlsST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -367,7 +365,7 @@ class ShellConnectMTlsST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -417,7 +415,7 @@ class ShellConnectMTlsST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }
@@ -468,7 +466,7 @@ class ShellConnectMTlsST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
     }

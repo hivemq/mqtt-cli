@@ -42,7 +42,6 @@ class ShellUnsubscribeST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
 
     @ParameterizedTest
@@ -56,8 +55,7 @@ class ShellUnsubscribeST {
                 .awaitLog("sending UNSUBSCRIBE")
                 .awaitLog("received UNSUBACK");
 
-        assertUnsubscribePacket(
-                hivemq.getUnsubscribePackets().get(0),
+        assertUnsubscribePacket(hivemq.getUnsubscribePackets().getFirst(),
                 unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test")));
     }
 
@@ -77,16 +75,13 @@ class ShellUnsubscribeST {
                 .awaitLog("received UNSUBACK");
 
 
-        assertUnsubscribePacket(
-                hivemq.getUnsubscribePackets().get(0),
+        assertUnsubscribePacket(hivemq.getUnsubscribePackets().get(0),
                 unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test1")));
 
-        assertUnsubscribePacket(
-                hivemq.getUnsubscribePackets().get(1),
+        assertUnsubscribePacket(hivemq.getUnsubscribePackets().get(1),
                 unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test2")));
 
-        assertUnsubscribePacket(
-                hivemq.getUnsubscribePackets().get(2),
+        assertUnsubscribePacket(hivemq.getUnsubscribePackets().get(2),
                 unsubscribeAssertion -> unsubscribeAssertion.setTopicFilters(List.of("test3")));
     }
 
@@ -107,7 +102,7 @@ class ShellUnsubscribeST {
         awaitOutput.awaitLog("sending UNSUBSCRIBE");
         awaitOutput.awaitLog("received UNSUBACK");
 
-        assertUnsubscribePacket(hivemq.getUnsubscribePackets().get(0), unsubscribeAssertion -> {
+        assertUnsubscribePacket(hivemq.getUnsubscribePackets().getFirst(), unsubscribeAssertion -> {
             unsubscribeAssertion.setTopicFilters(List.of("test"));
 
             if (mqttVersion == '5') {

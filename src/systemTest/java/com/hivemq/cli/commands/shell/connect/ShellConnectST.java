@@ -54,9 +54,7 @@ class ShellConnectST {
     private final @NotNull HiveMQExtension hivemq = HiveMQExtension.builder().build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliShellExtension mqttCliShell = new MqttCliShellExtension();
-
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -76,7 +74,7 @@ class ShellConnectST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        final ConnectPacket connectPacket = hivemq.getConnectPackets().get(0);
+        final ConnectPacket connectPacket = hivemq.getConnectPackets().getFirst();
         assertConnectPacket(connectPacket,
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
@@ -111,7 +109,7 @@ class ShellConnectST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        final ConnectPacket connectPacket1 = hivemq.getConnectPackets().get(0);
+        final ConnectPacket connectPacket1 = hivemq.getConnectPackets().getFirst();
         assertConnectPacket(connectPacket1, connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setClientId("client1");
@@ -174,7 +172,7 @@ class ShellConnectST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '3') {
                 connectAssertion.setSessionExpiryInterval(4294967295L);
@@ -195,7 +193,7 @@ class ShellConnectST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '3') {
                 connectAssertion.setSessionExpiryInterval(0L);
@@ -223,7 +221,7 @@ class ShellConnectST {
         awaitOutput.awaitLog("sending CONNECT");
         awaitOutput.awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setReceiveMaximum(500);
@@ -250,7 +248,7 @@ class ShellConnectST {
         awaitOutput.awaitLog("sending CONNECT");
         awaitOutput.awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setMaximumPacketSize(500);
@@ -277,7 +275,7 @@ class ShellConnectST {
         awaitOutput.awaitLog("sending CONNECT");
         awaitOutput.awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setTopicAliasMaximum(5);
@@ -298,7 +296,7 @@ class ShellConnectST {
         awaitOutput.awaitLog("sending CONNECT");
         awaitOutput.awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestProblemInformation(false);
@@ -326,7 +324,7 @@ class ShellConnectST {
         awaitOutput.awaitLog("sending CONNECT");
         awaitOutput.awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestProblemInformation(true);
@@ -354,7 +352,7 @@ class ShellConnectST {
         awaitOutput.awaitLog("sending CONNECT");
         awaitOutput.awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 connectAssertion.setRequestResponseInformation(true);
@@ -399,7 +397,7 @@ class ShellConnectST {
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("username");
         });
@@ -423,7 +421,7 @@ class ShellConnectST {
             awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -444,7 +442,7 @@ class ShellConnectST {
                 .awaitStdOut(String.format("@%s>", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("user");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -473,7 +471,7 @@ class ShellConnectST {
             awaitOutput.awaitStdOut(String.format("@%s>", hivemq.getHost()))
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
             });
@@ -499,7 +497,7 @@ class ShellConnectST {
                 .awaitStdOut(String.format("@%s>", hivemq.getHost()))
                 .awaitLog("sending CONNECT")
                 .awaitLog("received CONNACK");
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setUserName("user");
             connectAssertion.setPassword(ByteBuffer.wrap("password".getBytes(StandardCharsets.UTF_8)));
@@ -550,7 +548,7 @@ class ShellConnectST {
             awaitOutput.awaitStdErr("Will Response Topic was set but is unused in MQTT Version MQTT_3_1_1");
             awaitOutput.awaitStdErr("Will User Properties was set but is unused in MQTT Version MQTT_3_1_1");
 
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 final WillPublishBuilder expectedWillBuilder = Builders.willPublish()
                         .payload(ByteBuffer.wrap("will-message".getBytes(StandardCharsets.UTF_8)))
                         .topic("test-will-topic")
@@ -566,7 +564,7 @@ class ShellConnectST {
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
 
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 final WillPublishBuilder expectedWillBuilder = Builders.willPublish()
                         .payload(ByteBuffer.wrap("will-message".getBytes(StandardCharsets.UTF_8)))
                         .topic("test-will-topic")
@@ -612,7 +610,7 @@ class ShellConnectST {
                     .awaitLog("sending CONNECT")
                     .awaitLog("received CONNACK");
 
-            assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+            assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
                 connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
                 connectAssertion.setSessionExpiryInterval(4294967295L);
                 connectAssertion.setCleanStart(false);
@@ -626,7 +624,7 @@ class ShellConnectST {
                     .awaitLog("received CONNACK")
                     .awaitLog("sessionPresent=false");
 
-            final ConnectPacket connectPacket1 = hivemq.getConnectPackets().get(0);
+            final ConnectPacket connectPacket1 = hivemq.getConnectPackets().getFirst();
             assertConnectPacket(connectPacket1, connectAssertion -> {
                 connectAssertion.setClientId(clientId);
                 connectAssertion.setCleanStart(false);
@@ -701,7 +699,7 @@ class ShellConnectST {
 
         awaitOutput.awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             if (mqttVersion == '5') {
                 final ImmutableList<MqttUserProperty> userProperties = ImmutableList.<MqttUserProperty>builder()
@@ -735,7 +733,7 @@ class ShellConnectST {
                 .awaitLog("keepAlive=30")
                 .awaitLog("received CONNACK");
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0), connectAssertion -> {
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(), connectAssertion -> {
             connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(mqttVersion));
             connectAssertion.setKeepAlive(30);
         });

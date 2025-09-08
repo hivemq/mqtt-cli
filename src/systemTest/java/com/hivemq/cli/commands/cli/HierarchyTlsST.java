@@ -56,9 +56,7 @@ class HierarchyTlsST {
             .build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
-
 
     @CartesianTest
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
@@ -90,9 +88,12 @@ class HierarchyTlsST {
         final String defaultClientTruststore =
                 Resources.getResource("tls/hierarchyTest/client/client-truststore." + clientStoreType).getPath();
 
-        final String defaultCertificateAuthorityPublicKey = Resources.getResource("tls/hierarchyTest/certificateAuthority/ca.pem").getPath();
-        final String defaultClientPublicKey = Resources.getResource("tls/hierarchyTest/client/client-cert.pem").getPath();
-        final String defaultClientPrivateKey = Resources.getResource("tls/hierarchyTest/client/client-key." + clientKeyType).getPath();
+        final String defaultCertificateAuthorityPublicKey =
+                Resources.getResource("tls/hierarchyTest/certificateAuthority/ca.pem").getPath();
+        final String defaultClientPublicKey =
+                Resources.getResource("tls/hierarchyTest/client/client-cert.pem").getPath();
+        final String defaultClientPrivateKey =
+                Resources.getResource("tls/hierarchyTest/client/client-key." + clientKeyType).getPath();
 
         final Map<String, String> properties = new HashMap<>(Map.of("auth.keystore",
                 defaultClientKeystore,
@@ -172,20 +173,21 @@ class HierarchyTlsST {
                     //"pkcs8.camellia256.pem",
                     //"pkcs8.des.pem",
                     "pkcs8.des3.pem"}) final @NotNull String clientKeyType) throws Exception {
-        final String certificateAuthorityPublicKey =
-                Resources.getResource("tls/certificateAuthority/ca.pem").getPath();
+        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/ca.pem").getPath();
         final String clientPublicKey = Resources.getResource("tls/client/client-cert.pem").getPath();
-        final String clientPrivateKey =
-                Resources.getResource("tls/client/client-key." + clientKeyType).getPath();
+        final String clientPrivateKey = Resources.getResource("tls/client/client-key." + clientKeyType).getPath();
 
         final String defaultClientKeystore =
                 Resources.getResource("tls/hierarchyTest/client/client-keystore." + clientStoreType).getPath();
         final String defaultClientTruststore =
                 Resources.getResource("tls/hierarchyTest/client/client-truststore." + clientStoreType).getPath();
 
-        final String defaultCertificateAuthorityPublicKey = Resources.getResource("tls/hierarchyTest/certificateAuthority/ca.pem").getPath();
-        final String defaultClientPublicKey = Resources.getResource("tls/hierarchyTest/client/client-cert.pem").getPath();
-        final String defaultClientPrivateKey = Resources.getResource("tls/hierarchyTest/client/client-key." + clientKeyType).getPath();
+        final String defaultCertificateAuthorityPublicKey =
+                Resources.getResource("tls/hierarchyTest/certificateAuthority/ca.pem").getPath();
+        final String defaultClientPublicKey =
+                Resources.getResource("tls/hierarchyTest/client/client-cert.pem").getPath();
+        final String defaultClientPrivateKey =
+                Resources.getResource("tls/hierarchyTest/client/client-key." + clientKeyType).getPath();
 
         final Map<String, String> properties = new HashMap<>(Map.of("auth.keystore",
                 defaultClientKeystore,
@@ -235,11 +237,11 @@ class HierarchyTlsST {
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -265,9 +267,12 @@ class HierarchyTlsST {
         final String defaultClientTruststore =
                 Resources.getResource("tls/client/client-truststore." + clientStoreType).getPath();
 
-        final String defaultCertificateAuthorityPublicKey = Resources.getResource("tls/hierarchyTest/certificateAuthority/ca.pem").getPath();
-        final String defaultClientPublicKey = Resources.getResource("tls/hierarchyTest/client/client-cert.pem").getPath();
-        final String defaultClientPrivateKey = Resources.getResource("tls/hierarchyTest/client/client-key." + clientKeyType).getPath();
+        final String defaultCertificateAuthorityPublicKey =
+                Resources.getResource("tls/hierarchyTest/certificateAuthority/ca.pem").getPath();
+        final String defaultClientPublicKey =
+                Resources.getResource("tls/hierarchyTest/client/client-cert.pem").getPath();
+        final String defaultClientPrivateKey =
+                Resources.getResource("tls/hierarchyTest/client/client-key." + clientKeyType).getPath();
 
         final Map<String, String> properties = new HashMap<>(Map.of("auth.keystore",
                 defaultClientKeystore,
