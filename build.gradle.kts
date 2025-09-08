@@ -396,6 +396,7 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
         vendor = JvmVendorSpec.GRAAL_VM
     }
     buildArgs.add("-Dio.netty.noUnsafe=true")
+    buildArgs.add("-Dio.netty.jfr.enabled=false")
     buildArgs.add("--no-fallback")
     buildArgs.add("--enable-https")
     buildArgs.add("--features=com.hivemq.cli.graal.BouncyCastleFeature")
