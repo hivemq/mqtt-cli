@@ -26,7 +26,7 @@ netty = "4.2.6.Final"
 okhttp = "4.12.0"
 openCsv = "5.12.0"
 picocli = "4.7.7"
-swagger-annotations = "2.2.36"
+swagger-annotations = "2.2.37"
 testcontainers = "1.21.3"
 tinylog = "2.7.0"
 
