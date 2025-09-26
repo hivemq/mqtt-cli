@@ -1,6 +1,6 @@
 [versions]
 apache-commonsIO = "2.20.0"
-apache-commonsLang = "3.18.0"
+apache-commonsLang = "3.19.0"
 apache-commonsText = "1.14.0"
 awaitility = "4.3.0"
 bouncycastle = "1.82"
