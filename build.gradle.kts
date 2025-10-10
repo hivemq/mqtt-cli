@@ -91,6 +91,7 @@ repositories {
 dependencies {
     implementation(libs.swagger.annotations)
     implementation(libs.jsr305)
+    implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     implementation(libs.okhttp.loggingInterceptor)
     implementation(libs.gsonFire)
@@ -235,6 +236,7 @@ testing {
         val test by getting(JvmTestSuite::class) {
             dependencies {
                 implementation(libs.mockito)
+                implementation(platform(libs.okhttp.bom))
                 implementation(libs.okhttp.mockWebserver)
             }
         }
@@ -252,6 +254,7 @@ testing {
                 implementation(libs.dagger)
                 implementation(libs.gson)
                 implementation(libs.hivemq.mqttClient)
+                implementation(platform(libs.okhttp.bom))
                 implementation(libs.okhttp)
                 implementation(libs.openCsv)
                 implementation(libs.picocli)
