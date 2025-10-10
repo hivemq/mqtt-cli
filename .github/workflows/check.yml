@@ -20,14 +20,12 @@ jobs:
             11
             21
           cache: gradle
-      - name: Login to Docker Hub
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
       - name: Setup GraalVM
         run: ./gradlew installNativeImageTooling
       - name: Check
+        env:
+          ORG_GRADLE_PROJECT_dockerHubUsername: ${{ secrets.DOCKER_USERNAME }}
+          ORG_GRADLE_PROJECT_dockerHubPassword: ${{ secrets.DOCKER_TOKEN }}
         run: ./gradlew check --stacktrace
       - name: Upload Test Results
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
