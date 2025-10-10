@@ -18,18 +18,24 @@ package com.hivemq.cli.commands.hivemq.export.clients;
 
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hivemq.cli.rest.ClientsApiResponses.INVALID_CURSOR_VALUE;
-import static com.hivemq.cli.rest.hivemq.TestResponseBodies.*;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_INVALID_CURSOR;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_SINGLE_RESULT;
+import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_WITH_CURSOR;
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -41,7 +47,7 @@ class ClientIdsRetrieverTaskTest {
     private @NotNull ClientIdsRetrieverTask clientIdsRetrieverTask;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() throws Exception {
         server = new MockWebServer();
         server.start();
 
@@ -53,7 +59,7 @@ class ClientIdsRetrieverTaskTest {
 
     @Test
     void single_page_success() {
-        final MockResponse response = new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_SINGLE_RESULT);
+        final MockResponse response = new MockResponse.Builder().code(HTTP_OK).body(CLIENT_IDS_SINGLE_RESULT).build();
 
         server.enqueue(response);
 
@@ -65,7 +71,7 @@ class ClientIdsRetrieverTaskTest {
 
     @Test
     void more_pages_success() {
-        final MockResponse response = new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_WITH_CURSOR);
+        final MockResponse response = new MockResponse.Builder().code(HTTP_OK).body(CLIENT_IDS_WITH_CURSOR).build();
 
         server.enqueue(response);
         server.enqueue(response);
@@ -73,7 +79,7 @@ class ClientIdsRetrieverTaskTest {
         server.enqueue(response);
         server.enqueue(response);
 
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_SINGLE_RESULT));
+        server.enqueue(new MockResponse.Builder().code(HTTP_OK).body(CLIENT_IDS_SINGLE_RESULT).build());
 
         clientIdsRetrieverTask.run();
 
@@ -83,7 +89,7 @@ class ClientIdsRetrieverTaskTest {
     @Test
     void unrecoverable_exception_success() {
         final MockResponse response =
-                new MockResponse().setResponseCode(INVALID_CURSOR_VALUE).setBody(CLIENT_IDS_INVALID_CURSOR);
+                new MockResponse.Builder().code(INVALID_CURSOR_VALUE).body(CLIENT_IDS_INVALID_CURSOR).build();
 
         server.enqueue(response);
 
@@ -96,9 +102,9 @@ class ClientIdsRetrieverTaskTest {
         clientIdsQueue = new LinkedBlockingQueue<>(1);
         clientIdsRetrieverTask = new ClientIdsRetrieverTask(mqttClientsApi, clientIdsQueue);
 
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_WITH_CURSOR));
+        server.enqueue(new MockResponse.Builder().code(HTTP_OK).body(CLIENT_IDS_WITH_CURSOR).build());
 
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(CLIENT_IDS_SINGLE_RESULT));
+        server.enqueue(new MockResponse.Builder().code(HTTP_OK).body(CLIENT_IDS_SINGLE_RESULT).build());
 
         final CompletableFuture<Void> clientIdsRetrieverFuture = CompletableFuture.runAsync(clientIdsRetrieverTask);
         final AtomicLong polledClientIds = new AtomicLong();

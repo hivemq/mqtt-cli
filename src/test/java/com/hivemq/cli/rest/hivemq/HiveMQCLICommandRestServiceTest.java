@@ -21,14 +21,13 @@ import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClient;
 import com.hivemq.cli.openapi.hivemq.HivemqOpenapiClientList;
 import com.hivemq.cli.openapi.hivemq.MqttClientsApi;
 import com.hivemq.cli.rest.HiveMQRestService;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.hivemq.cli.rest.hivemq.TestResponseBodies.CLIENT_IDS_CURSOR_NOT_VALID_ANYMORE;
@@ -52,20 +51,20 @@ class HiveMQCLICommandRestServiceTest {
     private @NotNull MqttClientsApi mqttClientsApi;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() throws Exception {
         server = new MockWebServer();
         server.start();
         mqttClientsApi = new HiveMQRestService().getMqttClientsApi(server.url("/").toString(), 500);
     }
 
     @AfterEach
-    void tearDown() throws IOException {
-        server.shutdown();
+    void tearDown() {
+        server.close();
     }
 
     @Test
     void get_client_ids_success() throws ApiException {
-        final MockResponse response = new MockResponse().setResponseCode(HTTP_OK).setBody(CLIENT_IDS_WITH_CURSOR);
+        final MockResponse response = new MockResponse.Builder().code(HTTP_OK).body(CLIENT_IDS_WITH_CURSOR).build();
 
         server.enqueue(response);
 
@@ -83,7 +82,7 @@ class HiveMQCLICommandRestServiceTest {
 
     @Test
     void get_client_ids_single_success() throws ApiException {
-        final MockResponse response = new MockResponse().setResponseCode(HTTP_OK).setBody(CLIENT_IDS_SINGLE_RESULT);
+        final MockResponse response = new MockResponse.Builder().code(HTTP_OK).body(CLIENT_IDS_SINGLE_RESULT).build();
 
         server.enqueue(response);
 
@@ -96,7 +95,7 @@ class HiveMQCLICommandRestServiceTest {
 
     @Test
     void get_client_ids_empty_success() throws ApiException {
-        final MockResponse response = new MockResponse().setResponseCode(HTTP_OK).setBody(CLIENT_IDS_EMPTY);
+        final MockResponse response = new MockResponse.Builder().code(HTTP_OK).body(CLIENT_IDS_EMPTY).build();
 
         server.enqueue(response);
 
@@ -110,7 +109,7 @@ class HiveMQCLICommandRestServiceTest {
     @Test
     void get_client_ids_invalid_cursor_failed() {
         final MockResponse response =
-                new MockResponse().setResponseCode(HTTP_BAD_REQUEST).setBody(CLIENT_IDS_INVALID_CURSOR);
+                new MockResponse.Builder().code(HTTP_BAD_REQUEST).body(CLIENT_IDS_INVALID_CURSOR).build();
 
         server.enqueue(response);
 
@@ -120,7 +119,7 @@ class HiveMQCLICommandRestServiceTest {
     @Test
     void get_client_ids_cursor_not_Valid_anymore_failed() {
         final MockResponse response =
-                new MockResponse().setResponseCode(HTTP_GONE).setBody(CLIENT_IDS_CURSOR_NOT_VALID_ANYMORE);
+                new MockResponse.Builder().code(HTTP_GONE).body(CLIENT_IDS_CURSOR_NOT_VALID_ANYMORE).build();
 
         server.enqueue(response);
 
@@ -130,7 +129,7 @@ class HiveMQCLICommandRestServiceTest {
     @Test
     void get_client_ids_during_replication_failed() {
         final MockResponse response =
-                new MockResponse().setResponseCode(HTTP_UNAVAILABLE).setBody(CLIENT_IDS_REPLICATION);
+                new MockResponse.Builder().code(HTTP_UNAVAILABLE).body(CLIENT_IDS_REPLICATION).build();
 
         server.enqueue(response);
 
@@ -140,7 +139,7 @@ class HiveMQCLICommandRestServiceTest {
     @Test
     void get_client_ids_rate_limit_5_success() throws ApiException {
         mqttClientsApi = new HiveMQRestService().getMqttClientsApi(server.url("/").toString(), 1);
-        final MockResponse response = new MockResponse().setResponseCode(HTTP_OK).setBody(CLIENT_IDS_WITH_CURSOR);
+        final MockResponse response = new MockResponse.Builder().code(HTTP_OK).body(CLIENT_IDS_WITH_CURSOR).build();
 
         for (int i = 0; i < 5; i++) {
             server.enqueue(response);
