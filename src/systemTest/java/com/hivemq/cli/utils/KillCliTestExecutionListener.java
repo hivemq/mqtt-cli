@@ -28,7 +28,8 @@ public class KillCliTestExecutionListener implements TestExecutionListener {
 
     @Override
     public void executionFinished(
-            final @NotNull TestIdentifier testIdentifier, final @NotNull TestExecutionResult testExecutionResult) {
+            final @NotNull TestIdentifier testIdentifier,
+            final @NotNull TestExecutionResult testExecutionResult) {
         final String processIds = System.getProperty(testIdentifier.getUniqueId());
         if (processIds == null) {
             return;

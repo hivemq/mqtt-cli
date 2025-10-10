@@ -245,6 +245,7 @@ testing {
             testType = TestSuiteType.INTEGRATION_TEST
 
             dependencies {
+                runtimeOnly(libs.junit.platformLauncher)
                 implementation(libs.awaitility)
                 implementation(libs.gradleOci.junitJupiter)
                 implementation(libs.mockito)
@@ -298,11 +299,11 @@ testing {
             }
 
             dependencies {
+                implementation(libs.junit.platformLauncher)
                 implementation(libs.awaitility)
                 implementation(libs.gradleOci.junitJupiter)
                 implementation(libs.hivemq.communityEditionEmbedded)
                 implementation(libs.junit.pioneer)
-                implementation(libs.junit.platformLauncher)
                 implementation(libs.testcontainers)
 
                 implementation(libs.apache.commonsIO)
