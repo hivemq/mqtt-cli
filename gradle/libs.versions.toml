@@ -20,7 +20,7 @@ junit-jupiter = "6.0.1"
 junit-pioneer = "2.3.0"
 mockito = "5.20.0"
 netty = "4.2.7.Final"
-okhttp = "5.2.1"
+okhttp = "5.3.0"
 openCsv = "5.12.0"
 picocli = "4.7.7"
 swagger-annotations = "2.2.40"
@@ -80,5 +80,5 @@ launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.7" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.11.2" }
 oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.24.0" }
-openapi-generator = { id = "org.openapi.generator", version = "7.16.0" }
+openapi-generator = { id = "org.openapi.generator", version = "7.17.0" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
