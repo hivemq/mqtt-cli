@@ -64,11 +64,11 @@ class PublishST {
 
         assertPublishOutput(executionResult);
 
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -84,7 +84,7 @@ class PublishST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setRetain(true);
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
@@ -107,7 +107,7 @@ class PublishST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message-from-file".getBytes(StandardCharsets.UTF_8)));
         });
@@ -125,7 +125,7 @@ class PublishST {
         final ExecutionResult executionResult = MqttCli.execute(publishCommand);
         assertPublishOutput(executionResult);
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.allocate(0));
         });
@@ -229,7 +229,7 @@ class PublishST {
                     .contains("Publish message expiry was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -254,7 +254,7 @@ class PublishST {
                     .contains("Publish payload format indicator was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -279,7 +279,7 @@ class PublishST {
                     .contains("Publish content type was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -304,7 +304,7 @@ class PublishST {
                     .contains("Publish response topic was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -329,7 +329,7 @@ class PublishST {
                     .contains("Publish correlation data was set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {
@@ -356,7 +356,7 @@ class PublishST {
                     .contains("Publish user properties were set but is unused in MQTT Version MQTT_3_1_1"));
         }
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
             if (mqttVersion == '5') {

@@ -61,7 +61,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.awaitility.Awaitility.await;
@@ -106,7 +105,7 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     }
 
     @Override
-    public void beforeAll(final @NotNull ExtensionContext context) throws IOException {
+    public void beforeAll(final @NotNull ExtensionContext context) throws Exception {
         port = generatePort();
         connectPackets = new ArrayList<>();
         connackPackets = new ArrayList<>();
@@ -181,22 +180,20 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
                 .withConfigurationFolder(hivemqConfigFolder)
                 .withDataFolder(hivemqDataFolder)
                 .withEmbeddedExtension(embeddedExtension);
-
         try {
             hivemq = builder.build();
             InternalConfigurations.PAYLOAD_PERSISTENCE_TYPE.set(PersistenceType.FILE);
             InternalConfigurations.RETAINED_MESSAGE_PERSISTENCE_TYPE.set(PersistenceType.FILE);
             hivemq.start().get();
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        } catch (final Exception e) {
+            e.printStackTrace();
         }
     }
 
     @Override
-    public void afterAll(final @NotNull ExtensionContext context)
-            throws IOException, ExecutionException, InterruptedException {
+    public void afterAll(final @NotNull ExtensionContext context) throws Exception {
         Objects.requireNonNull(hivemq).stop().get();
-        //This allows gc of embedded hivemq even if the JUnit Extension is still referenced (static)
+        // this allows gc of embedded hivemq even if the JUnit Extension is still referenced (static)
         hivemq = null;
         FileUtils.deleteDirectory(Objects.requireNonNull(hivemqConfigFolder).toFile());
         FileUtils.deleteDirectory(Objects.requireNonNull(hivemqDataFolder).toFile());
@@ -277,20 +274,17 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     }
 
     private @NotNull String setupHivemqConfig() throws IOException {
-        final String tlsConfig = setupTls();
-        final String websocketsConfig = setupWebsockets();
-        //@formatter:off
-        return "<hivemq>\n" + "    " +
-                "    <listeners>\n" + "        " +
-                "        <tcp-listener>\n" +
-                "            <port>" + port + "</port>\n" +
-                "            <bind-address>" + bindAddress + "</bind-address>\n" +
-                "        </tcp-listener>\n" +
-                tlsConfig +
-                websocketsConfig +
-                "    </listeners>\n" +
-                "</hivemq>";
-        //@formatter:on
+        return """
+                <hivemq>
+                  <listeners>
+                  <tcp-listener>
+                    <port>%d</port>
+                    <bind-address>%s</bind-address>
+                  </tcp-listener>
+                %s
+                %s
+                  </listeners>
+                </hivemq>""".formatted(port, bindAddress, setupTls().indent(4), setupWebsockets().indent(4));
     }
 
     private @NotNull String setupTls() throws IOException {
@@ -303,39 +297,22 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
             final String trustStorePath = Resources.getResource("tls/server/server-truststore.jks").getPath();
             final String trustStorePassword = "serverTruststorePassword";
 
-            final String tlsVersionsString;
+            final StringBuilder tlsVersions = new StringBuilder();
             if (!tlsConfiguration.getTlsVersions().isEmpty()) {
-                final StringBuilder tlsVersions = new StringBuilder();
+                tlsVersions.append("<protocols>\n");
                 for (final TlsVersion tlsVersion : tlsConfiguration.getTlsVersions()) {
-                    tlsVersions.append("                   <protocol>").append(tlsVersion).append("</protocol>\n");
+                    tlsVersions.append("  <protocol>").append(tlsVersion).append("</protocol>\n");
                 }
-
-                //@formatter:off
-                tlsVersionsString =
-                        "                <protocols>\n" +
-                        tlsVersions +
-                        "                </protocols>\n";
-                //@formatter:on
-            } else {
-                tlsVersionsString = "";
+                tlsVersions.append("</protocols>\n");
             }
 
-            final String cipherSuitesString;
+            final StringBuilder cipherSuites = new StringBuilder();
             if (!tlsConfiguration.getCipherSuites().isEmpty()) {
-                final StringBuilder cipherSuites = new StringBuilder();
+                cipherSuites.append("<cipher-suites>\n");
                 for (final String cipherSuite : tlsConfiguration.getCipherSuites()) {
-                    cipherSuites.append("                   <cipher-suite>")
-                            .append(cipherSuite)
-                            .append("</cipher-suite>\n");
+                    cipherSuites.append("  <cipher-suite>").append(cipherSuite).append("</cipher-suite>\n");
                 }
-                //@formatter:off
-                cipherSuitesString =
-                        "                <cipher-suites>\n" +
-                        cipherSuites +
-                        "                </cipher-suites>\n";
-                //@formatter:on
-            } else {
-                cipherSuitesString = "";
+                cipherSuites.append("</cipher-suites>\n");
             }
 
             final String clientAuthentication;
@@ -344,28 +321,35 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
             } else {
                 clientAuthentication = "NONE";
             }
-
-            //@formatter:off
-            tlsConfig =
-                    "<tls-tcp-listener>\n" +
-                    "           <port>" + tlsPort + "</port>\n" +
-                    "           <bind-address>" + bindAddress + "</bind-address>\n" +
-                    "           <tls>\n" +
-                    tlsVersionsString +
-                    cipherSuitesString +
-                    "                <keystore\n>" +
-                    "                   <path>" + keyStorePath +  "</path>\n" +
-                    "                   <password>" + keyStorePassword + "</password>\n" +
-                    "                   <private-key-password>" + keyStorePrivatePassword + "</private-key-password>\n" +
-                    "                </keystore>\n" +
-                    "                <client-authentication-mode>" + clientAuthentication + "</client-authentication-mode>\n" +
-                    "                <truststore>\n" +
-                    "                   <path>" + trustStorePath + "</path>\n" +
-                    "                   <password>" + trustStorePassword + "</password>\n" +
-                    "                </truststore>\n" +
-                    "           </tls>\n" +
-                    "</tls-tcp-listener>\n";
-            //@formatter:on
+            tlsConfig = """
+                    <tls-tcp-listener>
+                      <port>%d</port>
+                      <bind-address>%s</bind-address>
+                      <tls>
+                    %s
+                    %s
+                        <keystore>
+                          <path>%s</path>
+                          <password>%s</password>
+                          <private-key-password>%s</private-key-password>
+                        </keystore>
+                        <client-authentication-mode>%s</client-authentication-mode>
+                        <truststore>
+                          <path>%s</path>
+                          <password>%s</password>
+                        </truststore>
+                      </tls>
+                    </tls-tcp-listener>
+                    """.formatted(tlsPort,
+                    bindAddress,
+                    tlsVersions.toString().indent(4),
+                    cipherSuites.toString().indent(4),
+                    keyStorePath,
+                    keyStorePassword,
+                    keyStorePrivatePassword,
+                    clientAuthentication,
+                    trustStorePath,
+                    trustStorePassword);
         } else {
             tlsConfig = "";
         }
@@ -375,21 +359,19 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
     private @NotNull String setupWebsockets() throws IOException {
         String websocketsConfig = "";
         if (websocketEnabled) {
-            this.websocketsPort = generatePort();
-            //@formatter:off
-            websocketsConfig =
-                    "<websocket-listener>\n" +
-                    "          <port>" + websocketsPort + "</port>\n" +
-                    "          <bind-address>" + bindAddress + "</bind-address>\n" +
-                    "          <path>" + WEBSOCKETS_PATH + "</path>\n" +
-                    "          <name>my-websocket-listener</name>\n" +
-                    "          <subprotocols>\n" +
-                    "              <subprotocol>mqttv3.1</subprotocol>\n" +
-                    "              <subprotocol>mqtt</subprotocol>\n" +
-                    "          </subprotocols>\n" +
-                    "          <allow-extensions>true</allow-extensions>\n" +
-                    "</websocket-listener>";
-            //@formatter:on
+            websocketsPort = generatePort();
+            websocketsConfig = """
+                    <websocket-listener>
+                      <port>%d</port>
+                      <bind-address>%s</bind-address>
+                      <path>%s</path>
+                      <name>my-websocket-listener</name>
+                      <subprotocols>
+                        <subprotocol>mqttv3.1</subprotocol>
+                        <subprotocol>mqtt</subprotocol>
+                      </subprotocols>
+                      <allow-extensions>true</allow-extensions>
+                    </websocket-listener>""".formatted(websocketsPort, bindAddress, WEBSOCKETS_PATH);
         }
         return websocketsConfig;
     }
@@ -460,4 +442,3 @@ public class HiveMQExtension implements BeforeAllCallback, AfterAllCallback, Aft
         }
     }
 }
-

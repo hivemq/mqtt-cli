@@ -46,8 +46,7 @@ class PublishConnectWebsocketsST {
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     @ValueSource(chars = {'3', '5'})
     void test_websockets(final char mqttVersion) throws Exception {
-        final List<String> publishCommand = List.of(
-                "pub",
+        final List<String> publishCommand = List.of("pub",
                 "-h",
                 hivemq.getHost(),
                 "-p",
@@ -70,12 +69,11 @@ class PublishConnectWebsocketsST {
         assertTrue(executionResult.getStandardOutput().contains("received CONNACK"));
         assertTrue(executionResult.getStandardOutput().contains("finish PUBLISH"));
 
-        assertConnectPacket(
-                hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("topic");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });

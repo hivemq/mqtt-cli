@@ -317,13 +317,15 @@ class SubscribeST {
         jsonObject.addProperty("property3", "value3");
         publishMessage("topic", jsonObject.toString());
 
-        executionResult.awaitStdOut("{\n" +
-                "  \"topic\": \"topic\",\n" +
-                "  \"payload\": {\n" +
-                "    \"property1\": \"value1\",\n" +
-                "    \"property2\": \"value2\",\n" +
-                "    \"property3\": \"value3\"\n" +
-                "  },\n");
+        executionResult.awaitStdOut("""
+                {
+                  "topic": "topic",
+                  "payload": {
+                    "property1": "value1",
+                    "property2": "value2",
+                    "property3": "value3"
+                  },
+                """);
         executionResult.awaitStdOut("\"qos\": \"EXACTLY_ONCE\",");
         executionResult.awaitStdOut("\"receivedAt\":");
         executionResult.awaitStdOut("\"retain\": false");
