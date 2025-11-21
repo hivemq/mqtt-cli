@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
 <hivemq>
-
     <listeners>
         <tcp-listener>
             <port>1883</port>
             <bind-address>0.0.0.0</bind-address>
         </tcp-listener>
     </listeners>
-
     <rest-api>
         <enabled>true</enabled>
         <listeners>
@@ -17,5 +15,7 @@
             </http>
         </listeners>
     </rest-api>
-
+    <anonymous-usage-statistics>
+        <enabled>false</enabled>
+    </anonymous-usage-statistics>
 </hivemq>

@@ -36,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.hivemq.HiveMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
 
 import static com.hivemq.cli.mqtt.test.results.TestResult.OK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +48,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class Mqtt5FeatureTesterDefaultIT {
 
     @Container
-    private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4"));
+    private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
+            .withHiveMQConfig(MountableFile.forClasspathResource("hivemq.configs/config.xml"));
 
     private @NotNull Mqtt5FeatureTester mqtt5FeatureTester;
 

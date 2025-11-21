@@ -54,6 +54,7 @@ public class SwarmRunStartCommandIT {
     private static final int REST_PORT = 8080;
 
     private final @NotNull Network network = Network.newNetwork();
+    @SuppressWarnings("resource")
     private final @NotNull GenericContainer<?> swarm =
             new GenericContainer<>(OciImages.getImageName("hivemq/hivemq-swarm")).withNetwork(network)
                     .withNetworkAliases("swarm")

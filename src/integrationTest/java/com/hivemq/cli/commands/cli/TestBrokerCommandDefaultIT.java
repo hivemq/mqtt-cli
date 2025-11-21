@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.hivemq.HiveMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,7 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TestBrokerCommandDefaultIT {
 
     @Container
-    private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4"));
+    private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
+            .withHiveMQConfig(MountableFile.forClasspathResource("hivemq.configs/config.xml"));
 
     @BeforeEach
     void setUp() {
