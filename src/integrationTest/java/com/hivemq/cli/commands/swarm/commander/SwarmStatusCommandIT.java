@@ -98,7 +98,6 @@ public class SwarmStatusCommandIT {
     @Test
     @Timeout(value = 3, unit = TimeUnit.MINUTES)
     void getCommanderStatus() {
-        //noinspection HttpUrlsUsage
         final int execute =
                 commandLine.execute("-url=http://" + swarm.getHost() + ":" + swarm.getMappedPort(REST_PORT));
         assertEquals(0, execute);
