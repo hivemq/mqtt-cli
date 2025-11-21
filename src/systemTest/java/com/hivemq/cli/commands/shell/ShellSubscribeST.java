@@ -353,13 +353,15 @@ class ShellSubscribeST {
 
         publisher.publishWith().topic("test").payload(jsonObject.toString().getBytes(StandardCharsets.UTF_8)).send();
 
-        awaitOutput.awaitStdOut("{\n" +
-                "  \"topic\": \"test\",\n" +
-                "  \"payload\": {\n" +
-                "    \"property1\": \"value1\",\n" +
-                "    \"property2\": \"value2\",\n" +
-                "    \"property3\": \"value3\"\n" +
-                "  },\n");
+        awaitOutput.awaitStdOut("""
+                {
+                  "topic": "test",
+                  "payload": {
+                    "property1": "value1",
+                    "property2": "value2",
+                    "property3": "value3"
+                  },
+                """);
         awaitOutput.awaitStdOut("\"qos\": \"AT_MOST_ONCE\",");
         awaitOutput.awaitStdOut("\"receivedAt\":");
         awaitOutput.awaitStdOut("\"retain\": false");

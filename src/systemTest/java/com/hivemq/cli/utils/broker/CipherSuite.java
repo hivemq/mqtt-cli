@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CipherSuite {
 
@@ -29,12 +28,10 @@ public class CipherSuite {
     }
 
     public static @NotNull List<String> getAllAsString() {
-        final List<String> ciphers_1_2 = Arrays.stream(TLS_1_2_Compatible.values())
-                .map(TLS_1_2_Compatible::toString)
-                .collect(Collectors.toList());
-        final List<String> ciphers_1_3 = Arrays.stream(TLS_1_3_Compatible.values())
-                .map(TLS_1_3_Compatible::toString)
-                .collect(Collectors.toList());
+        final List<String> ciphers_1_2 =
+                Arrays.stream(TLS_1_2_Compatible.values()).map(TLS_1_2_Compatible::toString).toList();
+        final List<String> ciphers_1_3 =
+                Arrays.stream(TLS_1_3_Compatible.values()).map(TLS_1_3_Compatible::toString).toList();
         final ArrayList<String> allCiphers = new ArrayList<>();
         allCiphers.addAll(ciphers_1_2);
         allCiphers.addAll(ciphers_1_3);

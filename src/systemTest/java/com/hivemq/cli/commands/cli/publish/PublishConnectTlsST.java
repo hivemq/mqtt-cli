@@ -58,9 +58,7 @@ class PublishConnectTlsST {
             .build();
 
     @RegisterExtension
-    @SuppressWarnings("JUnitMalformedDeclaration")
     private final @NotNull MqttCliAsyncExtension mqttCli = new MqttCliAsyncExtension();
-
 
     //TRUSTSTORE
 
@@ -98,11 +96,11 @@ class PublishConnectTlsST {
         executionResult.awaitStdOut("Enter truststore password:");
         executionResult.write("clientTruststorePassword");
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -142,11 +140,11 @@ class PublishConnectTlsST {
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -190,11 +188,11 @@ class PublishConnectTlsST {
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -232,11 +230,11 @@ class PublishConnectTlsST {
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -247,7 +245,8 @@ class PublishConnectTlsST {
     void test_tls_pem_format_via_folder(
             @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
             @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
-        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/capath/pem").getPath();
+        final String certificateAuthorityPublicKey =
+                Resources.getResource("tls/certificateAuthority/capath/pem").getPath();
 
         final List<String> publishCommand = List.of("pub",
                 "-h",
@@ -271,11 +270,11 @@ class PublishConnectTlsST {
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -310,11 +309,11 @@ class PublishConnectTlsST {
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -352,11 +351,11 @@ class PublishConnectTlsST {
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -367,7 +366,8 @@ class PublishConnectTlsST {
     void test_tls_der_format_via_folder(
             @CartesianTest.Values(chars = {'3', '5'}) final char mqttVersion,
             @CartesianTest.Enum final @NotNull TlsVersion tlsVersion) throws Exception {
-        final String certificateAuthorityPublicKey = Resources.getResource("tls/certificateAuthority/capath/der").getPath();
+        final String certificateAuthorityPublicKey =
+                Resources.getResource("tls/certificateAuthority/capath/der").getPath();
 
         final List<String> publishCommand = List.of("pub",
                 "-h",
@@ -391,11 +391,11 @@ class PublishConnectTlsST {
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand);
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
@@ -430,11 +430,11 @@ class PublishConnectTlsST {
 
         final ExecutionResultAsync executionResult = mqttCli.executeAsync(publishCommand, Map.of(), properties);
         executionResult.awaitStdOut("finish PUBLISH");
-        assertConnectPacket(hivemq.getConnectPackets().get(0),
+        assertConnectPacket(hivemq.getConnectPackets().getFirst(),
                 connectAssertion -> connectAssertion.setMqttVersion(MqttVersionConverter.toExtensionSdkVersion(
                         mqttVersion)));
 
-        assertPublishPacket(hivemq.getPublishPackets().get(0), publishAssertion -> {
+        assertPublishPacket(hivemq.getPublishPackets().getFirst(), publishAssertion -> {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
