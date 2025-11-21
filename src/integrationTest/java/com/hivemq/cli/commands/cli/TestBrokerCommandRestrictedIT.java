@@ -35,9 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TestBrokerCommandRestrictedIT {
 
     @Container
-    private final @NotNull HiveMQContainer hivemq =
-            new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")).withHiveMQConfig(MountableFile.forClasspathResource(
-                    "mqtt/test/restricted-config.xml"));
+    private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
+            .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/restricted-config.xml"));
 
     @BeforeEach
     void setUp() {

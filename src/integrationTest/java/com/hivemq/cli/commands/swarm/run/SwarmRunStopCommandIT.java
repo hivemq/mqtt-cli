@@ -62,11 +62,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@SuppressWarnings("HttpUrlsUsage")
 public class SwarmRunStopCommandIT {
 
     private static final int REST_PORT = 8080;
 
     private final @NotNull Network network = Network.newNetwork();
+    @SuppressWarnings("resource")
     private final @NotNull GenericContainer<?> swarm =
             new GenericContainer<>(OciImages.getImageName("hivemq/hivemq-swarm")).withNetwork(network)
                     .withNetworkAliases("swarm")
@@ -145,21 +147,23 @@ public class SwarmRunStopCommandIT {
 
         final Mqtt5BlockingClient client = Mqtt5Client.builder().serverPort(hivemq.getMqttPort()).buildBlocking();
         client.connect();
-        final Mqtt5BlockingClient.Mqtt5Publishes publishes = client.publishes(MqttGlobalPublishFilter.ALL);
-        client.toAsync().subscribeWith().topicFilter("#").send();
+        try (final Mqtt5BlockingClient.Mqtt5Publishes publishes = client.publishes(MqttGlobalPublishFilter.ALL)) {
+            client.toAsync().subscribeWith().topicFilter("#").send();
 
-        final UploadScenarioRequest uploadScenarioRequest =
-                new UploadScenarioRequest().scenarioType("XML").scenario(scenarioBase64).scenarioName("my-scenario");
-        final UploadScenarioResponse uploadScenarioResponse = scenariosApi.uploadScenario(uploadScenarioRequest);
+            final UploadScenarioRequest uploadScenarioRequest = new UploadScenarioRequest().scenarioType("XML")
+                    .scenario(scenarioBase64)
+                    .scenarioName("my-scenario");
+            final UploadScenarioResponse uploadScenarioResponse = scenariosApi.uploadScenario(uploadScenarioRequest);
 
-        final StartRunRequest startRunRequest = new StartRunRequest();
-        final Integer scenarioId = uploadScenarioResponse.getScenarioId();
-        assertNotNull(scenarioId);
-        startRunRequest.setScenarioId(scenarioId.toString());
-        runsApi.startRun(startRunRequest);
+            final StartRunRequest startRunRequest = new StartRunRequest();
+            final Integer scenarioId = uploadScenarioResponse.getScenarioId();
+            assertNotNull(scenarioId);
+            startRunRequest.setScenarioId(scenarioId.toString());
+            runsApi.startRun(startRunRequest);
 
-        // the scenario is started
-        publishes.receive();
+            // the scenario is started
+            publishes.receive();
+        }
 
         // stop the scenario
         //TODO: not sure why here a logger reset is necessary (local machine)

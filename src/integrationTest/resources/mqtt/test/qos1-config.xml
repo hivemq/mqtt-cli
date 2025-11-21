@@ -1,19 +1,17 @@
 <?xml version="1.0"?>
-<hivemq xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
+<hivemq>
     <listeners>
         <tcp-listener>
             <port>1883</port>
             <bind-address>0.0.0.0</bind-address>
         </tcp-listener>
     </listeners>
-
     <mqtt>
-
         <quality-of-service>
             <max-qos>1</max-qos>
         </quality-of-service>
-
     </mqtt>
-
+    <anonymous-usage-statistics>
+        <enabled>false</enabled>
+    </anonymous-usage-statistics>
 </hivemq>
