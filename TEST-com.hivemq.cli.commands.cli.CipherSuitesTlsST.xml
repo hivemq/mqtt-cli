@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.CipherSuitesTlsST" tests="34" skipped="0" failures="0" errors="0" timestamp="2026-02-08T05:54:56" hostname="runnervmwffz4" time="46.645">
+<testsuite name="com.hivemq.cli.commands.cli.CipherSuitesTlsST" tests="34" skipped="0" failures="0" errors="0" timestamp="2026-02-08T06:12:56" hostname="runnervmwffz4" time="47.354">
   <properties/>
-  <testcase name="[1] 3, TLS_DHE_RSA_WITH_AES_128_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.569"/>
-  <testcase name="[2] 3, TLS_DHE_RSA_WITH_AES_256_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.415"/>
-  <testcase name="[3] 3, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.415"/>
+  <testcase name="[1] 3, TLS_DHE_RSA_WITH_AES_128_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.56"/>
+  <testcase name="[2] 3, TLS_DHE_RSA_WITH_AES_256_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.417"/>
+  <testcase name="[3] 3, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.413"/>
   <testcase name="[4] 3, TLS_DHE_RSA_WITH_AES_256_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.413"/>
-  <testcase name="[5] 3, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.313"/>
-  <testcase name="[6] 3, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.415"/>
-  <testcase name="[7] 3, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.314"/>
-  <testcase name="[8] 3, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.312"/>
-  <testcase name="[9] 3, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.41"/>
-  <testcase name="[10] 3, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.316"/>
-  <testcase name="[11] 3, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.311"/>
-  <testcase name="[12] 3, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.315"/>
-  <testcase name="[13] 3, TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.318"/>
+  <testcase name="[5] 3, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.416"/>
+  <testcase name="[6] 3, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.412"/>
+  <testcase name="[7] 3, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.416"/>
+  <testcase name="[8] 3, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.313"/>
+  <testcase name="[9] 3, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.414"/>
+  <testcase name="[10] 3, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.414"/>
+  <testcase name="[11] 3, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.313"/>
+  <testcase name="[12] 3, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.314"/>
+  <testcase name="[13] 3, TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.412"/>
   <testcase name="[14] 3, TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.411"/>
-  <testcase name="[15] 5, TLS_DHE_RSA_WITH_AES_128_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.414"/>
+  <testcase name="[15] 5, TLS_DHE_RSA_WITH_AES_128_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.418"/>
   <testcase name="[16] 5, TLS_DHE_RSA_WITH_AES_256_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.415"/>
-  <testcase name="[17] 5, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.411"/>
-  <testcase name="[18] 5, TLS_DHE_RSA_WITH_AES_256_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.411"/>
-  <testcase name="[19] 5, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.414"/>
-  <testcase name="[20] 5, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.311"/>
-  <testcase name="[21] 5, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.313"/>
-  <testcase name="[22] 5, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.312"/>
-  <testcase name="[23] 5, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.312"/>
-  <testcase name="[24] 5, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.311"/>
-  <testcase name="[25] 5, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.312"/>
-  <testcase name="[26] 5, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.315"/>
-  <testcase name="[27] 5, TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.311"/>
-  <testcase name="[28] 5, TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.314"/>
+  <testcase name="[17] 5, TLS_DHE_RSA_WITH_AES_128_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.417"/>
+  <testcase name="[18] 5, TLS_DHE_RSA_WITH_AES_256_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.412"/>
+  <testcase name="[19] 5, TLS_DHE_RSA_WITH_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.415"/>
+  <testcase name="[20] 5, TLS_DHE_RSA_WITH_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.413"/>
+  <testcase name="[21] 5, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.311"/>
+  <testcase name="[22] 5, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.314"/>
+  <testcase name="[23] 5, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.315"/>
+  <testcase name="[24] 5, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.41"/>
+  <testcase name="[25] 5, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.316"/>
+  <testcase name="[26] 5, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.311"/>
+  <testcase name="[27] 5, TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.315"/>
+  <testcase name="[28] 5, TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.414"/>
   <testcase name="[1] 3, TLS_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.414"/>
   <testcase name="[2] 3, TLS_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.412"/>
-  <testcase name="[3] 3, TLS_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.41"/>
-  <testcase name="[4] 5, TLS_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.412"/>
-  <testcase name="[5] 5, TLS_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.412"/>
-  <testcase name="[6] 5, TLS_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.42"/>
+  <testcase name="[3] 3, TLS_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.416"/>
+  <testcase name="[4] 5, TLS_AES_128_GCM_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.413"/>
+  <testcase name="[5] 5, TLS_AES_256_GCM_SHA384" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.41"/>
+  <testcase name="[6] 5, TLS_CHACHA20_POLY1305_SHA256" classname="com.hivemq.cli.commands.cli.CipherSuitesTlsST" time="1.414"/>
 </testsuite>
