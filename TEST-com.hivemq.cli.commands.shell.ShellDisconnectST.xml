@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.ShellDisconnectST" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-02-08T06:46:47" hostname="runnervmwffz4" time="26.573">
+<testsuite name="com.hivemq.cli.commands.shell.ShellDisconnectST" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-02-08T21:41:46" hostname="runnervmwffz4" time="27.464">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="3.435"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="3.329"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.415"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.416"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.921"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.918"/>
-  <testcase name="test_notConnectedDisconnect()" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.111"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="3.533"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="3.527"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.52"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.414"/>
   <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.019"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.018"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.017"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.917"/>
+  <testcase name="test_notConnectedDisconnect()" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.113"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.118"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.121"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.119"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.017"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.024"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.918"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.018"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.018"/>
 </testsuite>
