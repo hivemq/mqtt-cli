@@ -301,7 +301,7 @@ jobs:
           split-artifact-pattern: junit-xml-reports-system-*
 
   check:
-    name: CI Check
+    name: check
     if: always()
     runs-on: ubuntu-latest
     needs:
