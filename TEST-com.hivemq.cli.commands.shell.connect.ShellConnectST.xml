@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.connect.ShellConnectST" tests="47" skipped="0" failures="0" errors="0" timestamp="2026-02-08T06:28:45" hostname="runnervmwffz4" time="75.118">
+<testsuite name="com.hivemq.cli.commands.shell.connect.ShellConnectST" tests="47" skipped="0" failures="0" errors="0" timestamp="2026-02-08T06:47:46" hostname="runnervmwffz4" time="75.005">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.514"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.517"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.511"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.512"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.817"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.511"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.613"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.715"/>
   <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.512"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.618"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.514"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.613"/>
-  <testcase name="test_help()" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.209"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="2.226"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.617"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.717"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.511"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.414"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.416"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.51"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.31"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.616"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.514"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.212"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.515"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.917"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.914"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.209"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.513"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.715"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.614"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.515"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.515"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.712"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.612"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.616"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="2.624"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.617"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.514"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.518"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.616"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.513"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.514"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.611"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.719"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.512"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.712"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.513"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.718"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.613"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.515"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.511"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.515"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.613"/>
+  <testcase name="test_help()" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.21"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="2.223"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.614"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.716"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.511"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.411"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.414"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.412"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.411"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.512"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.613"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.212"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.614"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.918"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="2.019"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.212"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.514"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.716"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.512"/>
   <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.615"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.718"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.615"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.714"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.511"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.718"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="2.52"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.513"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.514"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.515"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.613"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.516"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.613"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.813"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.513"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.512"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectST" time="1.614"/>
 </testsuite>
