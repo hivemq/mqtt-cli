@@ -3,7 +3,8 @@ name: CI Check
 on: [pull_request]
 
 env:
-  split-total: 4
+  integration-test-split-total: 4
+  system-test-split-total: 8
 
 concurrency:
   group: check-${{ github.ref }}
@@ -14,13 +15,19 @@ jobs:
     name: Generate split indexes
     runs-on: ubuntu-latest
     steps:
-      - name: Generate split index list
-        id: generate
+      - name: Generate integration test split index list
+        id: integration
         uses: donnerbart/split-tests-java-action/generate-split-index-json@e2619a793729ac506ba2633f3ad870b72bd328f3 # v1
         with:
-          split-total: ${{ env.split-total }}
+          split-total: ${{ env.integration-test-split-total }}
+      - name: Generate system test split index list
+        id: system
+        uses: donnerbart/split-tests-java-action/generate-split-index-json@e2619a793729ac506ba2633f3ad870b72bd328f3 # v1
+        with:
+          split-total: ${{ env.system-test-split-total }}
     outputs:
-      json: ${{ steps.generate.outputs.split-index-json }}
+      integration-json: ${{ steps.integration.outputs.split-index-json }}
+      system-json: ${{ steps.system.outputs.split-index-json }}
 
   compile:
     name: Compile
@@ -96,7 +103,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        split-index: ${{ fromjson(needs.generate-split-index-json.outputs.json) }}
+        split-index: ${{ fromjson(needs.generate-split-index-json.outputs.integration-json) }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -136,7 +143,7 @@ jobs:
         with:
           glob: '**/src/integrationTest/java/**/*IT.java'
           split-index: ${{ matrix.split-index }}
-          split-total: ${{ env.split-total }}
+          split-total: ${{ env.integration-test-split-total }}
           junit-glob: '**/junit-reports/*.xml'
           format: gradle
           new-test-time: average
@@ -199,7 +206,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        split-index: ${{ fromjson(needs.generate-split-index-json.outputs.json) }}
+        split-index: ${{ fromjson(needs.generate-split-index-json.outputs.system-json) }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -239,7 +246,7 @@ jobs:
         with:
           glob: '**/src/systemTest/java/**/*ST.java'
           split-index: ${{ matrix.split-index }}
-          split-total: ${{ env.split-total }}
+          split-total: ${{ env.system-test-split-total }}
           junit-glob: '**/junit-reports/*.xml'
           format: gradle
           new-test-time: average
