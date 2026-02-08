@@ -44,8 +44,8 @@ jobs:
             11
             21
           cache: gradle
-      - name: Setup GraalVM
-        run: ./gradlew installNativeImageTooling
+      #- name: Setup GraalVM
+      #  run: ./gradlew installNativeImageTooling
       - name: Warmup Gradle cache
         if: ${{ steps.setup-java.outputs.cache-hit == 'false' }}
         run: ./gradlew compileIntegrationTestJava compileSystemTestJava shadowJar
