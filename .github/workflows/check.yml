@@ -84,7 +84,7 @@ jobs:
           fail-on-error: false
 
   integration-test:
-    name: Integration test #${{ matrix.split-index }}
+    name: "Integration test #${{ matrix.split-index }}"
     runs-on: ubuntu-latest
     needs:
       - generate-split-index-json
@@ -151,7 +151,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
-          name: Integration test results #${{ matrix.split-index }}
+          name: "Integration test results #${{ matrix.split-index }}"
           path: |
             build/reports/tests/integrationTest/
             build/test-results/integrationTest/
@@ -187,7 +187,7 @@ jobs:
           done
 
   system-test:
-    name: System test #${{ matrix.split-index }}
+    name: "System test #${{ matrix.split-index }}"
     runs-on: ubuntu-latest
     needs:
       - generate-split-index-json
@@ -254,7 +254,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
-          name: System test results #${{ matrix.split-index }}
+          name: "System test results #${{ matrix.split-index }}"
           path: |
             build/reports/tests/systemTest/
             build/test-results/systemTest/
