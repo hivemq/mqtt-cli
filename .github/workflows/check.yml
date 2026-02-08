@@ -1,19 +1,36 @@
 name: CI Check
 
-on: [ push ]
+on: [pull_request]
+
+env:
+  split-total: 4
 
 concurrency:
   group: check-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  check:
+  generate-split-index-json:
+    name: Generate split indexes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate split index list
+        id: generate
+        uses: donnerbart/split-tests-java-action/generate-split-index-json@e2619a793729ac506ba2633f3ad870b72bd328f3 # v1
+        with:
+          split-total: ${{ env.split-total }}
+    outputs:
+      json: ${{ steps.generate.outputs.split-index-json }}
+
+  compile:
+    name: Compile
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: Setup Java
-        uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5
+        id: setup-java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
           distribution: temurin
           java-version: |
@@ -22,19 +39,327 @@ jobs:
           cache: gradle
       - name: Setup GraalVM
         run: ./gradlew installNativeImageTooling
-      - name: Check
+      - name: Warmup Gradle cache
+        if: ${{ steps.setup-java.outputs.cache-hit == 'false' }}
+        run: ./gradlew compileIntegrationTestJava compileSystemTestJava shadowJar
+
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    needs:
+      - compile
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Setup Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            11
+            21
+          cache: gradle
+      - name: Run unit tests
+        run: ./gradlew test --stacktrace
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: Unit test results
+          path: |
+            build/reports/tests/test/
+            build/test-results/test/
+          retention-days: 5
+      - name: Publish test report
+        if: ${{ !cancelled() }}
+        uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637 # v2
+        with:
+          name: Unit tests report
+          path: '**/build/test-results/test/TEST-*.xml'
+          reporter: java-junit
+          fail-on-error: false
+
+  integration-test:
+    name: Integration test #${{ matrix.split-index }}
+    runs-on: ubuntu-latest
+    needs:
+      - generate-split-index-json
+      - compile
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      checks: write
+    strategy:
+      fail-fast: false
+      matrix:
+        split-index: ${{ fromjson(needs.generate-split-index-json.outputs.json) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Checkout JUnit reports
+        uses: donnerbart/split-tests-java-action/checkout-junit-reports@e2619a793729ac506ba2633f3ad870b72bd328f3 # v1
+        with:
+          split-index: ${{ matrix.split-index }}
+          git-branch: junit-reports/integration/${{ github.base_ref }}
+          path: junit-reports
+          artifact-name: junit-reports-sha-integration
+      - name: Setup Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            11
+            21
+          cache: gradle
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/local/julia*
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/local/share/chromium
+          sudo rm -rf /opt/microsoft /opt/google
+          sudo rm -rf /opt/az
+          sudo rm -rf /usr/local/share/powershell
+          df -h /
+      - name: Compile integration tests
+        run: ./gradlew compileIntegrationTestJava
+      - name: Split tests
+        id: split-tests
+        uses: donnerbart/split-tests-java-action@e2619a793729ac506ba2633f3ad870b72bd328f3 # v1
+        with:
+          glob: '**/src/integrationTest/java/**/*IT.java'
+          split-index: ${{ matrix.split-index }}
+          split-total: ${{ env.split-total }}
+          junit-glob: '**/junit-reports/*.xml'
+          format: gradle
+          new-test-time: average
+          calculate-optimal-total-split: true
+          debug: true
+      - name: Run integration tests
         env:
           ORG_GRADLE_PROJECT_dockerHubUsername: ${{ secrets.DOCKER_USERNAME }}
           ORG_GRADLE_PROJECT_dockerHubPassword: ${{ secrets.DOCKER_TOKEN }}
-        run: ./gradlew check --stacktrace
-      - name: Upload Test Results
+        run: ./gradlew integrationTest ${{ steps.split-tests.outputs.test-suite }} --stacktrace
+      - name: Upload test results
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: Integration test results #${{ matrix.split-index }}
+          path: |
+            build/reports/tests/integrationTest/
+            build/test-results/integrationTest/
+          retention-days: 5
+      - name: Upload JUnit report artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: junit-xml-reports-integration-${{ matrix.split-index }}
+          path: build/test-results/integrationTest/*.xml
+      - name: Publish test report
+        if: ${{ !cancelled() }}
+        uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637 # v2
+        with:
+          name: Integration tests report
+          path: '**/build/test-results/integrationTest/TEST-*.xml'
+          reporter: java-junit
+          fail-on-error: false
+      - name: Install xmllint
         if: failure()
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+      - name: Set annotations for failed tests
+        if: failure()
+        run: |
+          find build/test-results/integrationTest -type f -name "*.xml" | while read -r FILE; do
+            COUNT=$(xmllint --xpath 'count(//testcase[failure or error])' "$FILE")
+            for INDEX in $(seq 1 "$COUNT"); do
+              TEST_CLASS=$(xmllint --xpath "string((//testcase[failure or error])[$INDEX]/@classname)" "$FILE" 2>/dev/null)
+              TEST_METHOD=$(xmllint --xpath "string((//testcase[failure or error])[$INDEX]/@name)" "$FILE" 2>/dev/null)
+              MESSAGE=$(xmllint --xpath "string((//testcase[failure or error])[$INDEX]/failure/@message | (//testcase[failure or error])[$INDEX]/error/@message)" "$FILE" 2>/dev/null)
+              [ -z "$MESSAGE" ] && MESSAGE="Test failed"
+              echo "::error title=Integration test #${{ matrix.split-index }}::$TEST_CLASS.$TEST_METHOD%0A$MESSAGE"
+            done
+          done
+
+  system-test:
+    name: System test #${{ matrix.split-index }}
+    runs-on: ubuntu-latest
+    needs:
+      - generate-split-index-json
+      - compile
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      checks: write
+    strategy:
+      fail-fast: false
+      matrix:
+        split-index: ${{ fromjson(needs.generate-split-index-json.outputs.json) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Checkout JUnit reports
+        uses: donnerbart/split-tests-java-action/checkout-junit-reports@e2619a793729ac506ba2633f3ad870b72bd328f3 # v1
         with:
-          name: test-results
-          path: build/test-results/
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@a294a61c909bd8a4b563024a2faa28897fd53ebc # v6
-        if: always() # always run even if the previous step fails
+          split-index: ${{ matrix.split-index }}
+          git-branch: junit-reports/system/${{ github.base_ref }}
+          path: junit-reports
+          artifact-name: junit-reports-sha-system
+      - name: Setup Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
         with:
-          report_paths: '**/build/test-results/*/TEST-*.xml'
+          distribution: temurin
+          java-version: |
+            11
+            21
+          cache: gradle
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/local/julia*
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/local/share/chromium
+          sudo rm -rf /opt/microsoft /opt/google
+          sudo rm -rf /opt/az
+          sudo rm -rf /usr/local/share/powershell
+          df -h /
+      - name: Compile system tests
+        run: ./gradlew compileSystemTestJava shadowJar
+      - name: Split tests
+        id: split-tests
+        uses: donnerbart/split-tests-java-action@e2619a793729ac506ba2633f3ad870b72bd328f3 # v1
+        with:
+          glob: '**/src/systemTest/java/**/*ST.java'
+          split-index: ${{ matrix.split-index }}
+          split-total: ${{ env.split-total }}
+          junit-glob: '**/junit-reports/*.xml'
+          format: gradle
+          new-test-time: average
+          calculate-optimal-total-split: true
+          debug: true
+      - name: Run system tests
+        env:
+          ORG_GRADLE_PROJECT_dockerHubUsername: ${{ secrets.DOCKER_USERNAME }}
+          ORG_GRADLE_PROJECT_dockerHubPassword: ${{ secrets.DOCKER_TOKEN }}
+        run: ./gradlew systemTest ${{ steps.split-tests.outputs.test-suite }} --stacktrace
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: System test results #${{ matrix.split-index }}
+          path: |
+            build/reports/tests/systemTest/
+            build/test-results/systemTest/
+          retention-days: 5
+      - name: Upload JUnit report artifact
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: junit-xml-reports-system-${{ matrix.split-index }}
+          path: build/test-results/systemTest/*.xml
+      - name: Publish test report
+        if: ${{ !cancelled() }}
+        uses: dorny/test-reporter@b082adf0eced0765477756c2a610396589b8c637 # v2
+        with:
+          name: System tests report
+          path: '**/build/test-results/systemTest/TEST-*.xml'
+          reporter: java-junit
+          fail-on-error: false
+      - name: Install xmllint
+        if: failure()
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+      - name: Set annotations for failed tests
+        if: failure()
+        run: |
+          find build/test-results/systemTest -type f -name "*.xml" | while read -r FILE; do
+            COUNT=$(xmllint --xpath 'count(//testcase[failure or error])' "$FILE")
+            for INDEX in $(seq 1 "$COUNT"); do
+              TEST_CLASS=$(xmllint --xpath "string((//testcase[failure or error])[$INDEX]/@classname)" "$FILE" 2>/dev/null)
+              TEST_METHOD=$(xmllint --xpath "string((//testcase[failure or error])[$INDEX]/@name)" "$FILE" 2>/dev/null)
+              MESSAGE=$(xmllint --xpath "string((//testcase[failure or error])[$INDEX]/failure/@message | (//testcase[failure or error])[$INDEX]/error/@message)" "$FILE" 2>/dev/null)
+              [ -z "$MESSAGE" ] && MESSAGE="Test failed"
+              echo "::error title=System test #${{ matrix.split-index }}::$TEST_CLASS.$TEST_METHOD%0A$MESSAGE"
+            done
+          done
+
+  merge-junit-reports-integration:
+    name: Merge JUnit reports (integration)
+    runs-on: ubuntu-latest
+    needs:
+      - integration-test
+    permissions:
+      contents: write
+    steps:
+      - name: Merge JUnit reports
+        uses: donnerbart/split-tests-java-action/merge-junit-reports@e2619a793729ac506ba2633f3ad870b72bd328f3 # v1
+        with:
+          git-branch: junit-reports/integration/${{ github.base_ref }}
+          artifact-name: junit-xml-reports-integration-${{ github.base_ref }}
+          split-artifact-pattern: junit-xml-reports-integration-*
+
+  merge-junit-reports-system:
+    name: Merge JUnit reports (system)
+    runs-on: ubuntu-latest
+    needs:
+      - system-test
+    permissions:
+      contents: write
+    steps:
+      - name: Merge JUnit reports
+        uses: donnerbart/split-tests-java-action/merge-junit-reports@e2619a793729ac506ba2633f3ad870b72bd328f3 # v1
+        with:
+          git-branch: junit-reports/system/${{ github.base_ref }}
+          artifact-name: junit-xml-reports-system-${{ github.base_ref }}
+          split-artifact-pattern: junit-xml-reports-system-*
+
+  check:
+    name: CI Check
+    if: always()
+    runs-on: ubuntu-latest
+    needs:
+      - generate-split-index-json
+      - compile
+      - unit-test
+      - integration-test
+      - system-test
+      - merge-junit-reports-integration
+      - merge-junit-reports-system
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.generate-split-index-json.result }}" != "success" ]]; then
+            echo "generate-split-index-json job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.compile.result }}" != "success" ]]; then
+            echo "compile job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.unit-test.result }}" != "success" ]]; then
+            echo "unit-test job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.integration-test.result }}" != "success" ]]; then
+            echo "integration-test job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.system-test.result }}" != "success" ]]; then
+            echo "system-test job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.merge-junit-reports-integration.result }}" != "success" ]]; then
+            echo "merge-junit-reports-integration job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.merge-junit-reports-system.result }}" != "success" ]]; then
+            echo "merge-junit-reports-system job failed"
+            exit 1
+          fi
+          echo "All jobs completed successfully"
