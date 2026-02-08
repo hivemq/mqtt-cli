@@ -3,8 +3,8 @@ name: CI Check
 on: [pull_request]
 
 env:
-  integration-test-split-total: 4
-  system-test-split-total: 8
+  integration-test-split-total: 5
+  system-test-split-total: 11
 
 concurrency:
   group: check-${{ github.ref }}
