@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" tests="50" skipped="0" failures="0" errors="0" timestamp="2026-02-09T08:38:21" hostname="runnervmwffz4" time="21.006">
+<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" tests="50" skipped="0" failures="0" errors="0" timestamp="2026-02-09T09:55:57" hostname="runnervmwffz4" time="20.837">
   <properties/>
-  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.466"/>
+  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.316"/>
   <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.314"/>
   <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
   <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
   <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.314"/>
   <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
-  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.312"/>
-  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.312"/>
+  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
+  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
   <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.513"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.516"/>
   <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
   <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
   <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.414"/>
-  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.413"/>
-  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.414"/>
+  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.414"/>
+  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.413"/>
   <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.414"/>
   <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.414"/>
-  <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.413"/>
-  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.414"/>
+  <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.415"/>
+  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.413"/>
   <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.414"/>
   <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.516"/>
   <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
-  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
-  <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
-  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
-  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
+  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.516"/>
+  <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
+  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
+  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
   <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
   <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
-  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
-  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
-  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
-  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.312"/>
-  <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.312"/>
+  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.314"/>
+  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.314"/>
+  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.314"/>
+  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
+  <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
   <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.312"/>
-  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.313"/>
-  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.517"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.513"/>
-  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
-  <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
-  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
-  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.513"/>
-  <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.513"/>
+  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.312"/>
   <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.513"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
+  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
+  <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
+  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
   <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
   <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.513"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.051"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.049"/>
+  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
+  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.514"/>
+  <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.515"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.053"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectTlsST" time="0.047"/>
 </testsuite>
