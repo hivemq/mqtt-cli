@@ -369,8 +369,8 @@ jobs:
             done
           done
 
-  build-windows-package:
-    name: Build Windows package
+  build-packages:
+    name: Build packages
     runs-on: ubuntu-latest
     needs:
       - compile
@@ -386,8 +386,26 @@ jobs:
             11
             21
           cache: gradle
-      - name: Build Windows ZIP
-        run: ./gradlew buildWindowsZip
+      - name: Build packages
+        run: ./gradlew buildPackages
+      - name: Upload Debian package
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: debian-package
+          path: build/packages/debian/
+          retention-days: 5
+      - name: Upload RPM package
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: rpm-package
+          path: build/packages/rpm/
+          retention-days: 5
+      - name: Upload Brew package
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: brew-package
+          path: build/packages/homebrew/
+          retention-days: 5
       - name: Upload Windows package
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
@@ -399,7 +417,7 @@ jobs:
     name: Windows smoke test
     runs-on: windows-latest
     needs:
-      - build-windows-package
+      - build-packages
     timeout-minutes: 10
     steps:
       - name: Setup Java
@@ -430,43 +448,11 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit 1 }
         shell: pwsh
 
-  build-linux-packages:
-    name: Build Linux packages
-    runs-on: ubuntu-latest
-    needs:
-      - compile
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - name: Setup Java
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
-        with:
-          distribution: temurin
-          java-version: |
-            11
-            21
-          cache: gradle
-      - name: Build Debian and RPM packages
-        run: ./gradlew buildDebianPackage buildRpmPackage
-      - name: Upload Debian package
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
-        with:
-          name: debian-package
-          path: build/packages/debian/
-          retention-days: 5
-      - name: Upload RPM package
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
-        with:
-          name: rpm-package
-          path: build/packages/rpm/
-          retention-days: 5
-
   debian-smoke-test:
     name: Debian smoke test
     runs-on: ubuntu-latest
     needs:
-      - build-linux-packages
+      - build-packages
     timeout-minutes: 10
     steps:
       - name: Setup Java
@@ -490,7 +476,7 @@ jobs:
     name: RPM smoke test
     runs-on: ubuntu-latest
     needs:
-      - build-linux-packages
+      - build-packages
     timeout-minutes: 10
     steps:
       - name: Setup Java
@@ -511,6 +497,34 @@ jobs:
         run: mqtt --version
       - name: Run mqtt --help
         run: mqtt --help
+
+  brew-smoke-test:
+    name: Brew smoke test
+    runs-on: ubuntu-latest
+    needs:
+      - build-packages
+    timeout-minutes: 10
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Download Brew package
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: brew-package
+          path: brew-package
+      - name: Extract and fix up Brew package
+        run: |
+          unzip brew-package/mqtt-cli-*-brew.zip -d brew
+          JAR_PATH=$(pwd)/$(ls brew/brew/mqtt-cli-*.jar)
+          sed -i "s|##PREFIX##|$JAR_PATH|" brew/brew/mqtt
+          chmod +x brew/brew/mqtt
+      - name: Run mqtt --version
+        run: brew/brew/mqtt --version
+      - name: Run mqtt --help
+        run: brew/brew/mqtt --help
 
   merge-junit-reports-integration:
     name: Merge JUnit reports (integration)
@@ -568,11 +582,11 @@ jobs:
       - integration-test
       - system-test
       - native-system-test
-      - build-windows-package
+      - build-packages
       - windows-smoke-test
-      - build-linux-packages
       - debian-smoke-test
       - rpm-smoke-test
+      - brew-smoke-test
       - merge-junit-reports-integration
       - merge-junit-reports-system
       - merge-junit-reports-native-system
@@ -611,16 +625,12 @@ jobs:
             echo "native-system-test job failed"
             exit 1
           fi
-          if [[ "${{ needs.build-windows-package.result }}" != "success" ]]; then
-            echo "build-windows-package job failed"
+          if [[ "${{ needs.build-packages.result }}" != "success" ]]; then
+            echo "build-packages job failed"
             exit 1
           fi
           if [[ "${{ needs.windows-smoke-test.result }}" != "success" ]]; then
             echo "windows-smoke-test job failed"
-            exit 1
-          fi
-          if [[ "${{ needs.build-linux-packages.result }}" != "success" ]]; then
-            echo "build-linux-packages job failed"
             exit 1
           fi
           if [[ "${{ needs.debian-smoke-test.result }}" != "success" ]]; then
@@ -629,6 +639,10 @@ jobs:
           fi
           if [[ "${{ needs.rpm-smoke-test.result }}" != "success" ]]; then
             echo "rpm-smoke-test job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.brew-smoke-test.result }}" != "success" ]]; then
+            echo "brew-smoke-test job failed"
             exit 1
           fi
           if [[ "${{ needs.merge-junit-reports-native-system.result }}" != "success" ]]; then
