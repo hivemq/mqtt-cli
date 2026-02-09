@@ -74,7 +74,7 @@ forbiddenApis = { id = "de.thetaphi.forbiddenapis", version = "3.10" }
 gitPublish = { id = "org.ajoberstar.git-publish", version = "4.2.2" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.5.2" }
 graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.11.4" }
-launch4j = { id = "edu.sc.seis.launch4j", version = "3.0.7" }
+launch4j = { id = "edu.sc.seis.launch4j", version = "4.0.0" }
 license = { id = "com.github.hierynomus.license", version = "0.16.1" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "11.11.2" }
 oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.24.0" }
