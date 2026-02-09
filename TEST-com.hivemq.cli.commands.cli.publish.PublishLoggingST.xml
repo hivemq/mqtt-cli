@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.publish.PublishLoggingST" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-02-09T09:53:19" hostname="runnervmwffz4" time="5.619">
+<testsuite name="com.hivemq.cli.commands.cli.publish.PublishLoggingST" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-02-09T10:09:24" hostname="runnervmwffz4" time="5.872">
   <properties/>
-  <testcase name="test_publish_mqtt5_qos0_logging()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.939"/>
-  <testcase name="test_publish_mqtt5_qos2_logging()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.925"/>
-  <testcase name="test_publish_mqtt3_qos0_logging()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.94"/>
-  <testcase name="test_publish_mqtt5_qos1_logging()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.929"/>
-  <testcase name="test_publish_mqtt5_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.91"/>
-  <testcase name="test_publish_mqtt5_qos1_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.973"/>
+  <testcase name="test_publish_mqtt5_qos0_logging()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="1.108"/>
+  <testcase name="test_publish_mqtt5_qos2_logging()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.943"/>
+  <testcase name="test_publish_mqtt3_qos0_logging()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.949"/>
+  <testcase name="test_publish_mqtt5_qos1_logging()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.949"/>
+  <testcase name="test_publish_mqtt5_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.968"/>
+  <testcase name="test_publish_mqtt5_qos1_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.publish.PublishLoggingST" time="0.952"/>
 </testsuite>

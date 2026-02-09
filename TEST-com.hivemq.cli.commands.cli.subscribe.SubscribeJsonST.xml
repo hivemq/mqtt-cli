@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeJsonST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-02-09T09:52:50" hostname="runnervmwffz4" time="5.085">
+<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeJsonST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-02-09T10:11:15" hostname="runnervmwffz4" time="4.918">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeJsonST" time="2.034"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeJsonST" time="3.049"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeJsonST" time="1.877"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeJsonST" time="3.04"/>
 </testsuite>
