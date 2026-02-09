@@ -19,7 +19,6 @@ jsr305 = "3.0.2"
 junit-jupiter = "6.0.2"
 junit-pioneer = "2.3.0"
 mockito = "5.21.0"
-netty = "4.2.10.Final"
 okhttp = "5.3.2"
 openCsv = "5.12.0"
 picocli = "4.7.7"
@@ -43,6 +42,8 @@ guava = { module = "com.google.guava:guava", version.ref = "guava" }
 hivemq-communityEditionEmbedded = { module = "com.hivemq:hivemq-community-edition-embedded", version.ref = "hivemq-communityEditionEmbedded" }
 hivemq-enterprise = { module = "com.hivemq:hivemq-enterprise" }
 hivemq-mqttClient = { module = "com.hivemq:hivemq-mqtt-client", version.ref = "hivemq-mqttClient" }
+hivemq-mqttClientEpoll = { module = "com.hivemq:hivemq-mqtt-client-epoll", version.ref = "hivemq-mqttClient" }
+hivemq-mqttClientWebsocket = { module = "com.hivemq:hivemq-mqtt-client-websocket", version.ref = "hivemq-mqttClient" }
 hivemq-swarm = { module = "com.hivemq:hivemq-swarm" }
 javax-annotation-api = { module = "javax.annotation:javax.annotation-api", version.ref = "javax-annotation-api" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }
@@ -52,9 +53,6 @@ jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
 junit-pioneer = { module = "org.junit-pioneer:junit-pioneer", version.ref = "junit-pioneer" }
 junit-platformLauncher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-jupiter" }
 mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
-netty-codec-http = { module = "io.netty:netty-codec-http", version.ref = "netty" }
-netty-handler = { module = "io.netty:netty-handler", version.ref = "netty" }
-netty-transport-native-epoll = { module = "io.netty:netty-transport-native-epoll", version.ref = "netty" }
 okhttp = { module = "com.squareup.okhttp3:okhttp" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor" }

@@ -117,9 +117,8 @@ dependencies {
     implementation(libs.bouncycastle.prov)
     implementation(libs.bouncycastle.pkix)
     implementation(libs.hivemq.mqttClient)
-    implementation(libs.netty.handler)
-    implementation(libs.netty.codec.http)
-    implementation(variantOf(libs.netty.transport.native.epoll) { classifier("linux-x86_64") })
+    implementation(platform(libs.hivemq.mqttClientEpoll))
+    implementation(platform(libs.hivemq.mqttClientWebsocket))
     implementation(libs.openCsv)
 }
 
