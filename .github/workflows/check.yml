@@ -5,7 +5,7 @@ on: [pull_request]
 env:
   integration-test-split-total: 5
   system-test-split-total: 11
-  native-system-test-split-total: 11
+  native-system-test-split-total: 12
 
 concurrency:
   group: check-${{ github.ref }}
