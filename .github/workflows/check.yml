@@ -430,6 +430,88 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit 1 }
         shell: pwsh
 
+  build-linux-packages:
+    name: Build Linux packages
+    runs-on: ubuntu-latest
+    needs:
+      - compile
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Setup Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            11
+            21
+          cache: gradle
+      - name: Build Debian and RPM packages
+        run: ./gradlew buildDebianPackage buildRpmPackage
+      - name: Upload Debian package
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: debian-package
+          path: build/packages/debian/
+          retention-days: 5
+      - name: Upload RPM package
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: rpm-package
+          path: build/packages/rpm/
+          retention-days: 5
+
+  debian-smoke-test:
+    name: Debian smoke test
+    runs-on: ubuntu-latest
+    needs:
+      - build-linux-packages
+    timeout-minutes: 10
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Download Debian package
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: debian-package
+          path: debian-package
+      - name: Install Debian package
+        run: sudo dpkg --force-depends -i debian-package/mqtt-cli-*.deb
+      - name: Run mqtt --version
+        run: mqtt --version
+      - name: Run mqtt --help
+        run: mqtt --help
+
+  rpm-smoke-test:
+    name: RPM smoke test
+    runs-on: ubuntu-latest
+    needs:
+      - build-linux-packages
+    timeout-minutes: 10
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Install rpm tooling
+        run: sudo apt-get update && sudo apt-get install -y rpm
+      - name: Download RPM package
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: rpm-package
+          path: rpm-package
+      - name: Install RPM package
+        run: sudo rpm -ivh --nodeps rpm-package/mqtt-cli-*.rpm
+      - name: Run mqtt --version
+        run: mqtt --version
+      - name: Run mqtt --help
+        run: mqtt --help
+
   merge-junit-reports-integration:
     name: Merge JUnit reports (integration)
     runs-on: ubuntu-latest
@@ -488,6 +570,9 @@ jobs:
       - native-system-test
       - build-windows-package
       - windows-smoke-test
+      - build-linux-packages
+      - debian-smoke-test
+      - rpm-smoke-test
       - merge-junit-reports-integration
       - merge-junit-reports-system
       - merge-junit-reports-native-system
@@ -532,6 +617,18 @@ jobs:
           fi
           if [[ "${{ needs.windows-smoke-test.result }}" != "success" ]]; then
             echo "windows-smoke-test job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.build-linux-packages.result }}" != "success" ]]; then
+            echo "build-linux-packages job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.debian-smoke-test.result }}" != "success" ]]; then
+            echo "debian-smoke-test job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.rpm-smoke-test.result }}" != "success" ]]; then
+            echo "rpm-smoke-test job failed"
             exit 1
           fi
           if [[ "${{ needs.merge-junit-reports-native-system.result }}" != "success" ]]; then
