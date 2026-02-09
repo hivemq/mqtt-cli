@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" tests="50" skipped="0" failures="0" errors="0" timestamp="2026-02-09T09:55:37" hostname="runnervmwffz4" time="11.204">
+<testsuite name="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" tests="50" skipped="0" failures="0" errors="0" timestamp="2026-02-09T10:13:01" hostname="runnervmwffz4" time="11.23">
   <properties/>
-  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.32"/>
-  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.216"/>
-  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.215"/>
-  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.213"/>
-  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
-  <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
+  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.322"/>
+  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.226"/>
+  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.218"/>
+  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.217"/>
+  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.208"/>
+  <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.208"/>
   <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
   <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
-  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.217"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.213"/>
+  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.214"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.215"/>
   <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.208"/>
   <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
-  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.315"/>
-  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.316"/>
-  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.314"/>
-  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.314"/>
-  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.308"/>
+  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.316"/>
+  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.317"/>
+  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.315"/>
+  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.319"/>
+  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.307"/>
   <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.308"/>
-  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.308"/>
+  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.307"/>
   <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.307"/>
-  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.214"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.214"/>
+  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.216"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.217"/>
   <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
   <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
-  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.216"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.214"/>
+  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.217"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.218"/>
   <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
   <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
-  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.214"/>
-  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.212"/>
-  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.219"/>
+  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.216"/>
+  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.221"/>
+  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.214"/>
   <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.217"/>
   <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.208"/>
   <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
-  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
+  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
   <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
-  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.216"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.22"/>
-  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
+  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.217"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.214"/>
+  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
   <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
-  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.218"/>
+  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.213"/>
+  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.213"/>
+  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
+  <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
+  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.215"/>
   <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.217"/>
   <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
   <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
-  <testcase name="[1] 3, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.216"/>
-  <testcase name="[2] 3, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.218"/>
-  <testcase name="[3] 5, TLSv1.2" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.207"/>
-  <testcase name="[4] 5, TLSv1.3" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.206"/>
   <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.048"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.046"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerConnectTlsST" time="0.048"/>
 </testsuite>
