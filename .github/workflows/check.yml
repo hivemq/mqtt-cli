@@ -461,7 +461,7 @@ jobs:
           distribution: temurin
           java-version: 11
       - name: Download Debian package
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: debian-package
           path: debian-package
@@ -487,7 +487,7 @@ jobs:
       - name: Install rpm tooling
         run: sudo apt-get update && sudo apt-get install -y rpm
       - name: Download RPM package
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: rpm-package
           path: rpm-package
@@ -511,7 +511,7 @@ jobs:
           distribution: temurin
           java-version: 11
       - name: Download Brew package
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
         with:
           name: brew-package
           path: brew-package
