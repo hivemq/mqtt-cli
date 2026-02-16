@@ -1,100 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.HierarchyTlsST" tests="96" skipped="0" failures="0" errors="0" timestamp="2026-02-16T11:47:40" hostname="runnervmjduv7" time="14.167">
+<testsuite name="com.hivemq.cli.commands.cli.HierarchyTlsST" tests="96" skipped="0" failures="0" errors="0" timestamp="2026-02-16T15:07:00" hostname="runnervmjduv7" time="14.306">
   <properties/>
-  <testcase name="[1] 3, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.083"/>
-  <testcase name="[2] 3, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.042"/>
-  <testcase name="[3] 3, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
+  <testcase name="[1] 3, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.072"/>
+  <testcase name="[2] 3, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.045"/>
+  <testcase name="[3] 3, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.042"/>
   <testcase name="[4] 3, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[5] 3, TLSv1.2, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[5] 3, TLSv1.2, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
   <testcase name="[6] 3, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[7] 3, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[7] 3, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
   <testcase name="[8] 3, TLSv1.2, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[9] 3, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[9] 3, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
   <testcase name="[10] 3, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[11] 3, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[12] 3, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.048"/>
-  <testcase name="[13] 3, TLSv1.3, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.043"/>
+  <testcase name="[11] 3, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[12] 3, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[13] 3, TLSv1.3, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.049"/>
   <testcase name="[14] 3, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[15] 3, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[16] 3, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[17] 5, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[18] 5, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[19] 5, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[15] 3, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
+  <testcase name="[16] 3, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[17] 5, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
+  <testcase name="[18] 5, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[19] 5, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
   <testcase name="[20] 5, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
   <testcase name="[21] 5, TLSv1.2, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[22] 5, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[23] 5, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[22] 5, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[23] 5, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
   <testcase name="[24] 5, TLSv1.2, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
-  <testcase name="[25] 5, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
-  <testcase name="[26] 5, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[25] 5, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[26] 5, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[27] 5, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[28] 5, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[29] 5, TLSv1.3, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[30] 5, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[31] 5, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[32] 5, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[1] 3, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[2] 3, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[3] 3, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.05"/>
+  <testcase name="[4] 3, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
+  <testcase name="[5] 3, TLSv1.2, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[6] 3, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.043"/>
+  <testcase name="[7] 3, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
+  <testcase name="[8] 3, TLSv1.2, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[9] 3, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[10] 3, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[11] 3, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.042"/>
+  <testcase name="[12] 3, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[13] 3, TLSv1.3, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[14] 3, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[15] 3, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[16] 3, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.044"/>
+  <testcase name="[17] 5, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.042"/>
+  <testcase name="[18] 5, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[19] 5, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[20] 5, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.037"/>
+  <testcase name="[21] 5, TLSv1.2, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[22] 5, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
+  <testcase name="[23] 5, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
+  <testcase name="[24] 5, TLSv1.2, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[25] 5, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.042"/>
+  <testcase name="[26] 5, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
   <testcase name="[27] 5, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
   <testcase name="[28] 5, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
   <testcase name="[29] 5, TLSv1.3, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
   <testcase name="[30] 5, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
   <testcase name="[31] 5, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
-  <testcase name="[32] 5, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[1] 3, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
-  <testcase name="[2] 3, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
-  <testcase name="[3] 3, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
-  <testcase name="[4] 3, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.042"/>
-  <testcase name="[5] 3, TLSv1.2, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.051"/>
-  <testcase name="[6] 3, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.055"/>
-  <testcase name="[7] 3, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.043"/>
-  <testcase name="[8] 3, TLSv1.2, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.042"/>
-  <testcase name="[9] 3, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
-  <testcase name="[10] 3, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.037"/>
-  <testcase name="[11] 3, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[12] 3, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[13] 3, TLSv1.3, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
-  <testcase name="[14] 3, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[15] 3, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[16] 3, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[17] 5, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[18] 5, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[19] 5, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.051"/>
-  <testcase name="[20] 5, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[21] 5, TLSv1.2, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[22] 5, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.037"/>
-  <testcase name="[23] 5, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[24] 5, TLSv1.2, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.037"/>
-  <testcase name="[25] 5, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
-  <testcase name="[26] 5, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
-  <testcase name="[27] 5, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.04"/>
-  <testcase name="[28] 5, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
-  <testcase name="[29] 5, TLSv1.3, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.037"/>
-  <testcase name="[30] 5, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.037"/>
-  <testcase name="[31] 5, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.039"/>
-  <testcase name="[32] 5, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.038"/>
+  <testcase name="[32] 5, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.041"/>
   <testcase name="[1] 3, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.534"/>
-  <testcase name="[2] 3, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.409"/>
+  <testcase name="[2] 3, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
   <testcase name="[3] 3, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
-  <testcase name="[4] 3, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.407"/>
+  <testcase name="[4] 3, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
   <testcase name="[5] 3, TLSv1.2, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.407"/>
-  <testcase name="[6] 3, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[7] 3, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.407"/>
+  <testcase name="[6] 3, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.409"/>
+  <testcase name="[7] 3, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
   <testcase name="[8] 3, TLSv1.2, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
-  <testcase name="[9] 3, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
-  <testcase name="[10] 3, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[11] 3, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
-  <testcase name="[12] 3, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.306"/>
+  <testcase name="[9] 3, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.407"/>
+  <testcase name="[10] 3, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.308"/>
+  <testcase name="[11] 3, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.409"/>
+  <testcase name="[12] 3, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.407"/>
   <testcase name="[13] 3, TLSv1.3, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[14] 3, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[15] 3, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.407"/>
-  <testcase name="[16] 3, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
+  <testcase name="[14] 3, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.308"/>
+  <testcase name="[15] 3, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
+  <testcase name="[16] 3, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.309"/>
   <testcase name="[17] 5, TLSv1.2, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[18] 5, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[19] 5, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[20] 5, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
+  <testcase name="[18] 5, TLSv1.2, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.308"/>
+  <testcase name="[19] 5, TLSv1.2, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.308"/>
+  <testcase name="[20] 5, TLSv1.2, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.411"/>
   <testcase name="[21] 5, TLSv1.2, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.308"/>
   <testcase name="[22] 5, TLSv1.2, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[23] 5, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.407"/>
-  <testcase name="[24] 5, TLSv1.2, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[25] 5, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
+  <testcase name="[23] 5, TLSv1.2, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.308"/>
+  <testcase name="[24] 5, TLSv1.2, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.309"/>
+  <testcase name="[25] 5, TLSv1.3, jks, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.308"/>
   <testcase name="[26] 5, TLSv1.3, jks, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[27] 5, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[28] 5, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.309"/>
+  <testcase name="[27] 5, TLSv1.3, jks, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.308"/>
+  <testcase name="[28] 5, TLSv1.3, jks, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
   <testcase name="[29] 5, TLSv1.3, p12, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
-  <testcase name="[30] 5, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.31"/>
+  <testcase name="[30] 5, TLSv1.3, p12, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.307"/>
   <testcase name="[31] 5, TLSv1.3, p12, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
-  <testcase name="[32] 5, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.408"/>
+  <testcase name="[32] 5, TLSv1.3, p12, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.HierarchyTlsST" time="0.309"/>
 </testsuite>
