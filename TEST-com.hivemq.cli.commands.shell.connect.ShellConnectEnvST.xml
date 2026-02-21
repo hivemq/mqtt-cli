@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-02-21T02:02:35" hostname="runnervmwffz4" time="6.063">
+<testsuite name="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-02-21T02:56:46" hostname="runnervmwffz4" time="5.766">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="1.314"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="1.616"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="1.514"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="1.615"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="1.215"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="1.512"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="1.52"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="1.515"/>
 </testsuite>
