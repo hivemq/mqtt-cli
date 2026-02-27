@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-02-27T04:32:34" hostname="runnervmnay03" time="110.781">
+<testsuite name="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-02-27T07:30:11" hostname="runnervmnay03" time="107.866">
   <properties/>
-  <testcase name="wildcard_subscriptions_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="17.908"/>
-  <testcase name="clientId_length_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.69"/>
-  <testcase name="retain_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.455"/>
-  <testcase name="qos_1_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.693"/>
-  <testcase name="shared_subscriptions_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.615"/>
-  <testcase name="asciiChars_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.943"/>
-  <testcase name="connect_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.2"/>
-  <testcase name="qos_0_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.204"/>
-  <testcase name="connect_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.171"/>
-  <testcase name="qos_2_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.416"/>
-  <testcase name="topic_length_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.255"/>
-  <testcase name="payload_size_1MB_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.219"/>
+  <testcase name="wildcard_subscriptions_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="17.411"/>
+  <testcase name="clientId_length_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.337"/>
+  <testcase name="retain_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.174"/>
+  <testcase name="qos_1_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.064"/>
+  <testcase name="shared_subscriptions_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.039"/>
+  <testcase name="asciiChars_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.846"/>
+  <testcase name="connect_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.378"/>
+  <testcase name="qos_0_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.398"/>
+  <testcase name="connect_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.054"/>
+  <testcase name="qos_2_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.013"/>
+  <testcase name="topic_length_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="7.907"/>
+  <testcase name="payload_size_1MB_success()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterDefaultIT" time="8.233"/>
 </testsuite>
