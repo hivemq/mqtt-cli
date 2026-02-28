@@ -1,104 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" tests="92" skipped="4" failures="0" errors="0" timestamp="2026-02-27T22:11:45" hostname="runnervmnay03" time="36.883">
+<testsuite name="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" tests="92" skipped="4" failures="0" errors="0" timestamp="2026-02-28T03:44:39" hostname="runnervmnay03" time="37.05">
   <properties/>
-  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.76"/>
-  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
-  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.61"/>
+  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.765"/>
+  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.511"/>
+  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.611"/>
   <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.511"/>
-  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.611"/>
+  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.61"/>
   <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
-  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.612"/>
-  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
-  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
-  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
-  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
-  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.509"/>
-  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
-  <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.508"/>
-  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.509"/>
+  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.61"/>
   <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.509"/>
+  <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
+  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.509"/>
+  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.511"/>
+  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.515"/>
+  <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
+  <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
+  <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
+  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.51"/>
   <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.309"/>
-  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
   <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
   <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[1] 3, TLSv1.2, pkcs1.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[1] 3, TLSv1.2, pkcs1.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.309"/>
   <testcase name="[2] 3, TLSv1.2, pkcs8.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
   <testcase name="[3] 3, TLSv1.3, pkcs1.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[4] 3, TLSv1.3, pkcs8.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[5] 5, TLSv1.2, pkcs1.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[4] 3, TLSv1.3, pkcs8.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.309"/>
+  <testcase name="[5] 5, TLSv1.2, pkcs1.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[6] 5, TLSv1.2, pkcs8.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
   <testcase name="[7] 5, TLSv1.3, pkcs1.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
-  <testcase name="[8] 5, TLSv1.3, pkcs8.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[8] 5, TLSv1.3, pkcs8.unencrypted.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.309"/>
   <testcase name="[1] 3, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
-  <testcase name="[2] 3, TLSv1.2, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
-  <testcase name="[3] 3, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[2] 3, TLSv1.2, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[3] 3, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.31"/>
   <testcase name="[4] 3, TLSv1.2, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[5] 3, TLSv1.3, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[6] 3, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
-  <testcase name="[7] 3, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
-  <testcase name="[8] 3, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.411"/>
-  <testcase name="[9] 5, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[6] 3, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[7] 3, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
+  <testcase name="[8] 3, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[9] 5, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[10] 5, TLSv1.2, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[11] 5, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[12] 5, TLSv1.2, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.306"/>
+  <testcase name="[11] 5, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[12] 5, TLSv1.2, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
   <testcase name="[13] 5, TLSv1.3, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
   <testcase name="[14] 5, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
   <testcase name="[15] 5, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[16] 5, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[16] 5, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[1] 3, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[2] 3, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
-  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.306"/>
+  <testcase name="[3] 3, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[4] 3, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[5] 5, TLSv1.2, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
   <testcase name="[6] 5, TLSv1.2, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
   <testcase name="[7] 5, TLSv1.3, jks" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.309"/>
-  <testcase name="[1] 3, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[8] 5, TLSv1.3, p12" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[1] 3, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[2] 3, TLSv1.2, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[3] 3, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[4] 3, TLSv1.2, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[5] 3, TLSv1.3, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[3] 3, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[4] 3, TLSv1.2, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.309"/>
+  <testcase name="[5] 3, TLSv1.3, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.309"/>
   <testcase name="[6] 3, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[7] 3, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[8] 3, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
-  <testcase name="[9] 5, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[7] 3, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[8] 3, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.31"/>
+  <testcase name="[9] 5, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
   <testcase name="[10] 5, TLSv1.2, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[11] 5, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[12] 5, TLSv1.2, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[13] 5, TLSv1.3, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[14] 5, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.306"/>
-  <testcase name="[15] 5, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
-  <testcase name="[16] 5, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.306"/>
-  <testcase name="[1] 3, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
+  <testcase name="[11] 5, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[12] 5, TLSv1.2, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
+  <testcase name="[13] 5, TLSv1.3, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[14] 5, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[15] 5, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.308"/>
+  <testcase name="[16] 5, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.307"/>
+  <testcase name="[1] 3, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.409"/>
   <testcase name="[2] 3, TLSv1.2, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
-  <testcase name="[3] 3, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
+  <testcase name="[3] 3, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
   <testcase name="[4] 3, TLSv1.2, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
   <testcase name="[5] 3, TLSv1.3, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
-  <testcase name="[6] 3, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
-  <testcase name="[7] 3, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
-  <testcase name="[8] 3, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
-  <testcase name="[9] 5, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
-  <testcase name="[10] 5, TLSv1.2, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
+  <testcase name="[6] 3, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
+  <testcase name="[7] 3, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.409"/>
+  <testcase name="[8] 3, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
+  <testcase name="[9] 5, TLSv1.2, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
+  <testcase name="[10] 5, TLSv1.2, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
   <testcase name="[11] 5, TLSv1.2, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
   <testcase name="[12] 5, TLSv1.2, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
-  <testcase name="[13] 5, TLSv1.3, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
-  <testcase name="[14] 5, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
+  <testcase name="[13] 5, TLSv1.3, pkcs1.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.409"/>
+  <testcase name="[14] 5, TLSv1.3, pkcs1.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.408"/>
   <testcase name="[15] 5, TLSv1.3, pkcs8.aes256.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.409"/>
-  <testcase name="[16] 5, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.407"/>
-  <testcase name="test_encrypted_der_private_keys_mutualTls(char, TlsVersion, String)" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="15.698">
+  <testcase name="[16] 5, TLSv1.3, pkcs8.des3.pem" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="0.409"/>
+  <testcase name="test_encrypted_der_private_keys_mutualTls(char, TlsVersion, String)" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="15.84">
     <skipped/>
   </testcase>
-  <testcase name="test_password_arguments_encrypted_der_private_keys_mutualTls(char, TlsVersion, String)" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="15.698">
+  <testcase name="test_password_arguments_encrypted_der_private_keys_mutualTls(char, TlsVersion, String)" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="15.841">
     <skipped/>
   </testcase>
-  <testcase name="test_unencrypted_der_private_keys_mutualTls(char, TlsVersion, String)" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="4.228">
+  <testcase name="test_unencrypted_der_private_keys_mutualTls(char, TlsVersion, String)" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="4.245">
     <skipped/>
   </testcase>
-  <testcase name="test_properties_encrypted_der_private_keys_mutualTls(char, TlsVersion, String)" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="32.233">
+  <testcase name="test_properties_encrypted_der_private_keys_mutualTls(char, TlsVersion, String)" classname="com.hivemq.cli.commands.cli.publish.PublishConnectMTlsST" time="32.4">
     <skipped/>
   </testcase>
 </testsuite>
