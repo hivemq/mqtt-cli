@@ -99,13 +99,12 @@ dependencies {
     implementation(libs.javax.annotation.api)
 
     implementation(libs.jline)
-    implementation(libs.jline.terminal.jansi)
     implementation(libs.dagger)
     compileOnly(libs.graalvm.nativeImage.svm)
     annotationProcessor(libs.dagger.compiler)
 
     implementation(libs.picocli)
-    implementation(libs.picocli.shellJline)
+    implementation(libs.jline.picocli)
     implementation(libs.picocli.codegen)
     annotationProcessor(libs.picocli.codegen)
     implementation(libs.guava)
