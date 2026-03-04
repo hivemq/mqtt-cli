@@ -89,36 +89,40 @@ repositories {
 }
 
 dependencies {
+    annotationProcessor(libs.dagger.compiler)
+    annotationProcessor(libs.picocli.codegen)
+
+    compileOnly(libs.graalvm.nativeImage.svm)
+
+    implementation(libs.javax.annotation.api)
+    implementation(libs.jetbrains.annotations)
     implementation(libs.swagger.annotations)
-    implementation(libs.jsr305)
+
+    implementation(libs.jline)
+    implementation(libs.jline.picocli)
+    implementation(libs.picocli)
+    implementation(libs.picocli.codegen)
+
+    implementation(platform(libs.hivemq.mqttClientEpoll))
+    implementation(platform(libs.hivemq.mqttClientWebsocket))
+    implementation(libs.hivemq.mqttClient)
+
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     implementation(libs.okhttp.loggingInterceptor)
-    implementation(libs.gsonFire)
-    implementation(libs.apache.commonsLang)
-    implementation(libs.javax.annotation.api)
 
-    implementation(libs.jline)
-    implementation(libs.dagger)
-    compileOnly(libs.graalvm.nativeImage.svm)
-    annotationProcessor(libs.dagger.compiler)
-
-    implementation(libs.picocli)
-    implementation(libs.jline.picocli)
-    implementation(libs.picocli.codegen)
-    annotationProcessor(libs.picocli.codegen)
-    implementation(libs.guava)
-    implementation(libs.gson)
     implementation(libs.apache.commonsIO)
+    implementation(libs.apache.commonsLang)
+    implementation(libs.bouncycastle.pkix)
+    implementation(libs.bouncycastle.prov)
+    implementation(libs.dagger)
+    implementation(libs.gson)
+    implementation(libs.gsonFire)
+    implementation(libs.guava)
+    implementation(libs.jsr305)
+    implementation(libs.openCsv)
     implementation(libs.tinylog.api)
     implementation(libs.tinylog.impl)
-    implementation(libs.jetbrains.annotations)
-    implementation(libs.bouncycastle.prov)
-    implementation(libs.bouncycastle.pkix)
-    implementation(libs.hivemq.mqttClient)
-    implementation(platform(libs.hivemq.mqttClientEpoll))
-    implementation(platform(libs.hivemq.mqttClientWebsocket))
-    implementation(libs.openCsv)
 }
 
 /* ******************** OpenAPI ******************** */
@@ -244,20 +248,21 @@ testing {
 
             dependencies {
                 runtimeOnly(libs.junit.platformLauncher)
+
                 implementation(libs.awaitility)
                 implementation(libs.gradleOci.junitJupiter)
                 implementation(libs.mockito)
-                implementation(libs.testcontainers.junitJupiter)
                 implementation(libs.testcontainers.hivemq)
+                implementation(libs.testcontainers.junitJupiter)
 
                 implementation(libs.dagger)
                 implementation(libs.gson)
                 implementation(libs.hivemq.mqttClient)
-                implementation(platform(libs.okhttp.bom))
                 implementation(libs.okhttp)
                 implementation(libs.openCsv)
                 implementation(libs.picocli)
                 implementation(libs.tinylog.api)
+                implementation(platform(libs.okhttp.bom))
                 implementation(project())
             }
 
@@ -297,11 +302,11 @@ testing {
             }
 
             dependencies {
-                implementation(libs.junit.platformLauncher)
                 implementation(libs.awaitility)
                 implementation(libs.gradleOci.junitJupiter)
                 implementation(libs.hivemq.communityEditionEmbedded)
                 implementation(libs.junit.pioneer)
+                implementation(libs.junit.platformLauncher)
                 implementation(libs.testcontainers)
 
                 implementation(libs.apache.commonsIO)
@@ -325,7 +330,6 @@ testing {
         }
     }
 }
-
 
 /* ******************** compliance ******************** */
 
