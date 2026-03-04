@@ -23,23 +23,27 @@ import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jline.picocli.PicocliCommandRegistry;
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.MaskingCallback;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
+import org.jline.reader.impl.completer.SystemCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 import org.tinylog.Logger;
 import org.tinylog.configuration.Configuration;
+import picocli.AutoComplete;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
@@ -102,16 +106,14 @@ public class ShellCommand implements Callable<Integer> {
 
         try {
             final Terminal terminal = TerminalBuilder.builder().name("MQTT Terminal").system(true).build();
-            final var shellCompleter = new PicocliCommandRegistry(shellCommandLine).compileCompleters();
-            shellCompleter.compile();
+            final var shellCompleter = buildPicocliCompleter(shellCommandLine);
             shellReader = LineReaderBuilder.builder()
                     .terminal(terminal)
                     .completer(shellCompleter)
                     .parser(new DefaultParser())
                     .build();
 
-            final var contextCompleter = new PicocliCommandRegistry(contextCommandLine).compileCompleters();
-            contextCompleter.compile();
+            final var contextCompleter = buildPicocliCompleter(contextCommandLine);
             contextReader = LineReaderBuilder.builder()
                     .terminal(terminal)
                     .completer(contextCompleter)
@@ -202,6 +204,24 @@ public class ShellCommand implements Callable<Integer> {
 
     static void clearScreen() {
         Objects.requireNonNull(currentReader).callWidget(LineReader.CLEAR_SCREEN);
+    }
+
+    // PicocliCommandRegistry.compileCompleters() only provides flat, single-level completion,
+    // use picocli.AutoComplete.complete() for full sub-command hierarchy support
+    private static @NotNull Completer buildPicocliCompleter(final @NotNull CommandLine commandLine) {
+        final var rootSpec = commandLine.getCommandSpec();
+        final Completer picocliCompleter = (reader, line, candidates) -> {
+            final var words = line.words().toArray(new String[0]);
+            final var completions = new ArrayList<CharSequence>();
+            AutoComplete.complete(rootSpec, words, line.wordIndex(), 0, line.cursor(), completions);
+            for (final var completion : completions) {
+                candidates.add(new Candidate(completion.toString()));
+            }
+        };
+        final var systemCompleter = new SystemCompleter();
+        systemCompleter.add(new ArrayList<>(commandLine.getSubcommands().keySet()), picocliCompleter);
+        systemCompleter.compile();
+        return systemCompleter;
     }
 
     @Override
