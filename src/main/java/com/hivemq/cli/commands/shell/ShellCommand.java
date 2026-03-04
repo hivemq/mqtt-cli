@@ -23,12 +23,13 @@ import com.hivemq.cli.utils.LoggerUtils;
 import com.hivemq.client.mqtt.datatypes.MqttClientIdentifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jline.picocli.PicocliCommandRegistry;
+import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.MaskingCallback;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
-import org.jline.reader.impl.LineReaderImpl;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.AttributedStringBuilder;
@@ -36,7 +37,6 @@ import org.jline.utils.AttributedStyle;
 import org.tinylog.Logger;
 import org.tinylog.configuration.Configuration;
 import picocli.CommandLine;
-import picocli.shell.jline3.PicocliJLineCompleter;
 
 import javax.inject.Inject;
 import java.io.PrintWriter;
@@ -61,9 +61,9 @@ public class ShellCommand implements Callable<Integer> {
 
     public static @Nullable PrintWriter TERMINAL_WRITER;
 
-    private static @Nullable LineReaderImpl currentReader;
-    private static @Nullable LineReaderImpl shellReader;
-    private static @Nullable LineReaderImpl contextReader;
+    private static @Nullable LineReader currentReader;
+    private static @Nullable LineReader shellReader;
+    private static @Nullable LineReader contextReader;
     private static @Nullable CommandLine currentCommandLine;
     private static @Nullable CommandLine shellCommandLine;
     private static @Nullable CommandLine contextCommandLine;
@@ -102,15 +102,19 @@ public class ShellCommand implements Callable<Integer> {
 
         try {
             final Terminal terminal = TerminalBuilder.builder().name("MQTT Terminal").system(true).build();
-            shellReader = (LineReaderImpl) LineReaderBuilder.builder()
+            final var shellCompleter = new PicocliCommandRegistry(shellCommandLine).compileCompleters();
+            shellCompleter.compile();
+            shellReader = LineReaderBuilder.builder()
                     .terminal(terminal)
-                    .completer(new PicocliJLineCompleter(shellCommandLine.getCommandSpec()))
+                    .completer(shellCompleter)
                     .parser(new DefaultParser())
                     .build();
 
-            contextReader = (LineReaderImpl) LineReaderBuilder.builder()
+            final var contextCompleter = new PicocliCommandRegistry(contextCommandLine).compileCompleters();
+            contextCompleter.compile();
+            contextReader = LineReaderBuilder.builder()
                     .terminal(terminal)
-                    .completer(new PicocliJLineCompleter(contextCommandLine.getCommandSpec()))
+                    .completer(contextCompleter)
                     .parser(new DefaultParser())
                     .build();
 
@@ -197,7 +201,7 @@ public class ShellCommand implements Callable<Integer> {
     }
 
     static void clearScreen() {
-        Objects.requireNonNull(currentReader).clearScreen();
+        Objects.requireNonNull(currentReader).callWidget(LineReader.CLEAR_SCREEN);
     }
 
     @Override
