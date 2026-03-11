@@ -30,6 +30,7 @@ plugins {
     alias(libs.plugins.githubRelease)
     alias(libs.plugins.gitPublish)
     alias(libs.plugins.graalvm.native)
+    alias(libs.plugins.spotless)
     id("com.hivemq.cli.native-image")
 }
 
@@ -333,11 +334,11 @@ testing {
 
 /* ******************** compliance ******************** */
 
-license {
-    header = file("HEADER")
-    include("**/*.java")
-    exclude("**/com/hivemq/cli/openapi/**")
-    mapping("java", "SLASHSTAR_STYLE")
+spotless {
+    java {
+        targetExclude("**/com/hivemq/cli/openapi/**")
+        licenseHeaderFile(rootDir.resolve("HEADER"))
+    }
 }
 
 downloadLicenses {
