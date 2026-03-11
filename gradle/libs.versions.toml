@@ -79,3 +79,4 @@ nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "12.3.0" }
 oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.25.0" }
 openapi-generator = { id = "org.openapi.generator", version = "7.21.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.10" }
+spotless = { id = "com.diffplug.spotless", version = "8.4.0" }
