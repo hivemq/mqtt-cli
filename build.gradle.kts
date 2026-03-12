@@ -237,8 +237,6 @@ testing {
         }
 
         val integrationTest by registering(JvmTestSuite::class) {
-            testType = TestSuiteType.INTEGRATION_TEST
-
             dependencies {
                 runtimeOnly(libs.junit.platformLauncher)
 
@@ -271,7 +269,6 @@ testing {
         }
 
         val systemTest by registering(JvmTestSuite::class) {
-            testType = TestSuiteType.FUNCTIONAL_TEST
             targets {
                 all {
                     testTask {
