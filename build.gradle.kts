@@ -8,14 +8,6 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
 
-buildscript {
-    if (gradle.includedBuilds.any { it.name == "plugins" }) {
-        plugins {
-            id("com.hivemq.third-party-license-generator")
-        }
-    }
-}
-
 plugins {
     java
     application
@@ -341,21 +333,17 @@ spotless {
     }
 }
 
-downloadLicenses {
-    dependencyConfiguration = "runtimeClasspath"
-}
-
-tasks.downloadLicenses {
-    dependsOn(tasks.clean)
-}
-
-plugins.withId("com.hivemq.third-party-license-generator") {
-    tasks.named("updateThirdPartyLicenses") {
-        dependsOn(tasks.downloadLicenses)
-        extra["projectName"] = "MQTT CLI"
-        extra["dependencyLicenseDirectory"] = tasks.downloadLicenses.get().xmlDestination
-        extra["outputDirectory"] = layout.projectDirectory.dir("src/distribution/third-party-licenses")
-    }
+hivemqLicense {
+    projectName.set("MQTT CLI")
+    thirdPartyLicenseDirectory.set(layout.projectDirectory.dir("src/distribution/third-party-licenses"))
+    excludedDependencies.set(setOf(
+        "org.jline:jline",
+        "org.jline:jline-picocli",
+    ))
+    overriddenLicenses.set(mapOf(
+        "org.jline:jline" to "BSD-3-Clause",
+        "org.jline:jline-picocli" to "BSD-3-Clause",
+    ))
 }
 
 forbiddenApis {
