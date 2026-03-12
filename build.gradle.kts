@@ -237,8 +237,6 @@ testing {
         }
 
         val integrationTest by registering(JvmTestSuite::class) {
-            testType = TestSuiteType.INTEGRATION_TEST
-
             dependencies {
                 runtimeOnly(libs.junit.platformLauncher)
 
@@ -271,7 +269,6 @@ testing {
         }
 
         val systemTest by registering(JvmTestSuite::class) {
-            testType = TestSuiteType.FUNCTIONAL_TEST
             targets {
                 all {
                     testTask {
@@ -469,7 +466,9 @@ val buildBrewZip by tasks.registering(Zip::class) {
 
     into("brew") {
         from(tasks.shadowJar)
-        from("packages/homebrew/mqtt")
+        from("packages/homebrew/mqtt") {
+            filePermissions { unix(0b111_101_101) }
+        }
     }
     from("LICENSE") {
         into("licenses")
@@ -676,6 +675,18 @@ distributions.shadow {
 
 tasks.startShadowScripts {
     applicationName = "mqtt"
+}
+
+tasks.shadowDistZip {
+    filesMatching("**/bin/*") {
+        permissions { unix(0b111_101_101) }
+    }
+}
+
+tasks.shadowDistTar {
+    filesMatching("**/bin/*") {
+        permissions { unix(0b111_101_101) }
+    }
 }
 
 /* ******************** version updating ******************** */
