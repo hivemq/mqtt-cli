@@ -387,7 +387,13 @@ jobs:
             21
           cache: gradle
       - name: Build packages
-        run: ./gradlew buildPackages
+        run: ./gradlew buildPackages shadowDistZip
+      - name: Upload distribution
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: distribution
+          path: build/distributions/mqtt-cli-*.zip
+          retention-days: 5
       - name: Upload Debian package
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
@@ -520,11 +526,34 @@ jobs:
           unzip brew-package/mqtt-cli-*-brew.zip -d brew
           JAR_PATH=$(pwd)/$(ls brew/brew/mqtt-cli-*.jar)
           sed -i "s|##PREFIX##|$JAR_PATH|" brew/brew/mqtt
-          chmod +x brew/brew/mqtt
       - name: Run mqtt --version
         run: brew/brew/mqtt --version
       - name: Run mqtt --help
         run: brew/brew/mqtt --help
+
+  distribution-smoke-test:
+    name: Distribution smoke test
+    runs-on: ubuntu-latest
+    needs:
+      - build-packages
+    timeout-minutes: 10
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Download distribution
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: distribution
+          path: distribution
+      - name: Extract distribution
+        run: unzip distribution/mqtt-cli-*.zip -d mqtt-cli
+      - name: Run mqtt --version
+        run: mqtt-cli/mqtt-cli-*/bin/mqtt --version
+      - name: Run mqtt --help
+        run: mqtt-cli/mqtt-cli-*/bin/mqtt --help
 
   merge-junit-reports-integration:
     name: Merge JUnit reports (integration)
@@ -587,6 +616,7 @@ jobs:
       - debian-smoke-test
       - rpm-smoke-test
       - brew-smoke-test
+      - distribution-smoke-test
       - merge-junit-reports-integration
       - merge-junit-reports-system
       - merge-junit-reports-native-system
@@ -643,6 +673,10 @@ jobs:
           fi
           if [[ "${{ needs.brew-smoke-test.result }}" != "success" ]]; then
             echo "brew-smoke-test job failed"
+            exit 1
+          fi
+          if [[ "${{ needs.distribution-smoke-test.result }}" != "success" ]]; then
+            echo "distribution-smoke-test job failed"
             exit 1
           fi
           if [[ "${{ needs.merge-junit-reports-native-system.result }}" != "success" ]]; then
