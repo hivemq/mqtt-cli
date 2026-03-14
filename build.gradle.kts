@@ -8,14 +8,6 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
 
-buildscript {
-    if (gradle.includedBuilds.any { it.name == "plugins" }) {
-        plugins {
-            id("com.hivemq.third-party-license-generator")
-        }
-    }
-}
-
 plugins {
     java
     application
@@ -30,6 +22,7 @@ plugins {
     alias(libs.plugins.githubRelease)
     alias(libs.plugins.gitPublish)
     alias(libs.plugins.graalvm.native)
+    alias(libs.plugins.spotless)
     id("com.hivemq.cli.native-image")
 }
 
@@ -244,8 +237,6 @@ testing {
         }
 
         val integrationTest by registering(JvmTestSuite::class) {
-            testType = TestSuiteType.INTEGRATION_TEST
-
             dependencies {
                 runtimeOnly(libs.junit.platformLauncher)
 
@@ -278,7 +269,6 @@ testing {
         }
 
         val systemTest by registering(JvmTestSuite::class) {
-            testType = TestSuiteType.FUNCTIONAL_TEST
             targets {
                 all {
                     testTask {
@@ -333,28 +323,24 @@ testing {
 
 /* ******************** compliance ******************** */
 
-license {
-    header = file("HEADER")
-    include("**/*.java")
-    exclude("**/com/hivemq/cli/openapi/**")
-    mapping("java", "SLASHSTAR_STYLE")
-}
-
-downloadLicenses {
-    dependencyConfiguration = "runtimeClasspath"
-}
-
-tasks.downloadLicenses {
-    dependsOn(tasks.clean)
-}
-
-plugins.withId("com.hivemq.third-party-license-generator") {
-    tasks.named("updateThirdPartyLicenses") {
-        dependsOn(tasks.downloadLicenses)
-        extra["projectName"] = "MQTT CLI"
-        extra["dependencyLicenseDirectory"] = tasks.downloadLicenses.get().xmlDestination
-        extra["outputDirectory"] = layout.projectDirectory.dir("src/distribution/third-party-licenses")
+spotless {
+    java {
+        targetExclude("**/com/hivemq/cli/openapi/**")
+        licenseHeaderFile(rootDir.resolve("HEADER"))
     }
+}
+
+hivemqLicense {
+    projectName.set("MQTT CLI")
+    thirdPartyLicenseDirectory.set(layout.projectDirectory.dir("src/distribution/third-party-licenses"))
+    excludedDependencies.set(setOf(
+        "org.jline:jline",
+        "org.jline:jline-picocli",
+    ))
+    overriddenLicenses.set(mapOf(
+        "org.jline:jline" to "BSD-3-Clause",
+        "org.jline:jline-picocli" to "BSD-3-Clause",
+    ))
 }
 
 forbiddenApis {
