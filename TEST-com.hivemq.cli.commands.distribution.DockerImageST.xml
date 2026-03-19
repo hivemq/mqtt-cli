@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.distribution.DockerImageST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-03-19T09:15:31.768Z" hostname="runnervm46oaq" time="6.813">
+<testsuite name="com.hivemq.cli.commands.distribution.DockerImageST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-03-19T12:27:57" hostname="runnervm46oaq" time="5.835">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.distribution.DockerImageST" time="3.783"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.distribution.DockerImageST" time="1.205"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.distribution.DockerImageST" time="4.596"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.distribution.DockerImageST" time="1.239"/>
 </testsuite>

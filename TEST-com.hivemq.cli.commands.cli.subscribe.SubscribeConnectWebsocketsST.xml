@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectWebsocketsST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-03-19T09:13:55.507Z" hostname="runnervm46oaq" time="3.875">
+<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectWebsocketsST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-03-19T12:27:17" hostname="runnervm46oaq" time="2.451">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectWebsocketsST" time="1.259"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectWebsocketsST" time="1.114"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectWebsocketsST" time="1.23"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeConnectWebsocketsST" time="1.22"/>
 </testsuite>
