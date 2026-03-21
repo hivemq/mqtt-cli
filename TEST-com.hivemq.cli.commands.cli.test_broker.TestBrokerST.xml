@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-03-21T04:11:59" hostname="runnervm46oaq" time="11.711">
+<testsuite name="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-03-21T04:20:00" hostname="runnervm46oaq" time="11.805">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.846"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="0.996"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.761"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.699"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.714"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="0.997"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.751"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.017"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.769"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.731"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.752"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.055"/>
   <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.68"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.011"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.043"/>
 </testsuite>
