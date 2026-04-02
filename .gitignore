@@ -10,5 +10,8 @@ out/
 !.idea/inspectionProfiles
 !.idea/runConfigurations
 
+# Ignore Kotlin compiler and error files in plugins/.kotlin
+mqtt-cli-plugins/.kotlin/
+
 .java-version
 .DS_Store
