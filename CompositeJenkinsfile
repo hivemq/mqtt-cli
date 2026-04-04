@@ -7,6 +7,9 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10'))
         timestamps()
     }
+    triggers {
+        githubPush()
+    }
     stages {
         stage('Trigger build') {
             steps {
