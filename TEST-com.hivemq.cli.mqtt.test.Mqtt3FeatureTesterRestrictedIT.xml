@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" tests="6" skipped="2" failures="0" errors="0" timestamp="2026-04-13T16:46:18.760Z" hostname="runnervm35a4x" time="33.988">
+<testsuite name="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" tests="6" skipped="2" failures="0" errors="0" timestamp="2026-04-14T09:01:51.753Z" hostname="runnervm35a4x" time="36.546">
   <properties/>
-  <testcase name="payload_size_1MB_failed_max_500KB()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="8.918"/>
-  <testcase name="wildcard_subscriptions_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="8.466"/>
-  <testcase name="clientId_length_failed_max_30()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="8.575"/>
-  <testcase name="retain_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="8.015"/>
-  <testcase name="shared_subscriptions_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="0.001">
+  <testcase name="payload_size_1MB_failed_max_500KB()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="9.255"/>
+  <testcase name="wildcard_subscriptions_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="8.729"/>
+  <testcase name="clientId_length_failed_max_30()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="9.464"/>
+  <testcase name="retain_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="9.088"/>
+  <testcase name="shared_subscriptions_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="0.0">
     <skipped/>
   </testcase>
-  <testcase name="topic_length_failed_max_30()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="0.001">
+  <testcase name="topic_length_failed_max_30()" classname="com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterRestrictedIT" time="0.0">
     <skipped/>
   </testcase>
 </testsuite>
