@@ -16,6 +16,7 @@ plugins {
     alias(libs.plugins.nebula.ospackage)
     alias(libs.plugins.launch4j)
     alias(libs.plugins.oci)
+    alias(libs.plugins.ociVersionCatalog)
     alias(libs.plugins.openapi.generator)
     alias(libs.plugins.license)
     alias(libs.plugins.forbiddenApis)
