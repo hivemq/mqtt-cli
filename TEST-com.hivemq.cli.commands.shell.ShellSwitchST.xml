@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.ShellSwitchST" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-04-18T01:43:56.794Z" hostname="runnervmeorf1" time="9.64">
+<testsuite name="com.hivemq.cli.commands.shell.ShellSwitchST" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-04-19T20:49:02.547Z" hostname="runnervmeorf1" time="9.547">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="0.919"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="0.913"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="1.417"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="1.418"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="1.417"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="1.418"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="0.913"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="0.917"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="0.914"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="1.417"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="1.417"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="1.417"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="1.417"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="0.913"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellSwitchST" time="0.912"/>
 </testsuite>
