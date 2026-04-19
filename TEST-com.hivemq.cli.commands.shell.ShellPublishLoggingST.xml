@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.ShellPublishLoggingST" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-04-18T01:41:38.628Z" hostname="runnervmeorf1" time="14.964">
+<testsuite name="com.hivemq.cli.commands.shell.ShellPublishLoggingST" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-04-19T20:48:28.086Z" hostname="runnervmeorf1" time="15.301">
   <properties/>
-  <testcase name="test_shell_publish_mqtt5_qos2_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.825"/>
+  <testcase name="test_shell_publish_mqtt5_qos2_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.927"/>
   <testcase name="test_shell_publish_mqtt3_qos0_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.219"/>
-  <testcase name="test_shell_publish_mqtt5_qos1_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.422"/>
-  <testcase name="test_shell_publish_mqtt5_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.526"/>
+  <testcase name="test_shell_publish_mqtt5_qos1_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.426"/>
+  <testcase name="test_shell_publish_mqtt5_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.622"/>
   <testcase name="test_shell_publish_mqtt5_qos1_logging_not_authorized()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.525"/>
-  <testcase name="test_shell_publish_mqtt5_qos0_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.216"/>
+  <testcase name="test_shell_publish_mqtt5_qos0_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.324"/>
 </testsuite>
