@@ -3,7 +3,7 @@ MASTER_BRANCH = 'master'
 pipeline {
     agent { label 'jenkins-worker' }
     options {
-        skipDefaultCheckout() // no checkout needed
+        skipDefaultCheckout()
         buildDiscarder(logRotator(numToKeepStr: '10'))
         timestamps()
     }
@@ -11,14 +11,14 @@ pipeline {
         stage('Trigger build') {
             steps {
                 script {
-                    def multiBranchJobPath = '../../hivemq4-composite'
+                    def multiBranchJobPath = '../../hivemq-composite'
                     def branchJobName = BRANCH_NAME.replace('/', '%2F')
                     try {
                         build job: "${multiBranchJobPath}/${branchJobName}", wait: false
                     } catch (e) {
                         try {
                             withCredentials([gitUsernamePassword(credentialsId: 'hivemq-jenkins')]) {
-                                sh("git clone https://github.com/hivemq/hivemq.git --branch=${MASTER_BRANCH} --single-branch --depth 1 .")
+                                sh("git clone https://github.com/hivemq/hivemq-composite-job.git --branch=${MASTER_BRANCH} --single-branch --depth 1 .")
                                 try {
                                     sh("git push origin HEAD:${BRANCH_NAME}")
                                 } catch (e2) { // if push failed, branch already exists
@@ -26,7 +26,6 @@ pipeline {
                             }
                         } finally {
                             cleanWs()
-                            build job: multiBranchJobPath, wait: false
                         }
                     }
                 }
