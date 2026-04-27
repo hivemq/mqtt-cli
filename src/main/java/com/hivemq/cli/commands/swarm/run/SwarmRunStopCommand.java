@@ -96,6 +96,7 @@ public class SwarmRunStopCommand implements Callable<Integer> {
         }
 
         runsApi.getApiClient().setBasePath(swarmOptions.getCommanderUrl());
+        commanderApi.getApiClient().setBasePath(swarmOptions.getCommanderUrl());
 
         final int usedRunID;
         if (runId == null) {
