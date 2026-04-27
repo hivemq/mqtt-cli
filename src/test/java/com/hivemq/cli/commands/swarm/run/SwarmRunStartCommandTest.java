@@ -218,8 +218,38 @@ class SwarmRunStartCommandTest {
         assertEquals(-1, command.call());
         verify(apiClient, times(2)).setBasePath("http://localhost:8080");
         verify(scenariosApi).uploadScenario(any());
+        verify(scenariosApi).deleteScenario("1");
         verify(swarmApiErrorTransformer).transformError(any());
         verify(runsApi).startRun(any());
+    }
+
+    @Test
+    void startRunWithoutRunId_deletesUploadedScenario(final @TempDir @NotNull Path tempDir)
+            throws IOException, ApiException {
+        final Path scenario = tempDir.resolve("scenario.vm");
+        Files.writeString(scenario, "scenario-content");
+
+        final SwarmRunStartCommand command = new SwarmRunStartCommand("http://localhost:8080",
+                scenario.toFile(),
+                true,
+                runsApi,
+                scenariosApi,
+                swarmApiErrorTransformer,
+                System.out);
+
+        final UploadScenarioResponse uploadScenarioResponse = mock(UploadScenarioResponse.class);
+        when(scenariosApi.uploadScenario(any())).thenReturn(uploadScenarioResponse);
+        when(uploadScenarioResponse.getScenarioId()).thenReturn(42);
+
+        final StartRunResponse startRunResponse = mock(StartRunResponse.class);
+        when(startRunResponse.getRunId()).thenReturn(null);
+        when(runsApi.startRun(any())).thenReturn(startRunResponse);
+
+        assertEquals(-1, command.call());
+        verify(apiClient, times(2)).setBasePath("http://localhost:8080");
+        verify(scenariosApi).uploadScenario(any());
+        verify(runsApi).startRun(any());
+        verify(scenariosApi).deleteScenario("42");
     }
 
     @Test
