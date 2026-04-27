@@ -187,6 +187,7 @@ public class SwarmRunStartCommand implements Callable<Integer> {
             final Error error = errorTransformer.transformError(e);
             Logger.error("Could not execute the scenario. {}.", error.getDetail());
             System.err.println("Could not execute the scenario. " + error.getDetail());
+            deleteScenarioAfterFailedStart(scenarioId);
             return -1;
         }
 
@@ -194,6 +195,7 @@ public class SwarmRunStartCommand implements Callable<Integer> {
         if (runId == null) {
             Logger.error("Start run response did not contain a run-id:\n {}", startRunResponse.toString());
             System.err.println("Start run response did not contain a run-id:\n " + startRunResponse);
+            deleteScenarioAfterFailedStart(scenarioId);
             return -1;
         }
         out.println("Run id: " + runId);
@@ -217,6 +219,15 @@ public class SwarmRunStartCommand implements Callable<Integer> {
             }
         }
         return 0;
+    }
+
+    private void deleteScenarioAfterFailedStart(final int scenarioId) {
+        try {
+            scenariosApi.deleteScenario(Integer.toString(scenarioId));
+        } catch (final ApiException e) {
+            final Error error = errorTransformer.transformError(e);
+            Logger.error("Failed to delete uploaded scenario '{}'. {}.", scenarioId, error.getDetail());
+        }
     }
 
     private void pollUntilFinished(final int runId) throws ApiException {
