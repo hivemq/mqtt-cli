@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeWithSessionST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-04-28T09:15:41.862Z" hostname="runnervmeorf1" time="5.61">
+<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeWithSessionST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-04-28T09:45:22.091Z" hostname="runnervmeorf1" time="5.719">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeWithSessionST" time="2.766"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeWithSessionST" time="2.564"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeWithSessionST" time="2.769"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeWithSessionST" time="2.661"/>
 </testsuite>
