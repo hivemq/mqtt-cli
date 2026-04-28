@@ -76,7 +76,7 @@ graalvm-native = { id = "org.graalvm.buildtools.native", version = "0.11.5" }
 launch4j = { id = "edu.sc.seis.launch4j", version = "4.0.0" }
 license = { id = "com.hivemq.tools.license", version = "1.3.5" }
 nebula-ospackage = { id = "com.netflix.nebula.ospackage", version = "12.3.0" }
-oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.25.0" }
+oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.26.0" }
 ociVersionCatalog = { id = "com.hivemq.tools.oci-version-catalog", version = "0.3.0" }
 openapi-generator = { id = "org.openapi.generator", version = "7.21.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.10" }
