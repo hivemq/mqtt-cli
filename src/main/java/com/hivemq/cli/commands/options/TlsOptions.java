@@ -21,16 +21,25 @@ import com.hivemq.cli.DefaultCLIProperties;
 import com.hivemq.cli.MqttCLIMain;
 import com.hivemq.cli.utils.TlsUtil;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
+import com.hivemq.client.mqtt.MqttClientSslConfigBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import picocli.CommandLine;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.ManagerFactoryParameters;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.TrustManagerFactorySpi;
+import javax.net.ssl.X509ExtendedTrustManager;
+import java.net.Socket;
 import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +48,9 @@ import java.util.Objects;
 public class TlsOptions {
 
     private static final @NotNull String DEFAULT_TLS_VERSION = "TLSv1.2";
+    private static final @NotNull TrustManagerFactory INSECURE_TRUST_MANAGER_FACTORY =
+            new InsecureTrustManagerFactory();
+    private static final @NotNull HostnameVerifier INSECURE_HOSTNAME_VERIFIER = (hostname, session) -> true;
 
     @SuppressWarnings("unused")
     @CommandLine.Option(names = {"-s", "--secure"},
@@ -105,25 +117,35 @@ public class TlsOptions {
     @CommandLine.Option(names = {"--tspw", "--truststore-password"}, description = "The password for the truststore")
     private @Nullable String clientTruststorePassword;
 
+    private boolean insecure;
+
+    public void setInsecure(final boolean insecure) {
+        this.insecure = insecure;
+    }
+
     public @Nullable MqttClientSslConfig buildSslConfig() throws Exception {
         if (!useTls()) {
             return null;
         }
 
         final KeyManagerFactory keyManagerFactory = buildKeyManagerFactory();
-        final TrustManagerFactory trustManagerFactory = buildTrustManagerFactory();
+        final TrustManagerFactory trustManagerFactory =
+                insecure ? INSECURE_TRUST_MANAGER_FACTORY : buildTrustManagerFactory();
 
         if (supportedTLSVersions == null) {
             supportedTLSVersions = new ArrayList<>();
             supportedTLSVersions.add(DEFAULT_TLS_VERSION);
         }
 
-        return MqttClientSslConfig.builder()
+        final MqttClientSslConfigBuilder builder = MqttClientSslConfig.builder()
                 .trustManagerFactory(trustManagerFactory)
                 .keyManagerFactory(keyManagerFactory)
                 .cipherSuites(cipherSuites)
-                .protocols(supportedTLSVersions)
-                .build();
+                .protocols(supportedTLSVersions);
+        if (insecure) {
+            builder.hostnameVerifier(INSECURE_HOSTNAME_VERIFIER);
+        }
+        return builder.build();
     }
 
     /**
@@ -433,6 +455,7 @@ public class TlsOptions {
                 supportedTLSVersions != null ||
                 clientPrivateKeyPath != null ||
                 clientCertificatePath != null ||
+                insecure ||
                 useTls;
     }
 
@@ -453,6 +476,82 @@ public class TlsOptions {
                 clientCertificatePath +
                 ", clientPrivateKey=" +
                 clientPrivateKeyPath +
+                ", insecure=" +
+                insecure +
                 '}';
+    }
+
+    private static class InsecureTrustManagerFactory extends TrustManagerFactory {
+
+        private static final @NotNull Provider PROVIDER =
+                new Provider("mqtt-cli-insecure", "1.0", "Trust manager for explicitly insecure MQTT CLI TLS") {
+                };
+
+        InsecureTrustManagerFactory() {
+            super(new InsecureTrustManagerFactorySpi(), PROVIDER, "insecure");
+        }
+    }
+
+    private static class InsecureTrustManagerFactorySpi extends TrustManagerFactorySpi {
+
+        private static final @NotNull TrustManager @NotNull [] TRUST_MANAGERS =
+                new TrustManager[]{new InsecureX509TrustManager()};
+
+        @Override
+        protected void engineInit(final @Nullable KeyStore keyStore) {
+        }
+
+        @Override
+        protected void engineInit(final @Nullable ManagerFactoryParameters managerFactoryParameters) {
+        }
+
+        @Override
+        protected @NotNull TrustManager @NotNull [] engineGetTrustManagers() {
+            return TRUST_MANAGERS;
+        }
+    }
+
+    private static class InsecureX509TrustManager extends X509ExtendedTrustManager {
+
+        @Override
+        public void checkClientTrusted(final X509Certificate @NotNull [] chain, final @NotNull String authType) {
+        }
+
+        @Override
+        public void checkServerTrusted(final X509Certificate @NotNull [] chain, final @NotNull String authType) {
+        }
+
+        @Override
+        public X509Certificate @NotNull [] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
+
+        @Override
+        public void checkClientTrusted(
+                final X509Certificate @NotNull [] chain,
+                final @NotNull String authType,
+                final @Nullable Socket socket) {
+        }
+
+        @Override
+        public void checkServerTrusted(
+                final X509Certificate @NotNull [] chain,
+                final @NotNull String authType,
+                final @Nullable Socket socket) {
+        }
+
+        @Override
+        public void checkClientTrusted(
+                final X509Certificate @NotNull [] chain,
+                final @NotNull String authType,
+                final @Nullable SSLEngine engine) {
+        }
+
+        @Override
+        public void checkServerTrusted(
+                final X509Certificate @NotNull [] chain,
+                final @NotNull String authType,
+                final @Nullable SSLEngine engine) {
+        }
     }
 }
