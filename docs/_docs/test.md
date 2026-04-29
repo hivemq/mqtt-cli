@@ -56,6 +56,7 @@ MQTT 5: OK
 | `-a`   | `--all`         | Perform all tests for all MQTT versions.                                       | `false` (Only test MQTT 3)   |
 | `-t`   | `--timeOut`     | The time to wait for the broker to respond (in seconds).                       | `10`                         |
 | `-q`   | `--qosTries`    | The amount of messages to send and receive from the broker for each QoS level. | `10`                         |
+|        | `--insecure`    | Disable TLS certificate and hostname validation for this test connection.       | `false`                      |
 
 ### Connect Options
 
