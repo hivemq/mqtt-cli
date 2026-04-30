@@ -158,9 +158,8 @@ dependencies {
 val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
     group = "openapi"
     generatorName = "java"
-    inputSpec = hivemqOpenApi.elements.map { it.single().asFile.path }
-    val outputDir = layout.buildDirectory.dir("tmp/$name")
-    this.outputDir = outputDir.map { it.asFile.absolutePath }
+    inputSpec = layout.file(hivemqOpenApi.elements.map { it.single().asFile })
+    outputDir = layout.buildDirectory.dir("tmp/$name")
     cleanupOutput = true
 
     apiPackage = "com.hivemq.cli.openapi.hivemq"
@@ -183,9 +182,8 @@ val generateHivemqOpenApi by tasks.registering(GenerateTask::class) {
 val generateSwarmOpenApi by tasks.registering(GenerateTask::class) {
     group = "openapi"
     generatorName = "java"
-    inputSpec = swarmOpenApi.elements.map { it.single().asFile.path }
-    val outputDir = layout.buildDirectory.dir("tmp/$name")
-    this.outputDir = outputDir.map { it.asFile.absolutePath }
+    inputSpec = layout.file(swarmOpenApi.elements.map { it.single().asFile })
+    outputDir = layout.buildDirectory.dir("tmp/$name")
     cleanupOutput = true
 
     apiPackage = "com.hivemq.cli.openapi.swarm"
