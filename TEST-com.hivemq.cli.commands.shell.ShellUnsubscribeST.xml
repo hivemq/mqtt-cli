@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.ShellUnsubscribeST" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-05-05T13:01:34.165Z" hostname="runnervmeorf1" time="18.838">
+<testsuite name="com.hivemq.cli.commands.shell.ShellUnsubscribeST" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-05-05T14:02:38.491Z" hostname="runnervmeorf1" time="19.519">
   <properties/>
-  <testcase name="test_UnsubscribeWhileNotConnected()" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="1.115"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.53"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.425"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.018"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.023"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.028"/>
+  <testcase name="test_UnsubscribeWhileNotConnected()" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="1.32"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.531"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.522"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.12"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.12"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.325"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.02"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.118"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.119"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.32"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellUnsubscribeST" time="2.12"/>
 </testsuite>
