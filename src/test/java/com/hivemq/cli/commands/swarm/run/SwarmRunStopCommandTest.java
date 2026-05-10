@@ -36,7 +36,8 @@ class SwarmRunStopCommandTest {
 
     private @NotNull RunsApi runsApi;
     private @NotNull SwarmApiErrorTransformer errorTransformer;
-    private @NotNull ApiClient apiClient;
+    private @NotNull ApiClient runsApiClient;
+    private @NotNull ApiClient commanderApiClient;
     private @NotNull CommanderApi commanderApi;
     private @NotNull PrintStream out;
 
@@ -47,8 +48,10 @@ class SwarmRunStopCommandTest {
         commanderApi = mock(CommanderApi.class);
         errorTransformer = mock(SwarmApiErrorTransformer.class);
 
-        apiClient = mock(ApiClient.class);
-        when(runsApi.getApiClient()).thenReturn(apiClient);
+        runsApiClient = mock(ApiClient.class);
+        commanderApiClient = mock(ApiClient.class);
+        when(runsApi.getApiClient()).thenReturn(runsApiClient);
+        when(commanderApi.getApiClient()).thenReturn(commanderApiClient);
 
         final Error error = mock(Error.class);
         when(errorTransformer.transformError(any())).thenReturn(error);
@@ -59,7 +62,8 @@ class SwarmRunStopCommandTest {
         final SwarmRunStopCommand invalid = new SwarmRunStopCommand("invalid", 1, runsApi, commanderApi, errorTransformer, out);
         assertEquals(-1, invalid.call());
         verify(runsApi, times(0)).getRun(any());
-        verify(apiClient, times(0)).setBasePath(anyString());
+        verify(runsApiClient, times(0)).setBasePath(anyString());
+        verify(commanderApiClient, times(0)).setBasePath(anyString());
     }
 
     @Test
@@ -70,7 +74,8 @@ class SwarmRunStopCommandTest {
 
         assertEquals(-1, invalid.call());
         verify(runsApi).stopRun(eq("1"), any());
-        verify(apiClient).setBasePath("http://localhost:8080");
+        verify(runsApiClient).setBasePath("http://localhost:8080");
+        verify(commanderApiClient).setBasePath("http://localhost:8080");
         verify(errorTransformer).transformError(any());
     }
 
@@ -80,7 +85,8 @@ class SwarmRunStopCommandTest {
 
         assertEquals(0, invalid.call());
         verify(runsApi).stopRun(eq("1"), any());
-        verify(apiClient).setBasePath("http://localhost:8080");
+        verify(runsApiClient).setBasePath("http://localhost:8080");
+        verify(commanderApiClient).setBasePath("http://localhost:8080");
         verify(errorTransformer, times(0)).transformError(any());
     }
 
@@ -93,7 +99,8 @@ class SwarmRunStopCommandTest {
 
         assertEquals(-1, invalid.call());
         verify(runsApi, times(0)).stopRun(eq("1"), any());
-        verify(apiClient).setBasePath("http://localhost:8080");
+        verify(runsApiClient).setBasePath("http://localhost:8080");
+        verify(commanderApiClient).setBasePath("http://localhost:8080");
         verify(errorTransformer).transformError(any());
     }
 
@@ -107,7 +114,8 @@ class SwarmRunStopCommandTest {
 
         assertEquals(0, invalid.call());
         verify(runsApi, times(0)).stopRun(eq("1"), any());
-        verify(apiClient).setBasePath("http://localhost:8080");
+        verify(runsApiClient).setBasePath("http://localhost:8080");
+        verify(commanderApiClient).setBasePath("http://localhost:8080");
         verify(errorTransformer, times(0)).transformError(any());
 
     }
@@ -122,7 +130,8 @@ class SwarmRunStopCommandTest {
 
         assertEquals(0, invalid.call());
         verify(runsApi).stopRun(eq("1337"), any());
-        verify(apiClient).setBasePath("http://localhost:8080");
+        verify(runsApiClient).setBasePath("http://localhost:8080");
+        verify(commanderApiClient).setBasePath("http://localhost:8080");
         verify(errorTransformer, times(0)).transformError(any());
     }
 }
