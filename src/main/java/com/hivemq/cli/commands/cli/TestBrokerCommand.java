@@ -95,6 +95,12 @@ public class TestBrokerCommand implements Callable<Integer> {
                         description = "Log to $HOME/.mqtt-cli/logs (Configurable through $HOME/.mqtt-cli/config.properties)")
     private boolean logToLogfile;
 
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--insecure"},
+                        defaultValue = "false",
+                        description = "Disable TLS certificate and hostname validation for this test connection")
+    private boolean insecure;
+
     @CommandLine.Mixin
     private final @NotNull AuthenticationOptions authenticationOptions = new AuthenticationOptions();
 
@@ -127,6 +133,7 @@ public class TestBrokerCommand implements Callable<Integer> {
         }
 
         authenticationOptions.setDefaultOptions();
+        tlsOptions.setInsecure(insecure);
 
         try {
             sslConfig = tlsOptions.buildSslConfig();
