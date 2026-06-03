@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.mqtt.test.Mqtt5FeatureTesterQos0IT" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-03T07:48:06.270Z" hostname="runnervm3jyl0" time="30.631">
+<testsuite name="com.hivemq.cli.mqtt.test.Mqtt5FeatureTesterQos0IT" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-03T16:17:27.986Z" hostname="runnervm3jyl0" time="32.36">
   <properties/>
-  <testcase name="qos_1_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt5FeatureTesterQos0IT" time="11.246"/>
-  <testcase name="qos_0_success()" classname="com.hivemq.cli.mqtt.test.Mqtt5FeatureTesterQos0IT" time="8.187"/>
-  <testcase name="qos_2_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt5FeatureTesterQos0IT" time="11.194"/>
+  <testcase name="qos_1_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt5FeatureTesterQos0IT" time="11.576"/>
+  <testcase name="qos_0_success()" classname="com.hivemq.cli.mqtt.test.Mqtt5FeatureTesterQos0IT" time="8.792"/>
+  <testcase name="qos_2_failed()" classname="com.hivemq.cli.mqtt.test.Mqtt5FeatureTesterQos0IT" time="11.987"/>
 </testsuite>
