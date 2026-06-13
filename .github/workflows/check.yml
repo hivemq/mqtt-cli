@@ -52,7 +52,7 @@ jobs:
             21
           cache: gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@5e2ebd065dc2488b7a6ad670704656cbbe1e8f60 # v6
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-disabled: true
       - name: Setup GraalVM
@@ -82,7 +82,7 @@ jobs:
             21
           cache: gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@5e2ebd065dc2488b7a6ad670704656cbbe1e8f60 # v6
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-disabled: true
       - name: Run unit tests
@@ -138,7 +138,7 @@ jobs:
             21
           cache: gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@5e2ebd065dc2488b7a6ad670704656cbbe1e8f60 # v6
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-disabled: true
       - name: Compile integration tests
@@ -232,7 +232,7 @@ jobs:
             21
           cache: gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@5e2ebd065dc2488b7a6ad670704656cbbe1e8f60 # v6
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-disabled: true
       - name: Compile system tests
@@ -326,7 +326,7 @@ jobs:
             21
           cache: gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@5e2ebd065dc2488b7a6ad670704656cbbe1e8f60 # v6
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-disabled: true
       - name: Setup GraalVM
@@ -407,7 +407,7 @@ jobs:
             21
           cache: gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@5e2ebd065dc2488b7a6ad670704656cbbe1e8f60 # v6
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6
         with:
           cache-disabled: true
       - name: Build packages
