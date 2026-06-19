@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Setup Java
         id: setup-java
         uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
@@ -72,7 +72,7 @@ jobs:
       checks: write
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Setup Java
         uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
         with:
@@ -121,7 +121,7 @@ jobs:
         split-index: ${{ fromjson(needs.generate-split-index-json.outputs.integration-json) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Checkout JUnit reports
         uses: donnerbart/split-tests-java-action/checkout-junit-reports@a2563bba87a8c00280604597fa0c61181919a68f # v1
         with:
@@ -215,7 +215,7 @@ jobs:
         split-index: ${{ fromjson(needs.generate-split-index-json.outputs.system-json) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Checkout JUnit reports
         uses: donnerbart/split-tests-java-action/checkout-junit-reports@a2563bba87a8c00280604597fa0c61181919a68f # v1
         with:
@@ -309,7 +309,7 @@ jobs:
         split-index: ${{ fromjson(needs.generate-split-index-json.outputs.native-system-json) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Checkout JUnit reports
         uses: donnerbart/split-tests-java-action/checkout-junit-reports@a2563bba87a8c00280604597fa0c61181919a68f # v1
         with:
@@ -397,7 +397,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
       - name: Setup Java
         uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5
         with:
