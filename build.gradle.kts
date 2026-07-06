@@ -97,6 +97,7 @@ dependencies {
     implementation(libs.picocli)
     implementation(libs.picocli.codegen)
 
+    implementation(enforcedPlatform(libs.netty.bom))
     implementation(platform(libs.hivemq.mqttClientEpoll))
     implementation(platform(libs.hivemq.mqttClientWebsocket))
     implementation(libs.hivemq.mqttClient)
