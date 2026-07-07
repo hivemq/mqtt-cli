@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.ShellListST" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-07-06T23:45:41.339Z" hostname="runnervmkkn4f" time="30.644">
+<testsuite name="com.hivemq.cli.commands.shell.ShellListST" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-07-07T01:43:07.836Z" hostname="runnervmkkn4f" time="29.965">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="4.848"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="4.74"/>
-  <testcase name="test_emptyList()" classname="com.hivemq.cli.commands.shell.ShellListST" time="1.113"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.33"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.328"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="4.751"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="4.747"/>
+  <testcase name="test_emptyList()" classname="com.hivemq.cli.commands.shell.ShellListST" time="1.013"/>
   <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.231"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.228"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.331"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.23"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.133"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.131"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.233"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.235"/>
 </testsuite>
