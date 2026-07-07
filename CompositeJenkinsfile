@@ -13,19 +13,38 @@ pipeline {
                 script {
                     def multiBranchJobPath = '../../hivemq-composite'
                     def branchJobName = BRANCH_NAME.replace('/', '%2F')
-                    try {
-                        build job: "${multiBranchJobPath}/${branchJobName}", wait: false
-                    } catch (e) {
-                        try {
-                            withCredentials([gitUsernamePassword(credentialsId: 'hivemq-jenkins')]) {
+                    withCredentials([gitUsernamePassword(credentialsId: 'hivemq-jenkins')]) {
+                        // Decide on branch existence from the source of truth (the git ref),
+                        // not from the multibranch child-job state. A missed REMOVED webhook can
+                        // leave the child job enabled while the ref is already gone (PLT-1235),
+                        // which makes the old `try build / catch` schedule a doomed build and skip
+                        // recreation. Keying off the ref makes recreation independent of that.
+                        def branchExists = sh(
+                            returnStatus: true,
+                            script: "git ls-remote --exit-code --heads https://github.com/hivemq/hivemq-composite-job.git ${BRANCH_NAME}"
+                        ) == 0
+                        if (branchExists) {
+                            try {
+                                build job: "${multiBranchJobPath}/${branchJobName}", wait: false
+                            } catch (ignored) {
+                                // Ref exists but the child job is absent or not yet indexed:
+                                // scan the multibranch project so it (re)creates and builds it.
+                                build job: multiBranchJobPath, wait: false
+                            }
+                        } else {
+                            // Ref is gone: recreate it from master, then scan so the child job is
+                            // (re)created and built. The rescan is required because a missed create
+                            // webhook would otherwise leave the new ref unindexed.
+                            try {
                                 sh("git clone https://github.com/hivemq/hivemq-composite-job.git --branch=${MASTER_BRANCH} --single-branch --depth 1 .")
                                 try {
                                     sh("git push origin HEAD:${BRANCH_NAME}")
-                                } catch (e2) { // if push failed, branch already exists
+                                } catch (ignored) { // ref may have been created concurrently; rescan anyway
                                 }
+                            } finally {
+                                cleanWs()
                             }
-                        } finally {
-                            cleanWs()
+                            build job: multiBranchJobPath, wait: false
                         }
                     }
                 }
