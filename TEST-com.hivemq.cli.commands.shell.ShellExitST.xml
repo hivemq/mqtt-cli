@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.ShellExitST" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-07-10T14:13:44.643Z" hostname="runnervm5mmn9" time="7.061">
+<testsuite name="com.hivemq.cli.commands.shell.ShellExitST" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-07-12T09:55:07.959Z" hostname="runnervm5mmn9" time="5.281">
   <properties/>
-  <testcase name="test_exitShell()" classname="com.hivemq.cli.commands.shell.ShellExitST" time="1.158"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellExitST" time="2.131"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellExitST" time="2.025"/>
+  <testcase name="test_exitShell()" classname="com.hivemq.cli.commands.shell.ShellExitST" time="1.116"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellExitST" time="2.019"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellExitST" time="1.917"/>
 </testsuite>
