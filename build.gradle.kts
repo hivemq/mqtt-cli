@@ -306,7 +306,7 @@ testing {
 
             oci.of(this) {
                 imageDependencies {
-                    runtime(project).tag("latest")
+                    runtime(project()).tag("latest")
                 }
                 val linuxAmd64 = platformSelector(platform("linux", "amd64"))
                 val linuxArm64v8 = platformSelector(platform("linux", "arm64", "v8"))
