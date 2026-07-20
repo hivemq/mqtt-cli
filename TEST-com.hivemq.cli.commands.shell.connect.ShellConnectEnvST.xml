@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-20T09:15:38.704Z" hostname="runnervm3jd5f" time="2.165">
+<testsuite name="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-20T11:38:46.155Z" hostname="runnervm3jd5f" time="2.135">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="0.413"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="0.511"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="0.511"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="0.409"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="0.51"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="0.511"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.connect.ShellConnectEnvST" time="0.508"/>
 </testsuite>
