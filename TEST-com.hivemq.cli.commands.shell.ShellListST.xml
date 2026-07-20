@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.ShellListST" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-07-18T07:43:19.236Z" hostname="runnervm3jd5f" time="21.099">
+<testsuite name="com.hivemq.cli.commands.shell.ShellListST" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-07-20T09:15:46.523Z" hostname="runnervm3jd5f" time="21.207">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.746"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.843"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="3.739"/>
-  <testcase name="test_emptyList()" classname="com.hivemq.cli.commands.shell.ShellListST" time="0.209"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.225"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.226"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.125"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.124"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.225"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.226"/>
+  <testcase name="test_emptyList()" classname="com.hivemq.cli.commands.shell.ShellListST" time="0.208"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.226"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.225"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.13"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.125"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.224"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellListST" time="2.227"/>
 </testsuite>
