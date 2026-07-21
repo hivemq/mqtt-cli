@@ -44,7 +44,7 @@ application {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -220,11 +220,29 @@ tasks.register<Sync>("updateOpenApiSpecs") {
 
 /* ******************** test ******************** */
 
+// see https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
+val mockitoAgent = configurations.create("mockitoAgent") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+dependencies {
+    mockitoAgent(libs.mockito) { isTransitive = false }
+}
+class MockitoAgentArgumentProvider(@get:Classpath val agentJar: FileCollection) : CommandLineArgumentProvider {
+    override fun asArguments(): Iterable<String> = listOf("-javaagent:${agentJar.singleFile}")
+}
+
 @Suppress("UnstableApiUsage") //
 testing {
     suites {
         withType<JvmTestSuite> {
             useJUnitJupiter(libs.versions.junit.jupiter)
+            targets.configureEach {
+                testTask {
+                    jvmArgumentProviders.add(MockitoAgentArgumentProvider(mockitoAgent))
+                    jvmArgs("--sun-misc-unsafe-memory-access=allow")
+                }
+            }
         }
 
         @Suppress("unused")
