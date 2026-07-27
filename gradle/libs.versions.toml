@@ -82,4 +82,4 @@ oci = { id = "io.github.sgtsilvio.gradle.oci", version = "0.28.0" }
 ociVersionCatalog = { id = "com.hivemq.tools.oci-version-catalog", version = "0.4.0" }
 openapi-generator = { id = "org.openapi.generator", version = "7.24.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.11" }
-spotless = { id = "com.diffplug.spotless", version = "8.8.0" }
+spotless = { id = "com.diffplug.spotless", version = "8.9.0" }
