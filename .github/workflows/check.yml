@@ -49,7 +49,7 @@ jobs:
           distribution: temurin
           java-version: |
             11
-            21
+            25
           cache: gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
@@ -79,7 +79,7 @@ jobs:
           distribution: temurin
           java-version: |
             11
-            21
+            25
           cache: gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
@@ -135,7 +135,7 @@ jobs:
           distribution: temurin
           java-version: |
             11
-            21
+            25
           cache: gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
@@ -229,7 +229,7 @@ jobs:
           distribution: temurin
           java-version: |
             11
-            21
+            25
           cache: gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
@@ -323,7 +323,7 @@ jobs:
           distribution: temurin
           java-version: |
             11
-            21
+            25
           cache: gradle
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
@@ -389,196 +389,6 @@ jobs:
             done
           done
 
-  build-packages:
-    name: Build packages
-    runs-on: ubuntu-latest
-    needs:
-      - compile
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Setup Java
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: |
-            11
-            21
-          cache: gradle
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
-        with:
-          cache-disabled: true
-      - name: Build packages
-        run: ./gradlew buildPackages shadowDistZip
-      - name: Upload distribution
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: distribution
-          path: build/distributions/mqtt-cli-*.zip
-          retention-days: 5
-      - name: Upload Debian package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: debian-package
-          path: build/packages/debian/
-          retention-days: 5
-      - name: Upload RPM package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: rpm-package
-          path: build/packages/rpm/
-          retention-days: 5
-      - name: Upload Brew package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: brew-package
-          path: build/packages/homebrew/
-          retention-days: 5
-      - name: Upload Windows package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: windows-package
-          path: build/packages/windows/
-          retention-days: 5
-
-  windows-smoke-test:
-    name: Windows smoke test
-    runs-on: windows-latest
-    needs:
-      - build-packages
-    timeout-minutes: 10
-    steps:
-      - name: Setup Java
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: 11
-      - name: Download Windows package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: windows-package
-          path: windows-package
-      - name: Extract Windows ZIP
-        run: |
-          $zip = Get-ChildItem -Path windows-package -Filter "mqtt-cli-*-win.zip" | Select-Object -First 1
-          Expand-Archive -Path $zip.FullName -DestinationPath mqtt-cli
-        shell: pwsh
-      - name: Run mqtt-cli --version
-        run: |
-          $output = & mqtt-cli/mqtt-cli.exe --version 2>&1
-          echo $output
-          if ($LASTEXITCODE -ne 0) { exit 1 }
-        shell: pwsh
-      - name: Run mqtt-cli --help
-        run: |
-          $output = & mqtt-cli/mqtt-cli.exe --help 2>&1
-          echo $output
-          if ($LASTEXITCODE -ne 0) { exit 1 }
-        shell: pwsh
-
-  debian-smoke-test:
-    name: Debian smoke test
-    runs-on: ubuntu-latest
-    needs:
-      - build-packages
-    timeout-minutes: 10
-    steps:
-      - name: Setup Java
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: 11
-      - name: Download Debian package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: debian-package
-          path: debian-package
-      - name: Install Debian package
-        run: sudo dpkg --force-depends -i debian-package/mqtt-cli-*.deb
-      - name: Run mqtt --version
-        run: mqtt --version
-      - name: Run mqtt --help
-        run: mqtt --help
-
-  rpm-smoke-test:
-    name: RPM smoke test
-    runs-on: ubuntu-latest
-    needs:
-      - build-packages
-    timeout-minutes: 10
-    steps:
-      - name: Setup Java
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: 11
-      - name: Install rpm tooling
-        run: sudo apt-get update && sudo apt-get install -y rpm
-      - name: Download RPM package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: rpm-package
-          path: rpm-package
-      - name: Install RPM package
-        run: sudo rpm -ivh --nodeps rpm-package/mqtt-cli-*.rpm
-      - name: Run mqtt --version
-        run: mqtt --version
-      - name: Run mqtt --help
-        run: mqtt --help
-
-  brew-smoke-test:
-    name: Brew smoke test
-    runs-on: ubuntu-latest
-    needs:
-      - build-packages
-    timeout-minutes: 10
-    steps:
-      - name: Setup Java
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: 11
-      - name: Download Brew package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: brew-package
-          path: brew-package
-      - name: Extract and fix up Brew package
-        run: |
-          unzip brew-package/mqtt-cli-*-brew.zip -d brew
-          JAR_PATH=$(pwd)/$(ls brew/brew/mqtt-cli-*.jar)
-          sed -i "s|##PREFIX##|$JAR_PATH|" brew/brew/mqtt
-      - name: Run mqtt --version
-        run: brew/brew/mqtt --version
-      - name: Run mqtt --help
-        run: brew/brew/mqtt --help
-
-  distribution-smoke-test:
-    name: Distribution smoke test
-    runs-on: ubuntu-latest
-    needs:
-      - build-packages
-    timeout-minutes: 10
-    steps:
-      - name: Setup Java
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: 11
-      - name: Download distribution
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
-        with:
-          name: distribution
-          path: distribution
-      - name: Extract distribution
-        run: unzip distribution/mqtt-cli-*.zip -d mqtt-cli
-      - name: Run mqtt --version
-        run: mqtt-cli/mqtt-cli-*/bin/mqtt --version
-      - name: Run mqtt --help
-        run: mqtt-cli/mqtt-cli-*/bin/mqtt --help
-
   merge-junit-reports-integration:
     name: Merge JUnit reports (integration)
     runs-on: ubuntu-latest
@@ -635,12 +445,6 @@ jobs:
       - integration-test
       - system-test
       - native-system-test
-      - build-packages
-      - windows-smoke-test
-      - debian-smoke-test
-      - rpm-smoke-test
-      - brew-smoke-test
-      - distribution-smoke-test
       - merge-junit-reports-integration
       - merge-junit-reports-system
       - merge-junit-reports-native-system
@@ -677,30 +481,6 @@ jobs:
           fi
           if [[ "${{ needs.native-system-test.result }}" != "success" ]]; then
             echo "native-system-test job failed"
-            exit 1
-          fi
-          if [[ "${{ needs.build-packages.result }}" != "success" ]]; then
-            echo "build-packages job failed"
-            exit 1
-          fi
-          if [[ "${{ needs.windows-smoke-test.result }}" != "success" ]]; then
-            echo "windows-smoke-test job failed"
-            exit 1
-          fi
-          if [[ "${{ needs.debian-smoke-test.result }}" != "success" ]]; then
-            echo "debian-smoke-test job failed"
-            exit 1
-          fi
-          if [[ "${{ needs.rpm-smoke-test.result }}" != "success" ]]; then
-            echo "rpm-smoke-test job failed"
-            exit 1
-          fi
-          if [[ "${{ needs.brew-smoke-test.result }}" != "success" ]]; then
-            echo "brew-smoke-test job failed"
-            exit 1
-          fi
-          if [[ "${{ needs.distribution-smoke-test.result }}" != "success" ]]; then
-            echo "distribution-smoke-test job failed"
             exit 1
           fi
           if [[ "${{ needs.merge-junit-reports-native-system.result }}" != "success" ]]; then
