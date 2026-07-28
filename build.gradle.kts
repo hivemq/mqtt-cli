@@ -651,6 +651,8 @@ oci {
             }
             config {
                 entryPoint.add("java")
+                // the base image pins Java 25, so both suppression flags are always valid here
+                entryPoint.addAll("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
                 entryPoint.addAll(application.applicationDefaultJvmArgs)
                 entryPoint.addAll("-cp", "/app/classpath/*:/app/libs/*")
                 entryPoint.add(application.mainClass)
@@ -694,6 +696,40 @@ distributions.shadow {
 
 tasks.startShadowScripts {
     applicationName = "mqtt"
+    doLast {
+        // inject the warning suppressions into the launcher, each guarded by the minimum Java version that
+        // recognizes it, so the CLI still starts on its Java 11 baseline (parsed from "java -version")
+        // see https://netty.io/wiki/java-24-and-sun.misc.unsafe.html
+        val originalUnixScript = unixScript.readText()
+        val replacedUnixScript = originalUnixScript
+            .replace(Regex("(?m)^DEFAULT_JVM_OPTS=.*$")) {
+                it.value +
+                        "\n\nJAVA_MAJOR_VERSION=\$(\"\$JAVACMD\" -version 2>&1 | awk -F '\"' '/version/ {print \$2}' | sed 's/\\..*//')" +
+                        "\nif [ \"\$JAVA_MAJOR_VERSION\" -ge 17 ]; then" +
+                        "\n    DEFAULT_JVM_OPTS=\"\$DEFAULT_JVM_OPTS \\\"--enable-native-access=ALL-UNNAMED\\\"\"" +
+                        "\nfi" +
+                        "\nif [ \"\$JAVA_MAJOR_VERSION\" -ge 24 ]; then" +
+                        "\n    DEFAULT_JVM_OPTS=\"\$DEFAULT_JVM_OPTS \\\"--sun-misc-unsafe-memory-access=allow\\\"\"" +
+                        "\nfi"
+            }
+        check(replacedUnixScript != originalUnixScript) {
+            "Launcher flag injection anchor not found in ${unixScript.name}; the Gradle start script template changed"
+        }
+        val originalWindowsScript = windowsScript.readText()
+        val replacedWindowsScript = originalWindowsScript
+            .replace(Regex("(?m)^\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%.*$")) {
+                "for /f tokens^=2-2^ delims^=^\" %%j in ('\"%JAVA_EXE%\" -version 2^>^&1') do set \"JAVA_VERSION=%%j\"\r\n" +
+                        "for /f \"tokens=1 delims=. \" %%a in (\"%JAVA_VERSION%\") do set \"JAVA_MAJOR_VERSION=%%a\"\r\n" +
+                        "if %JAVA_MAJOR_VERSION% GEQ 17 set DEFAULT_JVM_OPTS=%DEFAULT_JVM_OPTS% \"--enable-native-access=ALL-UNNAMED\"\r\n" +
+                        "if %JAVA_MAJOR_VERSION% GEQ 24 set DEFAULT_JVM_OPTS=%DEFAULT_JVM_OPTS% \"--sun-misc-unsafe-memory-access=allow\"\r\n\r\n" +
+                        it.value
+            }
+        check(replacedWindowsScript != originalWindowsScript) {
+            "Launcher flag injection anchor not found in ${windowsScript.name}; the Gradle start script template changed"
+        }
+        unixScript.writeText(replacedUnixScript)
+        windowsScript.writeText(replacedWindowsScript)
+    }
 }
 
 tasks.shadowDistZip {

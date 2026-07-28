@@ -126,8 +126,8 @@ Test
 ----
 
 The test command runs various tests against the specified broker to find out its features and limitations.
-By default the test command will use MQTT 3 clients to test the broker first
-and will afterwards check the connect restrictions returned by a connect of a MQTT 5 client.
+By default, the test command will use MQTT 3 clients to test the broker first
+and will afterward check the connect restrictions returned by a connect message of a MQTT 5 client.
 You can alter this behavior by specifying different options when using the command.
 
 Test the public HiveMQ broker:

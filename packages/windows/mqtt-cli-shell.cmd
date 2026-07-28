@@ -1,2 +1,2 @@
 @ECHO off
-start /B %0\..\ @@exeName@@ shell
+call "%~dp0mqtt-cli.cmd" shell
