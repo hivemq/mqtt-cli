@@ -1,3 +1,10 @@
 #!/bin/bash
 # Runs Mqtt CLI
-exec java -jar @@jarPath@@ "$@"
+# Add the launcher flags only on the Java versions that recognize them, so the CLI still starts on its
+# Java 8 and 11 baseline. The major version is parsed from "java -version".
+# see https://netty.io/wiki/java-24-and-sun.misc.unsafe.html
+java_major_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | sed 's/\..*//')
+java_opts=()
+if [ "$java_major_version" -ge 17 ]; then java_opts+=("--enable-native-access=ALL-UNNAMED"); fi
+if [ "$java_major_version" -ge 24 ]; then java_opts+=("--sun-misc-unsafe-memory-access=allow"); fi
+exec java "${java_opts[@]}" -jar @@jarPath@@ "$@"
