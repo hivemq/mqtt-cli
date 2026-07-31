@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.swarm.run.SwarmRunStopCommandIT" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-07-31T12:39:19.249Z" hostname="runnervmvrwv9" time="11.567">
+<testsuite name="com.hivemq.cli.commands.swarm.run.SwarmRunStopCommandIT" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-07-31T23:40:30.979Z" hostname="runnervmvrwv9" time="11.851">
   <properties/>
-  <testcase name="stopRun()" classname="com.hivemq.cli.commands.swarm.run.SwarmRunStopCommandIT" time="11.565"/>
+  <testcase name="stopRun()" classname="com.hivemq.cli.commands.swarm.run.SwarmRunStopCommandIT" time="11.849"/>
 </testsuite>
