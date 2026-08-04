@@ -15,3 +15,6 @@ mqtt-cli-plugins/.kotlin/
 
 .java-version
 .DS_Store
+
+# Claude Code local state (worktrees, settings) — never part of a release commit
+.claude/
