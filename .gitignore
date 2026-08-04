@@ -16,5 +16,8 @@ mqtt-cli-plugins/.kotlin/
 .java-version
 .DS_Store
 
-# Claude Code local state (worktrees, settings) — never part of a release commit
-.claude/
+# Claude Code local state — never part of a release commit.
+# Scoped deliberately: .claude/skills and .claude/settings.json are shared team
+# config and must stay committable.
+.claude/worktrees/
+.claude/settings.local.json
