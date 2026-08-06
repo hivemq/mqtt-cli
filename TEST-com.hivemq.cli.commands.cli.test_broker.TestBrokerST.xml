@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-08-05T15:04:38.099Z" hostname="runnervmvrwv9" time="12.918">
+<testsuite name="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-08-06T00:34:55.561Z" hostname="runnervmvrwv9" time="12.562">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="2.014"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.077"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.867"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.845"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.868"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.099"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.838"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.085"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.969"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.05"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.814"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.753"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.818"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.057"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.794"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.test_broker.TestBrokerST" time="1.071"/>
 </testsuite>
