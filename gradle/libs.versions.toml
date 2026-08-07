@@ -31,8 +31,9 @@ tinylog = "2.7.0"
 apache-commonsIO = { module = "commons-io:commons-io", version.ref = "apache-commonsIO" }
 apache-commonsLang = { module = "org.apache.commons:commons-lang3", version.ref = "apache-commonsLang" }
 awaitility = { module = "org.awaitility:awaitility", version.ref = "awaitility" }
-bouncycastle-pkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
-bouncycastle-prov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-bom = { module = "org.bouncycastle:bc-jdk18on-bom", version.ref = "bouncycastle" }
+bouncycastle-pkix = { module = "org.bouncycastle:bcpkix-jdk18on" }
+bouncycastle-prov = { module = "org.bouncycastle:bcprov-jdk18on" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 graalvm-nativeImage-svm = { module = "org.graalvm.nativeimage:svm", version.ref = "graalvm-nativeImage-svm" }

@@ -108,6 +108,7 @@ dependencies {
 
     implementation(libs.apache.commonsIO)
     implementation(libs.apache.commonsLang)
+    implementation(platform(libs.bouncycastle.bom))
     implementation(libs.bouncycastle.pkix)
     implementation(libs.bouncycastle.prov)
     implementation(libs.dagger)
