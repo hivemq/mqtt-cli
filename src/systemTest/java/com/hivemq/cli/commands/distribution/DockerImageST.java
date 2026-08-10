@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hivemq.cli.utils.broker.assertions.ConnectAssertion.assertConnectPacket;
 import static com.hivemq.cli.utils.broker.assertions.PublishAssertion.assertPublishPacket;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class DockerImageST {
 
@@ -78,5 +79,10 @@ public class DockerImageST {
             publishAssertion.setTopic("test");
             publishAssertion.setPayload(ByteBuffer.wrap("message".getBytes(StandardCharsets.UTF_8)));
         });
+
+        final String logs = mqttCli.getLogs();
+        assertFalse(logs.contains("terminally deprecated"), "container logged a terminally-deprecated method warning on Java 25");
+        assertFalse(logs.contains("restricted method"), "container logged a native-access warning on Java 25");
+        assertFalse(logs.contains("Unrecognized"), "container logged an unrecognized JVM option");
     }
 }
