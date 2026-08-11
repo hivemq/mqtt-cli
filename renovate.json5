@@ -11,4 +11,18 @@
     addLabels: [
         'integrations-team-coordination',
     ],
+    customManagers: [
+        {
+            customType: 'regex',
+            datasourceTemplate: 'github-releases',
+            depNameTemplate: 'graalvm/graalvm-ce-builds',
+            description: 'GraalVM Community Edition used to build the native image',
+            extractVersionTemplate: '^graal-(?<version>.+)$',
+            managerFilePatterns: ['**/libs.versions.toml'],
+            matchStrings: [
+                'graalvm-community\\s*=\\s*"(?<currentValue>[^"]+)"',
+            ],
+            versioningTemplate: 'semver',
+        },
+    ],
 }
