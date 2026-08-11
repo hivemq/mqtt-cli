@@ -27,7 +27,7 @@ plugins {
     id("com.hivemq.cli.native-image")
 }
 
-/* ******************** metadata ******************** */
+// ******************** metadata ********************
 
 val prevVersion = "4.52.0"
 version = "4.53.0"
@@ -40,7 +40,7 @@ application {
     mainClass = "com.hivemq.cli.MqttCLIMain"
 }
 
-/* ******************** java ******************** */
+// ******************** Java ********************
 
 java {
     toolchain {
@@ -76,7 +76,7 @@ tasks.shadowJar {
     archiveClassifier = ""
 }
 
-/* ******************** dependencies ******************** */
+// ******************** dependencies ********************
 
 repositories {
     mavenCentral()
@@ -121,7 +121,7 @@ dependencies {
     implementation(libs.tinylog.impl)
 }
 
-/* ******************** OpenAPI ******************** */
+// ******************** OpenAPI ********************
 
 val hivemqOpenApi: Configuration by configurations.creating {
     isCanBeConsumed = false
@@ -219,7 +219,7 @@ tasks.register<Sync>("updateOpenApiSpecs") {
     into("specs")
 }
 
-/* ******************** test ******************** */
+// ******************** test ********************
 
 // see https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mockito.html#0.3
 val mockitoAgent = configurations.create("mockitoAgent") {
@@ -340,7 +340,7 @@ testing {
     }
 }
 
-/* ******************** compliance ******************** */
+// ******************** compliance ********************
 
 spotless {
     java {
@@ -352,14 +352,18 @@ spotless {
 hivemqLicense {
     projectName.set("MQTT CLI")
     thirdPartyLicenseDirectory.set(layout.projectDirectory.dir("src/distribution/third-party-licenses"))
-    excludedDependencies.set(setOf(
-        "org.jline:jline",
-        "org.jline:jline-picocli",
-    ))
-    overriddenLicenses.set(mapOf(
-        "org.jline:jline" to "BSD-3-Clause",
-        "org.jline:jline-picocli" to "BSD-3-Clause",
-    ))
+    excludedDependencies.set(
+        setOf(
+            "org.jline:jline",
+            "org.jline:jline-picocli",
+        )
+    )
+    overriddenLicenses.set(
+        mapOf(
+            "org.jline:jline" to "BSD-3-Clause",
+            "org.jline:jline-picocli" to "BSD-3-Clause",
+        )
+    )
 }
 
 forbiddenApis {
@@ -374,26 +378,26 @@ tasks.forbiddenApisTest { enabled = false }
 
 tasks.named("forbiddenApisIntegrationTest") { enabled = false }
 
-/* ******************** graal ******************** */
+// ******************** Graal ********************
 
-//In order to run the native tasks the Graal environment must be installed first.
-//This can be done with the "installNativeImageTooling" Task.
-//Unfortunately, this is not able to be a task dependency as it uses the gradle java provisioning service which only
-//checks for java installations prior the execution.
+// In order to run the native tasks the Graal environment must be installed first.
+// This can be done with the "installNativeImageTooling" Task.
+// Unfortunately, this is not able to be a task dependency as it uses the Gradle Java provisioning service which only
+// checks for Java installations prior the execution.
 
 cliNative {
-    javaVersion = libs.versions.javaNative
+    graalVersion = libs.versions.graalvm.community
 }
-val majorJavaNativeVersion = libs.versions.javaNative.get().substringBefore(".")
+val graalJavaVersion = libs.versions.graalvm.community.get().substringBefore(".")
 
-//reflection configuration files are currently created manually with the command: ./gradlew -Pagent agentMainRun --stacktrace
-//this yields an exception as the Graal plugin is currently quite buggy. The files are created nonetheless.
-//build/native/agent-output/agentMainRun/session-*****-*Date*T*Time*Z -> src/main/resources/META-INF/native-image
+// Reflection configuration files are currently created manually with the command: ./gradlew -Pagent agentMainRun --stacktrace
+// This yields an exception as the Graal plugin is currently quite buggy. The files are created nonetheless.
+// build/native/agent-output/agentMainRun/session-*****-*Date*T*Time*Z -> src/main/resources/META-INF/native-image
 val agentMainRun by tasks.registering(JavaExec::class) {
     group = "native"
 
     val launcher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(majorJavaNativeVersion)
+        languageVersion = JavaLanguageVersion.of(graalJavaVersion)
         vendor = JvmVendorSpec.GRAAL_VM
     }
     javaLauncher = launcher
@@ -403,7 +407,7 @@ val agentMainRun by tasks.registering(JavaExec::class) {
 
 val nativeImageOptions by graalvmNative.binaries.named("main") {
     javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(majorJavaNativeVersion)
+        languageVersion = JavaLanguageVersion.of(graalJavaVersion)
         vendor = JvmVendorSpec.GRAAL_VM
     }
     buildArgs.add("-Dio.netty.noUnsafe=true")
@@ -411,58 +415,57 @@ val nativeImageOptions by graalvmNative.binaries.named("main") {
     buildArgs.add("--no-fallback")
     buildArgs.add("--enable-https")
     buildArgs.add("--features=com.hivemq.cli.graal.BouncyCastleFeature")
-    //@formatter:off
     buildArgs.add(
         "--initialize-at-build-time=" +
-                "org.bouncycastle," +
-                "org.jctools.queues.BaseMpscLinkedArrayQueue," +
-                "org.jctools.queues.BaseSpscLinkedArrayQueue," +
-                "org.jctools.util.UnsafeAccess," +
+                "io.netty.buffer.AbstractByteBufAllocator," +
+                "io.netty.util.CharsetUtil," +
                 "io.netty.util.ReferenceCountUtil," +
                 "io.netty.util.ResourceLeakDetector," +
                 "io.netty.util.ResourceLeakDetector\$Level," +
-                "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueue," +
-                "io.netty.util.internal.shaded.org.jctools.queues.BaseSpscLinkedArrayQueue," +
-                "io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess," +
-                "io.netty.util.CharsetUtil," +
-                "io.netty.util.internal.SystemPropertyUtil," +
+                "io.netty.util.internal.CleanerJava25," +
                 "io.netty.util.internal.PlatformDependent," +
                 "io.netty.util.internal.PlatformDependent0," +
                 "io.netty.util.internal.PlatformDependent\$1," +
                 "io.netty.util.internal.PlatformDependent\$2," +
+                "io.netty.util.internal.SystemPropertyUtil," +
                 "io.netty.util.internal.logging.JdkLogger," +
-                "io.netty.buffer.AbstractByteBufAllocator"
+                "io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueue," +
+                "io.netty.util.internal.shaded.org.jctools.queues.BaseSpscLinkedArrayQueue," +
+                "io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess," +
+                "org.bouncycastle," +
+                "org.jctools.queues.BaseMpscLinkedArrayQueue," +
+                "org.jctools.queues.BaseSpscLinkedArrayQueue," +
+                "org.jctools.util.UnsafeAccess"
     )
     buildArgs.add(
         "--initialize-at-run-time=" +
-                "org.bouncycastle.jcajce.provider.drbg.DRBG\$Default," +
-                "org.bouncycastle.jcajce.provider.drbg.DRBG\$NonceAndIV," +
                 "io.netty," +
                 "io.netty.bootstrap," +
                 "io.netty.channel," +
-                "io.netty.handler.ssl," +
-                "io.netty.handler.proxy," +
                 "io.netty.handler.codec," +
                 "io.netty.handler.codec.http," +
+                "io.netty.handler.proxy," +
+                "io.netty.handler.ssl," +
                 "io.netty.internal.tcnative," +
                 "io.netty.resolver," +
                 "io.netty.util," +
                 "io.netty.util.concurrent," +
+                "org.bouncycastle.jcajce.provider.drbg.DRBG\$Default," +
+                "org.bouncycastle.jcajce.provider.drbg.DRBG\$NonceAndIV," +
                 "org.tinylog," +
                 "org.tinylog.configuration," +
-                "org.tinylog.format," +
-                "org.tinylog.provider," +
-                "org.tinylog.runtime," +
                 "org.tinylog.converters," +
                 "org.tinylog.core," +
+                "org.tinylog.format," +
                 "org.tinylog.path," +
                 "org.tinylog.pattern," +
                 "org.tinylog.policies," +
+                "org.tinylog.provider," +
+                "org.tinylog.runtime," +
                 "org.tinylog.throwable," +
                 "org.tinylog.writers," +
                 "org.tinylog.writers.raw"
     )
-    //@formatter:on
 }
 
 graalvmNative {
@@ -476,7 +479,7 @@ graalvmNative {
     }
 }
 
-/* ******************** homebrew package & formula ******************** */
+// ******************** Homebrew package & formula ********************
 
 val buildBrewZip by tasks.registering(Zip::class) {
 
@@ -520,7 +523,7 @@ val buildBrewFormula by tasks.registering {
     }
 }
 
-/* ******************** debian and rpm packages ******************** */
+// ******************** Debian and RPM packages ********************
 
 ospackage {
     packageName = project.name
@@ -584,7 +587,7 @@ val buildRpmPackage by tasks.registering {
     }
 }
 
-/* ******************** windows zip ******************** */
+// ******************** Windows ZIP ********************
 
 launch4j {
     headerType = "console"
@@ -613,13 +616,13 @@ val buildWindowsZip by tasks.registering(Zip::class) {
     from("LICENSE")
 }
 
-/* ******************** packages ******************** */
+// ******************** packages ********************
 
 val buildPackages by tasks.registering {
     dependsOn(buildBrewFormula, buildDebianPackage, buildRpmPackage, buildWindowsZip)
 }
 
-/* ******************** Attach all packages to GitHub release ******************** */
+// ******************** attach all packages to the GitHub release ********************
 
 githubRelease {
     token(System.getenv("githubToken"))
@@ -627,7 +630,7 @@ githubRelease {
     allowUploadToExisting = true
 }
 
-/* ******************** Update the Homebrew-Formula with the newly built package ******************** */
+// ******************** update the Homebrew formula with the newly built package ********************
 
 gitPublish {
     repoUri = "https://github.com/hivemq/homebrew-mqtt-cli.git"
@@ -636,7 +639,7 @@ gitPublish {
     contents.from(buildBrewFormula)
 }
 
-/* ******************** docker ******************** */
+// ******************** Docker ********************
 
 oci {
     registries {
@@ -685,7 +688,7 @@ oci {
     }
 }
 
-/* ******************** platform distribution ******************** */
+// ******************** platform distribution ********************
 
 distributions.shadow {
     distributionBaseName = "mqtt-cli"
@@ -744,7 +747,7 @@ tasks.shadowDistTar {
     }
 }
 
-/* ******************** version updating ******************** */
+// ******************** version updating ********************
 
 val updateVersionInFiles by tasks.registering {
     group = "version"
@@ -759,7 +762,7 @@ val updateVersionInFiles by tasks.registering {
     }
 }
 
-/* ******************** artifacts ******************** */
+// ******************** artifacts ********************
 
 val releaseBinary: Configuration by configurations.creating {
     isCanBeConsumed = true
