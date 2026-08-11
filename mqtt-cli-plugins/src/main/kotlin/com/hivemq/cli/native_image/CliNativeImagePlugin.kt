@@ -14,7 +14,6 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import java.io.File
 
-
 class CliNativeImagePlugin : Plugin<Project> {
 
     companion object {
@@ -29,7 +28,7 @@ class CliNativeImagePlugin : Plugin<Project> {
         val downloadTask = project.tasks.register<DownloadGraalJVMTask>("downloadGraalJvm") {
             group = "native"
             description = "Configures the correct download for Graal"
-            javaVersion.set(extension.javaVersion)
+            graalVersion.set(extension.graalVersion)
             downloadBaseUrl.set(extension.graalBaseUrl)
         }
 

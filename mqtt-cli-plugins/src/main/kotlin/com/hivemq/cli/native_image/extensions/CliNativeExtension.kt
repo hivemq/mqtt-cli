@@ -5,9 +5,9 @@ import org.gradle.api.provider.Property
 interface CliNativeExtension {
 
     /**
-     * Java version, default: 21.0.2
+     * GraalVM version, default: 25.2.4
      */
-    val javaVersion: Property<String>
+    val graalVersion: Property<String>
 
     /**
      * Graal download base url, default: https://github.com/graalvm/graalvm-ce-builds/releases/download
