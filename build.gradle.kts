@@ -647,8 +647,9 @@ oci {
         dockerHub {
             optionalCredentials()
         }
-        registry(ociImages.eclipse.temurin.registry!!) {
+        registry("ecrPublic") {
             url = uri("https://${ociImages.eclipse.temurin.registry}")
+            optionalCredentials()
             exclusiveContent { includeGroup(ociImages.eclipse.temurin.group) }
         }
     }
