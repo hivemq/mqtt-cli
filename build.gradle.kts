@@ -241,7 +241,8 @@ testing {
             targets.configureEach {
                 testTask {
                     jvmArgumentProviders.add(MockitoAgentArgumentProvider(mockitoAgent))
-                    jvmArgs("--sun-misc-unsafe-memory-access=allow")
+                    // see https://netty.io/wiki/java-24-and-sun.misc.unsafe.html
+                    jvmArgs("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
                 }
             }
         }
