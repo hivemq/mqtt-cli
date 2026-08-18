@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.ShellPublishLoggingST" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-08-17T10:52:02.801Z" hostname="runnervmzvulz" time="16.318">
+<testsuite name="com.hivemq.cli.commands.shell.ShellPublishLoggingST" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-08-18T17:06:09.693Z" hostname="runnervmzvulz" time="16.179">
   <properties/>
-  <testcase name="test_shell_publish_mqtt5_qos2_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="3.139"/>
-  <testcase name="test_shell_publish_mqtt3_qos0_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.424"/>
-  <testcase name="test_shell_publish_mqtt5_qos1_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.629"/>
-  <testcase name="test_shell_publish_mqtt5_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.726"/>
-  <testcase name="test_shell_publish_mqtt5_qos1_logging_not_authorized()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.727"/>
-  <testcase name="test_shell_publish_mqtt5_qos0_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.426"/>
+  <testcase name="test_shell_publish_mqtt5_qos2_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="3.031"/>
+  <testcase name="test_shell_publish_mqtt3_qos0_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.421"/>
+  <testcase name="test_shell_publish_mqtt5_qos1_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.624"/>
+  <testcase name="test_shell_publish_mqtt5_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.723"/>
+  <testcase name="test_shell_publish_mqtt5_qos1_logging_not_authorized()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.73"/>
+  <testcase name="test_shell_publish_mqtt5_qos0_logging()" classname="com.hivemq.cli.commands.shell.ShellPublishLoggingST" time="2.421"/>
 </testsuite>
