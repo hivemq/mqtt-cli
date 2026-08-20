@@ -1,5 +1,5 @@
-# https://hub.docker.com/_/eclipse-temurin/tags?name=25-jre-resolute
+# https://gallery.ecr.aws/hivemq/library/eclipse-temurin
 [[oci]]
 name = "eclipse-temurin"
-image = "library/eclipse-temurin"
-reference = "25-jre-resolute@sha256:dfb5912013299daafe722565f6ce6b019e96d5b396455b7e47c811ea03e21668"
+image = "public.ecr.aws/hivemq/library/eclipse-temurin"
+reference = "25-jre-resolute@sha256:dac55b8ae0e8c2614c94c08f1c28e2bee5784da2062c0193b6a63b9c12582e76"
