@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-12T01:18:32.111Z" hostname="runnervmlun5p" time="58.132">
+<testsuite name="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-12T01:52:52.492Z" hostname="runnervmlun5p" time="57.186">
   <properties/>
-  <testcase name="rate_limit()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="21.42"/>
-  <testcase name="client_detail_1_success()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="8.419"/>
-  <testcase name="connection_refused()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="8.408"/>
-  <testcase name="csv_options()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="8.306"/>
-  <testcase name="client_details_25_success()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="8.703"/>
+  <testcase name="rate_limit()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="21.235"/>
+  <testcase name="client_detail_1_success()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="8.526"/>
+  <testcase name="connection_refused()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="8.261"/>
+  <testcase name="csv_options()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="8.444"/>
+  <testcase name="client_details_25_success()" classname="com.hivemq.cli.commands.hivemq.export.clients.ExportClientsCommandIT" time="8.563"/>
 </testsuite>
