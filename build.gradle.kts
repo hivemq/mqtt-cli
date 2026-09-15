@@ -647,6 +647,16 @@ oci {
         dockerHub {
             optionalCredentials()
         }
+        registry("ecrPublic") {
+            url = uri("https://${ociImages.eclipse.temurin.registry}")
+            optionalCredentials()
+            exclusiveContent { includeGroup(ociImages.eclipse.temurin.group) }
+        }
+    }
+    imageMapping {
+        mapGroup(ociImages.eclipse.temurin.group) {
+            toImage(nameSpec("${ociImages.eclipse.temurin.namespace}/") + name)
+        }
     }
     imageDefinitions.register("main") {
         allPlatforms {
