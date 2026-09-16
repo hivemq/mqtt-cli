@@ -648,14 +648,14 @@ oci {
             optionalCredentials()
         }
         registry("ecrPublic") {
-            url = uri("https://${ociImages.eclipse.temurin.registry}")
+            url = uri("https://public.ecr.aws")
             optionalCredentials()
-            exclusiveContent { includeGroup(ociImages.eclipse.temurin.group) }
+            exclusiveContent { includeGroup("hivemq.library") }
         }
     }
     imageMapping {
-        mapGroup(ociImages.eclipse.temurin.group) {
-            toImage(nameSpec("${ociImages.eclipse.temurin.namespace}/") + name)
+        mapGroup("hivemq.library") {
+            toImage(nameSpec("hivemq/library/") + name)
         }
     }
     imageDefinitions.register("main") {
