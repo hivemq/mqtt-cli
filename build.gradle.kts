@@ -647,6 +647,16 @@ oci {
         dockerHub {
             optionalCredentials()
         }
+        registry("ecrPublic") {
+            url = uri("https://public.ecr.aws")
+            optionalCredentials()
+            exclusiveContent { includeGroup("hivemq.library") }
+        }
+    }
+    imageMapping {
+        mapGroup("hivemq.library") {
+            toImage(nameSpec("hivemq/library/") + name)
+        }
     }
     imageDefinitions.register("main") {
         allPlatforms {
