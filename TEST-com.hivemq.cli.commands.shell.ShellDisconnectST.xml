@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.shell.ShellDisconnectST" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-09-16T20:22:29.320Z" hostname="runnervmlun5p" time="13.789">
+<testsuite name="com.hivemq.cli.commands.shell.ShellDisconnectST" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-09-17T06:28:19.450Z" hostname="runnervmlun5p" time="15.8">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.427"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.57"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="2.321"/>
   <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.409"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.41"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.912"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.914"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.913"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.913"/>
   <testcase name="test_notConnectedDisconnect()" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.308"/>
   <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.013"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.012"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.013"/>
   <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.012"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.913"/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.013"/>
   <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.911"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="1.013"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.shell.ShellDisconnectST" time="0.912"/>
 </testsuite>
