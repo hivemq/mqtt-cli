@@ -3,7 +3,7 @@ name: Run Snyk scan on PRs
 on:
   pull_request:
     branches:
-      - master**
+      - master
 
 jobs:
   monitor-baseline-project:
