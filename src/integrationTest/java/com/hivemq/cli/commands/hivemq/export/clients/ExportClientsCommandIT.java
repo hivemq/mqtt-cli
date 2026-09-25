@@ -52,7 +52,8 @@ class ExportClientsCommandIT {
     @Container
     private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
             .withHiveMQConfig(MountableFile.forClasspathResource("hivemq.configs/rest-api-config.xml"))
-            .withExposedPorts(1883, HTTP_PORT);
+            .withExposedPorts(1883, HTTP_PORT)
+            .withLogConsumer(outputFrame -> System.out.print("HIVEMQ: " + outputFrame.getUtf8String()));
 
     private @NotNull File file;
 

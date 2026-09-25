@@ -36,7 +36,8 @@ class TestBrokerCommandRestrictedIT {
 
     @Container
     private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
-            .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/restricted-config.xml"));
+            .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/restricted-config.xml"))
+            .withLogConsumer(outputFrame -> System.out.print("HIVEMQ: " + outputFrame.getUtf8String()));
 
     @BeforeEach
     void setUp() {
