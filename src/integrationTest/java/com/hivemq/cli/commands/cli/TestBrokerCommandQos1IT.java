@@ -36,7 +36,8 @@ class TestBrokerCommandQos1IT {
 
     @Container
     private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
-            .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/qos1-config.xml"));
+            .withHiveMQConfig(MountableFile.forClasspathResource("mqtt/test/qos1-config.xml"))
+            .withLogConsumer(outputFrame -> System.out.print("HIVEMQ: " + outputFrame.getUtf8String()));
 
     @BeforeEach
     void setUp() {

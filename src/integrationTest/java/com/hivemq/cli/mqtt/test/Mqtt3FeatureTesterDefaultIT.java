@@ -50,7 +50,8 @@ class Mqtt3FeatureTesterDefaultIT {
 
     @Container
     private final @NotNull HiveMQContainer hivemq = new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")) //
-            .withHiveMQConfig(MountableFile.forClasspathResource("hivemq.configs/config.xml"));
+            .withHiveMQConfig(MountableFile.forClasspathResource("hivemq.configs/config.xml"))
+            .withLogConsumer(outputFrame -> System.out.print("HIVEMQ: " + outputFrame.getUtf8String()));
 
     private @NotNull Mqtt3FeatureTester mqtt3FeatureTester;
 

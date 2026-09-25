@@ -73,7 +73,8 @@ public class SwarmRunStartCommandIT {
 
     private final @NotNull HiveMQContainer hivemq =
             new HiveMQContainer(OciImages.getImageName("hivemq/hivemq4")).withNetwork(network)
-                    .withNetworkAliases("hivemq");
+                    .withNetworkAliases("hivemq")
+                    .withLogConsumer(outputFrame -> System.out.print("HIVEMQ: " + outputFrame.getUtf8String()));
 
     private @NotNull CommandLine commandLine;
     private @NotNull PrintStream out;
