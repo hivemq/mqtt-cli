@@ -11,6 +11,9 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -26,6 +29,18 @@ jobs:
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
           cache-disabled: true
+      - name: Configure AWS credentials for ECR Public
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: arn:aws:iam::691852750577:role/gha-ecr-public-pull
+          aws-region: us-east-1
+      # authenticated pulls lift the anonymous 1/s ECR Public cap
+      - name: Log in to ECR Public
+        run: |
+          password=$(aws ecr-public get-login-password --region us-east-1)
+          echo "::add-mask::$password"
+          echo "ORG_GRADLE_PROJECT_ecrPublicUsername=AWS" >> "$GITHUB_ENV"
+          echo "ORG_GRADLE_PROJECT_ecrPublicPassword=$password" >> "$GITHUB_ENV"
       - name: Publish
         env:
           githubToken: ${{ secrets.GITHUB_TOKEN }}

@@ -209,6 +209,7 @@ jobs:
     permissions:
       contents: read
       checks: write
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -235,6 +236,21 @@ jobs:
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
         with:
           cache-disabled: true
+      - name: Configure AWS credentials for ECR Public
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: arn:aws:iam::691852750577:role/gha-ecr-public-pull
+          aws-region: us-east-1
+      # authenticated pulls lift the anonymous 1/s ECR Public cap that parallel jobs hit; fork PRs
+      # cannot mint an OIDC token and fall back to anonymous pulls
+      - name: Log in to ECR Public
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          password=$(aws ecr-public get-login-password --region us-east-1)
+          echo "::add-mask::$password"
+          echo "ORG_GRADLE_PROJECT_ecrPublicUsername=AWS" >> "$GITHUB_ENV"
+          echo "ORG_GRADLE_PROJECT_ecrPublicPassword=$password" >> "$GITHUB_ENV"
       - name: Compile system tests
         run: ./gradlew compileSystemTestJava shadowJar
       - name: Split tests
@@ -303,6 +319,7 @@ jobs:
     permissions:
       contents: read
       checks: write
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -331,6 +348,21 @@ jobs:
           cache-disabled: true
       - name: Setup GraalVM
         run: ./gradlew installNativeImageTooling
+      - name: Configure AWS credentials for ECR Public
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: arn:aws:iam::691852750577:role/gha-ecr-public-pull
+          aws-region: us-east-1
+      # authenticated pulls lift the anonymous 1/s ECR Public cap that parallel jobs hit; fork PRs
+      # cannot mint an OIDC token and fall back to anonymous pulls
+      - name: Log in to ECR Public
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          password=$(aws ecr-public get-login-password --region us-east-1)
+          echo "::add-mask::$password"
+          echo "ORG_GRADLE_PROJECT_ecrPublicUsername=AWS" >> "$GITHUB_ENV"
+          echo "ORG_GRADLE_PROJECT_ecrPublicPassword=$password" >> "$GITHUB_ENV"
       - name: Compile native system tests
         run: ./gradlew compileSystemTestJava nativeCompile
       - name: Split tests
