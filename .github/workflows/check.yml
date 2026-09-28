@@ -401,7 +401,7 @@ jobs:
         uses: donnerbart/split-tests-java-action/merge-junit-reports@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
         with:
           git-branch: junit-reports/integration/${{ github.base_ref }}
-          artifact-name: junit-xml-reports-integration-${{ github.base_ref }}
+          artifact-name: merged-junit-xml-reports-integration-${{ github.base_ref }}
           split-artifact-pattern: junit-xml-reports-integration-*
 
   merge-junit-reports-system:
@@ -416,7 +416,7 @@ jobs:
         uses: donnerbart/split-tests-java-action/merge-junit-reports@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
         with:
           git-branch: junit-reports/system/${{ github.base_ref }}
-          artifact-name: junit-xml-reports-system-${{ github.base_ref }}
+          artifact-name: merged-junit-xml-reports-system-${{ github.base_ref }}
           split-artifact-pattern: junit-xml-reports-system-*
 
   merge-junit-reports-native-system:
@@ -431,7 +431,7 @@ jobs:
         uses: donnerbart/split-tests-java-action/merge-junit-reports@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
         with:
           git-branch: junit-reports/native-system/${{ github.base_ref }}
-          artifact-name: junit-xml-reports-native-system-${{ github.base_ref }}
+          artifact-name: merged-junit-xml-reports-native-system-${{ github.base_ref }}
           split-artifact-pattern: junit-xml-reports-native-system-*
 
   check:
