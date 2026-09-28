@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-09-28T10:50:41.065Z" hostname="runnervmtr4k5" time="23.616">
+<testsuite name="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-09-28T12:32:30.382Z" hostname="runnervmtr4k5" time="22.579">
   <properties/>
-  <testcase name="test_subscribe_with_message_mqtt3_qos1_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.993"/>
-  <testcase name="test_subscribe_mqtt5_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.919"/>
+  <testcase name="test_subscribe_with_message_mqtt3_qos1_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.879"/>
+  <testcase name="test_subscribe_mqtt5_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.816"/>
   <testcase name="test_subscribe_mqtt5_qos1_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.817"/>
-  <testcase name="test_subscribe_mqtt5_qos0_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.917"/>
-  <testcase name="test_subscribe_with_message_mqtt5_qos0_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.836"/>
-  <testcase name="test_subscribe_with_message_mqtt5_qos2_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="2.435"/>
-  <testcase name="test_subscribe_with_message_mqtt3_qos0_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.826"/>
-  <testcase name="test_subscribe_with_message_mqtt3_qos2_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.839"/>
-  <testcase name="test_subscribe_mqtt3_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.92"/>
-  <testcase name="test_subscribe_mqtt3_qos1_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.922"/>
-  <testcase name="test_subscribe_mqtt3_qos0_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.917"/>
-  <testcase name="test_subscribe_with_message_mqtt5_qos1_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="2.034"/>
+  <testcase name="test_subscribe_mqtt5_qos0_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.819"/>
+  <testcase name="test_subscribe_with_message_mqtt5_qos0_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.833"/>
+  <testcase name="test_subscribe_with_message_mqtt5_qos2_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="2.333"/>
+  <testcase name="test_subscribe_with_message_mqtt3_qos0_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.728"/>
+  <testcase name="test_subscribe_with_message_mqtt3_qos2_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.731"/>
+  <testcase name="test_subscribe_mqtt3_qos2_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.815"/>
+  <testcase name="test_subscribe_mqtt3_qos1_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.814"/>
+  <testcase name="test_subscribe_mqtt3_qos0_logging_not_authorized()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.816"/>
+  <testcase name="test_subscribe_with_message_mqtt5_qos1_logging()" classname="com.hivemq.cli.commands.cli.subscribe.SubscribeLoggingST" time="1.934"/>
 </testsuite>
