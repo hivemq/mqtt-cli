@@ -18,17 +18,17 @@ jobs:
     steps:
       - name: Generate integration test split index list
         id: integration
-        uses: donnerbart/split-tests-java-action/generate-split-index-json@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action/generate-split-index-json@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           split-total: ${{ env.integration-test-split-total }}
       - name: Generate system test split index list
         id: system
-        uses: donnerbart/split-tests-java-action/generate-split-index-json@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action/generate-split-index-json@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           split-total: ${{ env.system-test-split-total }}
       - name: Generate native system test split index list
         id: native-system
-        uses: donnerbart/split-tests-java-action/generate-split-index-json@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action/generate-split-index-json@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           split-total: ${{ env.native-system-test-split-total }}
     outputs:
@@ -123,7 +123,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Checkout JUnit reports
-        uses: donnerbart/split-tests-java-action/checkout-junit-reports@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action/checkout-junit-reports@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           split-index: ${{ matrix.split-index }}
           git-branch: junit-reports/integration/${{ github.base_ref }}
@@ -145,7 +145,7 @@ jobs:
         run: ./gradlew compileIntegrationTestJava
       - name: Split tests
         id: split-tests
-        uses: donnerbart/split-tests-java-action@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           glob: '**/src/integrationTest/java/**/*IT.java'
           split-index: ${{ matrix.split-index }}
@@ -217,7 +217,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Checkout JUnit reports
-        uses: donnerbart/split-tests-java-action/checkout-junit-reports@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action/checkout-junit-reports@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           split-index: ${{ matrix.split-index }}
           git-branch: junit-reports/system/${{ github.base_ref }}
@@ -239,7 +239,7 @@ jobs:
         run: ./gradlew compileSystemTestJava shadowJar
       - name: Split tests
         id: split-tests
-        uses: donnerbart/split-tests-java-action@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           glob: '**/src/systemTest/java/**/*ST.java'
           split-index: ${{ matrix.split-index }}
@@ -311,7 +311,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Checkout JUnit reports
-        uses: donnerbart/split-tests-java-action/checkout-junit-reports@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action/checkout-junit-reports@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           split-index: ${{ matrix.split-index }}
           git-branch: junit-reports/native-system/${{ github.base_ref }}
@@ -335,7 +335,7 @@ jobs:
         run: ./gradlew compileSystemTestJava nativeCompile
       - name: Split tests
         id: split-tests
-        uses: donnerbart/split-tests-java-action@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           glob: '**/src/systemTest/java/**/*ST.java'
           split-index: ${{ matrix.split-index }}
@@ -398,7 +398,7 @@ jobs:
       contents: write
     steps:
       - name: Merge JUnit reports
-        uses: donnerbart/split-tests-java-action/merge-junit-reports@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action/merge-junit-reports@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           git-branch: junit-reports/integration/${{ github.base_ref }}
           artifact-name: merged-junit-xml-reports-integration-${{ github.base_ref }}
@@ -413,7 +413,7 @@ jobs:
       contents: write
     steps:
       - name: Merge JUnit reports
-        uses: donnerbart/split-tests-java-action/merge-junit-reports@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action/merge-junit-reports@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           git-branch: junit-reports/system/${{ github.base_ref }}
           artifact-name: merged-junit-xml-reports-system-${{ github.base_ref }}
@@ -428,7 +428,7 @@ jobs:
       contents: write
     steps:
       - name: Merge JUnit reports
-        uses: donnerbart/split-tests-java-action/merge-junit-reports@8c6a409268899fa0258aff4969c9a3568e34a002 # v1
+        uses: donnerbart/split-tests-java-action/merge-junit-reports@43e3467e53068fc42d15b7a234974db5d792744d # v1
         with:
           git-branch: junit-reports/native-system/${{ github.base_ref }}
           artifact-name: merged-junit-xml-reports-native-system-${{ github.base_ref }}
