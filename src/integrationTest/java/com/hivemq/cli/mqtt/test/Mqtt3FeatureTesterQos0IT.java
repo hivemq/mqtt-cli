@@ -20,7 +20,6 @@ import com.hivemq.cli.mqtt.test.results.QosTestResult;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import io.github.sgtsilvio.gradle.oci.junit.jupiter.OciImages;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.hivemq.HiveMQContainer;
@@ -29,7 +28,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @Testcontainers
 class Mqtt3FeatureTesterQos0IT {
@@ -45,11 +43,6 @@ class Mqtt3FeatureTesterQos0IT {
     @BeforeEach
     void setUp() {
         mqtt3FeatureTester = new Mqtt3FeatureTester(hivemq.getHost(), hivemq.getMqttPort(), null, null, null, 3);
-    }
-
-    @AfterEach
-    void keepOutput() {
-        fail("keep the captured broker output in the build scan");
     }
 
     @Test
