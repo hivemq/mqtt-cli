@@ -35,8 +35,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class Mqtt3FeatureTesterQos0IT {
 
     // Debug variants: "baseline", "malloc-arena-2" (MALLOC_ARENA_MAX=2), "jdk25" (the image with the JRE of
-    // eclipse-temurin:25-jre first on the PATH), "cross" (4.55.0 broker and JDK on the 4.54.0 base image).
-    private static final @NotNull String VARIANT = "baseline";
+    // eclipse-temurin:25-jre first on the PATH), "cross" (4.55.0 broker and JDK on the 4.54.0 base image),
+    // "reverse-cross" (4.54.0 broker and JDK on the 4.55.0 base image), "jemalloc" (4.55.0 with jemalloc preloaded).
+    private static final @NotNull String VARIANT = "reverse-cross";
 
     @Container
     private final @NotNull HiveMQContainer hivemq = container();
@@ -57,15 +58,18 @@ class Mqtt3FeatureTesterQos0IT {
     private static @NotNull DockerImageName image() {
         final DockerImageName base = OciImages.getImageName("hivemq/hivemq4");
         if (VARIANT.equals("cross")) {
-            final String name = new ImageFromDockerfile("hivemq-455-on-2404-debug", false).withFileFromString(
+            return swapped("hivemq-455-on-2404-debug", "4.54.0", "4.55.0");
+        }
+        if (VARIANT.equals("reverse-cross")) {
+            return swapped("hivemq-454-on-2604-debug", "4.55.0", "4.54.0");
+        }
+        if (VARIANT.equals("jemalloc")) {
+            final String name = new ImageFromDockerfile("hivemq-455-jemalloc-debug", false).withFileFromString(
                     "Dockerfile",
-                    "FROM hivemq/hivemq4:4.54.0\n" +
+                    "FROM hivemq/hivemq4:4.55.0\n" +
                             "USER root\n" +
-                            "RUN rm -rf /opt/java/openjdk && find /opt/hivemq -mindepth 1 -maxdepth 1 ! -name data ! -name log -exec rm -rf {} +\n" +
-                            "COPY --from=hivemq/hivemq4:4.55.0 /opt/java/openjdk /opt/java/openjdk\n" +
-                            "COPY --from=hivemq/hivemq4:4.55.0 /opt/hivemq /opt/hivemq\n" +
-                            "COPY --from=hivemq/hivemq4:4.55.0 /opt/docker-entrypoint.sh /opt/docker-entrypoint.sh\n" +
-                            "RUN chmod 775 /opt/hivemq\n" +
+                            "RUN apt-get update && apt-get install -y --no-install-recommends libjemalloc2 && rm -rf /var/lib/apt/lists/*\n" +
+                            "ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2\n" +
                             "USER 10000\n").get();
             return DockerImageName.parse(name).asCompatibleSubstituteFor("hivemq/hivemq4");
         }
@@ -77,6 +81,20 @@ class Mqtt3FeatureTesterQos0IT {
                         "FROM " + base.asCanonicalNameString() + "\n" +
                         "COPY --from=jdk /opt/java/openjdk /opt/java/openjdk-25\n" +
                         "ENV JAVA_HOME=/opt/java/openjdk-25 PATH=/opt/java/openjdk-25/bin:$PATH\n").get();
+        return DockerImageName.parse(name).asCompatibleSubstituteFor("hivemq/hivemq4");
+    }
+
+    // The broker distribution, JDK and entrypoint of the broker tag on the OS base of the base tag.
+    private static @NotNull DockerImageName swapped(
+            final @NotNull String imageName, final @NotNull String baseTag, final @NotNull String brokerTag) {
+        final String name = new ImageFromDockerfile(imageName, false).withFileFromString("Dockerfile",
+                "FROM hivemq/hivemq4:" + baseTag + "\n" +
+                        "USER root\n" +
+                        "RUN rm -rf /opt/java/openjdk && find /opt/hivemq -mindepth 1 -maxdepth 1 ! -name data ! -name log -exec rm -rf {} +\n" +
+                        "COPY --from=hivemq/hivemq4:" + brokerTag + " /opt/java/openjdk /opt/java/openjdk\n" +
+                        "COPY --from=hivemq/hivemq4:" + brokerTag + " /opt/hivemq /opt/hivemq\n" +
+                        "COPY --from=hivemq/hivemq4:" + brokerTag + " /opt/docker-entrypoint.sh /opt/docker-entrypoint.sh\n" +
+                        "USER 10000\n").get();
         return DockerImageName.parse(name).asCompatibleSubstituteFor("hivemq/hivemq4");
     }
 
