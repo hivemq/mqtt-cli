@@ -38,8 +38,8 @@ class Mqtt3FeatureTesterQos0IT {
 
     // Debug variants: "baseline", "malloc-arena-2" (MALLOC_ARENA_MAX=2), "jdk25" (the image with the JRE of
     // eclipse-temurin:25-jre first on the PATH), "cross" (4.55.0 broker and JDK on the 4.54.0 base image),
-    // "reverse-cross" (4.54.0 broker and JDK on the 4.55.0 base image), "jemalloc" (4.55.0 with jemalloc preloaded), "cpuset-2" (test container pinned to CPUs 0-1).
-    private static final @NotNull String VARIANT = "cpuset-2";
+    // "reverse-cross" (4.54.0 broker and JDK on the 4.55.0 base image), "jemalloc" (4.55.0 with jemalloc preloaded), "cpuset-2" (test container pinned to CPUs 0-1), "quota-2" (test container with a 2-CPU quota).
+    private static final @NotNull String VARIANT = "quota-2";
 
     @Container
     private final @NotNull HiveMQContainer hivemq = container();
@@ -57,6 +57,10 @@ class Mqtt3FeatureTesterQos0IT {
         if (VARIANT.equals("cpuset-2")) {
             container.withCreateContainerCmdModifier(cmd -> Objects.requireNonNull(cmd.getHostConfig())
                     .withCpusetCpus("0-1"));
+        }
+        if (VARIANT.equals("quota-2")) {
+            container.withCreateContainerCmdModifier(cmd -> Objects.requireNonNull(cmd.getHostConfig())
+                    .withNanoCPUs(2_000_000_000L));
         }
         return container;
     }
