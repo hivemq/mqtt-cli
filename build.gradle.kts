@@ -288,7 +288,7 @@ testing {
 
             oci.of(this) {
                 imageDependencies {
-                    runtime("hivemq:hivemq4:latest") { isChanging = true }
+                    runtime("hivemq:hivemq4:4.54.0").tag("latest")
                     runtime("hivemq:hivemq-swarm:latest") { isChanging = true }
                 }
                 val linuxAmd64 = platformSelector(platform("linux", "amd64"))
