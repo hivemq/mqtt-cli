@@ -257,6 +257,15 @@ testing {
         }
 
         val integrationTest by registering(JvmTestSuite::class) {
+            targets {
+                all {
+                    testTask {
+                        filter {
+                            includeTestsMatching("com.hivemq.cli.mqtt.test.Mqtt3FeatureTesterQos0IT")
+                        }
+                    }
+                }
+            }
             dependencies {
                 runtimeOnly(libs.junit.platformLauncher)
 
