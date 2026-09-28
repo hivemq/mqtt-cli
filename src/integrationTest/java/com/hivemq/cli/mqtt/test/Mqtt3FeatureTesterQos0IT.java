@@ -37,7 +37,7 @@ class Mqtt3FeatureTesterQos0IT {
     // Debug variants: "baseline", "malloc-arena-2" (MALLOC_ARENA_MAX=2), "jdk25" (the image with the JRE of
     // eclipse-temurin:25-jre first on the PATH), "cross" (4.55.0 broker and JDK on the 4.54.0 base image),
     // "reverse-cross" (4.54.0 broker and JDK on the 4.55.0 base image), "jemalloc" (4.55.0 with jemalloc preloaded).
-    private static final @NotNull String VARIANT = "reverse-cross";
+    private static final @NotNull String VARIANT = "jemalloc";
 
     @Container
     private final @NotNull HiveMQContainer hivemq = container();
