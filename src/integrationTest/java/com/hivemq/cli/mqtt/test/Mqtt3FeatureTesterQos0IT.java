@@ -29,6 +29,8 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
@@ -36,8 +38,8 @@ class Mqtt3FeatureTesterQos0IT {
 
     // Debug variants: "baseline", "malloc-arena-2" (MALLOC_ARENA_MAX=2), "jdk25" (the image with the JRE of
     // eclipse-temurin:25-jre first on the PATH), "cross" (4.55.0 broker and JDK on the 4.54.0 base image),
-    // "reverse-cross" (4.54.0 broker and JDK on the 4.55.0 base image), "jemalloc" (4.55.0 with jemalloc preloaded).
-    private static final @NotNull String VARIANT = "baseline";
+    // "reverse-cross" (4.54.0 broker and JDK on the 4.55.0 base image), "jemalloc" (4.55.0 with jemalloc preloaded), "cpuset-2" (test container pinned to CPUs 0-1).
+    private static final @NotNull String VARIANT = "cpuset-2";
 
     @Container
     private final @NotNull HiveMQContainer hivemq = container();
@@ -51,6 +53,10 @@ class Mqtt3FeatureTesterQos0IT {
                 .withLogConsumer(outputFrame -> System.out.print("HIVEMQ: " + outputFrame.getUtf8String()));
         if (VARIANT.equals("malloc-arena-2")) {
             container.withEnv("MALLOC_ARENA_MAX", "2");
+        }
+        if (VARIANT.equals("cpuset-2")) {
+            container.withCreateContainerCmdModifier(cmd -> Objects.requireNonNull(cmd.getHostConfig())
+                    .withCpusetCpus("0-1"));
         }
         return container;
     }
