@@ -36,7 +36,7 @@ jobs:
           ref: ${{ steps.select_github_ref.outputs.selected_github_ref }}
 
       - name: Setup Snyk
-        uses: snyk/actions/setup@12140f4059e244892ae643824a95459a102120dd # master
+        uses: snyk/actions/setup@b075801f26076be9bb50521154cafab73f44da0c # master
 
       - name: Run Snyk monitor
         shell: bash
