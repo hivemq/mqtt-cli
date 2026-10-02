@@ -1,6 +1,6 @@
 [versions]
 apache-commonsIO = "2.22.0"
-apache-commonsLang = "3.20.0"
+apache-commonsLang = "3.21.0"
 awaitility = "4.3.0"
 bouncycastle = "1.86.1"
 dagger = "2.60.1"
