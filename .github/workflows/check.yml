@@ -98,7 +98,7 @@ jobs:
           retention-days: 5
       - name: Publish test report
         if: ${{ !cancelled() }}
-        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3
+        uses: dorny/test-reporter@d1b5dff021aa968b288b02285a8bf47471c5928a # v3
         with:
           name: Unit tests report
           path: '**/build/test-results/test/TEST-*.xml'
@@ -176,7 +176,7 @@ jobs:
           path: build/test-results/integrationTest/*.xml
       - name: Publish test report
         if: ${{ !cancelled() }}
-        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3
+        uses: dorny/test-reporter@d1b5dff021aa968b288b02285a8bf47471c5928a # v3
         with:
           name: Integration tests report
           path: '**/build/test-results/integrationTest/TEST-*.xml'
@@ -286,7 +286,7 @@ jobs:
           path: build/test-results/systemTest/*.xml
       - name: Publish test report
         if: ${{ !cancelled() }}
-        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3
+        uses: dorny/test-reporter@d1b5dff021aa968b288b02285a8bf47471c5928a # v3
         with:
           name: System tests report
           path: '**/build/test-results/systemTest/TEST-*.xml'
@@ -398,7 +398,7 @@ jobs:
           path: build/test-results/systemTestNative/*.xml
       - name: Publish test report
         if: ${{ !cancelled() }}
-        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3
+        uses: dorny/test-reporter@d1b5dff021aa968b288b02285a8bf47471c5928a # v3
         with:
           name: Native system tests report
           path: '**/build/test-results/systemTestNative/TEST-*.xml'
