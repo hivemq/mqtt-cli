@@ -29,31 +29,31 @@ jobs:
       - name: Build packages
         run: ./gradlew buildPackages shadowDistZip
       - name: Upload distribution
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: distribution
           path: build/distributions/mqtt-cli-*.zip
           retention-days: 5
       - name: Upload Debian package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: debian-package
           path: build/packages/debian/
           retention-days: 5
       - name: Upload RPM package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: rpm-package
           path: build/packages/rpm/
           retention-days: 5
       - name: Upload Brew package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: brew-package
           path: build/packages/homebrew/
           retention-days: 5
       - name: Upload Windows package
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: windows-package
           path: build/packages/windows/
@@ -76,7 +76,7 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
       - name: Download Windows package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: windows-package
           path: windows-package
@@ -127,7 +127,7 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
       - name: Download Debian package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: debian-package
           path: debian-package
@@ -157,7 +157,7 @@ jobs:
       - name: Install rpm tooling
         run: sudo apt-get update && sudo apt-get install -y rpm
       - name: Download RPM package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: rpm-package
           path: rpm-package
@@ -185,7 +185,7 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
       - name: Download Brew package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: brew-package
           path: brew-package
@@ -216,7 +216,7 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
       - name: Download distribution
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: distribution
           path: distribution

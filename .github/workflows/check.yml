@@ -89,7 +89,7 @@ jobs:
         run: ./gradlew test --stacktrace
       - name: Upload test results
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: Unit test results
           path: |
@@ -162,7 +162,7 @@ jobs:
         run: ./gradlew integrationTest ${{ steps.split-tests.outputs.test-suite }} --stacktrace
       - name: Upload test results
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: "Integration test results #${{ matrix.split-index }}"
           path: |
@@ -170,7 +170,7 @@ jobs:
             build/test-results/integrationTest/
           retention-days: 5
       - name: Upload JUnit report artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: junit-xml-reports-integration-${{ matrix.split-index }}
           path: build/test-results/integrationTest/*.xml
@@ -272,7 +272,7 @@ jobs:
         run: ./gradlew systemTest ${{ steps.split-tests.outputs.test-suite }} --stacktrace
       - name: Upload test results
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: "System test results #${{ matrix.split-index }}"
           path: |
@@ -280,7 +280,7 @@ jobs:
             build/test-results/systemTest/
           retention-days: 5
       - name: Upload JUnit report artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: junit-xml-reports-system-${{ matrix.split-index }}
           path: build/test-results/systemTest/*.xml
@@ -384,7 +384,7 @@ jobs:
         run: ./gradlew systemTestNative ${{ steps.split-tests.outputs.test-suite }} --stacktrace
       - name: Upload test results
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: "Native system test results #${{ matrix.split-index }}"
           path: |
@@ -392,7 +392,7 @@ jobs:
             build/test-results/systemTestNative/
           retention-days: 5
       - name: Upload JUnit report artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: junit-xml-reports-native-system-${{ matrix.split-index }}
           path: build/test-results/systemTestNative/*.xml
