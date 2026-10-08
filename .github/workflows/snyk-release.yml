@@ -23,7 +23,7 @@ jobs:
           path: mqtt-cli
 
       - name: Setup Snyk
-        uses: snyk/actions/setup@b075801f26076be9bb50521154cafab73f44da0c # master
+        uses: snyk/actions/setup@11b673cfb4b0dc0d860a1323caa199d54950dcce # master
 
       - name: Run Snyk monitor
         shell: bash
