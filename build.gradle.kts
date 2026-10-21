@@ -353,16 +353,18 @@ spotless {
 hivemqLicense {
     projectName.set("MQTT CLI")
     thirdPartyLicenseDirectory.set(layout.projectDirectory.dir("src/distribution/third-party-licenses"))
-    excludedDependencies.set(
-        setOf(
-            "org.jline:jline",
-            "org.jline:jline-picocli",
-        )
-    )
     overriddenLicenses.set(
         mapOf(
             "org.jline:jline" to "BSD-3-Clause",
+            "org.jline:jline-builtins" to "BSD-3-Clause",
+            "org.jline:jline-console" to "BSD-3-Clause",
+            "org.jline:jline-console-ui" to "BSD-3-Clause",
+            "org.jline:jline-native" to "BSD-3-Clause",
             "org.jline:jline-picocli" to "BSD-3-Clause",
+            "org.jline:jline-reader" to "BSD-3-Clause",
+            "org.jline:jline-shell" to "BSD-3-Clause",
+            "org.jline:jline-style" to "BSD-3-Clause",
+            "org.jline:jline-terminal" to "BSD-3-Clause",
         )
     )
 }
