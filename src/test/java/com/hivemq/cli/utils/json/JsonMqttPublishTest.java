@@ -19,7 +19,6 @@ package com.hivemq.cli.utils.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.Strictness;
-import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttTopic;
@@ -36,6 +35,7 @@ import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -145,8 +145,8 @@ class JsonMqttPublishTest {
         final Object userPropertiesArrayList = map.get("userProperties");
         assertInstanceOf(ArrayList.class, userPropertiesArrayList);
         @SuppressWarnings("unchecked") //
-        final ArrayList<LinkedTreeMap<String, String>> userPropertiesMapCasted =
-                (ArrayList<LinkedTreeMap<String, String>>) userPropertiesArrayList;
+        final ArrayList<LinkedHashMap<String, String>> userPropertiesMapCasted =
+                (ArrayList<LinkedHashMap<String, String>>) userPropertiesArrayList;
         assertEquals("name1", userPropertiesMapCasted.get(0).get("name"));
         assertEquals("value1", userPropertiesMapCasted.get(0).get("value"));
         assertEquals("name1", userPropertiesMapCasted.get(1).get("name"));
