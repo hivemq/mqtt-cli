@@ -6,7 +6,7 @@ MQTT CLI uses the following third party libraries:
  Module                                                                     | Version                                   | License ID    | License URL
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  com.google.code.findbugs:jsr305                                            | 3.0.2                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- com.google.code.gson:gson                                                  | 2.14.0                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ com.google.code.gson:gson                                                  | 2.15.0                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  com.google.dagger:dagger                                                   | 2.60.1                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  com.google.errorprone:error_prone_annotations                              | 2.50.0                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  com.google.guava:failureaccess                                             | 1.0.3                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
@@ -15,10 +15,10 @@ MQTT CLI uses the following third party libraries:
  com.google.j2objc:j2objc-annotations                                       | 3.1                                       | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  com.hivemq:hivemq-mqtt-client                                              | 1.4.1                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  com.opencsv:opencsv                                                        | 5.12.0                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- com.squareup.okhttp3:logging-interceptor                                   | 5.5.0                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- com.squareup.okhttp3:okhttp                                                | 5.5.0                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- com.squareup.okhttp3:okhttp-bom                                            | 5.5.0                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- com.squareup.okhttp3:okhttp-jvm                                            | 5.5.0                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ com.squareup.okhttp3:logging-interceptor                                   | 5.5.1                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ com.squareup.okhttp3:okhttp                                                | 5.5.1                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ com.squareup.okhttp3:okhttp-bom                                            | 5.5.1                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ com.squareup.okhttp3:okhttp-jvm                                            | 5.5.1                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  com.squareup.okio:okio                                                     | 3.18.1                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  com.squareup.okio:okio-jvm                                                 | 3.18.1                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  commons-beanutils:commons-beanutils                                        | 1.11.0                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
@@ -28,21 +28,21 @@ MQTT CLI uses the following third party libraries:
  info.picocli:picocli                                                       | 4.7.7                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  info.picocli:picocli-codegen                                               | 4.7.7                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  io.gsonfire:gson-fire                                                      | 1.9.0                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-bom                                                         | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-buffer                                                      | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-codec                                                       | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-codec-base                                                  | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-codec-compression                                           | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-codec-http                                                  | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-codec-marshalling                                           | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-codec-protobuf                                              | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-common                                                      | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-handler                                                     | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-resolver                                                    | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-transport                                                   | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-transport-classes-epoll                                     | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-transport-native-epoll                                      | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
- io.netty:netty-transport-native-unix-common                                | 4.2.19.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-bom                                                         | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-buffer                                                      | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-codec                                                       | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-codec-base                                                  | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-codec-compression                                           | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-codec-http                                                  | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-codec-marshalling                                           | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-codec-protobuf                                              | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-common                                                      | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-handler                                                     | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-resolver                                                    | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-transport                                                   | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-transport-classes-epoll                                     | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-transport-native-epoll                                      | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
+ io.netty:netty-transport-native-unix-common                                | 4.2.20.Final                              | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  io.reactivex.rxjava2:rxjava                                                | 2.2.21                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  io.swagger.core.v3:swagger-annotations                                     | 2.2.55                                    | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
  jakarta.inject:jakarta.inject-api                                          | 2.0.1                                     | Apache-2.0    | https://spdx.org/licenses/Apache-2.0.html
