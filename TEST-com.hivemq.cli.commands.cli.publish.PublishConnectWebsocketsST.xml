@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.cli.publish.PublishConnectWebsocketsST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-03T14:39:32.018Z" hostname="runnervmnwato" time="4.524">
+<testsuite name="com.hivemq.cli.commands.cli.publish.PublishConnectWebsocketsST" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-07T01:59:01.535Z" hostname="runnervmwuk1x" time="4.657">
   <properties/>
-  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.publish.PublishConnectWebsocketsST" time="1.443"/>
-  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.publish.PublishConnectWebsocketsST" time="1.255"/>
+  <testcase name="[1] '3'" classname="com.hivemq.cli.commands.cli.publish.PublishConnectWebsocketsST" time="1.323"/>
+  <testcase name="[2] '5'" classname="com.hivemq.cli.commands.cli.publish.PublishConnectWebsocketsST" time="1.123"/>
 </testsuite>
