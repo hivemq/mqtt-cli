@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.hivemq.cli.commands.swarm.commander.SwarmStatusCommandIT" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-07T04:37:29.403Z" hostname="runnervmwuk1x" time="2.797">
+<testsuite name="com.hivemq.cli.commands.swarm.commander.SwarmStatusCommandIT" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-10T11:32:07.339Z" hostname="runnervmwuk1x" time="9.022">
   <properties/>
-  <testcase name="getCommanderStatus()" classname="com.hivemq.cli.commands.swarm.commander.SwarmStatusCommandIT" time="2.792"/>
+  <testcase name="getCommanderStatus()" classname="com.hivemq.cli.commands.swarm.commander.SwarmStatusCommandIT" time="6.48"/>
 </testsuite>
