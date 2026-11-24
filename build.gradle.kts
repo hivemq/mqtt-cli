@@ -652,18 +652,13 @@ oci {
         registry("ecrPublic") {
             url = uri("https://public.ecr.aws")
             optionalCredentials()
-            exclusiveContent { includeGroup("hivemq.library") }
-        }
-    }
-    imageMapping {
-        mapGroup("hivemq.library") {
-            toImage(nameSpec("hivemq/library/") + name)
+            exclusiveContent { includeModule("hivemq", "hivemq-coffee") }
         }
     }
     imageDefinitions.register("main") {
         allPlatforms {
             dependencies {
-                runtime(ociImages.eclipse.temurin.oci)
+                runtime(ociImages.hivemq.coffee.oci)
             }
             config {
                 entryPoint.add("java")
