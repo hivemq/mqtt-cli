@@ -1,5 +1,5 @@
-# https://gallery.ecr.aws/hivemq/library/eclipse-temurin
+# https://gallery.ecr.aws/hivemq/hivemq-coffee
 [[oci]]
-name = "eclipse-temurin"
-image = "public.ecr.aws/hivemq/library/eclipse-temurin"
-reference = "25-jre-resolute@sha256:46c9b24cfdb8e7682bcfc3afee0ea77285db93832237f5f51c69d2c6f11398e7"
+name = "hivemq-coffee"
+image = "public.ecr.aws/hivemq/hivemq-coffee"
+reference = "25-jre-resolute@sha256:be06a9131bf23375fcbde7f59a085b2cd78a54f03459bfa5a963b5a210eafd8d"
