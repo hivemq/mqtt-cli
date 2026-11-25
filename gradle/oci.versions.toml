@@ -2,4 +2,4 @@
 [[oci]]
 name = "hivemq-coffee"
 image = "public.ecr.aws/hivemq/hivemq-coffee"
-reference = "25-jre-resolute@sha256:ca54092051fe981e6794c8dfd7bda6f586d0d3dde9a498ee33111405fbab9981"
+reference = "25-jre-resolute@sha256:a6f69688d82238bf342fa32542876c5455463ed8a8080d4a9cb2ce1a4d117c41"
